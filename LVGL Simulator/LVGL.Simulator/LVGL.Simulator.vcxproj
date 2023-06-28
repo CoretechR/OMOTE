@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="Mile.Project.Windows.Legacy\Mile.Project.Platform.Win32.props" />
+  <Import Project="Mile.Project.Windows.Legacy\Mile.Project.Platform.x64.props" />
+  <Import Project="Mile.Project.Windows.Legacy\Mile.Project.Platform.ARM64.props" />
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3CA6E070-4AC1-475E-BB17-CF29AE4806DF}</ProjectGuid>
+    <RootNamespace>LVGL</RootNamespace>
+    <MileProjectType>ConsoleApplication</MileProjectType>
+    <MileProjectManifestFile>LVGL.Simulator.manifest</MileProjectManifestFile>
+    <MileProjectEnableVCLTLSupport>true</MileProjectEnableVCLTLSupport>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Debug'">
+    <SupportLTL>false</SupportLTL>
+  </PropertyGroup>
+  <Import Project="Mile.Project.Windows.Legacy\Mile.Project.Cpp.props" />
+  <Import Project="freetype.props" />
+  <PropertyGroup>
+    <IncludePath>$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\LvglPlatform\lvgl\;$(MSBuildThisFileDirectory)..\LvglPlatform\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>LV_CONF_INCLUDE_SIMPLE;LV_LVGL_H_INCLUDE_SIMPLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization Condition="'$(Configuration)'=='Release'">MinSpace</Optimization>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="LVGL.Portable.vcxitems" />
+  <Import Project="LVGL.Drivers.vcxitems" />
+  <ItemGroup>
+    <ClInclude Include="lv_conf.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lv_drv_conf.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="LVGL.Simulator.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Mile.Project.Properties.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LVGL.Simulator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="LVGL.Simulator.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="LVGL.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="freetype.props" />
+  </ItemGroup>
+  <Import Project="Mile.Project.Windows.Legacy\Mile.Project.Cpp.targets" />
+</Project>

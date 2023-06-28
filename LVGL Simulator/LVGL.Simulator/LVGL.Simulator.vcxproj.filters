@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="LVGL.Portable.vcxitems.filters" />
+  <Import Project="LVGL.Drivers.vcxitems.filters" />
+  <ItemGroup>
+    <ClInclude Include="lv_conf.h" />
+    <ClInclude Include="lv_drv_conf.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="LVGL.Simulator.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Mile.Project.Properties.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LVGL.Simulator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="LVGL.Simulator.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="LVGL.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="freetype.props" />
+  </ItemGroup>
+</Project>

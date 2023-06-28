@@ -1,0 +1,9 @@
+[submodule "LvglPlatform/lvgl"]
+	path = LvglPlatform/lvgl
+	url = https://github.com/lvgl/lvgl
+[submodule "LvglPlatform/lv_drivers"]
+	path = LvglPlatform/lv_drivers
+	url = https://github.com/lvgl/lv_drivers
+[submodule "LvglPlatform/freetype"]
+	path = LvglPlatform/freetype
+	url = https://github.com/freetype/freetype

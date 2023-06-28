@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  PROJECT:   Mouri Internal Library Essentials
+  FILE:      Directory.Build.props
+  PURPOSE:   Global settings for Visual Studio .NET Project
+
+  LICENSE:   The MIT License
+
+  DEVELOPER: Mouri_Naruto (Mouri_Naruto AT Outlook.com)
+-->
+<Project>
+  <PropertyGroup>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)Output\Binaries\$(MSBuildProjectName)\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)Output\Objects\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

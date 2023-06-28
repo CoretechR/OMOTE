@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  PROJECT:   LVGL PC Simulator using Visual Studio
+  FILE:      freetype.props
+  PURPOSE:   Property sheet for FreeType
+
+  LICENSE:   The MIT License
+
+  DEVELOPER: Mouri_Naruto (Mouri_Naruto AT Outlook.com)
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IncludePath>$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\include\;$(IncludePath);</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4703;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Target Name="FreeTypeLibraryBuildSource" BeforeTargets="BeforeClCompile">
+    <ItemGroup>
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\autofit\autofit.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftbase.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftbbox.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftbdf.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftbitmap.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftcid.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftfstype.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftgasp.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftglyph.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftgxval.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftinit.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftmm.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftotval.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftpatent.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftpfr.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftstroke.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftsynth.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\fttype1.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\base\ftwinfnt.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\bdf\bdf.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\cache\ftcache.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\cff\cff.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\cid\type1cid.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\dlg\dlgwrap.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\gzip\ftgzip.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\lzw\ftlzw.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\pcf\pcf.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\pfr\pfr.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\psaux\psaux.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\pshinter\pshinter.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\psnames\psmodule.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\raster\raster.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\sfnt\sfnt.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\smooth\smooth.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\sdf\sdf.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\svg\svg.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\truetype\truetype.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\type1\type1.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\type42\type42.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\src\winfonts\winfnt.c" />
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\builds\windows\ftdebug.c">
+        <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      </ClCompile>
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\LvglPlatform\freetype\builds\windows\ftsystem.c">
+        <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      </ClCompile>   
+    </ItemGroup>
+  </Target>
+</Project>

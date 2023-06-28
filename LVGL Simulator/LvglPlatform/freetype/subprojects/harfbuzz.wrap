@@ -1,0 +1,12 @@
+[wrap-file]
+directory = harfbuzz-4.3.0
+
+source_url = https://github.com/harfbuzz/harfbuzz/releases/download/4.3.0/harfbuzz-4.3.0.tar.xz
+source_filename = harfbuzz-4.3.0.tar.xz
+source_hash = a49628f4c4c8e6d8df95ef44935a93446cf2e46366915b0e3ca30df21fffb530
+
+[provide]
+harfbuzz = libharfbuzz_dep
+harfbuzz-subset = libharfbuzz_subset_dep
+harfbuzz-icu = libharfbuzz_icu_dep
+harfbuzz-gobject = libharfbuzz_gobject_dep
