@@ -34,5 +34,5 @@ Item;Quantity;References;Value;Footprint;Source;Comment
 37;1;J1;USB_C_Receptacle_USB2.0;USB_C_Receptacle_HRO_TYPE-C-31-M-12;https://www.lcsc.com/product-detail/_Korean-Hroparts-Elec-_C165948.html;
 38;1;U2;XC6220B331;SOT-23-5;https://www.lcsc.com/product-detail/_Torex-Semicon-_C86534.html;
 ;;;;;;
-39;1;;"2.8"" TFT Display - 240x320 with Capacitive Touchscreen";;https://www.adafruit.com/product/2770;
+39;1;;2.8 TFT Display - 240x320 with Capacitive Touchscreen;;https://www.adafruit.com/product/2770;
 40;1;;3.7V 2000mAh LiPo;;https://eckstein-shop.de/LiPo-Akku-Lithium-Ion-Polymer-Batterie-37V-2000mAh-mit-JST-PHR-2-Stecker-LP103450;
