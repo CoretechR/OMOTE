@@ -2375,7 +2375,7 @@
      *     90~degrees with the curve.  We solve this with the Newton-Raphson
      *     method.
      *
-     * (7) We first assume an arbitary value of factor `t`, which we then
+     * (7) We first assume an arbitrary value of factor `t`, which we then
      *     improve.
      *
      *     ```
@@ -2688,7 +2688,7 @@
      *     90~degree with curve.  We solve this with the Newton-Raphson
      *     method.
      *
-     * (7) We first assume an arbitary value of factor `t`, which we then
+     * (7) We first assume an arbitrary value of factor `t`, which we then
      *     improve.
      *
      *     ```
