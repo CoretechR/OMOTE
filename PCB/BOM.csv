@@ -28,7 +28,7 @@ Item,Quantity,References,Value,Footprint,Source,Comment
 28,1,D1,MBR0520,D_SOD-123,https://www.lcsc.com/product-detail/_Shikues-_C475717.html,
 29,1,Q2,MBT3904DW1,SOT-363_SC-70-6,https://www.lcsc.com/product-detail/_onsemi-_C110150.html,
 30,1,U1,MCP73831-2-OT,SOT-23-5,https://www.lcsc.com/product-detail/Battery-Management-ICs_Microchip-Tech-MCP73831T-2ATI-OT_C14879.html,Possible Alternative: https://www.lcsc.com/product-detail/_LR-_C5336483.html
-31,1,J1,2x2.54mm pin header,,,Only needed for supplying power externally
+31,1,J4,2x2.54mm pin header,,,Only needed for supplying power externally
 33,1,D2,SFH4346,LED_5mm_Side_Mount,https://www.lcsc.com/product-detail/_Everlight-Elec-_C139041.html,Any IR LED should work
 34,25,S1; S2; S3; S4; S5; S6; S7; S8; S9; S10; S11; S12; S13; S14; S15; S16; S17; S18; S19; S20; S22; S23; S24; S25; S26,TL3342F160QG,SW_SPST_TL3342,https://www.lcsc.com/product-detail/_G-Switch-_C778172.html,
 35,1,U6,TSSP77038,Heimdall vertical,https://www.lcsc.com/product-detail/_Vishay-Intertech-_C499566.html,
