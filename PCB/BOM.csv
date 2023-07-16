@@ -8,13 +8,13 @@ Item,Quantity,References,Value,Footprint,Source,Comment
 7,1,R21,3R3,R_0805_2012Metric,,
 8,2,R10; R36,0,R_0603_1608Metric,,
 9,4,R15; R16; R17; R18,10,R_0603_1608Metric,,
-10,15,R6; R11; R12; R13; R14; R19; R20; R22; R26; R30; R31; R32; R33; R34; R35; R37,10k,R_0603_1608Metric,,
+10,16,R6; R11; R12; R13; R14; R19; R20; R22; R26; R30; R31; R32; R33; R34; R35; R37,10k,R_0603_1608Metric,,
 12,2,R23; R24,300k,R_0603_1608Metric,,
 13,3,R27; R28; R29,330,R_0603_1608Metric,https://www.lcsc.com/product-detail/_YAGEO-_C105881.html,
 14,1,R8,3k,R_0603_1608Metric,https://www.lcsc.com/product-detail/_YAGEO-_C126358.html,
 15,1,R25,4k7,R_0603_1608Metric,,
 16,2,R7; R9,5.1k,R_0603_1608Metric,,
-17,2,R1; R38; R39; R40,2.2k,R_0603_1608Metric,,
+17,4,R1; R38; R39; R40,2.2k,R_0603_1608Metric,,
 18,1,F1,500mA,Fuse_1206_3216Metric_Pad1.42x1.75mm_HandSolder,https://www.lcsc.com/product-detail/_Fuzetec-Tech-_C220146.html,
 19,1,U8,AP2112K-3.3,SOT-23-5,https://www.lcsc.com/product-detail/_Diodes-Incorporated-_C51118.html,
 20,1,AE1,Antenna,RFANT5220110A2T,https://www.lcsc.com/product-detail/_Walsin-Tech-Corp-_C201761.html,
@@ -28,6 +28,7 @@ Item,Quantity,References,Value,Footprint,Source,Comment
 28,1,D1,MBR0520,D_SOD-123,https://www.lcsc.com/product-detail/_Shikues-_C475717.html,
 29,1,Q2,MBT3904DW1,SOT-363_SC-70-6,https://www.lcsc.com/product-detail/_onsemi-_C110150.html,
 30,1,U1,MCP73831-2-OT,SOT-23-5,https://www.lcsc.com/product-detail/Battery-Management-ICs_Microchip-Tech-MCP73831T-2ATI-OT_C14879.html,Possible Alternative: https://www.lcsc.com/product-detail/_LR-_C5336483.html
+31,1,J1,2x2.54mm pin header,,,Only needed for supplying power externally
 33,1,D2,SFH4346,LED_5mm_Side_Mount,https://www.lcsc.com/product-detail/_Everlight-Elec-_C139041.html,Any IR LED should work
 34,25,S1; S2; S3; S4; S5; S6; S7; S8; S9; S10; S11; S12; S13; S14; S15; S16; S17; S18; S19; S20; S22; S23; S24; S25; S26,TL3342F160QG,SW_SPST_TL3342,https://www.lcsc.com/product-detail/_G-Switch-_C778172.html,
 35,1,U6,TSSP77038,Heimdall vertical,https://www.lcsc.com/product-detail/_Vishay-Intertech-_C499566.html,
