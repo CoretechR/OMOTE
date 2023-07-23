@@ -52,6 +52,14 @@ See the [open issues](https://github.com/CoretechR/OMOTE/issues) and [discussion
 
 OMOTE might look like a finished product, but especially the software is ***not "consumer-friendly"*** yet. If you want to build your own remote and customize it to your devices, you should be ***somewhat experienced with electronics and programming***. 
 
+### Simulator
+
+You can try the user interface on your PC using the LVGL simulator. Just follow these steps:
+
+1. Install Visual Studio, including the "Desktop development with C++" workload. You can use the free Community edition.
+2. Start Visual Studio and open LVGL.Simulator.sln
+3. Make sure that the build target is set to x64 and then run the local Windows debugger.
+
 ### Hardware
 
 The central component of OMOTE is its PCB. If you want to build the PCB yourself, you will need SMT-reflow tools like a hot plate or a hot-air station. The 2-layered board and a solder paste stencil can be ordered from any PCB manufacturer using the [KiCad files](https://github.com/CoretechR/OMOTE/tree/main/PCB). Manufacturers like OSHPARK or Aisler will accept these files directly. For JLCPCB or PCBWay, you can use their plugin to export the optimized Gerber files.
