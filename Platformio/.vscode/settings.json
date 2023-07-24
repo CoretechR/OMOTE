@@ -2,7 +2,15 @@
     "cmake.configureOnOpen": false,
     "files.associations": {
         "random": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "adafruit_ft6206.h": "c",
+        "deque": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO"
 }
