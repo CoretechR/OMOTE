@@ -11,6 +11,8 @@
 #include <Windows.h>
 #include <string>
 #include "resource.h"
+
+#include "omoteconfig.h"
 #include "HardwareSimulator.hpp"
 #include "OmoteUI.hpp"
 

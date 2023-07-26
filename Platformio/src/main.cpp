@@ -1,59 +1,27 @@
 // OMOTE firmware for ESP32
 // 2023 Maximilian Kern
 
-#include <TFT_eSPI.h> // Hardware-specific library
-#include <Keypad.h>   // modified for inverted logic
-#include <Preferences.h>
 #include "SparkFunLIS3DH.h"
+#include "WiFi.h"
 #include "Wire.h"
+#include "driver/ledc.h"
+#include <Adafruit_FT6206.h>
+#include <IRrecv.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
-#include <IRrecv.h>
 #include <IRutils.h>
-#include <lvgl.h>
-#include "WiFi.h"
-#include <Adafruit_FT6206.h>
-#include "driver/ledc.h"
+#include <Keypad.h> // modified for inverted logic
+#include <Preferences.h>
 #include <PubSubClient.h>
-#include "OmoteUI/OmoteUI.hpp"
+#include <TFT_eSPI.h> // Hardware-specific library
+#include <lvgl.h>
+
 #include "HardwareRevX.hpp"
+#include "OmoteUI/OmoteUI.hpp"
+#include "omoteconfig.h"
 
-#define ENABLE_WIFI // Comment out to diable connected features
-
-// Pin assignment -----------------------------------------------------------------------------------------------------------------------
-
-#define LCD_DC 9 // defined in TFT_eSPI User_Setup.h
-#define LCD_CS 5
-#define LCD_MOSI 23
-#define LCD_SCK 18
-#define LCD_BL 4
-#define LCD_EN 10
-
-#define USER_LED 2
-
-#define SW_1 32 // 1...5: Output
-#define SW_2 26
-#define SW_3 27
-#define SW_4 14
-#define SW_5 12
-#define SW_A 37 // A...E: Input
-#define SW_B 38
-#define SW_C 39
-#define SW_D 34
-#define SW_E 35
-
-#define IR_RX 15   // IR receiver input
-#define ADC_BAT 36 // Battery voltage sense input (1/2 divider)
-#define IR_VCC 25  // IR receiver power
-#define IR_LED 33  // IR LED output
-
-#define SCL 22
-#define SDA 19
-#define ACC_INT 20
-
-#define CRG_STAT 21 // battery charger feedback
-
-// Variables and Object declarations ------------------------------------------------------------------------------------------------------
+// Variables and Object declarations
+// ------------------------------------------------------------------------------------------------------
 
 // Battery declares
 int battery_voltage = 0;
@@ -62,7 +30,8 @@ bool battery_ischarging = false;
 
 // IMU declarations
 int motion = 0;
-#define SLEEP_TIMEOUT 20000 // time until device enters sleep mode in milliseconds
+#define SLEEP_TIMEOUT                                                          \
+  20000 // time until device enters sleep mode in milliseconds
 #define MOTION_THRESHOLD 50 // motion above threshold keeps device awake
 int standbyTimer = SLEEP_TIMEOUT;
 bool wakeupByIMUEnabled = true;
@@ -103,18 +72,23 @@ char hexaKeys[ROWS][COLS] = {
     {'>', 'o', 'b', 'u', 'l'}, // forward,      off,    back,     up,   left
     {'?', 'p', 'c', '<', '='}  //       ?,     play,  config, rewind,   stop
 };
-byte rowPins[ROWS] = {SW_A, SW_B, SW_C, SW_D, SW_E}; // connect to the row pinouts of the keypad
-byte colPins[COLS] = {SW_1, SW_2, SW_3, SW_4, SW_5}; // connect to the column pinouts of the keypad
-Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
-#define BUTTON_PIN_BITMASK 0b1110110000000000000000000010000000000000 // IO34+IO35+IO37+IO38+IO39(+IO13)
-byte keyMapTechnisat[ROWS][COLS] = {
-    {0x69, 0x20, 0x11, 0x0D, 0x56},
-    {0x4F, 0x37, 0x10, 0x57, 0x51},
-    {0x6E, 0x21, 0x6B, 0x6D, 0x6C},
-    {0x34, 0x0C, 0x22, 0x50, 0x55},
-    {'?', 0x35, 0x2F, 0x32, 0x36}};
-byte virtualKeyMapTechnisat[10] = {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0x0};
-byte currentDevice = 1; // Current Device to control (allows switching mappings between devices)
+byte rowPins[ROWS] = {SW_A, SW_B, SW_C, SW_D,
+                      SW_E}; // connect to the row pinouts of the keypad
+byte colPins[COLS] = {SW_1, SW_2, SW_3, SW_4,
+                      SW_5}; // connect to the column pinouts of the keypad
+Keypad customKeypad =
+    Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
+#define BUTTON_PIN_BITMASK                                                     \
+  0b1110110000000000000000000010000000000000 // IO34+IO35+IO37+IO38+IO39(+IO13)
+byte keyMapTechnisat[ROWS][COLS] = {{0x69, 0x20, 0x11, 0x0D, 0x56},
+                                    {0x4F, 0x37, 0x10, 0x57, 0x51},
+                                    {0x6E, 0x21, 0x6B, 0x6D, 0x6C},
+                                    {0x34, 0x0C, 0x22, 0x50, 0x55},
+                                    {'?', 0x35, 0x2F, 0x32, 0x36}};
+byte virtualKeyMapTechnisat[10] = {0x1, 0x2, 0x3, 0x4, 0x5,
+                                   0x6, 0x7, 0x8, 0x9, 0x0};
+byte currentDevice =
+    1; // Current Device to control (allows switching mappings between devices)
 
 // IR declarations
 IRsend IrSender(IR_LED, true);
@@ -122,12 +96,7 @@ IRrecv IrReceiver(IR_RX);
 
 // Other declarations
 byte wakeup_reason;
-enum Wakeup_reasons
-{
-  WAKEUP_BY_RESET,
-  WAKEUP_BY_IMU,
-  WAKEUP_BY_KEYPAD
-};
+enum Wakeup_reasons { WAKEUP_BY_RESET, WAKEUP_BY_IMU, WAKEUP_BY_KEYPAD };
 Preferences preferences;
 
 #define WIFI_SSID "YOUR_WIFI_SSID"
@@ -137,11 +106,12 @@ lv_obj_t *WifiLabel;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-// Helper Functions -----------------------------------------------------------------------------------------------------------------------
+// Helper Functions
+// -----------------------------------------------------------------------------------------------------------------------
 
 // Display flushing
-void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
-{
+void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area,
+                   lv_color_t *color_p) {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
 
@@ -154,25 +124,20 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
 }
 
 // Read the touchpad
-void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
-{
+void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
   // int16_t touchX, touchY;
   touchPoint = touch.getPoint();
   int16_t touchX = touchPoint.x;
   int16_t touchY = touchPoint.y;
   bool touched = false;
-  if ((touchX > 0) || (touchY > 0))
-  {
+  if ((touchX > 0) || (touchY > 0)) {
     touched = true;
     standbyTimer = SLEEP_TIMEOUT;
   }
 
-  if (!touched)
-  {
+  if (!touched) {
     data->state = LV_INDEV_STATE_REL;
-  }
-  else
-  {
+  } else {
     data->state = LV_INDEV_STATE_PR;
 
     // Set the coordinates
@@ -188,8 +153,7 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
   }
 }
 
-void activityDetection()
-{
+void activityDetection() {
   static int accXold;
   static int accYold;
   static int accZold;
@@ -213,8 +177,7 @@ void activityDetection()
   accZold = accZ;
 }
 
-void configIMUInterrupts()
-{
+void configIMUInterrupts() {
   uint8_t dataToWrite = 0;
 
   // LIS3DH_INT1_CFG
@@ -267,8 +230,7 @@ void configIMUInterrupts()
 }
 
 // Enter Sleep Mode
-void enterSleep()
-{
+void enterSleep() {
   // Save settings to internal flash memory
   preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
   preferences.putUChar("blBrightness", backlight_brightness);
@@ -332,43 +294,36 @@ void enterSleep()
 
 #ifdef ENABLE_WIFI
 // WiFi status event
-void WiFiEvent(WiFiEvent_t event)
-{
+void WiFiEvent(WiFiEvent_t event) {
   // Serial.printf("[WiFi-event] event: %d\n", event);
-  if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP)
-  {
+  if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP) {
     client.setServer(MQTT_SERVER, 1883); // MQTT initialization
     client.connect("OMOTE");             // Connect using a client id
   }
   // Set status bar icon based on WiFi status
-  if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP || event == ARDUINO_EVENT_WIFI_STA_GOT_IP6)
-  {
+  if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP ||
+      event == ARDUINO_EVENT_WIFI_STA_GOT_IP6) {
     lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);
-  }
-  else
-  {
+  } else {
     lv_label_set_text(WifiLabel, "");
   }
 }
 #endif
 
-// Setup ----------------------------------------------------------------------------------------------------------------------------------
+// Setup
+// ----------------------------------------------------------------------------------------------------------------------------------
 
-void setup()
-{
+void setup() {
 
   setCpuFrequencyMhz(240); // Make sure ESP32 is running at full speed
 
   // Find out wakeup cause
-  if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1)
-  {
+  if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1) {
     if (log(esp_sleep_get_ext1_wakeup_status()) / log(2) == 13)
       wakeup_reason = WAKEUP_BY_IMU;
     else
       wakeup_reason = WAKEUP_BY_KEYPAD;
-  }
-  else
-  {
+  } else {
     wakeup_reason = WAKEUP_BY_RESET;
   }
 
@@ -444,8 +399,7 @@ void setup()
 
   // Restore settings from internal flash memory
   preferences.begin("settings", false);
-  if (preferences.getBool("alreadySetUp"))
-  {
+  if (preferences.getBool("alreadySetUp")) {
     wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
     backlight_brightness = preferences.getUChar("blBrightness");
     currentDevice = preferences.getUChar("currentDevice");
@@ -455,8 +409,7 @@ void setup()
 
   // Slowly charge the VSW voltage to prevent a brownout
   // Workaround for hardware rev 1!
-  for (int i = 0; i < 100; i++)
-  {
+  for (int i = 0; i < 100; i++) {
     digitalWrite(LCD_EN, HIGH); // LCD Logic off
     delayMicroseconds(1);
     digitalWrite(LCD_EN, LOW); // LCD Logic on
@@ -470,8 +423,9 @@ void setup()
   tft.setSwapBytes(true);
 
   // Setup touchscreen
-  Wire.begin(SDA, SCL, 400000); // Configure i2c pins and set frequency to 400kHz
-  touch.begin(128);             // Initialize touchscreen and set sensitivity threshold
+  Wire.begin(SDA, SCL,
+             400000); // Configure i2c pins and set frequency to 400kHz
+  touch.begin(128);   // Initialize touchscreen and set sensitivity threshold
 
   auto hal = std::make_shared<HardwareRevX>();
   hal->initLVGL(my_disp_flush, my_touchpad_read);
@@ -488,8 +442,9 @@ void setup()
 #endif
 
   // Setup IMU
-  IMU.settings.accelSampleRate = 50; // Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
-  IMU.settings.accelRange = 2;       // Max G force readable.  Can be: 2, 4, 8, 16
+  IMU.settings.accelSampleRate =
+      50; // Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
+  IMU.settings.accelRange = 2; // Max G force readable.  Can be: 2, 4, 8, 16
   IMU.settings.adcEnabled = 0;
   IMU.settings.tempEnabled = 0;
   IMU.settings.xAccelEnabled = 1;
@@ -511,19 +466,17 @@ void setup()
   Serial.println("ms.");
 }
 
-// Loop ------------------------------------------------------------------------------------------------------------------------------------
+// Loop
+// ------------------------------------------------------------------------------------------------------------------------------------
 
-void loop()
-{
+void loop() {
 
   // Update Backlight brightness
   static int fadeInTimer = millis(); // fadeInTimer = time after setup
-  if (millis() < fadeInTimer + backlight_brightness)
-  { // Fade in the backlight brightness
+  if (millis() <
+      fadeInTimer + backlight_brightness) { // Fade in the backlight brightness
     ledcWrite(5, millis() - fadeInTimer);
-  }
-  else
-  { // Dim Backlight before entering standby
+  } else { // Dim Backlight before entering standby
     if (standbyTimer < 2000)
       ledcWrite(5, 85); // Backlight dim
     else
@@ -538,11 +491,9 @@ void loop()
 
   // Refresh IMU data at 10Hz
   static unsigned long IMUTaskTimer = millis();
-  if (millis() - IMUTaskTimer >= 100)
-  {
+  if (millis() - IMUTaskTimer >= 100) {
     activityDetection();
-    if (standbyTimer == 0)
-    {
+    if (standbyTimer == 0) {
       Serial.println("Entering Sleep Mode. Goodbye.");
       enterSleep();
     }
@@ -550,21 +501,20 @@ void loop()
   }
 
   // Update battery stats at 1Hz
-  static unsigned long batteryTaskTimer = millis() + 1000; // add 1s to start immediately
-  if (millis() - batteryTaskTimer >= 1000)
-  {
-    battery_voltage = analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
-    battery_percentage = constrain(map(battery_voltage, 3700, 4200, 0, 100), 0, 100);
+  static unsigned long batteryTaskTimer =
+      millis() + 1000; // add 1s to start immediately
+  if (millis() - batteryTaskTimer >= 1000) {
+    battery_voltage =
+        analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
+    battery_percentage =
+        constrain(map(battery_voltage, 3700, 4200, 0, 100), 0, 100);
     batteryTaskTimer = millis();
     battery_ischarging = !digitalRead(CRG_STAT);
     // Check if battery is charging, fully charged or disconnected
-    if (battery_ischarging || (!battery_ischarging && battery_voltage > 4350))
-    {
+    if (battery_ischarging || (!battery_ischarging && battery_voltage > 4350)) {
       lv_label_set_text(objBattPercentage, "");
       lv_label_set_text(objBattIcon, LV_SYMBOL_USB);
-    }
-    else
-    {
+    } else {
       // Update status bar battery indicator
       // lv_label_set_text_fmt(objBattPercentage, "%d%%", battery_percentage);
       if (battery_percentage > 95)
@@ -582,16 +532,18 @@ void loop()
 
   // Keypad Handling
   customKeypad.getKey(); // Populate key list
-  for (int i = 0; i < LIST_MAX; i++)
-  { // Handle multiple keys (Not really necessary in this case)
-    if (customKeypad.key[i].kstate == PRESSED || customKeypad.key[i].kstate == HOLD)
-    {
-      standbyTimer = SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
+  for (int i = 0; i < LIST_MAX;
+       i++) { // Handle multiple keys (Not really necessary in this case)
+    if (customKeypad.key[i].kstate == PRESSED ||
+        customKeypad.key[i].kstate == HOLD) {
+      standbyTimer =
+          SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
       int keyCode = customKeypad.key[i].kcode;
       Serial.println(customKeypad.key[i].kchar);
       // Send IR codes depending on the current device (tabview page)
       if (currentDevice == 1)
-        IrSender.sendRC5(IrSender.encodeRC5X(0x00, keyMapTechnisat[keyCode / ROWS][keyCode % ROWS]));
+        IrSender.sendRC5(IrSender.encodeRC5X(
+            0x00, keyMapTechnisat[keyCode / ROWS][keyCode % ROWS]));
       else if (currentDevice == 2)
         IrSender.sendSony((keyCode / ROWS) * (keyCode % ROWS), 15);
     }

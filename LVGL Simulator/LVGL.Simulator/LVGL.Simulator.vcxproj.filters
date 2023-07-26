@@ -12,6 +12,7 @@
     <ClInclude Include="..\..\Platformio\include\OmoteUI\OmoteUI.hpp">
       <Filter>OmoteUI</Filter>
     </ClInclude>
+    <ClInclude Include="omoteconfig.h" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="LVGL.Simulator.manifest" />
@@ -41,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Filter Include="OmoteUI">
-      <UniqueIdentifier>{99618779-7582-48d0-b4c5-921283dc84e0}</UniqueIdentifier>
+      <UniqueIdentifier>{0b1f99aa-73cb-482d-9d62-20e17f93b890}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
