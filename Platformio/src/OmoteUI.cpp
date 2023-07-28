@@ -95,7 +95,7 @@ void OmoteUI::layout_UI() {
       lv_tabview_create(lv_scr_act(), LV_DIR_TOP,
                         0); // Hide tab labels by setting their height to 0
   lv_obj_set_style_bg_color(tabview, lv_color_black(), LV_PART_MAIN);
-  lv_obj_set_size(tabview, mHardware->getScreenWidth(),
+  lv_obj_set_size(tabview, SCREEN_WIDTH,
                   270); // 270 = screenHeight(320) - panel(30) - statusbar(20)
   lv_obj_align(tabview, LV_ALIGN_TOP_MID, 0, 20);
 
@@ -465,7 +465,7 @@ void OmoteUI::layout_UI() {
   panel = lv_obj_create(lv_scr_act());
   lv_obj_clear_flag(
       panel, LV_OBJ_FLAG_CLICKABLE); // this indicator will not be clickable
-  lv_obj_set_size(panel, mHardware->getScreenWidth(), 30);
+  lv_obj_set_size(panel, SCREEN_WIDTH, 30);
   lv_obj_set_flex_flow(panel, LV_FLEX_FLOW_ROW);
   lv_obj_align(panel, LV_ALIGN_BOTTOM_MID, 0, 0);
   lv_obj_set_scrollbar_mode(panel, LV_SCROLLBAR_MODE_OFF);

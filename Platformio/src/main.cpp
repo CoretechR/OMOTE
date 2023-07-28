@@ -1,11 +1,9 @@
 // OMOTE firmware for ESP32
 // 2023 Maximilian Kern
 
-#include "SparkFunLIS3DH.h"
 #include "WiFi.h"
 #include "Wire.h"
 #include "driver/ledc.h"
-#include <Adafruit_FT6206.h>
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
@@ -13,37 +11,20 @@
 #include <Keypad.h> // modified for inverted logic
 #include <Preferences.h>
 #include <PubSubClient.h>
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <lvgl.h>
 
 #include "HardwareRevX.hpp"
 #include "OmoteUI/OmoteUI.hpp"
 #include "omoteconfig.h"
 
-// Variables and Object declarations
-// ------------------------------------------------------------------------------------------------------
+std::shared_ptr<HardwareRevX> hal = nullptr;
 
-// Battery declares
 int battery_voltage = 0;
 int battery_percentage = 100;
 bool battery_ischarging = false;
 
-// IMU declarations
-int motion = 0;
-#define SLEEP_TIMEOUT                                                          \
-  20000 // time until device enters sleep mode in milliseconds
-#define MOTION_THRESHOLD 50 // motion above threshold keeps device awake
-int standbyTimer = SLEEP_TIMEOUT;
-bool wakeupByIMUEnabled = true;
-LIS3DH IMU(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
-
 // LCD declarations
-TFT_eSPI tft = TFT_eSPI();
-#define screenWidth 240
-#define screenHeight 320
-Adafruit_FT6206 touch = Adafruit_FT6206();
-TS_Point touchPoint;
-TS_Point oldPoint;
+
 int backlight_brightness = 255;
 
 // LVGL declarations
@@ -109,74 +90,6 @@ PubSubClient client(espClient);
 // Helper Functions
 // -----------------------------------------------------------------------------------------------------------------------
 
-// Display flushing
-void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area,
-                   lv_color_t *color_p) {
-  uint32_t w = (area->x2 - area->x1 + 1);
-  uint32_t h = (area->y2 - area->y1 + 1);
-
-  tft.startWrite();
-  tft.setAddrWindow(area->x1, area->y1, w, h);
-  tft.pushPixelsDMA((uint16_t *)&color_p->full, w * h);
-  tft.endWrite();
-
-  lv_disp_flush_ready(disp);
-}
-
-// Read the touchpad
-void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
-  // int16_t touchX, touchY;
-  touchPoint = touch.getPoint();
-  int16_t touchX = touchPoint.x;
-  int16_t touchY = touchPoint.y;
-  bool touched = false;
-  if ((touchX > 0) || (touchY > 0)) {
-    touched = true;
-    standbyTimer = SLEEP_TIMEOUT;
-  }
-
-  if (!touched) {
-    data->state = LV_INDEV_STATE_REL;
-  } else {
-    data->state = LV_INDEV_STATE_PR;
-
-    // Set the coordinates
-    data->point.x = screenWidth - touchX;
-    data->point.y = screenHeight - touchY;
-
-    // Serial.print( "touchpoint: x" );
-    // Serial.print( touchX );
-    // Serial.print( " y" );
-    // Serial.println( touchY );
-    // tft.drawFastHLine(0, screenHeight - touchY, screenWidth, TFT_RED);
-    // tft.drawFastVLine(screenWidth - touchX, 0, screenHeight, TFT_RED);
-  }
-}
-
-void activityDetection() {
-  static int accXold;
-  static int accYold;
-  static int accZold;
-  int accX = IMU.readFloatAccelX() * 1000;
-  int accY = IMU.readFloatAccelY() * 1000;
-  int accZ = IMU.readFloatAccelZ() * 1000;
-
-  // determine motion value as da/dt
-  motion = (abs(accXold - accX) + abs(accYold - accY) + abs(accZold - accZ));
-  // Calculate time to standby
-  standbyTimer -= 100;
-  if (standbyTimer < 0)
-    standbyTimer = 0;
-  // If the motion exceeds the threshold, the standbyTimer is reset
-  if (motion > MOTION_THRESHOLD)
-    standbyTimer = SLEEP_TIMEOUT;
-
-  // Store the current acceleration and time
-  accXold = accX;
-  accYold = accY;
-  accZold = accZ;
-}
-
 void configIMUInterrupts() {
   uint8_t dataToWrite = 0;
 
@@ -191,31 +104,31 @@ void configIMUInterrupts() {
   // dataToWrite |= 0x04;//Y low
   dataToWrite |= 0x02; // X high
   // dataToWrite |= 0x01;//X low
-  if (wakeupByIMUEnabled)
-    IMU.writeRegister(LIS3DH_INT1_CFG, 0b00101010);
+  if (hal->wakeupByIMUEnabled)
+    hal->IMU.writeRegister(LIS3DH_INT1_CFG, 0b00101010);
   else
-    IMU.writeRegister(LIS3DH_INT1_CFG, 0b00000000);
+    hal->IMU.writeRegister(LIS3DH_INT1_CFG, 0b00000000);
 
   // LIS3DH_INT1_THS
   dataToWrite = 0;
   // Provide 7 bit value, 0x7F always equals max range by accelRange setting
   dataToWrite |= 0x45;
-  IMU.writeRegister(LIS3DH_INT1_THS, dataToWrite);
+  hal->IMU.writeRegister(LIS3DH_INT1_THS, dataToWrite);
 
   // LIS3DH_INT1_DURATION
   dataToWrite = 0;
   // minimum duration of the interrupt
   // LSB equals 1/(sample rate)
   dataToWrite |= 0x00; // 1 * 1/50 s = 20ms
-  IMU.writeRegister(LIS3DH_INT1_DURATION, dataToWrite);
+  hal->IMU.writeRegister(LIS3DH_INT1_DURATION, dataToWrite);
 
   // LIS3DH_CTRL_REG5
   // Int1 latch interrupt and 4D on  int1 (preserve fifo en)
-  IMU.readRegister(&dataToWrite, LIS3DH_CTRL_REG5);
+  hal->IMU.readRegister(&dataToWrite, LIS3DH_CTRL_REG5);
   dataToWrite &= 0xF3; // Clear bits of interest
   dataToWrite |= 0x08; // Latch interrupt (Cleared by reading int1_src)
   // dataToWrite |= 0x04; //Pipe 4D detection from 6D recognition to int1?
-  IMU.writeRegister(LIS3DH_CTRL_REG5, dataToWrite);
+  hal->IMU.writeRegister(LIS3DH_CTRL_REG5, dataToWrite);
 
   // LIS3DH_CTRL_REG3
   // Choose source for pin 1
@@ -226,24 +139,25 @@ void configIMUInterrupts() {
   // dataToWrite |= 0x10; //Data ready
   // dataToWrite |= 0x04; //FIFO watermark
   // dataToWrite |= 0x02; //FIFO overrun
-  IMU.writeRegister(LIS3DH_CTRL_REG3, dataToWrite);
+  hal->IMU.writeRegister(LIS3DH_CTRL_REG3, dataToWrite);
 }
 
 // Enter Sleep Mode
 void enterSleep() {
   // Save settings to internal flash memory
-  preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
+  preferences.putBool("wkpByIMU", hal->wakeupByIMUEnabled);
   preferences.putUChar("blBrightness", backlight_brightness);
   preferences.putUChar("currentDevice", currentDevice);
   if (!preferences.getBool("alreadySetUp"))
     preferences.putBool("alreadySetUp", true);
   preferences.end();
 
-  // Configure IMU
+  // Configure hal->IMU
   uint8_t intDataRead;
-  IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
+  hal->IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
   configIMUInterrupts();
-  IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // really clear interrupt
+  hal->IMU.readRegister(&intDataRead,
+                        LIS3DH_INT1_SRC); // really clear interrupt
 
 #ifdef ENABLE_WIFI
   // Power down modem
@@ -315,8 +229,6 @@ void WiFiEvent(WiFiEvent_t event) {
 
 void setup() {
 
-  setCpuFrequencyMhz(240); // Make sure ESP32 is running at full speed
-
   // Find out wakeup cause
   if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1) {
     if (log(esp_sleep_get_ext1_wakeup_status()) / log(2) == 13)
@@ -326,52 +238,6 @@ void setup() {
   } else {
     wakeup_reason = WAKEUP_BY_RESET;
   }
-
-  // --- IO Initialization ---
-
-  // Button Pin Definition
-  pinMode(SW_1, OUTPUT);
-  pinMode(SW_2, OUTPUT);
-  pinMode(SW_3, OUTPUT);
-  pinMode(SW_4, OUTPUT);
-  pinMode(SW_5, OUTPUT);
-  pinMode(SW_A, INPUT);
-  pinMode(SW_B, INPUT);
-  pinMode(SW_C, INPUT);
-  pinMode(SW_D, INPUT);
-  pinMode(SW_E, INPUT);
-
-  // Power Pin Definition
-  pinMode(CRG_STAT, INPUT_PULLUP);
-  pinMode(ADC_BAT, INPUT);
-
-  // IR Pin Definition
-  pinMode(IR_RX, INPUT);
-  pinMode(IR_LED, OUTPUT);
-  pinMode(IR_VCC, OUTPUT);
-  digitalWrite(IR_LED, HIGH); // HIGH off - LOW on
-  digitalWrite(IR_VCC, LOW);  // HIGH on - LOW off
-
-  // LCD Pin Definition
-  pinMode(LCD_EN, OUTPUT);
-  digitalWrite(LCD_EN, HIGH);
-  pinMode(LCD_BL, OUTPUT);
-  digitalWrite(LCD_BL, HIGH);
-
-  // Other Pin Definition
-  pinMode(ACC_INT, INPUT);
-  pinMode(USER_LED, OUTPUT);
-  digitalWrite(USER_LED, LOW);
-
-  // Release GPIO hold in case we are coming out of standby
-  gpio_hold_dis((gpio_num_t)SW_1);
-  gpio_hold_dis((gpio_num_t)SW_2);
-  gpio_hold_dis((gpio_num_t)SW_3);
-  gpio_hold_dis((gpio_num_t)SW_4);
-  gpio_hold_dis((gpio_num_t)SW_5);
-  gpio_hold_dis((gpio_num_t)LCD_EN);
-  gpio_hold_dis((gpio_num_t)LCD_BL);
-  gpio_deep_sleep_hold_dis();
 
   // Configure the backlight PWM
   // Manual setup because ledcSetup() briefly turns on the backlight
@@ -400,12 +266,10 @@ void setup() {
   // Restore settings from internal flash memory
   preferences.begin("settings", false);
   if (preferences.getBool("alreadySetUp")) {
-    wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
+    hal->wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
     backlight_brightness = preferences.getUChar("blBrightness");
     currentDevice = preferences.getUChar("currentDevice");
   }
-
-  // Setup TFT
 
   // Slowly charge the VSW voltage to prevent a brownout
   // Workaround for hardware rev 1!
@@ -416,23 +280,18 @@ void setup() {
   }
 
   delay(100); // Wait for the LCD driver to power on
-  tft.init();
-  tft.initDMA();
-  tft.setRotation(0);
-  tft.fillScreen(TFT_BLACK);
-  tft.setSwapBytes(true);
 
   // Setup touchscreen
   Wire.begin(SDA, SCL,
              400000); // Configure i2c pins and set frequency to 400kHz
-  touch.begin(128);   // Initialize touchscreen and set sensitivity threshold
 
-  auto hal = std::make_shared<HardwareRevX>();
-  hal->initLVGL(my_disp_flush, my_touchpad_read);
+  hal = HardwareRevX::getInstance();
+  hal->init();
 
-  auto ui = std::make_shared<OmoteUI>(hal);
+  auto ui = OmoteUI::getInstance(hal);
   ui->layout_UI();
 
+  hal->touch.begin(128); // Initialize touchscreen and set sensitivity threshold
 #ifdef ENABLE_WIFI
   // Setup WiFi
   WiFi.setHostname("OMOTE"); // define hostname
@@ -441,18 +300,19 @@ void setup() {
   WiFi.setSleep(true);
 #endif
 
-  // Setup IMU
-  IMU.settings.accelSampleRate =
+  // Setup hal->IMU
+  hal->IMU.settings.accelSampleRate =
       50; // Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
-  IMU.settings.accelRange = 2; // Max G force readable.  Can be: 2, 4, 8, 16
-  IMU.settings.adcEnabled = 0;
-  IMU.settings.tempEnabled = 0;
-  IMU.settings.xAccelEnabled = 1;
-  IMU.settings.yAccelEnabled = 1;
-  IMU.settings.zAccelEnabled = 1;
-  IMU.begin();
+  hal->IMU.settings.accelRange =
+      2; // Max G force readable.  Can be: 2, 4, 8, 16
+  hal->IMU.settings.adcEnabled = 0;
+  hal->IMU.settings.tempEnabled = 0;
+  hal->IMU.settings.xAccelEnabled = 1;
+  hal->IMU.settings.yAccelEnabled = 1;
+  hal->IMU.settings.zAccelEnabled = 1;
+  hal->IMU.begin();
   uint8_t intDataRead;
-  IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
+  hal->IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
 
   // Setup IR
   IrSender.begin();
@@ -477,7 +337,7 @@ void loop() {
       fadeInTimer + backlight_brightness) { // Fade in the backlight brightness
     ledcWrite(5, millis() - fadeInTimer);
   } else { // Dim Backlight before entering standby
-    if (standbyTimer < 2000)
+    if (hal->standbyTimer < 2000)
       ledcWrite(5, 85); // Backlight dim
     else
       ledcWrite(5, backlight_brightness); // Backlight on
@@ -492,8 +352,8 @@ void loop() {
   // Refresh IMU data at 10Hz
   static unsigned long IMUTaskTimer = millis();
   if (millis() - IMUTaskTimer >= 100) {
-    activityDetection();
-    if (standbyTimer == 0) {
+    hal->activityDetection();
+    if (hal->standbyTimer == 0) {
       Serial.println("Entering Sleep Mode. Goodbye.");
       enterSleep();
     }
@@ -536,7 +396,7 @@ void loop() {
        i++) { // Handle multiple keys (Not really necessary in this case)
     if (customKeypad.key[i].kstate == PRESSED ||
         customKeypad.key[i].kstate == HOLD) {
-      standbyTimer =
+      hal->standbyTimer =
           SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
       int keyCode = customKeypad.key[i].kcode;
       Serial.println(customKeypad.key[i].kchar);

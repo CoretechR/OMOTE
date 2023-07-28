@@ -8,10 +8,6 @@
 #include <stdio.h>
 #include <string>
 
-
-#define screenWidth 240
-#define screenHeight 320
-
 /// @brief Singleton to allow UI code to live separately from the Initialization
 /// of resources.
 class OmoteUI {

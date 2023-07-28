@@ -17,9 +17,8 @@ public:
 
   virtual void MQTTPublish(const char *topic, const char *payload) = 0;
 
-  virtual void initLVGL(display_flush_cb aDisplayFlushCb,
-                        touch_pad_read aTouchPadReadCb) = 0;
+  virtual void init() = 0;
 
-  virtual lv_coord_t getScreenWidth() = 0;
-  virtual lv_coord_t getScreenHeight() = 0;
+protected:
+  virtual void initLVGL() = 0;
 };

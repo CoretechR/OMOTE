@@ -2,7 +2,17 @@
 
 #define IS_SIMULATOR false
 
-#define ENABLE_WIFI // Comment out to disable connected features
+// Comment out to disable connected features
+#define ENABLE_WIFI
+
+// time until device enters sleep mode in milliseconds
+#define SLEEP_TIMEOUT 20000
+
+// motion above threshold keeps device awake
+#define MOTION_THRESHOLD 50
+
+#define SCREEN_WIDTH 240
+#define SCREEN_HEIGHT 360
 
 // Pin assignment
 // -----------------------------------------------------------------------------------------------------------------------
