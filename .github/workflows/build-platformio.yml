@@ -1,4 +1,4 @@
-name: Build Omote Esp32
+name: ESP32 Build
 
 on: [push]
 

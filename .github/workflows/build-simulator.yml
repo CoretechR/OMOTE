@@ -1,4 +1,4 @@
-name: Build Omote Simulator
+name: Simulator Build
 
 on: [push]
 
