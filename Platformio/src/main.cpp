@@ -1,15 +1,12 @@
 // OMOTE firmware for ESP32
 // 2023 Maximilian Kern
 
-#include "WiFi.h"
 #include "Wire.h"
-#include "driver/ledc.h"
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <IRutils.h>
 #include <Keypad.h> // modified for inverted logic
-#include <Preferences.h>
 #include <PubSubClient.h>
 #include <lvgl.h>
 
@@ -24,8 +21,6 @@ int battery_percentage = 100;
 bool battery_ischarging = false;
 
 // LCD declarations
-
-int backlight_brightness = 255;
 
 // LVGL declarations
 
@@ -59,8 +54,7 @@ byte colPins[COLS] = {SW_1, SW_2, SW_3, SW_4,
                       SW_5}; // connect to the column pinouts of the keypad
 Keypad customKeypad =
     Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
-#define BUTTON_PIN_BITMASK                                                     \
-  0b1110110000000000000000000010000000000000 // IO34+IO35+IO37+IO38+IO39(+IO13)
+
 byte keyMapTechnisat[ROWS][COLS] = {{0x69, 0x20, 0x11, 0x0D, 0x56},
                                     {0x4F, 0x37, 0x10, 0x57, 0x51},
                                     {0x6E, 0x21, 0x6B, 0x6D, 0x6C},
@@ -68,17 +62,10 @@ byte keyMapTechnisat[ROWS][COLS] = {{0x69, 0x20, 0x11, 0x0D, 0x56},
                                     {'?', 0x35, 0x2F, 0x32, 0x36}};
 byte virtualKeyMapTechnisat[10] = {0x1, 0x2, 0x3, 0x4, 0x5,
                                    0x6, 0x7, 0x8, 0x9, 0x0};
-byte currentDevice =
-    1; // Current Device to control (allows switching mappings between devices)
 
 // IR declarations
 IRsend IrSender(IR_LED, true);
 IRrecv IrReceiver(IR_RX);
-
-// Other declarations
-byte wakeup_reason;
-enum Wakeup_reasons { WAKEUP_BY_RESET, WAKEUP_BY_IMU, WAKEUP_BY_KEYPAD };
-Preferences preferences;
 
 #define WIFI_SSID "YOUR_WIFI_SSID"
 #define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
@@ -89,122 +76,6 @@ PubSubClient client(espClient);
 
 // Helper Functions
 // -----------------------------------------------------------------------------------------------------------------------
-
-void configIMUInterrupts() {
-  uint8_t dataToWrite = 0;
-
-  // LIS3DH_INT1_CFG
-  // dataToWrite |= 0x80;//AOI, 0 = OR 1 = AND
-  // dataToWrite |= 0x40;//6D, 0 = interrupt source, 1 = 6 direction source
-  // Set these to enable individual axes of generation source (or direction)
-  //  -- high and low are used generically
-  dataToWrite |= 0x20; // Z high
-  // dataToWrite |= 0x10;//Z low
-  dataToWrite |= 0x08; // Y high
-  // dataToWrite |= 0x04;//Y low
-  dataToWrite |= 0x02; // X high
-  // dataToWrite |= 0x01;//X low
-  if (hal->wakeupByIMUEnabled)
-    hal->IMU.writeRegister(LIS3DH_INT1_CFG, 0b00101010);
-  else
-    hal->IMU.writeRegister(LIS3DH_INT1_CFG, 0b00000000);
-
-  // LIS3DH_INT1_THS
-  dataToWrite = 0;
-  // Provide 7 bit value, 0x7F always equals max range by accelRange setting
-  dataToWrite |= 0x45;
-  hal->IMU.writeRegister(LIS3DH_INT1_THS, dataToWrite);
-
-  // LIS3DH_INT1_DURATION
-  dataToWrite = 0;
-  // minimum duration of the interrupt
-  // LSB equals 1/(sample rate)
-  dataToWrite |= 0x00; // 1 * 1/50 s = 20ms
-  hal->IMU.writeRegister(LIS3DH_INT1_DURATION, dataToWrite);
-
-  // LIS3DH_CTRL_REG5
-  // Int1 latch interrupt and 4D on  int1 (preserve fifo en)
-  hal->IMU.readRegister(&dataToWrite, LIS3DH_CTRL_REG5);
-  dataToWrite &= 0xF3; // Clear bits of interest
-  dataToWrite |= 0x08; // Latch interrupt (Cleared by reading int1_src)
-  // dataToWrite |= 0x04; //Pipe 4D detection from 6D recognition to int1?
-  hal->IMU.writeRegister(LIS3DH_CTRL_REG5, dataToWrite);
-
-  // LIS3DH_CTRL_REG3
-  // Choose source for pin 1
-  dataToWrite = 0;
-  // dataToWrite |= 0x80; //Click detect on pin 1
-  dataToWrite |= 0x40; // AOI1 event (Generator 1 interrupt on pin 1)
-  dataToWrite |= 0x20; // AOI2 event ()
-  // dataToWrite |= 0x10; //Data ready
-  // dataToWrite |= 0x04; //FIFO watermark
-  // dataToWrite |= 0x02; //FIFO overrun
-  hal->IMU.writeRegister(LIS3DH_CTRL_REG3, dataToWrite);
-}
-
-// Enter Sleep Mode
-void enterSleep() {
-  // Save settings to internal flash memory
-  preferences.putBool("wkpByIMU", hal->wakeupByIMUEnabled);
-  preferences.putUChar("blBrightness", backlight_brightness);
-  preferences.putUChar("currentDevice", currentDevice);
-  if (!preferences.getBool("alreadySetUp"))
-    preferences.putBool("alreadySetUp", true);
-  preferences.end();
-
-  // Configure hal->IMU
-  uint8_t intDataRead;
-  hal->IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
-  configIMUInterrupts();
-  hal->IMU.readRegister(&intDataRead,
-                        LIS3DH_INT1_SRC); // really clear interrupt
-
-#ifdef ENABLE_WIFI
-  // Power down modem
-  WiFi.disconnect();
-  WiFi.mode(WIFI_OFF);
-#endif
-
-  // Prepare IO states
-  digitalWrite(LCD_DC, LOW); // LCD control signals off
-  digitalWrite(LCD_CS, LOW);
-  digitalWrite(LCD_MOSI, LOW);
-  digitalWrite(LCD_SCK, LOW);
-  digitalWrite(LCD_EN, HIGH); // LCD logic off
-  digitalWrite(LCD_BL, HIGH); // LCD backlight off
-  pinMode(CRG_STAT, INPUT);   // Disable Pull-Up
-  digitalWrite(IR_VCC, LOW);  // IR Receiver off
-
-  // Configure button matrix for ext1 interrupt
-  pinMode(SW_1, OUTPUT);
-  pinMode(SW_2, OUTPUT);
-  pinMode(SW_3, OUTPUT);
-  pinMode(SW_4, OUTPUT);
-  pinMode(SW_5, OUTPUT);
-  digitalWrite(SW_1, HIGH);
-  digitalWrite(SW_2, HIGH);
-  digitalWrite(SW_3, HIGH);
-  digitalWrite(SW_4, HIGH);
-  digitalWrite(SW_5, HIGH);
-  gpio_hold_en((gpio_num_t)SW_1);
-  gpio_hold_en((gpio_num_t)SW_2);
-  gpio_hold_en((gpio_num_t)SW_3);
-  gpio_hold_en((gpio_num_t)SW_4);
-  gpio_hold_en((gpio_num_t)SW_5);
-  // Force display pins to high impedance
-  // Without this the display might not wake up from sleep
-  pinMode(LCD_BL, INPUT);
-  pinMode(LCD_EN, INPUT);
-  gpio_hold_en((gpio_num_t)LCD_BL);
-  gpio_hold_en((gpio_num_t)LCD_EN);
-  gpio_deep_sleep_hold_en();
-
-  esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_HIGH);
-
-  delay(100);
-  // Sleep
-  esp_deep_sleep_start();
-}
 
 #ifdef ENABLE_WIFI
 // WiFi status event
@@ -229,47 +100,9 @@ void WiFiEvent(WiFiEvent_t event) {
 
 void setup() {
 
-  // Find out wakeup cause
-  if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1) {
-    if (log(esp_sleep_get_ext1_wakeup_status()) / log(2) == 13)
-      wakeup_reason = WAKEUP_BY_IMU;
-    else
-      wakeup_reason = WAKEUP_BY_KEYPAD;
-  } else {
-    wakeup_reason = WAKEUP_BY_RESET;
-  }
-
-  // Configure the backlight PWM
-  // Manual setup because ledcSetup() briefly turns on the backlight
-  ledc_channel_config_t ledc_channel_left;
-  ledc_channel_left.gpio_num = (gpio_num_t)LCD_BL;
-  ledc_channel_left.speed_mode = LEDC_HIGH_SPEED_MODE;
-  ledc_channel_left.channel = LEDC_CHANNEL_5;
-  ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
-  ledc_channel_left.timer_sel = LEDC_TIMER_1;
-  ledc_channel_left.flags.output_invert = 1; // Can't do this with ledcSetup()
-  ledc_channel_left.duty = 0;
-
-  ledc_timer_config_t ledc_timer;
-  ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
-  ledc_timer.duty_resolution = LEDC_TIMER_8_BIT;
-  ledc_timer.timer_num = LEDC_TIMER_1;
-  ledc_timer.freq_hz = 640;
-
-  ledc_channel_config(&ledc_channel_left);
-  ledc_timer_config(&ledc_timer);
-
   // --- Startup ---
 
   Serial.begin(115200);
-
-  // Restore settings from internal flash memory
-  preferences.begin("settings", false);
-  if (preferences.getBool("alreadySetUp")) {
-    hal->wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
-    backlight_brightness = preferences.getUChar("blBrightness");
-    currentDevice = preferences.getUChar("currentDevice");
-  }
 
   // Slowly charge the VSW voltage to prevent a brownout
   // Workaround for hardware rev 1!
@@ -334,13 +167,14 @@ void loop() {
   // Update Backlight brightness
   static int fadeInTimer = millis(); // fadeInTimer = time after setup
   if (millis() <
-      fadeInTimer + backlight_brightness) { // Fade in the backlight brightness
+      fadeInTimer +
+          hal->backlight_brightness) { // Fade in the backlight brightness
     ledcWrite(5, millis() - fadeInTimer);
   } else { // Dim Backlight before entering standby
     if (hal->standbyTimer < 2000)
       ledcWrite(5, 85); // Backlight dim
     else
-      ledcWrite(5, backlight_brightness); // Backlight on
+      ledcWrite(5, hal->backlight_brightness); // Backlight on
   }
 
   // Update LVGL UI
@@ -355,7 +189,7 @@ void loop() {
     hal->activityDetection();
     if (hal->standbyTimer == 0) {
       Serial.println("Entering Sleep Mode. Goodbye.");
-      enterSleep();
+      hal->enterSleep();
     }
     IMUTaskTimer = millis();
   }
@@ -401,10 +235,10 @@ void loop() {
       int keyCode = customKeypad.key[i].kcode;
       Serial.println(customKeypad.key[i].kchar);
       // Send IR codes depending on the current device (tabview page)
-      if (currentDevice == 1)
+      if (hal->currentDevice == 1)
         IrSender.sendRC5(IrSender.encodeRC5X(
             0x00, keyMapTechnisat[keyCode / ROWS][keyCode % ROWS]));
-      else if (currentDevice == 2)
+      else if (hal->currentDevice == 2)
         IrSender.sendSony((keyCode / ROWS) * (keyCode % ROWS), 15);
     }
   }
