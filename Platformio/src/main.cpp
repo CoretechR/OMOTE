@@ -1,7 +1,6 @@
 // OMOTE firmware for ESP32
 // 2023 Maximilian Kern
 
-#include "Wire.h"
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
@@ -100,31 +99,12 @@ void WiFiEvent(WiFiEvent_t event) {
 
 void setup() {
 
-  // --- Startup ---
-
-  Serial.begin(115200);
-
-  // Slowly charge the VSW voltage to prevent a brownout
-  // Workaround for hardware rev 1!
-  for (int i = 0; i < 100; i++) {
-    digitalWrite(LCD_EN, HIGH); // LCD Logic off
-    delayMicroseconds(1);
-    digitalWrite(LCD_EN, LOW); // LCD Logic on
-  }
-
-  delay(100); // Wait for the LCD driver to power on
-
-  // Setup touchscreen
-  Wire.begin(SDA, SCL,
-             400000); // Configure i2c pins and set frequency to 400kHz
-
   hal = HardwareRevX::getInstance();
   hal->init();
 
   auto ui = OmoteUI::getInstance(hal);
   ui->layout_UI();
 
-  hal->touch.begin(128); // Initialize touchscreen and set sensitivity threshold
 #ifdef ENABLE_WIFI
   // Setup WiFi
   WiFi.setHostname("OMOTE"); // define hostname
@@ -132,20 +112,6 @@ void setup() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   WiFi.setSleep(true);
 #endif
-
-  // Setup hal->IMU
-  hal->IMU.settings.accelSampleRate =
-      50; // Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
-  hal->IMU.settings.accelRange =
-      2; // Max G force readable.  Can be: 2, 4, 8, 16
-  hal->IMU.settings.adcEnabled = 0;
-  hal->IMU.settings.tempEnabled = 0;
-  hal->IMU.settings.xAccelEnabled = 1;
-  hal->IMU.settings.yAccelEnabled = 1;
-  hal->IMU.settings.zAccelEnabled = 1;
-  hal->IMU.begin();
-  uint8_t intDataRead;
-  hal->IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
 
   // Setup IR
   IrSender.begin();

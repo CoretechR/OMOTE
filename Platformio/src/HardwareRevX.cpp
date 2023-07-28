@@ -65,18 +65,18 @@ void HardwareRevX::init() {
 
   // Make sure ESP32 is running at full speed
   setCpuFrequencyMhz(240);
+  Serial.begin(115200);
 
   wakeup_reason = getWakeReason();
+  setupTouchScreen();
+
+  slowDisplayWakeup();
+
   initIO();
   restorePreferences();
   setupBacklight();
-
-  // Setup TFT
-  tft.init();
-  tft.initDMA();
-  tft.setRotation(0);
-  tft.fillScreen(TFT_BLACK);
-  tft.setSwapBytes(true);
+  setupTFT();
+  setupIMU();
 
   initLVGL();
 }
@@ -319,4 +319,46 @@ void HardwareRevX::restorePreferences() {
     backlight_brightness = preferences.getUChar("blBrightness");
     currentDevice = preferences.getUChar("currentDevice");
   }
+}
+
+void HardwareRevX::setupTFT() {
+  // Setup TFT
+  tft.init();
+  tft.initDMA();
+  tft.setRotation(0);
+  tft.fillScreen(TFT_BLACK);
+  tft.setSwapBytes(true);
+}
+
+void HardwareRevX::setupTouchScreen() {
+  // Configure i2c pins and set frequency to 400kHz
+  Wire.begin(SDA, SCL, 400000);
+  touch.begin(128); // Initialize touchscreen and set sensitivity threshold
+}
+
+void HardwareRevX::setupIMU() {
+  // Setup hal
+  IMU.settings.accelSampleRate =
+      50; // Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
+  IMU.settings.accelRange = 2; // Max G force readable.  Can be: 2, 4, 8, 16
+  IMU.settings.adcEnabled = 0;
+  IMU.settings.tempEnabled = 0;
+  IMU.settings.xAccelEnabled = 1;
+  IMU.settings.yAccelEnabled = 1;
+  IMU.settings.zAccelEnabled = 1;
+  IMU.begin();
+  uint8_t intDataRead;
+  IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
+}
+
+void HardwareRevX::slowDisplayWakeup() {
+  // Slowly charge the VSW voltage to prevent a brownout
+  // Workaround for hardware rev 1!
+  for (int i = 0; i < 100; i++) {
+    digitalWrite(LCD_EN, HIGH); // LCD Logic off
+    delayMicroseconds(1);
+    digitalWrite(LCD_EN, LOW); // LCD Logic on
+  }
+
+  delay(100); // Wait for the LCD driver to power on
 }

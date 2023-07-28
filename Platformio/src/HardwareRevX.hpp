@@ -3,6 +3,7 @@
 
 #include "HardwareAbstractionInterface.h"
 #include "WiFi.h"
+#include "Wire.h"
 #include "lvgl.h"
 #include <Adafruit_FT6206.h>
 #include <Preferences.h>
@@ -55,6 +56,12 @@ public:
   void restorePreferences();
 
   void setupTFT();
+
+  void setupTouchScreen();
+
+  void setupIMU();
+
+  void slowDisplayWakeup();
 
 public:
   static void displayFlushImpl(lv_disp_drv_t *disp, const lv_area_t *area,
