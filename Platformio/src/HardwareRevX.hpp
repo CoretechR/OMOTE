@@ -45,7 +45,7 @@ public:
 
   void handleLoop();
 
-public:
+protected:
   virtual void initLVGL();
 
   void initIO();
@@ -78,7 +78,7 @@ public:
 
   void handleWifiEvent(WiFiEvent_t event);
 
-public:
+private:
 
   static void WiFiEvent(WiFiEvent_t event){
     mInstance->handleWifiEvent(event);

@@ -52,5 +52,6 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp"
     },
-    "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO"
+    "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO",
+    "editor.formatOnSave": false
 }
