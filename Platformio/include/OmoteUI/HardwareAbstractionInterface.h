@@ -19,6 +19,4 @@ public:
 
   virtual void init() = 0;
 
-protected:
-  virtual void initLVGL() = 0;
 };

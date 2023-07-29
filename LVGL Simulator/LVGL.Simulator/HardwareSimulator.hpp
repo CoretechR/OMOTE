@@ -3,9 +3,6 @@
 #include <string>
 #include <iostream>
 
-#define screenWidth 240
-#define screenHeight 320
-
 class HardwareSimulator :
     public HardwareAbstractionInterface
 {
@@ -25,14 +22,9 @@ class HardwareSimulator :
 
     };
 
-    virtual void initLVGL(
-        display_flush_cb aDisplayFlushCb = nullptr,
-        touch_pad_read aTouchPadReadCb = nullptr) override {
+    virtual void init() override {
         lv_init();
-    };
-
-    virtual lv_coord_t getScreenWidth() { return screenWidth; };
-    virtual lv_coord_t getScreenHeight() { return screenHeight; };
+    }
 
 };
 

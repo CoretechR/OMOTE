@@ -157,7 +157,7 @@ bool multiple_display_mode_initialization()
 int main()
 {
     auto hal = std::make_shared<HardwareSimulator>();
-    hal->initLVGL();
+    hal->init();
 
     auto ui = OmoteUI::getInstance(hal);
 
