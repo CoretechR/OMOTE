@@ -58,6 +58,18 @@ private:
   int backlight_brightness = 255;
   lv_color_t color_primary = lv_color_hex(0x303030); // gray
   bool wakeupByIMUEnabled = true;
+  
+  // TODO Figure out best way to have images added
+
+  // LV_IMG_DECLARE(gradientLeft);
+  // LV_IMG_DECLARE(gradientRight);
+  // LV_IMG_DECLARE(appleTvIcon);
+  // LV_IMG_DECLARE(appleDisplayIcon);
+  // LV_IMG_DECLARE(appleBackIcon);
+  // LV_IMG_DECLARE(high_brightness);
+  // LV_IMG_DECLARE(low_brightness);
+  // LV_IMG_DECLARE(lightbulb);
+  
   lv_img_dsc_t low_brightness;
   lv_img_dsc_t high_brightness;
   lv_img_dsc_t appleBackIcon;

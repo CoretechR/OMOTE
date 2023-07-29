@@ -77,6 +77,7 @@ void HardwareRevX::init() {
   setupBacklight();
   setupTFT();
   setupIMU();
+  setupIR();
 
   initLVGL();
 }
@@ -361,4 +362,122 @@ void HardwareRevX::slowDisplayWakeup() {
   }
 
   delay(100); // Wait for the LCD driver to power on
+}
+
+void HardwareRevX::handleWifiEvent(WiFiEvent_t event){
+   // Serial.printf("[WiFi-event] event: %d\n", event);
+  if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP) {
+    client.setServer(MQTT_SERVER, 1883); // MQTT initialization
+    client.connect("OMOTE");             // Connect using a client id
+  }
+  // Set status bar icon based on WiFi status
+  // TODO allow UI to register a Handler for these events
+
+  //   if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP ||
+  //       event == ARDUINO_EVENT_WIFI_STA_GOT_IP6) {
+  //     lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);
+  //   } else {
+  //     lv_label_set_text(WifiLabel, "");
+  //   }
+}
+ 
+void HardwareRevX::setupIR(){
+    // Setup IR
+  IrSender.begin();
+  digitalWrite(IR_VCC, HIGH); // Turn on IR receiver
+  IrReceiver.enableIRIn();    // Start the receiver
+}
+
+void HardwareRevX::setupWifi(){
+#ifdef ENABLE_WIFI
+  // Setup WiFi
+  WiFi.setHostname("OMOTE"); // define hostname
+  WiFi.onEvent(WiFiEvent);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.setSleep(true);
+#endif
+}
+
+void HardwareRevX::handleLoop(){
+    // Update Backlight brightness
+  static int fadeInTimer = millis(); // fadeInTimer = time after setup
+  if (millis() <
+      fadeInTimer +
+          backlight_brightness) { // Fade in the backlight brightness
+    ledcWrite(5, millis() - fadeInTimer);
+  } else { // Dim Backlight before entering standby
+    if (standbyTimer < 2000)
+      ledcWrite(5, 85); // Backlight dim
+    else
+      ledcWrite(5, backlight_brightness); // Backlight on
+  }
+
+  // Update LVGL UI
+  lv_timer_handler();
+
+  // Blink debug LED at 1 Hz
+  digitalWrite(USER_LED, millis() % 1000 > 500);
+
+  // Refresh IMU data at 10Hz
+  static unsigned long IMUTaskTimer = millis();
+  if (millis() - IMUTaskTimer >= 100) {
+    activityDetection();
+    if (standbyTimer == 0) {
+      Serial.println("Entering Sleep Mode. Goodbye.");
+      enterSleep();
+    }
+    IMUTaskTimer = millis();
+  }
+
+  // Update battery stats at 1Hz
+  static unsigned long batteryTaskTimer =
+      millis() + 1000; // add 1s to start immediately
+  if (millis() - batteryTaskTimer >= 1000) {
+    battery_voltage =
+        analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
+    battery_percentage =
+        constrain(map(battery_voltage, 3700, 4200, 0, 100), 0, 100);
+    batteryTaskTimer = millis();
+    battery_ischarging = !digitalRead(CRG_STAT);
+    // Check if battery is charging, fully charged or disconnected
+  }
+    // TODO Create batter change notification for UI
+  
+  //   if (battery_ischarging || (!battery_ischarging && battery_voltage > 4350)) {
+  //     lv_label_set_text(objBattPercentage, "");
+  //     lv_label_set_text(objBattIcon, LV_SYMBOL_USB);
+  //   } else {
+  //     // Update status bar battery indicator
+  //     // lv_label_set_text_fmt(objBattPercentage, "%d%%", battery_percentage);
+  //     if (battery_percentage > 95)
+  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_FULL);
+  //     else if (battery_percentage > 75)
+  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_3);
+  //     else if (battery_percentage > 50)
+  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_2);
+  //     else if (battery_percentage > 25)
+  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_1);
+  //     else
+  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_EMPTY);
+  //   }
+  // }
+
+  // Keypad Handling
+  customKeypad.getKey(); // Populate key list
+  for (int i = 0; i < LIST_MAX; i++) { // Handle multiple keys (Not really necessary in this case)
+    if (customKeypad.key[i].kstate == PRESSED ||
+        customKeypad.key[i].kstate == HOLD) {
+      standbyTimer =
+          SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
+      int keyCode = customKeypad.key[i].kcode;
+      Serial.println(customKeypad.key[i].kchar);
+      // Send IR codes depending on the current device (tabview page)
+      if (currentDevice == 1){
+        IrSender.sendRC5(IrSender.encodeRC5X(0x00, keyMapTechnisat[keyCode / ROWS][keyCode % ROWS]));
+      }
+      else if (currentDevice == 2){
+        IrSender.sendSony((keyCode / ROWS) * (keyCode % ROWS), 15);
+      }
+    }
+  }
 }
