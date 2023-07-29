@@ -408,9 +408,6 @@ void HardwareRevX::loopHandler(){
       ledcWrite(5, backlight_brightness); // Backlight on
   }
 
-  // Update LVGL UI
-  lv_timer_handler();
-
   // Blink debug LED at 1 Hz
   digitalWrite(USER_LED, millis() % 1000 > 500);
 
@@ -425,6 +422,7 @@ void HardwareRevX::loopHandler(){
     IMUTaskTimer = millis();
   }
 
+  // TODO Convert to free RTOS task
   // Update battery stats at 1Hz
   static unsigned long batteryTaskTimer =
       millis() + 1000; // add 1s to start immediately
@@ -437,7 +435,7 @@ void HardwareRevX::loopHandler(){
     battery_ischarging = !digitalRead(CRG_STAT);
     // Check if battery is charging, fully charged or disconnected
   }
-    // TODO Create batter change notification for UI
+  // TODO Create batter change notification for UI
   
   //   if (battery_ischarging || (!battery_ischarging && battery_voltage > 4350)) {
   //     lv_label_set_text(objBattPercentage, "");
@@ -476,4 +474,11 @@ void HardwareRevX::loopHandler(){
       }
     }
   }
+  // IR Test
+  // tft.drawString("IR Command: ", 10, 90, 1);
+  // decode_results results;
+  // if (IrReceiver.decode(&results)) {
+  // IrReceiver.resume(); // Enable receiving of the next value
+  //}  //tft.drawString(String(results.command) + "        ", 80, 90, 1);
+  // 
 }

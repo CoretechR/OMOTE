@@ -49,6 +49,8 @@ public:
   // Use LVGL to layout the ui and register the callbacks
   void layout_UI();
 
+  void loopHandler();
+
 private:
   static std::shared_ptr<OmoteUI> mInstance;
   std::shared_ptr<HardwareAbstractionInterface> mHardware;

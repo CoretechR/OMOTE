@@ -82,6 +82,10 @@ void OmoteUI::virtualKeypad_event_cb(lv_event_t *e) {
   mHardware->debugPrint(buffer);
 }
 
+void OmoteUI::loopHandler(){
+  lv_timer_handler();
+}
+
 void OmoteUI::layout_UI() {
 
   // --- LVGL UI Configuration ---
