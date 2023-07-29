@@ -62,49 +62,46 @@ HardwareRevX::WakeReason getWakeReason() {
 }
 
 void HardwareRevX::init() {
-
   // Make sure ESP32 is running at full speed
   setCpuFrequencyMhz(240);
-  Serial.begin(115200);
 
   wakeup_reason = getWakeReason();
-  setupTouchScreen();
-
-  slowDisplayWakeup();
-
   initIO();
-  restorePreferences();
   setupBacklight();
+  Serial.begin(115200);
+  restorePreferences();
+  slowDisplayWakeup();
   setupTFT();
+  setupTouchScreen();
+  initLVGL();
+  setupWifi();
   setupIMU();
   setupIR();
 
-  initLVGL();
+  debugPrint(std::string("Finished Hardware Setup in %d",millis()));
 }
 
 void HardwareRevX::initLVGL() {
-  {
-    lv_init();
+  lv_init();
 
-    lv_disp_draw_buf_init(&mdraw_buf, mbufA, mbufB,
-                          SCREEN_WIDTH * SCREEN_HEIGHT / 10);
+  lv_disp_draw_buf_init(&mdraw_buf, mbufA, mbufB,
+                        SCREEN_WIDTH * SCREEN_HEIGHT / 10);
 
-    // Initialize the display driver
-    static lv_disp_drv_t disp_drv;
-    lv_disp_drv_init(&disp_drv);
-    disp_drv.hor_res = SCREEN_WIDTH;
-    disp_drv.ver_res = SCREEN_HEIGHT;
-    disp_drv.flush_cb = &HardwareRevX::displayFlushImpl;
-    disp_drv.draw_buf = &mdraw_buf;
-    lv_disp_drv_register(&disp_drv);
+  // Initialize the display driver
+  static lv_disp_drv_t disp_drv;
+  lv_disp_drv_init(&disp_drv);
+  disp_drv.hor_res = SCREEN_WIDTH;
+  disp_drv.ver_res = SCREEN_HEIGHT;
+  disp_drv.flush_cb = &HardwareRevX::displayFlushImpl;
+  disp_drv.draw_buf = &mdraw_buf;
+  lv_disp_drv_register(&disp_drv);
 
-    // Initialize the touchscreen driver
-    static lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = &HardwareRevX::touchPadReadImpl;
-    lv_indev_drv_register(&indev_drv);
-  }
+  // Initialize the touchscreen driver
+  static lv_indev_drv_t indev_drv;
+  lv_indev_drv_init(&indev_drv);
+  indev_drv.type = LV_INDEV_TYPE_POINTER;
+  indev_drv.read_cb = &HardwareRevX::touchPadReadImpl;
+  lv_indev_drv_register(&indev_drv);
 }
 
 void HardwareRevX::displayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
@@ -174,7 +171,6 @@ void HardwareRevX::activityDetection() {
   accZold = accZ;
 }
 
-// Enter Sleep Mode
 void HardwareRevX::enterSleep() {
   // Save settings to internal flash memory
   preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
@@ -398,7 +394,7 @@ void HardwareRevX::setupWifi(){
 #endif
 }
 
-void HardwareRevX::handleLoop(){
+void HardwareRevX::loopHandler(){
     // Update Backlight brightness
   static int fadeInTimer = millis(); // fadeInTimer = time after setup
   if (millis() <

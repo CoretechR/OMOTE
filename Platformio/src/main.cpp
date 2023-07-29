@@ -27,7 +27,7 @@ void setup() {
 
 void loop() {
 
-  HardwareRevX::getInstance()->handleLoop();
+  HardwareRevX::getInstance()->loopHandler();
   // IR Test
   // tft.drawString("IR Command: ", 10, 90, 1);
   // decode_results results;

@@ -35,7 +35,7 @@ public:
 
   HardwareRevX() : HardwareAbstractionInterface(){};
 
-  virtual void debugPrint(std::string aDebugMessage) override {}
+  virtual void debugPrint(std::string aDebugMessage) override {Serial.print(aDebugMessage.c_str());}
 
   virtual void sendIR() override {}
 
@@ -43,43 +43,35 @@ public:
 
   virtual void init();
 
-  void handleLoop();
+  void loopHandler();
 
 protected:
-  virtual void initLVGL();
-
+  // Init Functions to setup hardware
   void initIO();
+  void setupBacklight();
+  void restorePreferences();
+  void slowDisplayWakeup();
+  void setupTFT();
+  void setupTouchScreen();
+  void initLVGL();
+  void setupIMU();
+  void setupIR();
+  void setupWifi();
 
+  void activityDetection();
+  void enterSleep();
+  void configIMUInterrupts();
+
+  // UI/UX Handlers
   void displayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
                     lv_color_t *color_p);
   void touchPadRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
-
-  void activityDetection();
-
-  void enterSleep();
-
-  void configIMUInterrupts();
-
-  void setupBacklight();
-
-  void restorePreferences();
-
-  void setupTFT();
-
-  void setupTouchScreen();
-
-  void setupIMU();
-
-  void slowDisplayWakeup();
-
-  void setupWifi();
-
-  void setupIR();
 
   void handleWifiEvent(WiFiEvent_t event);
 
 private:
 
+  // Static Wrappers Needed to Satisfy C APIs
   static void WiFiEvent(WiFiEvent_t event){
     mInstance->handleWifiEvent(event);
   }
@@ -153,11 +145,6 @@ private:
                                       {'?', 0x35, 0x2F, 0x32, 0x36}};
   byte virtualKeyMapTechnisat[10] = {0x1, 0x2, 0x3, 0x4, 0x5,
                                     0x6, 0x7, 0x8, 0x9, 0x0};
-
-
-
-
-
 
   static std::shared_ptr<HardwareRevX> mInstance;
 };

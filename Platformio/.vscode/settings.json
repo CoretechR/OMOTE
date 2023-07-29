@@ -53,5 +53,6 @@
         "typeinfo": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO",
-    "editor.formatOnSave": false
+    "editor.formatOnSave": false,
+    "idf.portWin": "COM8"
 }
