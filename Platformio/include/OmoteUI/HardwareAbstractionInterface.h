@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// OMOTE Hardware Abstraction
+// 2023 Matthew Colvin
+
+#pragma once
 #include <lvgl.h>
 #include <string>
 

@@ -1,7 +1,6 @@
 // OMOTE firmware for ESP32
 // 2023 Maximilian Kern
 
-
 #include <lvgl.h>
 #include "HardwareRevX.hpp"
 #include "OmoteUI/OmoteUI.hpp"

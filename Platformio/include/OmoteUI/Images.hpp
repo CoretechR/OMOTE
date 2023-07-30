@@ -1,3 +1,5 @@
+// OMOTE UI Images
+// 2023 Matthew Colvin
 #pragma once
 #include "lvgl.h"
 
