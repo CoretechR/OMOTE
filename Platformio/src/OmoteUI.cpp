@@ -1,8 +1,13 @@
 ﻿#include "OmoteUI.hpp"
+#include "lvgl.h"
 #include "omoteconfig.h"
 #include <functional>
 
 std::shared_ptr<OmoteUI> OmoteUI::mInstance = nullptr;
+
+// This can be used to flag out specific code for SIM only
+// #if defined(IS_SIMULATOR) && (IS_SIMULATOR == true)
+// #endif
 
 // Set the page indicator scroll position relative to the tabview scroll
 // position
@@ -89,7 +94,7 @@ void OmoteUI::loopHandler(){
 void OmoteUI::layout_UI() {
 
   // --- LVGL UI Configuration ---
-
+    
   // Set the background color
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), LV_PART_MAIN);
 
@@ -167,38 +172,12 @@ void OmoteUI::layout_UI() {
       cont, [](lv_event_t *e) { mInstance->virtualKeypad_event_cb(e); },
       LV_EVENT_CLICKED, NULL);
 
-// Only for the LVGL PC Simulator !!!
-#if defined(IS_SIMULATOR) && (IS_SIMULATOR == true)
-  appleTvIcon.header.cf = LV_IMG_CF_TRUE_COLOR;
-  appleTvIcon.header.always_zero = 0;
-  appleTvIcon.header.reserved = 0;
-  appleTvIcon.header.w = 91;
-  appleTvIcon.header.h = 42;
-  appleTvIcon.data_size = 3822 * LV_COLOR_SIZE / 8;
-  appleTvIcon.data = appleTvIcon_map;
-  appleDisplayIcon.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  appleDisplayIcon.header.always_zero = 0;
-  appleDisplayIcon.header.reserved = 0;
-  appleDisplayIcon.header.w = 25;
-  appleDisplayIcon.header.h = 20;
-  appleDisplayIcon.data_size = 500;
-  appleDisplayIcon.data = appleDisplayIcon_map;
-
-  appleBackIcon.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  appleBackIcon.header.always_zero = 0;
-  appleBackIcon.header.reserved = 0;
-  appleBackIcon.header.w = 13;
-  appleBackIcon.header.h = 25;
-  appleBackIcon.data_size = 325;
-  appleBackIcon.data = appleBackIcon_map;
-
-#endif
-
   // Add content to the Apple TV tab (3)
   // Add a nice apple tv logo
-  lv_obj_t *appleImg = lv_img_create(tab3);
-  lv_img_set_src(appleImg, &appleTvIcon);
+  
+  lv_obj_t* appleImg = imgs.addAppleTVIcon(tab3);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, -60);
+  
   // create two buttons and add their icons accordingly
   lv_obj_t *button = lv_btn_create(tab3);
   lv_obj_align(button, LV_ALIGN_BOTTOM_LEFT, 10, 0);
@@ -209,10 +188,7 @@ void OmoteUI::layout_UI() {
       button, [](lv_event_t *e) { mInstance->appleKey_event_cb(e); },
       LV_EVENT_CLICKED, (void *)1);
 
-  appleImg = lv_img_create(button);
-  lv_img_set_src(appleImg, &appleBackIcon);
-  lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
+  appleImg = imgs.addAppleBackIcon(button);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, -3, 0);
 
   button = lv_btn_create(tab3);
@@ -224,10 +200,7 @@ void OmoteUI::layout_UI() {
       button, [](lv_event_t *e) { mInstance->appleKey_event_cb(e); },
       LV_EVENT_CLICKED, (void *)2);
 
-  appleImg = lv_img_create(button);
-  lv_img_set_src(appleImg, &appleDisplayIcon);
-  lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
+  appleImg = imgs.addAppleDisplayImage(button);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, 0);
 
   // Add content to the settings tab
@@ -237,22 +210,6 @@ void OmoteUI::layout_UI() {
   lv_obj_set_flex_flow(tab1, LV_FLEX_FLOW_COLUMN);
   lv_obj_set_scrollbar_mode(tab1, LV_SCROLLBAR_MODE_ACTIVE);
 
-  // Only for the LVGL PC Simulator !!!
-  high_brightness.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  high_brightness.header.always_zero = 0;
-  high_brightness.header.reserved = 0;
-  high_brightness.header.w = 18;
-  high_brightness.header.h = 18;
-  high_brightness.data_size = 352;
-  high_brightness.data = high_brightness_map;
-
-  low_brightness.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  low_brightness.header.always_zero = 0;
-  low_brightness.header.reserved = 0;
-  low_brightness.header.w = 16;
-  low_brightness.header.h = 16;
-  low_brightness.data_size = 256;
-  low_brightness.data = low_brightness_map;
 
   // Add a label, then a box for the display settings
   lv_obj_t *menuLabel = lv_label_create(tab1);
@@ -263,11 +220,9 @@ void OmoteUI::layout_UI() {
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
 
-  lv_obj_t *brightnessIcon = lv_img_create(menuBox);
-  lv_img_set_src(brightnessIcon, &low_brightness);
-  lv_obj_set_style_img_recolor(brightnessIcon, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_t *brightnessIcon = imgs.addLowBrightnessIcon(menuBox);
   lv_obj_align(brightnessIcon, LV_ALIGN_TOP_LEFT, 0, 0);
+
   lv_obj_t *slider = lv_slider_create(menuBox);
   lv_slider_set_range(slider, 60, 255);
   lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
@@ -277,11 +232,10 @@ void OmoteUI::layout_UI() {
   lv_slider_set_value(slider, backlight_brightness, LV_ANIM_OFF);
   lv_obj_set_size(slider, lv_pct(66), 10);
   lv_obj_align(slider, LV_ALIGN_TOP_MID, 0, 3);
-  brightnessIcon = lv_img_create(menuBox);
-  lv_img_set_src(brightnessIcon, &high_brightness);
-  lv_obj_set_style_img_recolor(brightnessIcon, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
+
+  brightnessIcon = imgs.addHighBrightnessIcon(menuBox);
   lv_obj_align(brightnessIcon, LV_ALIGN_TOP_RIGHT, 0, -1);
+  
   lv_obj_add_event_cb(
       slider, [](lv_event_t *e) { mInstance->bl_slider_event_cb(e); },
       LV_EVENT_VALUE_CHANGED, NULL);
@@ -350,12 +304,6 @@ void OmoteUI::layout_UI() {
 
   // Add content to the smart home tab (4)
 
-  // Only for the LVGL PC Simulator !!!
-  lightbulb.header.cf = LV_IMG_CF_ALPHA_8BIT, lightbulb.header.always_zero = 0,
-  lightbulb.header.reserved = 0, lightbulb.header.w = 12,
-  lightbulb.header.h = 20, lightbulb.data_size = 240,
-  lightbulb.data = lightbulb_map;
-
   lv_obj_set_layout(tab4, LV_LAYOUT_FLEX);
   lv_obj_set_flex_flow(tab4, LV_FLEX_FLOW_COLUMN);
   lv_obj_set_scrollbar_mode(tab4, LV_SCROLLBAR_MODE_ACTIVE);
@@ -369,10 +317,7 @@ void OmoteUI::layout_UI() {
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
 
-  lv_obj_t *bulbIcon = lv_img_create(menuBox);
-  lv_img_set_src(bulbIcon, &lightbulb);
-  lv_obj_set_style_img_recolor(bulbIcon, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(bulbIcon, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_t *bulbIcon = imgs.addLightBulbIcon(menuBox);
   lv_obj_align(bulbIcon, LV_ALIGN_TOP_LEFT, 0, 0);
 
   menuLabel = lv_label_create(menuBox);
@@ -414,10 +359,7 @@ void OmoteUI::layout_UI() {
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
 
-  bulbIcon = lv_img_create(menuBox);
-  lv_img_set_src(bulbIcon, &lightbulb);
-  lv_obj_set_style_img_recolor(bulbIcon, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(bulbIcon, LV_OPA_COVER, LV_PART_MAIN);
+  bulbIcon = imgs.addLightBulbIcon(menuBox);
   lv_obj_align(bulbIcon, LV_ALIGN_TOP_LEFT, 0, 0);
 
   menuLabel = lv_label_create(menuBox);
@@ -539,30 +481,12 @@ void OmoteUI::layout_UI() {
   lv_style_set_bg_opa(&style_btn, LV_OPA_TRANSP);
   lv_obj_add_style(panel, &style_btn, 0);
 
-  // Only for the LVGL PC Simulator !!!
-  gradientLeft.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  gradientLeft.header.always_zero = 0;
-  gradientLeft.header.reserved = 0;
-  gradientLeft.header.w = 30;
-  gradientLeft.header.h = 1;
-  gradientLeft.data_size = 30;
-  gradientLeft.data = gradientLeft_map;
-
-  gradientRight.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  gradientRight.header.always_zero = 0;
-  gradientRight.header.reserved = 0;
-  gradientRight.header.w = 30;
-  gradientRight.header.h = 1;
-  gradientRight.data_size = 30;
-  gradientRight.data = gradientRight_map;
-
   // Make the indicator fade out at the sides using gradient bitmaps
-  lv_obj_t *img1 = lv_img_create(lv_scr_act());
-  lv_img_set_src(img1, &gradientLeft);
+  lv_obj_t *img1 = imgs.addLeftGradiant(lv_scr_act());
   lv_obj_align(img1, LV_ALIGN_BOTTOM_LEFT, 0, 0);
   lv_obj_set_size(img1, 30, 30); // stretch the 1-pixel high image to 30px
-  lv_obj_t *img2 = lv_img_create(lv_scr_act());
-  lv_img_set_src(img2, &gradientRight);
+  
+  lv_obj_t* img2 = imgs.addRightGradiant(lv_scr_act());
   lv_obj_align(img2, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
   lv_obj_set_size(img2, 30, 30);
 

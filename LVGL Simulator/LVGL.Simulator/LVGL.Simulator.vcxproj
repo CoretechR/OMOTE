@@ -45,6 +45,7 @@
   <Import Project="LVGL.Drivers.vcxitems" />
   <ItemGroup>
     <ClInclude Include="..\..\Platformio\include\OmoteUI\HardwareAbstractionInterface.h" />
+    <ClInclude Include="..\..\Platformio\include\OmoteUI\Images.hpp" />
     <ClInclude Include="..\..\Platformio\include\OmoteUI\OmoteUI.hpp" />
     <ClInclude Include="HardwareSimulator.hpp" />
     <ClInclude Include="omoteconfig.h" />

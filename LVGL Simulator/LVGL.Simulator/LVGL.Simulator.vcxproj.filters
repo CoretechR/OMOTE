@@ -13,6 +13,9 @@
       <Filter>OmoteUI</Filter>
     </ClInclude>
     <ClInclude Include="omoteconfig.h" />
+    <ClInclude Include="..\..\Platformio\include\OmoteUI\Images.hpp">
+      <Filter>OmoteUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="LVGL.Simulator.manifest" />
