@@ -81,6 +81,18 @@ void HardwareRevX::init() {
   debugPrint(std::string("Finished Hardware Setup in %d",millis()));
 }
 
+void HardwareRevX::debugPrint(std::string aDebugMessage){
+  Serial.print(aDebugMessage.c_str());
+}
+
+void HardwareRevX::sendIR(){
+
+}
+
+void HardwareRevX::MQTTPublish(const char *topic, const char *payload){
+
+}
+
 void HardwareRevX::initLVGL() {
   lv_init();
 

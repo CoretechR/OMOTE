@@ -34,15 +34,12 @@ public:
   }
 
   HardwareRevX() : HardwareAbstractionInterface(){};
-
-  virtual void debugPrint(std::string aDebugMessage) override {Serial.print(aDebugMessage.c_str());}
-
-  virtual void sendIR() override {}
-
-  virtual void MQTTPublish(const char *topic, const char *payload) override {}
-
-  virtual void init();
-
+  // HardwareAbstractionInterface 
+  virtual void init() override;
+  virtual void debugPrint(std::string aDebugMessage) override;
+  virtual void sendIR() override;
+  virtual void MQTTPublish(const char *topic, const char *payload) override;
+  
   void loopHandler();
 
 protected:
