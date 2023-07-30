@@ -14,9 +14,7 @@
 class OmoteUI {
 public:
   OmoteUI(std::shared_ptr<HardwareAbstractionInterface> aHardware)
-      : mHardware(aHardware) {
-    lv_init();
-  };
+      : mHardware(aHardware) {};
 
   static std::weak_ptr<OmoteUI> getRefrence() { return getInstance(); };
   static std::shared_ptr<OmoteUI> getInstance(

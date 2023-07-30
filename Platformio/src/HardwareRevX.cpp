@@ -104,7 +104,7 @@ void HardwareRevX::initLVGL() {
   lv_indev_drv_register(&indev_drv);
 }
 
-void HardwareRevX::displayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
+void HardwareRevX::handleDisplayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
                                 lv_color_t *color_p) {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
@@ -117,7 +117,7 @@ void HardwareRevX::displayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
   lv_disp_flush_ready(disp);
 }
 
-void HardwareRevX::touchPadRead(lv_indev_drv_t *indev_driver,
+void HardwareRevX::handleTouchPadRead(lv_indev_drv_t *indev_driver,
                                 lv_indev_data_t *data) {
   // int16_t touchX, touchY;
   touchPoint = touch.getPoint();
@@ -361,7 +361,8 @@ void HardwareRevX::slowDisplayWakeup() {
 }
 
 void HardwareRevX::handleWifiEvent(WiFiEvent_t event){
-   // Serial.printf("[WiFi-event] event: %d\n", event);
+#ifdef ENABLE_WIFI
+  // Serial.printf("[WiFi-event] event: %d\n", event);
   if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP) {
     client.setServer(MQTT_SERVER, 1883); // MQTT initialization
     client.connect("OMOTE");             // Connect using a client id
@@ -375,6 +376,7 @@ void HardwareRevX::handleWifiEvent(WiFiEvent_t event){
   //   } else {
   //     lv_label_set_text(WifiLabel, "");
   //   }
+#endif
 }
  
 void HardwareRevX::setupIR(){
@@ -388,7 +390,7 @@ void HardwareRevX::setupWifi(){
 #ifdef ENABLE_WIFI
   // Setup WiFi
   WiFi.setHostname("OMOTE"); // define hostname
-  WiFi.onEvent(WiFiEvent);
+  WiFi.onEvent(wiFiEventImpl);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   WiFi.setSleep(true);
 #endif

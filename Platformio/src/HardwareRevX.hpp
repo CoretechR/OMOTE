@@ -63,29 +63,31 @@ protected:
   void configIMUInterrupts();
 
   // UI/UX Handlers
-  void displayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
+  void handleDisplayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
                     lv_color_t *color_p);
-  void touchPadRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
+  void handleTouchPadRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
 
   void handleWifiEvent(WiFiEvent_t event);
 
 private:
 
   // Static Wrappers Needed to Satisfy C APIs
-  static void WiFiEvent(WiFiEvent_t event){
+  static void wiFiEventImpl(WiFiEvent_t event){
     mInstance->handleWifiEvent(event);
   }
   static void displayFlushImpl(lv_disp_drv_t *disp, const lv_area_t *area,
                                lv_color_t *color_p) {
-    mInstance->displayFlush(disp, area, color_p);
+    mInstance->handleDisplayFlush(disp, area, color_p);
   }
   static void touchPadReadImpl(lv_indev_drv_t *indev_driver,
                                lv_indev_data_t *data) {
-    mInstance->touchPadRead(indev_driver, data);
+    mInstance->handleTouchPadRead(indev_driver, data);
   }
 
+#ifdef ENABLE_WIFI
   WiFiClient espClient;
   PubSubClient client = PubSubClient(espClient);
+#endif
 
   Adafruit_FT6206 touch = Adafruit_FT6206();
   TS_Point touchPoint;
