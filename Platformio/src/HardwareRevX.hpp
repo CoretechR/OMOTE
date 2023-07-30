@@ -69,6 +69,12 @@ protected:
 
   void handleWifiEvent(WiFiEvent_t event);
 
+  // Tasks
+  void startTasks();
+
+  static void updateBatteryTask([[maybe_unused]] void* aData);
+  TaskHandle_t batteryUpdateTskHndl = nullptr;
+
 private:
 
   // Static Wrappers Needed to Satisfy C APIs

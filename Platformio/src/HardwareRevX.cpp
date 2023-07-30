@@ -396,6 +396,26 @@ void HardwareRevX::setupWifi(){
 #endif
 }
 
+void HardwareRevX::startTasks(){
+  if(xTaskCreate(&HardwareRevX::updateBatteryTask,
+                 "Battery Percent Update",1024,nullptr,5,&batteryUpdateTskHndl) != pdPASS){
+    debugPrint("ERROR Could not Create Battery Update Task!");
+  }
+}
+
+void HardwareRevX::updateBatteryTask([[maybe_unused]] void* aData){
+  while(true){
+    mInstance->battery_voltage =
+        analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
+    mInstance->battery_percentage =
+        constrain(map(mInstance->battery_voltage, 3700, 4200, 0, 100), 0, 100);
+    mInstance->battery_ischarging = !digitalRead(CRG_STAT);
+    // Check if battery is charging, fully charged or disconnected
+    vTaskDelay(1000/ portTICK_PERIOD_MS);
+    // Update battery at 1Hz
+  }
+}
+
 void HardwareRevX::loopHandler(){
     // Update Backlight brightness
   static int fadeInTimer = millis(); // fadeInTimer = time after setup
@@ -425,18 +445,7 @@ void HardwareRevX::loopHandler(){
   }
 
   // TODO Convert to free RTOS task
-  // Update battery stats at 1Hz
-  static unsigned long batteryTaskTimer =
-      millis() + 1000; // add 1s to start immediately
-  if (millis() - batteryTaskTimer >= 1000) {
-    battery_voltage =
-        analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
-    battery_percentage =
-        constrain(map(battery_voltage, 3700, 4200, 0, 100), 0, 100);
-    batteryTaskTimer = millis();
-    battery_ischarging = !digitalRead(CRG_STAT);
-    // Check if battery is charging, fully charged or disconnected
-  }
+
   // TODO Create batter change notification for UI
   
   //   if (battery_ischarging || (!battery_ischarging && battery_voltage > 4350)) {
