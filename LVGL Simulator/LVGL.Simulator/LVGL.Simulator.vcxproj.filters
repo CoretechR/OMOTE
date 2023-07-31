@@ -5,6 +5,17 @@
   <ItemGroup>
     <ClInclude Include="lv_conf.h" />
     <ClInclude Include="lv_drv_conf.h" />
+    <ClInclude Include="HardwareSimulator.hpp" />
+    <ClInclude Include="..\..\Platformio\include\OmoteUI\HardwareAbstractionInterface.h">
+      <Filter>OmoteUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Platformio\include\OmoteUI\OmoteUI.hpp">
+      <Filter>OmoteUI</Filter>
+    </ClInclude>
+    <ClInclude Include="omoteconfig.h" />
+    <ClInclude Include="..\..\Platformio\include\OmoteUI\Images.hpp">
+      <Filter>OmoteUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="LVGL.Simulator.manifest" />
@@ -15,6 +26,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LVGL.Simulator.cpp" />
+    <ClCompile Include="HardwareSimulator.cpp" />
+    <ClCompile Include="..\..\Platformio\src\HardwareAbstractionInterface.cpp">
+      <Filter>OmoteUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Platformio\src\OmoteUI.cpp">
+      <Filter>OmoteUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />
@@ -24,5 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="freetype.props" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="OmoteUI">
+      <UniqueIdentifier>{0b1f99aa-73cb-482d-9d62-20e17f93b890}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
