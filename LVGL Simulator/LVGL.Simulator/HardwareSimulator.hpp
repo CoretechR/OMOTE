@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-class HardwareSimulator : public HardwareAbstractionInterface {
+class HardwareSimulator : public HardwareInterface {
 public:
   HardwareSimulator() = default;
 

@@ -10,16 +10,17 @@
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <IRutils.h>
-#include <PubSubClient.h>
-#include <Preferences.h>
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <Keypad.h> // modified for inverted logic
+#include <Preferences.h>
+#include <PubSubClient.h>
+#include <TFT_eSPI.h> // Hardware-specific library
 #include <functional>
 #include <memory>
 
+
 #include "omoteconfig.h"
 
-class HardwareRevX : public HardwareAbstractionInterface {
+class HardwareRevX : public HardwareInterface {
 public:
   enum class WakeReason { RESET, IMU, KEYPAD };
 
@@ -29,12 +30,10 @@ public:
     }
     return mInstance;
   }
-  static std::weak_ptr<HardwareRevX> getRefrence(){
-    return getInstance();
-  }
+  static std::weak_ptr<HardwareRevX> getRefrence() { return getInstance(); }
 
-  HardwareRevX() : HardwareAbstractionInterface(){};
-  // HardwareAbstractionInterface
+  HardwareRevX() : HardwareInterface(){};
+  // HardwareInterface
   virtual void init() override;
   virtual void sendIR() override;
   virtual void MQTTPublish(const char *topic, const char *payload) override;
@@ -62,7 +61,7 @@ protected:
 
   // UI/UX Handlers
   void handleDisplayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
-                    lv_color_t *color_p);
+                          lv_color_t *color_p);
   void handleTouchPadRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
 
   void handleWifiEvent(WiFiEvent_t event);
@@ -70,13 +69,12 @@ protected:
   // Tasks
   void startTasks();
 
-  static void updateBatteryTask([[maybe_unused]] void* aData);
+  static void updateBatteryTask([[maybe_unused]] void *aData);
   TaskHandle_t batteryUpdateTskHndl = nullptr;
 
 private:
-
   // Static Wrappers Needed to Satisfy C APIs
-  static void wiFiEventImpl(WiFiEvent_t event){
+  static void wiFiEventImpl(WiFiEvent_t event) {
     mInstance->handleWifiEvent(event);
   }
   static void displayFlushImpl(lv_disp_drv_t *disp, const lv_area_t *area,
@@ -115,7 +113,7 @@ private:
   IRsend IrSender = IRsend(IR_LED, true);
   IRrecv IrReceiver = IRrecv(IR_RX);
 
-  HardwareAbstractionInterface::batteryStatus battery;
+  HardwareInterface::batteryStatus battery;
 
   // LVGL Screen Buffers
   lv_disp_draw_buf_t mdraw_buf;
@@ -148,7 +146,7 @@ private:
                                       {0x34, 0x0C, 0x22, 0x50, 0x55},
                                       {'?', 0x35, 0x2F, 0x32, 0x36}};
   byte virtualKeyMapTechnisat[10] = {0x1, 0x2, 0x3, 0x4, 0x5,
-                                    0x6, 0x7, 0x8, 0x9, 0x0};
+                                     0x6, 0x7, 0x8, 0x9, 0x0};
 
   static std::shared_ptr<HardwareRevX> mInstance;
 };
