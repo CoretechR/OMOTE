@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "HardwareAbstractionInterface.h"
+#include "HardwareInterface.h"
 #include <iostream>
 #include <string>
 
