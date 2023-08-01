@@ -99,7 +99,7 @@ void HardwareRevX::MQTTPublish(const char *topic, const char *payload) {
 #endif
 }
 
-HardwareAbstractionInterface::batteryStatus HardwareRevX::getBatteryPercentage(){
+HardwareInterface::batteryStatus HardwareRevX::getBatteryPercentage() {
   return battery;
 }
 

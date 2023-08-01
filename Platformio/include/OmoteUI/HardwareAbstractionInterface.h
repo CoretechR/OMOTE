@@ -5,9 +5,9 @@
 #include <lvgl.h>
 #include <string>
 
-class HardwareAbstractionInterface {
+class HardwareInterface {
 public:
-  struct batteryStatus{
+  struct batteryStatus {
     /// @brief Percent of battery remaining (0-100]
     int percentage;
     /// @brief Voltage of battery in millivolts
@@ -17,7 +17,7 @@ public:
     bool isCharging;
   };
 
-  HardwareAbstractionInterface() = default;
+  HardwareInterface() = default;
 
   virtual void init() = 0;
   virtual void sendIR() = 0;
