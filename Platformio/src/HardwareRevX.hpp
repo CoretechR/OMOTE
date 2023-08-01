@@ -34,12 +34,13 @@ public:
   }
 
   HardwareRevX() : HardwareAbstractionInterface(){};
-  // HardwareAbstractionInterface 
+  // HardwareAbstractionInterface
   virtual void init() override;
   virtual void sendIR() override;
   virtual void MQTTPublish(const char *topic, const char *payload) override;
+  virtual batteryStatus getBatteryPercentage() override;
   virtual void debugPrint(std::string aDebugMessage) override;
-  
+
   void loopHandler();
 
 protected:
@@ -114,9 +115,7 @@ private:
   IRsend IrSender = IRsend(IR_LED, true);
   IRrecv IrReceiver = IRrecv(IR_RX);
 
-  int battery_voltage = 0;
-  int battery_percentage = 100;
-  bool battery_ischarging = false;
+  HardwareAbstractionInterface::batteryStatus battery;
 
   // LVGL Screen Buffers
   lv_disp_draw_buf_t mdraw_buf;
