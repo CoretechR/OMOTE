@@ -379,7 +379,7 @@
       (stroke (width 0) (type solid)) (fill solid) (layer "F.SilkS") (tstamp 51db3da6-9e43-47ce-9571-e63cf05ae317))
   )
 
-  (footprint "mkern:LED_5mm_Side_Mount" locked (layer "F.Cu")
+  (footprint "omoteLib:LED_5mm_Side_Mount" locked (layer "F.Cu")
     (tstamp 028982f1-ec49-4f15-a3a1-367832d00d71)
     (at 59.676677 102 90)
     (descr "5mm LED for horizontal soldering to the board edge")
@@ -466,7 +466,7 @@
       (net 48 "GND") (pinfunction "K") (pintype "passive") (tstamp 71289672-541a-40f3-bb92-b36055f6b1d6))
     (pad "2" smd rect locked (at -1.275 3.5 90) (size 1.5 5) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 14 "Net-(D2-A)") (pinfunction "A") (pintype "passive") (tstamp ffb8b095-3661-40af-83bd-a02a8d8ca89c))
-    (model "${KICAD_USER_3DMODEL_DIR}/Side Mount LED v1.step"
+    (model "${KIPRJMOD}/project_libraries/3D-models/Side Mount LED v1.step"
       (offset (xyz 0 0 0.25))
       (scale (xyz 1 1 1))
       (rotate (xyz 90 0 0))
@@ -648,7 +648,7 @@
     )
   )
 
-  (footprint "mkern:JST_PH_B2B-PH-SM4-TB_1x02-1MP_P2.00mm_Vertical" (layer "F.Cu")
+  (footprint "omoteLib:JST_PH_B2B-PH-SM4-TB_1x02-1MP_P2.00mm_Vertical" (layer "F.Cu")
     (tstamp 06c0ec99-fe4f-4c5e-9492-8f7abb1bea3e)
     (at 224.9 113.5 90)
     (descr "JST PH series connector, B2B-PH-SM4-TB (http://www.jst-mfg.com/product/pdf/eng/ePH.pdf), generated with kicad-footprint-generator")
@@ -729,7 +729,7 @@
       (net 48 "GND") (pinfunction "Pin_2") (pintype "passive") (tstamp a8674511-9189-4417-9af0-7e68e5f383e2))
     (pad "MP" smd roundrect (at -3.4 -1.75 90) (size 1.6 3) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.15625) (tstamp 7ec99062-2840-4ac6-8a0d-545eb56296d1))
     (pad "MP" smd roundrect (at 3.4 -1.75 90) (size 1.6 3) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.15625) (tstamp 2c9323e8-8263-4b88-b05b-7ff99f5bc2b5))
-    (model "${KICAD_USER_3DMODEL_DIR}/B2B-PH-SM4-TB.STEP"
+    (model "${KIPRJMOD}/project_libraries/3D-models/B2B-PH-SM4-TB.STEP"
       (offset (xyz -4 3.25 0))
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 0))
@@ -1370,7 +1370,7 @@
     )
   )
 
-  (footprint "mkern:QFN-48-1EP_7x7mm_P0.5mm_EP5.3x5.3mm_ThermalVias_MR" (layer "F.Cu")
+  (footprint "omoteLib:QFN-48-1EP_7x7mm_P0.5mm_EP5.3x5.3mm_ThermalVias_MR" (layer "F.Cu")
     (tstamp 21878e1b-21e2-436e-9384-827df816db75)
     (at 76.85 91.55)
     (descr "QFN, 48 Pin (https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2041_datasheet.pdf#page=62), generated with kicad-footprint-generator ipc_noLead_generator.py")
@@ -1615,7 +1615,7 @@
     )
   )
 
-  (footprint "mkern:XDCR_LIS3DHTR" (layer "F.Cu")
+  (footprint "omoteLib:XDCR_LIS3DHTR" (layer "F.Cu")
     (tstamp 230440db-a366-4510-924d-f45962ca2d45)
     (at 89.75 84.786992 90)
     (property "MANUFACTURER" "STMicroelectronics")
@@ -1694,7 +1694,7 @@
       (net 97 "unconnected-(U5-ADC2-Pad15)") (pinfunction "ADC2") (pintype "input+no_connect") (solder_paste_margin_ratio -0.05) (tstamp 0d3a3e5a-4358-4958-b320-6834c31fe10c))
     (pad "16" smd rect (at -0.5 -1.3 180) (size 0.8 0.3) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 98 "unconnected-(U5-ADC1-Pad16)") (pinfunction "ADC1") (pintype "input+no_connect") (solder_paste_margin_ratio -0.05) (tstamp 9aa4f2f5-5d32-456f-89d1-63571efbe5d2))
-    (model "${KICAD_USER_3DMODEL_DIR}/LIS3DHTR.step"
+    (model "${KIPRJMOD}/project_libraries/3D-models/LIS3DHTR.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 0))
@@ -4052,7 +4052,7 @@
       (stroke (width 0) (type solid)) (fill solid) (layer "F.Mask") (tstamp 299dc0c1-5c29-4cd1-b7d9-0cce8367cfa3))
   )
 
-  (footprint "mkern:TFT_2.83IN_240X320_50PIN" locked (layer "F.Cu")
+  (footprint "omoteLib:TFT_2.83IN_240X320_50PIN" locked (layer "F.Cu")
     (tstamp 5a621486-0b9c-4ec0-862b-29bd1b417bb9)
     (at 91.622852 102 90)
     (property "Sheetfile" "Remote.kicad_sch")
@@ -4766,12 +4766,12 @@
       (net 48 "GND") (pinfunction "MP") (pintype "passive") (solder_mask_margin 0.1016) (tstamp 4eb426d9-e540-47c5-9b76-3e1d32abc52e))
     (pad "MP" smd roundrect locked (at 14.35 13.09 270) (size 2.4 2.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.125)
       (net 48 "GND") (pinfunction "MP") (pintype "passive") (solder_mask_margin 0.1016) (tstamp 2e81d339-fff0-4f74-96c2-d969d63a15e6))
-    (model "${KICAD_USER_3DMODEL_DIR}/541325062_colored.step"
+    (model "${KIPRJMOD}/project_libraries/3D-models/541325062_colored.step"
       (offset (xyz 0 -15.5 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
-    (model "${KICAD_USER_3DMODEL_DIR}/280QV10 v5.step"
+    (model "${KIPRJMOD}/project_libraries/3D-models/280QV10 v5.step"
       (offset (xyz 0 -22.25 -6))
       (scale (xyz 1 1 1))
       (rotate (xyz 180 0 180))
@@ -4932,7 +4932,7 @@
     )
   )
 
-  (footprint "mkern:Heimdall vertical" (layer "F.Cu")
+  (footprint "omoteLib:Heimdall vertical" (layer "F.Cu")
     (tstamp 5d2b74c8-ea79-4f25-99fd-c78691bddaa1)
     (at 55.4 116.3 90)
     (descr "VISHAY Heimdall for TSSP77038")
@@ -4989,7 +4989,7 @@
       (net 87 "IR_VCC") (pinfunction "Vs") (pintype "power_in") (tstamp 122ac044-9956-47ad-90b3-cd90dd9d6e84))
     (pad "4" smd rect (at 1.9 0.7 180) (size 2 0.8) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 48 "GND") (pinfunction "GND") (pintype "power_in") (tstamp a399ed69-ca57-4198-ac99-c2971749e3d2))
-    (model "${KICAD_USER_3DMODEL_DIR}/82672Heimdall.stp"
+    (model "${KIPRJMOD}/project_libraries/3D-models/82672Heimdall.stp"
       (offset (xyz 0 -1.2 1.6))
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 -180))
@@ -8289,7 +8289,7 @@
     )
   )
 
-  (footprint "mkern:RFANT5220110A2T" (layer "F.Cu")
+  (footprint "omoteLib:RFANT5220110A2T" (layer "F.Cu")
     (tstamp cdd38a2c-3189-4b09-aa8d-b7b99e8e71b9)
     (at 55.500146 85.711992)
     (descr "Walsin RFANT5220110A2T SMD antenna 2400-2500Mhz, 2dBi, http://www.passivecomponent.com/wp-content/uploads/2013/12/ASC_RFANT5220110A2T_V03.pdf")
@@ -8339,7 +8339,7 @@
     (pad "" smd roundrect (at -2.7 0) (size 1 2) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.208333) (tstamp cc86c1ac-e652-4e6f-8b3b-2ad7dcf806b0))
     (pad "1" smd roundrect (at 2.7 0 180) (size 1 2) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.208333)
       (net 3 "Net-(AE1-A)") (pinfunction "A") (pintype "input") (tstamp 5f31508e-8dcd-4d96-b5f5-cf3f4a95c613))
-    (model "${KICAD_USER_3DMODEL_DIR}/Walsin RFANT5220110A2T v1.step"
+    (model "${KIPRJMOD}/project_libraries/3D-models/Walsin RFANT5220110A2T v1.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 -90))
@@ -8955,7 +8955,7 @@
     )
   )
 
-  (footprint "mkern:USB_C_Receptacle_HRO_TYPE-C-31-M-12" (layer "F.Cu")
+  (footprint "omoteLib:USB_C_Receptacle_HRO_TYPE-C-31-M-12" (layer "F.Cu")
     (tstamp ed154c17-7f27-4787-a05a-0859bc96f71a)
     (at 241 102 90)
     (descr "USB Type-C receptacle for USB 2.0 and PD, http://www.krhro.com/uploads/soft/180320/1-1P320120243.pdf")
