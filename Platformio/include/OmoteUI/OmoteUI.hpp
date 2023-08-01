@@ -3,7 +3,7 @@
 #pragma once
 #define LV_CONF_INCLUDE_SIMPLE
 
-#include "HardwareAbstractionInterface.h"
+#include "HardwareInterface.h"
 #include "Images.hpp"
 #include "lvgl.h"
 #include <algorithm>

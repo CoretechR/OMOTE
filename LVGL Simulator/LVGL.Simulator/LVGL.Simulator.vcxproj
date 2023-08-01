@@ -44,7 +44,7 @@
   <Import Project="LVGL.Portable.vcxitems" />
   <Import Project="LVGL.Drivers.vcxitems" />
   <ItemGroup>
-    <ClInclude Include="..\..\Platformio\include\OmoteUI\HardwareAbstractionInterface.h" />
+    <ClInclude Include="..\..\Platformio\include\OmoteUI\HardwareInterface.h" />
     <ClInclude Include="..\..\Platformio\include\OmoteUI\Images.hpp" />
     <ClInclude Include="..\..\Platformio\include\OmoteUI\OmoteUI.hpp" />
     <ClInclude Include="HardwareSimulator.hpp" />
@@ -62,7 +62,6 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Platformio\src\HardwareAbstractionInterface.cpp" />
     <ClCompile Include="..\..\Platformio\src\OmoteUI.cpp" />
     <ClCompile Include="HardwareSimulator.cpp" />
     <ClCompile Include="LVGL.Simulator.cpp">
