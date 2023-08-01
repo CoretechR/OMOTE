@@ -99,6 +99,10 @@ void HardwareRevX::MQTTPublish(const char *topic, const char *payload) {
 #endif
 }
 
+HardwareAbstractionInterface::batteryStatus HardwareRevX::getBatteryPercentage(){
+  return battery;
+}
+
 void HardwareRevX::initLVGL() {
   lv_init();
 
@@ -424,11 +428,11 @@ void HardwareRevX::startTasks() {
 
 void HardwareRevX::updateBatteryTask([[maybe_unused]] void *aData) {
   while (true) {
-    mInstance->battery_voltage =
+    mInstance->battery.voltage =
         analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
-    mInstance->battery_percentage =
-        constrain(map(mInstance->battery_voltage, 3700, 4200, 0, 100), 0, 100);
-    mInstance->battery_ischarging = !digitalRead(CRG_STAT);
+    mInstance->battery.percentage =
+        constrain(map(mInstance->battery.voltage, 3700, 4200, 0, 100), 0, 100);
+    mInstance->battery.isCharging = !digitalRead(CRG_STAT);
     // Check if battery is charging, fully charged or disconnected
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     // Update battery at 1Hz
@@ -436,6 +440,9 @@ void HardwareRevX::updateBatteryTask([[maybe_unused]] void *aData) {
 }
 
 void HardwareRevX::loopHandler() {
+
+  // TODO Move the backlight handling into task that spawns when the backlight
+  // setting changes and then gets deleted when the setting is achieved.
   // Update Backlight brightness
   static int fadeInTimer = millis(); // fadeInTimer = time after setup
   if (millis() <
@@ -448,6 +455,7 @@ void HardwareRevX::loopHandler() {
       ledcWrite(5, backlight_brightness); // Backlight on
   }
 
+  // TODO move to debug task
   // Blink debug LED at 1 Hz
   digitalWrite(USER_LED, millis() % 1000 > 500);
 
