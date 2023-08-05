@@ -3,7 +3,7 @@
 
 #include <lvgl.h>
 #include "HardwareRevX.hpp"
-#include "OmoteUI/OmoteUI.hpp"
+#include "OmoteUI.hpp"
 #include "omoteconfig.h"
 
 std::shared_ptr<HardwareRevX> hal = nullptr;

@@ -2,7 +2,7 @@
 #include "SparkFunLIS3DH.h"
 
 #include "HardwareInterface.h"
-#include "WiFi.h"
+#include <WiFi.h>
 #include "Wire.h"
 #include "lvgl.h"
 #include <Adafruit_FT6206.h>
