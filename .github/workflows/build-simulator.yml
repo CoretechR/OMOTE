@@ -1,37 +1,28 @@
-name: Simulator Build
+name: Ubuntu Simulator Build
 
 on: [push]
 
 jobs:
-  build-x64:
-
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
-        with:
-            msbuild-architecture: x64
-
-      # You can test your matrix by printing the current dotnet version
-      - name: Build
-        working-directory: ./LVGL Simulator
-        run: MSBuild.exe ./LVGL.Simulator.sln -target:Build /p:Platform="x64"
-
-  build-x86:
-
-    runs-on: windows-latest
+  build-ubuntu:
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+      - uses: actions/cache@v3
         with:
-            msbuild-architecture: x86
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
 
-      - name: Build
-        working-directory: ./LVGL Simulator
-        run: MSBuild.exe ./LVGL.Simulator.sln -target:Build /p:Platform="x86"
+      - name: Install SDL2
+        run : sudo apt-get update && sudo apt-get install -y libsdl2-dev
+
+      - name: Build PlatformIO Project 64 bit sim
+        working-directory: ./Platformio
+        run: pio run --environment x64_sim
