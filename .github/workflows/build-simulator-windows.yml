@@ -1,0 +1,29 @@
+name: Windows Simulator Build
+
+on: [push]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-python
+            python3-pip
+      - uses: actions/checkout@v3
+
+      - name: Install Platform IOCore
+        run: pip install --upgrade platformio
+
+      - name: Put MSYS2_MinGW64 on PATH
+        # there is not yet an environment variable for this path from msys2/setup-msys2
+        run: echo "${{ runner.temp }}/msys64/mingw64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Build PlatformIO Project 64 bit sim
+        working-directory: ./Platformio
+        run: pio run --environment x64_sim

@@ -1,6 +1,5 @@
 #include "HardwareSimulator.hpp"
 #include <unistd.h>
-#define SDL_MAIN_HANDLED        /*To fix SDL's "undefined reference to WinMain" issue*/
 #include "SDL2/SDL.h"
 #include "display/monitor.h"
 #include "indev/mouse.h"
