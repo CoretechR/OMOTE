@@ -17,7 +17,7 @@ public:
 
   };
 
-  virtual void init() override { lv_init(); }
+  virtual void init() override;
 
   virtual batteryStatus getBatteryPercentage() {
     batteryStatus fakeStatus;
