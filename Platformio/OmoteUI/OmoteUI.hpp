@@ -1,7 +1,6 @@
 ﻿// OMOTE UI
 // 2023 Matthew Colvin
 #pragma once
-#define LV_CONF_INCLUDE_SIMPLE
 
 #include "HardwareInterface.h"
 #include "Images.hpp"
