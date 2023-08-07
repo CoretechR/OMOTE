@@ -34,7 +34,7 @@ void OmoteUI::bl_slider_event_cb(lv_event_t *e) {
 void OmoteUI::appleKey_event_cb(lv_event_t *e) {
   // Send IR command based on the event user data
   mHardware->sendIR();
-  mHardware->debugPrint(std::to_string(50 + (int)e->user_data));
+  //mHardware->debugPrint(std::to_string(50 + (int)e->user_data));
 }
 
 // Wakeup by IMU Switch Event handler
@@ -51,10 +51,10 @@ void OmoteUI::smartHomeToggle_event_cb(lv_event_t *e) {
   else
     strcpy(payload, "false");
   // Publish an MQTT message based on the event user data
-  if ((int)e->user_data == 1)
-    mHardware->MQTTPublish("bulb1_set", payload);
-  if ((int)e->user_data == 2)
-    mHardware->MQTTPublish("bulb2_set", payload);
+  // if ((int)e->user_data == 1)
+  //   mHardware->MQTTPublish("bulb1_set", payload);
+  // if ((int)e->user_data == 2)
+  //   mHardware->MQTTPublish("bulb2_set", payload);
 }
 
 // Smart Home Toggle Event handler
@@ -69,10 +69,10 @@ void OmoteUI::smartHomeSlider_event_cb(lv_event_t *e) {
   snprintf(payload, sizeof(payload), "%8.2f", sliderValue);
 
   // Publish an MQTT message based on the event user data
-  if ((int)e->user_data == 1)
-    mHardware->MQTTPublish("bulb1_setbrightness", payload);
-  if ((int)e->user_data == 2)
-    mHardware->MQTTPublish("bulb2_setbrightness", payload);
+  // if ((int)e->user_data == 1)
+  //   mHardware->MQTTPublish("bulb1_setbrightness", payload);
+  // if ((int)e->user_data == 2)
+  //   mHardware->MQTTPublish("bulb2_setbrightness", payload);
 }
 
 void OmoteUI::virtualKeypad_event_cb(lv_event_t *e) {
@@ -82,9 +82,9 @@ void OmoteUI::virtualKeypad_event_cb(lv_event_t *e) {
     return;
 
   char buffer[100];
-  sprintf(buffer, "check it out: %d\n",
-          virtualKeyMapTechnisat[(int)target->user_data]);
-  mHardware->debugPrint(buffer);
+  // sprintf(buffer, "check it out: %d\n",
+  //         virtualKeyMapTechnisat[(int)target->user_data]);
+  // mHardware->debugPrint(buffer);
 }
 
 void OmoteUI::loopHandler(){

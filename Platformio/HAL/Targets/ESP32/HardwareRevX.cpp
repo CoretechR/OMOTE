@@ -78,19 +78,29 @@ void HardwareRevX::init() {
   setupIMU();
   setupIR();
 
-  debugPrint(std::string("Finished Hardware Setup in %d",millis()));
+  debugPrint(std::string("Finished Hardware Setup in %d", millis()));
 }
 
-void HardwareRevX::debugPrint(std::string aDebugMessage){
+void HardwareRevX::debugPrint(std::string aDebugMessage) {
   Serial.print(aDebugMessage.c_str());
 }
 
-void HardwareRevX::sendIR(){
+void HardwareRevX::sendIR() {}
 
+void HardwareRevX::MQTTPublish(const char *topic, const char *payload) {
+#ifdef ENABLE_WIFI
+  if (client.connected()) {
+    client.publish(topic, payload);
+  } else {
+    debugPrint("MQTT Client Not Connected When Attempting Publish.");
+  }
+#else
+  debugPrint("Attempting To Publish MQTT with wifi Disabled!");
+#endif
 }
 
-void HardwareRevX::MQTTPublish(const char *topic, const char *payload){
-
+HardwareInterface::batteryStatus HardwareRevX::getBatteryPercentage() {
+  return battery;
 }
 
 void HardwareRevX::initLVGL() {
@@ -116,8 +126,9 @@ void HardwareRevX::initLVGL() {
   lv_indev_drv_register(&indev_drv);
 }
 
-void HardwareRevX::handleDisplayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
-                                lv_color_t *color_p) {
+void HardwareRevX::handleDisplayFlush(lv_disp_drv_t *disp,
+                                      const lv_area_t *area,
+                                      lv_color_t *color_p) {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
 
@@ -130,7 +141,7 @@ void HardwareRevX::handleDisplayFlush(lv_disp_drv_t *disp, const lv_area_t *area
 }
 
 void HardwareRevX::handleTouchPadRead(lv_indev_drv_t *indev_driver,
-                                lv_indev_data_t *data) {
+                                      lv_indev_data_t *data) {
   // int16_t touchX, touchY;
   touchPoint = touch.getPoint();
   int16_t touchX = touchPoint.x;
@@ -372,7 +383,7 @@ void HardwareRevX::slowDisplayWakeup() {
   delay(100); // Wait for the LCD driver to power on
 }
 
-void HardwareRevX::handleWifiEvent(WiFiEvent_t event){
+void HardwareRevX::handleWifiEvent(WiFiEvent_t event) {
 #ifdef ENABLE_WIFI
   // Serial.printf("[WiFi-event] event: %d\n", event);
   if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP) {
@@ -390,15 +401,15 @@ void HardwareRevX::handleWifiEvent(WiFiEvent_t event){
   //   }
 #endif
 }
- 
-void HardwareRevX::setupIR(){
-    // Setup IR
+
+void HardwareRevX::setupIR() {
+  // Setup IR
   IrSender.begin();
   digitalWrite(IR_VCC, HIGH); // Turn on IR receiver
   IrReceiver.enableIRIn();    // Start the receiver
 }
 
-void HardwareRevX::setupWifi(){
+void HardwareRevX::setupWifi() {
 #ifdef ENABLE_WIFI
   // Setup WiFi
   WiFi.setHostname("OMOTE"); // define hostname
@@ -408,32 +419,34 @@ void HardwareRevX::setupWifi(){
 #endif
 }
 
-void HardwareRevX::startTasks(){
-  if(xTaskCreate(&HardwareRevX::updateBatteryTask,
-                 "Battery Percent Update",1024,nullptr,5,&batteryUpdateTskHndl) != pdPASS){
+void HardwareRevX::startTasks() {
+  if (xTaskCreate(&HardwareRevX::updateBatteryTask, "Battery Percent Update",
+                  1024, nullptr, 5, &batteryUpdateTskHndl) != pdPASS) {
     debugPrint("ERROR Could not Create Battery Update Task!");
   }
 }
 
-void HardwareRevX::updateBatteryTask([[maybe_unused]] void* aData){
-  while(true){
-    mInstance->battery_voltage =
+void HardwareRevX::updateBatteryTask([[maybe_unused]] void *aData) {
+  while (true) {
+    mInstance->battery.voltage =
         analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
-    mInstance->battery_percentage =
-        constrain(map(mInstance->battery_voltage, 3700, 4200, 0, 100), 0, 100);
-    mInstance->battery_ischarging = !digitalRead(CRG_STAT);
+    mInstance->battery.percentage =
+        constrain(map(mInstance->battery.voltage, 3700, 4200, 0, 100), 0, 100);
+    mInstance->battery.isCharging = !digitalRead(CRG_STAT);
     // Check if battery is charging, fully charged or disconnected
-    vTaskDelay(1000/ portTICK_PERIOD_MS);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     // Update battery at 1Hz
   }
 }
 
-void HardwareRevX::loopHandler(){
-    // Update Backlight brightness
+void HardwareRevX::loopHandler() {
+
+  // TODO Move the backlight handling into task that spawns when the backlight
+  // setting changes and then gets deleted when the setting is achieved.
+  // Update Backlight brightness
   static int fadeInTimer = millis(); // fadeInTimer = time after setup
   if (millis() <
-      fadeInTimer +
-          backlight_brightness) { // Fade in the backlight brightness
+      fadeInTimer + backlight_brightness) { // Fade in the backlight brightness
     ledcWrite(5, millis() - fadeInTimer);
   } else { // Dim Backlight before entering standby
     if (standbyTimer < 2000)
@@ -442,6 +455,7 @@ void HardwareRevX::loopHandler(){
       ledcWrite(5, backlight_brightness); // Backlight on
   }
 
+  // TODO move to debug task
   // Blink debug LED at 1 Hz
   digitalWrite(USER_LED, millis() % 1000 > 500);
 
@@ -459,14 +473,15 @@ void HardwareRevX::loopHandler(){
   // TODO Convert to free RTOS task
 
   // TODO Create batter change notification for UI
-  
-  //   if (battery_ischarging || (!battery_ischarging && battery_voltage > 4350)) {
+
+  //   if (battery_ischarging || (!battery_ischarging && battery_voltage >
+  //   4350)) {
   //     lv_label_set_text(objBattPercentage, "");
   //     lv_label_set_text(objBattIcon, LV_SYMBOL_USB);
   //   } else {
   //     // Update status bar battery indicator
-  //     // lv_label_set_text_fmt(objBattPercentage, "%d%%", battery_percentage);
-  //     if (battery_percentage > 95)
+  //     // lv_label_set_text_fmt(objBattPercentage, "%d%%",
+  //     battery_percentage); if (battery_percentage > 95)
   //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_FULL);
   //     else if (battery_percentage > 75)
   //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_3);
@@ -481,7 +496,8 @@ void HardwareRevX::loopHandler(){
 
   // Keypad Handling
   customKeypad.getKey(); // Populate key list
-  for (int i = 0; i < LIST_MAX; i++) { // Handle multiple keys (Not really necessary in this case)
+  for (int i = 0; i < LIST_MAX;
+       i++) { // Handle multiple keys (Not really necessary in this case)
     if (customKeypad.key[i].kstate == PRESSED ||
         customKeypad.key[i].kstate == HOLD) {
       standbyTimer =
@@ -489,10 +505,10 @@ void HardwareRevX::loopHandler(){
       int keyCode = customKeypad.key[i].kcode;
       Serial.println(customKeypad.key[i].kchar);
       // Send IR codes depending on the current device (tabview page)
-      if (currentDevice == 1){
-        IrSender.sendRC5(IrSender.encodeRC5X(0x00, keyMapTechnisat[keyCode / ROWS][keyCode % ROWS]));
-      }
-      else if (currentDevice == 2){
+      if (currentDevice == 1) {
+        IrSender.sendRC5(IrSender.encodeRC5X(
+            0x00, keyMapTechnisat[keyCode / ROWS][keyCode % ROWS]));
+      } else if (currentDevice == 2) {
         IrSender.sendSony((keyCode / ROWS) * (keyCode % ROWS), 15);
       }
     }
@@ -503,5 +519,5 @@ void HardwareRevX::loopHandler(){
   // if (IrReceiver.decode(&results)) {
   // IrReceiver.resume(); // Enable receiving of the next value
   //}  //tft.drawString(String(results.command) + "        ", 80, 90, 1);
-  // 
+  //
 }

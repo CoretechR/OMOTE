@@ -1,26 +1,26 @@
 ﻿// OMOTE UI
 // 2023 Matthew Colvin
 #pragma once
-#define LV_CONF_INCLUDE_SIMPLE
 
-#include "HardwareAbstractionInterface.h"
-#include "lvgl.h"
+#include "HardwareInterface.h"
 #include "Images.hpp"
+#include "lvgl.h"
 #include <algorithm>
 #include <memory>
 #include <stdio.h>
 #include <string>
 
+
 /// @brief Singleton to allow UI code to live separately from the Initialization
 /// of resources.
 class OmoteUI {
 public:
-  OmoteUI(std::shared_ptr<HardwareAbstractionInterface> aHardware)
-      : mHardware(aHardware) {};
+  OmoteUI(std::shared_ptr<HardwareInterface> aHardware)
+      : mHardware(aHardware){};
 
   static std::weak_ptr<OmoteUI> getRefrence() { return getInstance(); };
-  static std::shared_ptr<OmoteUI> getInstance(
-      std::shared_ptr<HardwareAbstractionInterface> aHardware = nullptr) {
+  static std::shared_ptr<OmoteUI>
+  getInstance(std::shared_ptr<HardwareInterface> aHardware = nullptr) {
     if (mInstance) {
       return mInstance;
     } else if (aHardware) {
@@ -54,7 +54,7 @@ public:
 
 private:
   static std::shared_ptr<OmoteUI> mInstance;
-  std::shared_ptr<HardwareAbstractionInterface> mHardware;
+  std::shared_ptr<HardwareInterface> mHardware;
 
   lv_obj_t *panel = nullptr;
   Images imgs = Images();
@@ -62,7 +62,7 @@ private:
   int backlight_brightness = 255;
   lv_color_t color_primary = lv_color_hex(0x303030); // gray
   bool wakeupByIMUEnabled = true;
-  
+
   inline static const uint_fast8_t virtualKeyMapTechnisat[10] = {
       0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0x0};
 };

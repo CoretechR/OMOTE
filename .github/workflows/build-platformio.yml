@@ -22,4 +22,4 @@ jobs:
 
       - name: Build PlatformIO Project
         working-directory: ./Platformio
-        run: pio run
+        run: pio run --environment esp32
