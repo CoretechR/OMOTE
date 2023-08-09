@@ -17,7 +17,7 @@
 /*********************************************************************************************************************
 ************************************************* Local functions ****************************************************
 **********************************************************************************************************************/
-
+#define WIFI_SUBPAGE_SIZE 3
 extern wifiHandler wifihandler;
 extern Display display;
 static char* ssid;
@@ -125,10 +125,14 @@ static void connect_btn_cb(lv_event_t* event)
 void Display::clear_wifi_networks()
 {
   lv_obj_clean(this->wifi_setting_cont);
+  this->no_subpages = 0;
 }
 
-void Display::add_wifi_networks(String *SSIDs, int *RSSI, unsigned int size)
+void Display::wifi_scan_complete(unsigned int size)
 {
+  this->no_subpages = (size + WIFI_SUBPAGE_SIZE - 1)/WIFI_SUBPAGE_SIZE;
+  this->no_wifi_networks = size;
+
   if (size == 0)
   {
     lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
@@ -137,47 +141,95 @@ void Display::add_wifi_networks(String *SSIDs, int *RSSI, unsigned int size)
     lv_obj_t* menuLabel = lv_label_create(menuBox);
     lv_label_set_text(menuLabel, "no networks found");
   }
-  for (int i = 0; i < size; i++)
+  else 
   {
-    lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
-    lv_obj_set_size(menuBox, lv_pct(100), 45);
-    lv_obj_set_scrollbar_mode(menuBox, LV_SCROLLBAR_MODE_OFF);
-    lv_obj_t* menuLabel = lv_label_create(menuBox);
-    lv_label_set_text_fmt(menuLabel, "%s", SSIDs[i]);
-    
-    #if 0
-    menuLabel = lv_label_create(menuBox);
-    lv_label_set_text_fmt(menuLabel, "%d", RSSI[i]);
-    lv_obj_align(menuLabel, LV_ALIGN_TOP_RIGHT, 0, 0);
-
-#else
-
-    lv_obj_t* wifi_image = lv_img_create(menuBox);
-    lv_obj_align(wifi_image, LV_ALIGN_TOP_RIGHT, 0, 0);
-
-    if (RSSI[i] > -50)
-    {
-      lv_img_set_src(wifi_image, &WiFi_High_Signal);
-    }
-    else if (RSSI[i] > -60)
-    {
-      lv_img_set_src(wifi_image, &WiFi_Mid_Signal);
-    }
-    else if (RSSI[i] > -70)
-    {
-      lv_img_set_src(wifi_image, &WiFi_Low_Signal);
-    }
-    else
-    {
-      lv_img_set_src(wifi_image, &WiFi_No_Signal);
-    }
-    lv_obj_set_style_img_recolor(wifi_image, lv_color_white(), LV_PART_MAIN);
-    lv_obj_set_style_img_recolor_opa(wifi_image, LV_OPA_COVER, LV_PART_MAIN);
-#endif
-
-    lv_menu_set_load_page_event(this->settingsMenu, menuBox, this->wifi_password_page);
-    lv_obj_add_event_cb(menuBox, wifi_selected_cb, LV_EVENT_CLICKED, this->wifi_password_label);
+    this->update_wifi_selection_subpage(0);
   }
+}
+
+void Display::update_wifi_selection_subpage(int page)
+{
+  if (page < this->no_subpages)
+  {
+    lv_obj_clean(this->wifi_setting_cont);
+
+    lv_obj_t* pageLabel = lv_label_create(this->wifi_setting_cont);
+    lv_label_set_text_fmt(pageLabel, "Page %d/%d", page + 1, this->no_subpages);
+    if (page > 0)
+    {
+      lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
+      lv_obj_set_size(menuBox, lv_pct(100), 45);
+      lv_obj_set_scrollbar_mode(menuBox, LV_SCROLLBAR_MODE_OFF);
+
+      lv_obj_t* menuLabel = lv_label_create(menuBox);
+      lv_label_set_text(menuLabel, "Previous");
+      lv_obj_align(menuLabel, LV_ALIGN_TOP_RIGHT, 0, 0);
+      lv_obj_add_event_cb(menuBox, [](lv_event_t* e) {display.next_wifi_selection_subpage(e);},LV_EVENT_CLICKED, (void*)(page - 1));
+      lv_obj_t* arrow = lv_label_create(menuBox);
+      lv_label_set_text(arrow, LV_SYMBOL_LEFT);
+      lv_obj_align(arrow, LV_ALIGN_TOP_LEFT, 0, 0);
+    }
+
+    for (int i = 0; i < WIFI_SUBPAGE_SIZE && (page*WIFI_SUBPAGE_SIZE + i) < this->no_wifi_networks; i++)
+    {
+      lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
+      lv_obj_set_size(menuBox, lv_pct(100), 45);
+      lv_obj_set_scrollbar_mode(menuBox, LV_SCROLLBAR_MODE_OFF);
+
+      lv_obj_add_flag(menuBox, LV_OBJ_FLAG_EVENT_BUBBLE);
+
+      lv_obj_t* menuLabel = lv_label_create(menuBox);
+      lv_label_set_text(menuLabel, wifihandler.getFoundSSID(page*WIFI_SUBPAGE_SIZE + i).c_str());
+      lv_obj_t* wifi_image = lv_img_create(menuBox);
+      lv_obj_align(wifi_image, LV_ALIGN_TOP_RIGHT, 0, 0);
+      int RSSI = wifihandler.getFoundRSSI(page*WIFI_SUBPAGE_SIZE + i);
+
+      if (RSSI > -50)
+      {
+        lv_img_set_src(wifi_image, &WiFi_High_Signal);
+      }
+      else if (RSSI > -60)
+      {
+        lv_img_set_src(wifi_image, &WiFi_Mid_Signal);
+      }
+      else if (RSSI > -70)
+      {
+        lv_img_set_src(wifi_image, &WiFi_Low_Signal);
+      }
+      else
+      {
+        lv_img_set_src(wifi_image, &WiFi_No_Signal);
+      }
+      lv_obj_set_style_img_recolor(wifi_image, lv_color_white(), LV_PART_MAIN);
+      lv_obj_set_style_img_recolor_opa(wifi_image, LV_OPA_COVER, LV_PART_MAIN);
+
+      lv_menu_set_load_page_event(this->settingsMenu, menuBox, this->wifi_password_page);
+      lv_obj_add_event_cb(menuBox, wifi_selected_cb, LV_EVENT_CLICKED, this->wifi_password_label);
+      }
+
+    if ((page + 1) < this->no_subpages)
+    {
+      lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
+      lv_obj_set_size(menuBox, lv_pct(100), 45);
+      lv_obj_set_scrollbar_mode(menuBox, LV_SCROLLBAR_MODE_OFF);
+
+      lv_obj_t* menuLabel = lv_label_create(menuBox);
+      lv_label_set_text(menuLabel, "Next");
+      lv_obj_add_event_cb(menuBox, [](lv_event_t* e) {display.next_wifi_selection_subpage(e);}, LV_EVENT_CLICKED, (void*)(page + 1));
+
+      lv_obj_t* arrow = lv_label_create(menuBox);
+      lv_label_set_text(arrow, LV_SYMBOL_RIGHT);
+      lv_obj_align(arrow, LV_ALIGN_TOP_RIGHT, 0, 0);
+
+    }
+    lv_obj_scroll_to_y(this->wifi_setting_cont, 0, LV_ANIM_OFF);
+  }
+}
+
+void Display::next_wifi_selection_subpage(lv_event_t* e)
+{
+  int subpage = (int) lv_event_get_user_data(e);
+  this->update_wifi_selection_subpage(subpage);
 }
 
 void Display::update_wifi(bool connected)

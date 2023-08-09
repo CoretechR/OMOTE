@@ -24,6 +24,22 @@ class wifiHandler {
         void disconnect();
 
         /**
+         * @brief Get the SSID of the found wifi
+         * 
+         * @param index     index of the found wifi 
+         * @return String   SSID of the wifi
+         */
+        String getFoundSSID(unsigned int index);
+
+        /**
+         * @brief Get the RSSI of the found wifi
+         * 
+         * @param index     index of the found wifi
+         * @return int      RSSI value of the found wifi 
+         */
+        int getFoundRSSI(unsigned int index);
+
+        /**
          * @brief Function to determine wether or not we are connected to a network 
          * 
          * @return true  Device is connected to wifi network

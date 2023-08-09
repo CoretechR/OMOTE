@@ -52,17 +52,13 @@ class Display
          */
         void flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p );
 
+
         /**
-         * @brief Function to add list of networks to the wifi selection page. 
+         * @brief API function to inform display that wifi scan is completed 
          * 
-         * @param SSIDS Pointer to the list of SSIDs found. The strings are moved out and the pointer does not have to 
-         * life after the function returns.
-         * @param RSSI Pointer to the list of the RSSI per SSID. The ordering of SSID and RSSI list should be equal. The
-         * value is moved out of the array in the function, therefore the array does not have to be valid after the 
-         * function returns. 
-         * @param size Size of the SSIDS and RSSI array. 
+         * @param size number of wifi networks found 
          */
-        void add_wifi_networks(String *SSIDS, int *RSSI, unsigned int size);
+        void wifi_scan_complete(unsigned int size);
 
         /**
          * @brief Clear the wifi networks listed in the wifi selection page. This function is called before new wifi
@@ -256,6 +252,26 @@ class Display
         lv_obj_t* WifiLabel;
 
         /**
+         * @brief Number of wifi subpage needed to display the found wifi networks
+         * 
+         */
+        unsigned int no_subpages;
+
+        /**
+         * @brief number of wifi networks found
+         * 
+         */
+        unsigned int no_wifi_networks;
+
+
+        /**
+         * @brief callback function to get next wifi subpage. This callback can be used to get the next or previous page
+         * 
+         * @param e lvgl event object 
+         */
+        void next_wifi_selection_subpage(lv_event_t* e);
+
+        /**
          * @brief Create a wifi selection sub page object
          * 
          * @param menu         LVGL Menu where the sub page should be added to 
@@ -287,6 +303,12 @@ class Display
          */
         void create_wifi_settings(lv_obj_t* menu, lv_obj_t* parent);
         
+        /**
+         * @brief Function to update the wifi selection sub page
+         * 
+         * @param page index of the page to display 
+         */
+        void update_wifi_selection_subpage(int page);
 
 /************************************** Display settings menu ********************************************************/
         /**

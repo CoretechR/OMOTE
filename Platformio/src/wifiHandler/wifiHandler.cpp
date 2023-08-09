@@ -42,14 +42,7 @@ void WiFiEvent(WiFiEvent_t event){
         display.clear_wifi_networks();
         Serial.print(no_networks);
         Serial.print(" found\n");
-        String SSIDS[no_networks];
-        int RSSIS[no_networks];
-        for (int i = 0; i < no_networks; i++)
-        {
-          SSIDS[i] = WiFi.SSID(i);
-          RSSIS[i] = WiFi.RSSI(i);
-        }
-        display.add_wifi_networks(SSIDS, RSSIS, no_networks);
+        display.wifi_scan_complete( no_networks);
       }
       break;
     case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -67,6 +60,17 @@ void WiFiEvent(WiFiEvent_t event){
       break;
   }
 }
+
+String wifiHandler::getFoundSSID(unsigned int index)
+{
+  return WiFi.SSID(index);
+}
+
+int wifiHandler::getFoundRSSI(unsigned int index)
+{
+  return WiFi.RSSI(index);
+}
+
 wifiHandler::wifiHandler()
 {
     this->password[0] = '\0';

@@ -11,7 +11,7 @@ extern bool wakeupByIMUEnabled;
 void bl_slider_event_cb(lv_event_t * e){
   lv_obj_t * slider = lv_event_get_target(e);
   unsigned int* backlight_brightness = (unsigned int*) lv_event_get_user_data(e);
-  *backlight_brightness = constrain(lv_slider_get_value(slider), 30, 255);
+  *backlight_brightness = map(constrain(lv_slider_get_value(slider), 30, 255), 30, 255, 255, 30);
 }
 
 // Wakeup by IMU Switch Event handler

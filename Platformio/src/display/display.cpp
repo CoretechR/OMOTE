@@ -83,6 +83,11 @@ void Display::setup()
   digitalWrite(this->backlight_pin, HIGH);
 
   this->tft = TFT_eSPI();
+#if 1
+  ledcSetup(LCD_BACKLIGHT_LEDC_CHANNEL, LCD_BACKLIGHT_LEDC_FREQUENCY, LCD_BACKLIGHT_LEDC_BIT_RESOLUTION);
+  ledcAttachPin(this->backlight_pin, LCD_BACKLIGHT_LEDC_CHANNEL);
+  ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, 0);
+#else
  // Configure the backlight PWM
   // Manual setup because ledcSetup() briefly turns on the backlight
   ledc_channel_config_t ledc_channel_left;
@@ -102,6 +107,8 @@ void Display::setup()
 
   ledc_channel_config(&ledc_channel_left);
   ledc_timer_config(&ledc_timer);
+ 
+#endif
 
   // Slowly charge the VSW voltage to prevent a brownout
   // Workaround for hardware rev 1!
