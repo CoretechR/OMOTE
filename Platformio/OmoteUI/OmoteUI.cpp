@@ -163,7 +163,7 @@ void OmoteUI::layout_UI() {
       lv_label_set_text_fmt(buttonLabel, "0", col, row);
       lv_obj_set_user_data(obj, (void *)9);
     }
-    lv_obj_set_style_text_font(buttonLabel, &lv_font_montserrat_14,
+    lv_obj_set_style_text_font(buttonLabel, &lv_font_montserrat_24,
                                LV_PART_MAIN);
     lv_obj_center(buttonLabel);
   }
@@ -190,6 +190,9 @@ void OmoteUI::layout_UI() {
 
   appleImg = imgs.addAppleBackIcon(button);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, -3, 0);
+  lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_align(appleImg, LV_ALIGN_CENTER, -3, 0);
 
   button = lv_btn_create(tab3);
   lv_obj_align(button, LV_ALIGN_BOTTOM_RIGHT, -10, 0);
@@ -201,6 +204,9 @@ void OmoteUI::layout_UI() {
       LV_EVENT_CLICKED, (void *)2);
 
   appleImg = imgs.addAppleDisplayImage(button);
+  lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, 0);
 
   // Add content to the settings tab
