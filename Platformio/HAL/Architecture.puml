@@ -1,0 +1,40 @@
+@startuml
+' KEY
+' --> : is a
+' *-- : must have
+' o-- : should have
+
+namespace HAL{
+    interface BatteryInterface
+    interface WifiInterface
+    interface OtherHWInterface
+
+    abstract HardwareAbstract
+
+    HardwareAbstract o-- BatteryInterface
+    HardwareAbstract o-- WifiInterface
+    HardwareAbstract o-- OtherHWInterface
+}
+
+namespace Simulator{
+    class BatterySimulator
+    class WifiSimulator
+    BatterySimulator --> HAL.BatteryInterface
+    WifiSimulator --> HAL.WifiInterface
+}
+
+namespace ESP32{
+    class Battery
+    class WifiHandler
+    Battery --> HAL.BatteryInterface
+    WifiHandler --> HAL.WifiInterface
+}
+
+
+namespace UI {
+    class OmoteUI
+    OmoteUI *-- HAL.HardwareAbstract
+}
+
+
+@enduml
