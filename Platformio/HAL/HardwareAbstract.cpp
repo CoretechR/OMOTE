@@ -1,4 +1,4 @@
-#include "HardwareInterface.h"
+#include "HardwareAbstract.hpp"
 
 HardwareAbstract::HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery)
 : mBattery(std::move(aBattery)){

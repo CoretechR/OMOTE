@@ -1,7 +1,7 @@
 #pragma once
 #include "SparkFunLIS3DH.h"
 
-#include "HardwareInterface.h"
+#include "HardwareAbstract.hpp"
 #include <WiFi.h>
 #include "Wire.h"
 #include "lvgl.h"

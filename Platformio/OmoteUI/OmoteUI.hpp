@@ -2,7 +2,7 @@
 // 2023 Matthew Colvin
 #pragma once
 
-#include "HardwareInterface.h"
+#include "HardwareAbstract.hpp"
 #include "Images.hpp"
 #include "lvgl.h"
 #include <algorithm>

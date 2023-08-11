@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "HardwareInterface.h"
+#include "HardwareAbstract.hpp"
 #include <iostream>
 #include <string>
 
