@@ -49,6 +49,10 @@ void HardwareRevX::initIO() {
   gpio_deep_sleep_hold_dis();
 }
 
+HardwareRevX::HardwareRevX():HardwareInterface(std::make_shared<Battery>(ADC_BAT,CRG_STAT)){
+
+}
+
 HardwareRevX::WakeReason getWakeReason() {
   // Find out wakeup cause
   if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1) {

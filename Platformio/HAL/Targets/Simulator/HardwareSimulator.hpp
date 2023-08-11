@@ -19,11 +19,10 @@ public:
 
   virtual void init() override;
 
-  virtual BatteryInterface::batteryStatus getBatteryPercentage() {
-    BatteryInterface::batteryStatus fakeStatus;
+  virtual std::optional<HardwareInterface::batteryStatus> getBatteryStatus() override {
+    HardwareInterface::batteryStatus fakeStatus;
     fakeStatus.isCharging = false;
     fakeStatus.percentage = 100;
-    fakeStatus.voltage = 4200;
     return fakeStatus;
   }
 };

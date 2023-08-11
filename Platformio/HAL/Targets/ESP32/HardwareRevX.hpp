@@ -27,13 +27,12 @@ public:
 
   static std::shared_ptr<HardwareRevX> getInstance() {
     if (!mInstance) {
-      mInstance = std::make_shared<HardwareRevX>();
+      mInstance = std::shared_ptr<HardwareRevX>(new HardwareRevX());
     }
     return mInstance;
   }
   static std::weak_ptr<HardwareRevX> getRefrence() { return getInstance(); }
 
-  HardwareRevX() : HardwareInterface(std::make_shared<Battery>()){};
   // HardwareInterface
   virtual void init() override;
   virtual void sendIR() override;
@@ -72,6 +71,8 @@ protected:
   TaskHandle_t batteryUpdateTskHndl = nullptr;
 
 private:
+  HardwareRevX();
+
   // Static Wrappers Needed to Satisfy C APIs
   static void wiFiEventImpl(WiFiEvent_t event) {
     mInstance->handleWifiEvent(event);
