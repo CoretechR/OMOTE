@@ -99,10 +99,6 @@ void HardwareRevX::MQTTPublish(const char *topic, const char *payload) {
 #endif
 }
 
-BatteryInterface::batteryStatus HardwareRevX::getBatteryPercentage() {
-  return battery;
-}
-
 void HardwareRevX::initLVGL() {
   lv_init();
 
@@ -420,23 +416,10 @@ void HardwareRevX::setupWifi() {
 }
 
 void HardwareRevX::startTasks() {
-  if (xTaskCreate(&HardwareRevX::updateBatteryTask, "Battery Percent Update",
-                  1024, nullptr, 5, &batteryUpdateTskHndl) != pdPASS) {
-    debugPrint("ERROR Could not Create Battery Update Task!");
-  }
-}
-
-void HardwareRevX::updateBatteryTask([[maybe_unused]] void *aData) {
-  while (true) {
-    mInstance->battery.voltage =
-        analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
-    mInstance->battery.percentage =
-        constrain(map(mInstance->battery.voltage, 3700, 4200, 0, 100), 0, 100);
-    mInstance->battery.isCharging = !digitalRead(CRG_STAT);
-    // Check if battery is charging, fully charged or disconnected
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    // Update battery at 1Hz
-  }
+  // if (xTaskCreate(&HardwareRevX::updateBatteryTask, "Battery Percent Update",
+  //                 1024, nullptr, 5, &batteryUpdateTskHndl) != pdPASS) {
+  //   debugPrint("ERROR Could not Create Battery Update Task!");
+  // }
 }
 
 void HardwareRevX::loopHandler() {

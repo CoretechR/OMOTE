@@ -4,7 +4,7 @@
 
 class wifiHandlerInterface{
     public:
-        virtual void begin(DisplayInterface& display) = 0;
+        virtual void begin() = 0;
         virtual void connect(const char* SSID, const char* password) = 0;
         virtual void disconnect() = 0;
         virtual bool isConnected() = 0;

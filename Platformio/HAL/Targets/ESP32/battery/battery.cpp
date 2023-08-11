@@ -1,9 +1,9 @@
 #include "battery.hpp"
 #include <Arduino.h>
 
-void Battery::setup(DisplayInterface& display, int adc_pin, int charging_pin)
+void Battery::setup( int adc_pin, int charging_pin)
 {
-    this->display = display;
+    //this->display = display;
     this->adc_pin = adc_pin;
     this->charging_pin = charging_pin;
     // Power Pin Definition
@@ -33,6 +33,14 @@ int Battery::getVoltage()
 
 void Battery::update()
 {
-    display.update_battery(this->getPercentage(), this->isCharging(), this->isConnected());
+    // TODO make Callback into UI
+    //display.update_battery(this->getPercentage(), this->isCharging(), this->isConnected());
+}
 
+BatteryInterface::batteryStatus Battery::getBatteryPercentage(){
+    BatteryInterface::batteryStatus currentStatus;
+    currentStatus.isCharging = isCharging();
+    currentStatus.percentage = getPercentage();
+    currentStatus.voltage = getVoltage();
+    return currentStatus;
 }

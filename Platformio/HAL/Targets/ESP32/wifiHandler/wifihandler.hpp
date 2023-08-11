@@ -11,7 +11,7 @@ class wifiHandler: public wifiHandlerInterface {
          * @brief Function to initialize the wifi handler 
          * 
          */
-        void begin(DisplayInterface& display);
+        void begin();
 
         /**
          * @brief Connect to the wifi using the provided credetials 
@@ -95,7 +95,6 @@ class wifiHandler: public wifiHandlerInterface {
         static char temporary_password[STRING_SIZE];
         static char temporary_ssid[STRING_SIZE];
 
-        DisplayInterface& display;
 
         wifiHandler();
 

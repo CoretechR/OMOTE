@@ -18,21 +18,24 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event){
       }
       else
       {
-        this->display.clear_wifi_networks();
+        // TODO Convert To callbacks
+        //this->display.clear_wifi_networks();
         Serial.print(no_networks);
         Serial.print(" found\n");
-        this->display.wifi_scan_complete( no_networks);
+        //this->display.wifi_scan_complete( no_networks);
       }
       break;
     case ARDUINO_EVENT_WIFI_STA_GOT_IP:
     case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
-      display.update_wifi(true);
+      // TODO convert to callbacks 
+      //display.update_wifi(true);
       this->update_credentials(temporary_ssid, temporary_password);
       break;
     case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
     case ARDUINO_EVENT_WIFI_STA_LOST_IP:
     case ARDUINO_EVENT_WIFI_STA_STOP:
-      display.update_wifi(false);
+      // TODO Convert to Callbacks 
+      //display.update_wifi(false);
     default:
       break;
   }
@@ -86,9 +89,9 @@ void wifiHandler::scan()
     WiFi.scanNetworks(true);
 }
 
-void wifiHandler::begin(DisplayInterface& display)
+void wifiHandler::begin()
 {
-    this->display = display;
+    //this->display = display;
     mInstance = wifiHandler::getInstance();
     WiFi.setHostname("OMOTE");
     WiFi.mode(WIFI_STA);

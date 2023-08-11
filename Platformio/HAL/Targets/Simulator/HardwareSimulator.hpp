@@ -5,7 +5,7 @@
 
 class HardwareSimulator : public HardwareInterface {
 public:
-  HardwareSimulator() = default;
+  HardwareSimulator() : HardwareInterface(nullptr){};
 
   virtual void debugPrint(std::string message) override {
     std::cout << message;

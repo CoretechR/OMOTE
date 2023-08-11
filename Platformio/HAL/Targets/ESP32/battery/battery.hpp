@@ -5,9 +5,10 @@
 class Battery: public BatteryInterface {
     public:
 
+        virtual BatteryInterface::batteryStatus getBatteryPercentage();
 
 
-        void setup(DisplayInterface& display, int adc_pin, int charging_pin);
+        void setup(int adc_pin, int charging_pin);
         /**
          * @brief Get the Percentage of the battery
          * 
@@ -36,8 +37,9 @@ class Battery: public BatteryInterface {
          * 
          */
         void update();
+        // TODO move to cpp file
+        Battery(){};
     private:
-        Battery();
         /**
          * @brief Function to get the current voltage of the battery 
          * 
@@ -57,6 +59,4 @@ class Battery: public BatteryInterface {
          */
         int charging_pin;
 
-
-        DisplayInterface& display;
 };

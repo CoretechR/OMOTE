@@ -5,6 +5,7 @@
 #include <WiFi.h>
 #include "Wire.h"
 #include "lvgl.h"
+#include "battery.hpp"
 #include <Adafruit_FT6206.h>
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
@@ -32,12 +33,11 @@ public:
   }
   static std::weak_ptr<HardwareRevX> getRefrence() { return getInstance(); }
 
-  HardwareRevX() : HardwareInterface(){};
+  HardwareRevX() : HardwareInterface(std::make_shared<Battery>()){};
   // HardwareInterface
   virtual void init() override;
   virtual void sendIR() override;
   virtual void MQTTPublish(const char *topic, const char *payload) override;
-  virtual batteryStatus getBatteryPercentage() override;
   virtual void debugPrint(std::string aDebugMessage) override;
 
   void loopHandler();
@@ -69,7 +69,6 @@ protected:
   // Tasks
   void startTasks();
 
-  static void updateBatteryTask([[maybe_unused]] void *aData);
   TaskHandle_t batteryUpdateTskHndl = nullptr;
 
 private:
@@ -113,7 +112,7 @@ private:
   IRsend IrSender = IRsend(IR_LED, true);
   IRrecv IrReceiver = IRrecv(IR_RX);
 
-  HardwareInterface::batteryStatus battery;
+  Battery battery;
 
   // LVGL Screen Buffers
   lv_disp_draw_buf_t mdraw_buf;
