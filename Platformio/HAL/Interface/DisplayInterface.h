@@ -15,4 +15,4 @@ class DisplayInterface
         virtual void reset_settings_menu() = 0;
         virtual void update_battery(int percentage, bool isCharging, bool isConnected) = 0;
         virtual void turnOff() = 0;
-}
+};

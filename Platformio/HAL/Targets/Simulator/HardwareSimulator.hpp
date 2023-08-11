@@ -19,8 +19,8 @@ public:
 
   virtual void init() override;
 
-  virtual batteryStatus getBatteryPercentage() {
-    batteryStatus fakeStatus;
+  virtual BatteryInterface::batteryStatus getBatteryPercentage() {
+    BatteryInterface::batteryStatus fakeStatus;
     fakeStatus.isCharging = false;
     fakeStatus.percentage = 100;
     fakeStatus.voltage = 4200;
