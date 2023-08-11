@@ -21,7 +21,7 @@
 
 #include "omoteconfig.h"
 
-class HardwareRevX : public HardwareInterface {
+class HardwareRevX : public HardwareAbstract {
 public:
   enum class WakeReason { RESET, IMU, KEYPAD };
 
@@ -33,7 +33,7 @@ public:
   }
   static std::weak_ptr<HardwareRevX> getRefrence() { return getInstance(); }
 
-  // HardwareInterface
+  // HardwareAbstract
   virtual void init() override;
   virtual void sendIR() override;
   virtual void MQTTPublish(const char *topic, const char *payload) override;

@@ -49,7 +49,7 @@ void HardwareRevX::initIO() {
   gpio_deep_sleep_hold_dis();
 }
 
-HardwareRevX::HardwareRevX():HardwareInterface(std::make_shared<Battery>(ADC_BAT,CRG_STAT)){
+HardwareRevX::HardwareRevX():HardwareAbstract(std::make_shared<Battery>(ADC_BAT,CRG_STAT)){
 
 }
 

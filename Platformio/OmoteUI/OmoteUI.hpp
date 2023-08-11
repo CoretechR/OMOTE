@@ -15,12 +15,12 @@
 /// of resources.
 class OmoteUI {
 public:
-  OmoteUI(std::shared_ptr<HardwareInterface> aHardware)
+  OmoteUI(std::shared_ptr<HardwareAbstract> aHardware)
       : mHardware(aHardware){};
 
   static std::weak_ptr<OmoteUI> getRefrence() { return getInstance(); };
   static std::shared_ptr<OmoteUI>
-  getInstance(std::shared_ptr<HardwareInterface> aHardware = nullptr) {
+  getInstance(std::shared_ptr<HardwareAbstract> aHardware = nullptr) {
     if (mInstance) {
       return mInstance;
     } else if (aHardware) {
@@ -54,7 +54,7 @@ public:
 
 private:
   static std::shared_ptr<OmoteUI> mInstance;
-  std::shared_ptr<HardwareInterface> mHardware;
+  std::shared_ptr<HardwareAbstract> mHardware;
 
   lv_obj_t *panel = nullptr;
   Images imgs = Images();

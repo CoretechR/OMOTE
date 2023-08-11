@@ -8,7 +8,7 @@
 #include <string>
 #include "BatteryInterface.h"
 
-class HardwareInterface {
+class HardwareAbstract {
 public:
 
   struct batteryStatus {
@@ -20,7 +20,7 @@ public:
   };
   virtual std::optional<batteryStatus> getBatteryStatus();
 
-  HardwareInterface(std::shared_ptr<BatteryInterface> aBattery = nullptr);
+  HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery = nullptr);
 
   virtual void init() = 0;
   virtual void sendIR() = 0;

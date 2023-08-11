@@ -1,13 +1,13 @@
 #include "HardwareInterface.h"
 
-HardwareInterface::HardwareInterface(std::shared_ptr<BatteryInterface> aBattery)
+HardwareAbstract::HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery)
 : mBattery(std::move(aBattery)){
 
 }
 
-std::optional<HardwareInterface::batteryStatus> HardwareInterface::getBatteryStatus(){
+std::optional<HardwareAbstract::batteryStatus> HardwareAbstract::getBatteryStatus(){
     if(mBattery){
-        HardwareInterface::batteryStatus currentStatus;
+        HardwareAbstract::batteryStatus currentStatus;
         currentStatus.percentage = mBattery->getPercentage();
         currentStatus.isCharging = mBattery->isCharging();
         return currentStatus;
