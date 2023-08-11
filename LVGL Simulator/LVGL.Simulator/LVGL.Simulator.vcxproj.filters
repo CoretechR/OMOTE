@@ -6,14 +6,14 @@
     <ClInclude Include="lv_conf.h" />
     <ClInclude Include="lv_drv_conf.h" />
     <ClInclude Include="HardwareSimulator.hpp" />
-    <ClInclude Include="..\..\Platformio\include\OmoteUI\HardwareAbstractionInterface.h">
-      <Filter>OmoteUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Platformio\include\OmoteUI\OmoteUI.hpp">
       <Filter>OmoteUI</Filter>
     </ClInclude>
     <ClInclude Include="omoteconfig.h" />
     <ClInclude Include="..\..\Platformio\include\OmoteUI\Images.hpp">
+      <Filter>OmoteUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Platformio\include\OmoteUI\HardwareInterface.h">
       <Filter>OmoteUI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -27,9 +27,6 @@
   <ItemGroup>
     <ClCompile Include="LVGL.Simulator.cpp" />
     <ClCompile Include="HardwareSimulator.cpp" />
-    <ClCompile Include="..\..\Platformio\src\HardwareAbstractionInterface.cpp">
-      <Filter>OmoteUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Platformio\src\OmoteUI.cpp">
       <Filter>OmoteUI</Filter>
     </ClCompile>

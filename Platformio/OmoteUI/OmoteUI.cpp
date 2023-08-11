@@ -34,7 +34,7 @@ void OmoteUI::bl_slider_event_cb(lv_event_t *e) {
 void OmoteUI::appleKey_event_cb(lv_event_t *e) {
   // Send IR command based on the event user data
   mHardware->sendIR();
-  mHardware->debugPrint(std::to_string(50 + (int)e->user_data));
+  //mHardware->debugPrint(std::to_string(50 + (int)e->user_data));
 }
 
 // Wakeup by IMU Switch Event handler
@@ -51,10 +51,10 @@ void OmoteUI::smartHomeToggle_event_cb(lv_event_t *e) {
   else
     strcpy(payload, "false");
   // Publish an MQTT message based on the event user data
-  if ((int)e->user_data == 1)
-    mHardware->MQTTPublish("bulb1_set", payload);
-  if ((int)e->user_data == 2)
-    mHardware->MQTTPublish("bulb2_set", payload);
+  // if ((int)e->user_data == 1)
+  //   mHardware->MQTTPublish("bulb1_set", payload);
+  // if ((int)e->user_data == 2)
+  //   mHardware->MQTTPublish("bulb2_set", payload);
 }
 
 // Smart Home Toggle Event handler
@@ -69,10 +69,10 @@ void OmoteUI::smartHomeSlider_event_cb(lv_event_t *e) {
   snprintf(payload, sizeof(payload), "%8.2f", sliderValue);
 
   // Publish an MQTT message based on the event user data
-  if ((int)e->user_data == 1)
-    mHardware->MQTTPublish("bulb1_setbrightness", payload);
-  if ((int)e->user_data == 2)
-    mHardware->MQTTPublish("bulb2_setbrightness", payload);
+  // if ((int)e->user_data == 1)
+  //   mHardware->MQTTPublish("bulb1_setbrightness", payload);
+  // if ((int)e->user_data == 2)
+  //   mHardware->MQTTPublish("bulb2_setbrightness", payload);
 }
 
 void OmoteUI::virtualKeypad_event_cb(lv_event_t *e) {
@@ -82,9 +82,9 @@ void OmoteUI::virtualKeypad_event_cb(lv_event_t *e) {
     return;
 
   char buffer[100];
-  sprintf(buffer, "check it out: %d\n",
-          virtualKeyMapTechnisat[(int)target->user_data]);
-  mHardware->debugPrint(buffer);
+  // sprintf(buffer, "check it out: %d\n",
+  //         virtualKeyMapTechnisat[(int)target->user_data]);
+  // mHardware->debugPrint(buffer);
 }
 
 void OmoteUI::loopHandler(){
@@ -163,7 +163,7 @@ void OmoteUI::layout_UI() {
       lv_label_set_text_fmt(buttonLabel, "0", col, row);
       lv_obj_set_user_data(obj, (void *)9);
     }
-    lv_obj_set_style_text_font(buttonLabel, &lv_font_montserrat_14,
+    lv_obj_set_style_text_font(buttonLabel, &lv_font_montserrat_24,
                                LV_PART_MAIN);
     lv_obj_center(buttonLabel);
   }
@@ -190,6 +190,9 @@ void OmoteUI::layout_UI() {
 
   appleImg = imgs.addAppleBackIcon(button);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, -3, 0);
+  lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_align(appleImg, LV_ALIGN_CENTER, -3, 0);
 
   button = lv_btn_create(tab3);
   lv_obj_align(button, LV_ALIGN_BOTTOM_RIGHT, -10, 0);
@@ -201,6 +204,9 @@ void OmoteUI::layout_UI() {
       LV_EVENT_CLICKED, (void *)2);
 
   appleImg = imgs.addAppleDisplayImage(button);
+  lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, 0);
 
   // Add content to the settings tab

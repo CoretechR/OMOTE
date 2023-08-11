@@ -4,7 +4,10 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest ]
 
     steps:
       - uses: actions/checkout@v3
@@ -22,4 +25,4 @@ jobs:
 
       - name: Build PlatformIO Project
         working-directory: ./Platformio
-        run: pio run
+        run: pio run --environment esp32

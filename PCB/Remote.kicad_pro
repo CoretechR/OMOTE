@@ -486,10 +486,10 @@
   },
   "libraries": {
     "pinned_footprint_libs": [
-      "mkern"
+      "omoteLib"
     ],
     "pinned_symbol_libs": [
-      "mkern"
+      "omoteLib"
     ]
   },
   "meta": {

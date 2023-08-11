@@ -40,10 +40,10 @@ There is still a lot of work left to be done in terms of software. Right now, ne
 
 ### To Do
 
-Right now I have no idea if and when this will be done. But these would be the next steps:
+Currently I have no idea if and when this will be done. But these would be the next steps:
 
 - [ ] Easier configuration
-    - [ ] Document the current process of custromization
+    - [ ] Document the current process of customization
     - [ ] Store the configuration in Flash (e.g. as a editable json file)
     - [ ] Add an interface for graphically editing the configuration
 - [ ] Complete the on-device settings page
@@ -81,7 +81,7 @@ The remote can be charged and programmed via its USB-C port. Open the [PlatformI
 
 ## Contributing
 
-If you have a suggestion for an improvement, please fork the repo and create a pull request. You can also simply open an issue or for more general feature requests, head over to the discussions.
+If you have a suggestion for an improvement, please fork the repo and create a pull request. You can also simply open an issue or for more general feature requests, head over to the [discussions](https://github.com/CoretechR/OMOTE/discussions).
 
 ## License
 
