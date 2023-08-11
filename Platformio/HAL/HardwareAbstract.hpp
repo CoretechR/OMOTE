@@ -2,10 +2,12 @@
 // 2023 Matthew Colvin
 
 #pragma once
+#include <functional>
 #include <lvgl.h>
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 #include "BatteryInterface.h"
 #include "DisplayInterface.h"
 #include "wifiHandlerInterface.h"
@@ -33,6 +35,10 @@ public:
   /// @brief Override to allow printing of a message for debugging
   /// @param message - Debug message
   virtual void debugPrint(std::string message) = 0;
+
+  // Didn't actually implement this but would need to set up something to intermittently notify of batteryChange.
+  void notifyBatteryChange(batteryStatus aStatus);
+  void onBatteryChange(std::function<void(batteryStatus)> onBatteryStatusChangeHandler);
 
   private:
     std::shared_ptr<BatteryInterface> mBattery;

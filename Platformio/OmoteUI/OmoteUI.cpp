@@ -93,7 +93,7 @@ void OmoteUI::loopHandler(){
 void OmoteUI::layout_UI() {
 
   // --- LVGL UI Configuration ---
-    
+
   // Set the background color
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), LV_PART_MAIN);
 
@@ -173,10 +173,10 @@ void OmoteUI::layout_UI() {
 
   // Add content to the Apple TV tab (3)
   // Add a nice apple tv logo
-  
+
   lv_obj_t* appleImg = imgs.addAppleTVIcon(tab3);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, -60);
-  
+
   // create two buttons and add their icons accordingly
   lv_obj_t *button = lv_btn_create(tab3);
   lv_obj_align(button, LV_ALIGN_BOTTOM_LEFT, 10, 0);
@@ -240,7 +240,7 @@ void OmoteUI::layout_UI() {
 
   brightnessIcon = imgs.addHighBrightnessIcon(menuBox);
   lv_obj_align(brightnessIcon, LV_ALIGN_TOP_RIGHT, 0, -1);
-  
+
   lv_obj_add_event_cb(
       slider, [](lv_event_t *e) { mInstance->bl_slider_event_cb(e); },
       LV_EVENT_VALUE_CHANGED, NULL);
@@ -306,6 +306,11 @@ void OmoteUI::layout_UI() {
   lv_obj_set_size(menuBox, lv_pct(100), 125);
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
+
+  mHardware->onBatteryChange([menuLabel](HardwareAbstract::batteryStatus aCurrentBattery){
+    // I dont know enough about lvgl to do this but basically take aCurrentBattery and update UI elements here.
+    // See Notice menuLabel is captured and useable here.
+  });
 
   // Add content to the smart home tab (4)
 
@@ -490,7 +495,7 @@ void OmoteUI::layout_UI() {
   lv_obj_t *img1 = imgs.addLeftGradiant(lv_scr_act());
   lv_obj_align(img1, LV_ALIGN_BOTTOM_LEFT, 0, 0);
   lv_obj_set_size(img1, 30, 30); // stretch the 1-pixel high image to 30px
-  
+
   lv_obj_t* img2 = imgs.addRightGradiant(lv_scr_act());
   lv_obj_align(img2, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
   lv_obj_set_size(img2, 30, 30);
