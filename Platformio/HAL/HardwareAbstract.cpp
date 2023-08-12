@@ -2,10 +2,12 @@
 
 HardwareAbstract::HardwareAbstract(
     std::shared_ptr<BatteryInterface> aBattery,
-    std::shared_ptr<wifiHandlerInterface> aWifiHandler
+    std::shared_ptr<wifiHandlerInterface> aWifiHandler,
+    std::shared_ptr<DisplayInterface> aDisplay
 )
 : mBattery(std::move(aBattery)),
-  mWifiHandler(std::move(aWifiHandler))
+  mWifiHandler(std::move(aWifiHandler)),
+  mDisplay(std::move(aDisplay))
 {}
 
 std::optional<HardwareAbstract::batteryStatus> HardwareAbstract::getBatteryStatus(){
