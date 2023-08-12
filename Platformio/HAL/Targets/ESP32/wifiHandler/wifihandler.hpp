@@ -6,7 +6,7 @@
 
 class wifiHandler: public wifiHandlerInterface {
     public:
-        static wifiHandler* getInstance();
+        static std::shared_ptr<wifiHandler> getInstance();
         /**
          * @brief Function to initialize the wifi handler 
          * 
@@ -78,7 +78,7 @@ class wifiHandler: public wifiHandlerInterface {
          * @param temporary_ssid 
          * @param temporary_password 
          */
-        static void update_credentials(const char* temporary_ssid, const char* temporary_password);
+        void update_credentials(const char* temporary_ssid, const char* temporary_password);
 
         void WiFiEvent(WiFiEvent_t event);
 
@@ -87,27 +87,25 @@ class wifiHandler: public wifiHandlerInterface {
          * 
          * @return String IP Address of the device
          */
-        String getIP();
+        std::string getIP();
     private:
 
-        static wifiHandler* instance;
-
-        static char temporary_password[STRING_SIZE];
-        static char temporary_ssid[STRING_SIZE];
-
-
         wifiHandler();
+
+        static std::shared_ptr<wifiHandler> mInstance;
+        char temporary_password[STRING_SIZE];
+        char temporary_ssid[STRING_SIZE];
 
         /**
          * @brief Internal variable to store the wifi password 
          * 
          */
-        static char password[STRING_SIZE];
+        char password[STRING_SIZE];
 
         /**
          * @brief Internal variable to store the wifi SSID 
          * 
          */
-        static char SSID[STRING_SIZE];
+        char SSID[STRING_SIZE];
 
 };

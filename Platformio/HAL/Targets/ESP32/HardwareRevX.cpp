@@ -1,4 +1,5 @@
 #include "HardwareRevX.hpp"
+#include "wifihandler.hpp"
 #include "driver/ledc.h"
 
 std::shared_ptr<HardwareRevX> HardwareRevX::mInstance = nullptr;
@@ -49,9 +50,11 @@ void HardwareRevX::initIO() {
   gpio_deep_sleep_hold_dis();
 }
 
-HardwareRevX::HardwareRevX():HardwareAbstract(std::make_shared<Battery>(ADC_BAT,CRG_STAT)){
-
-}
+HardwareRevX::HardwareRevX():
+  HardwareAbstract(
+    std::make_shared<Battery>(ADC_BAT,CRG_STAT),
+    wifiHandler::getInstance()
+  ){}
 
 HardwareRevX::WakeReason getWakeReason() {
   // Find out wakeup cause

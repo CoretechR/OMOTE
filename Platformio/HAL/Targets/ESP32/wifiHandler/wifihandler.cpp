@@ -2,7 +2,8 @@
 #include <Arduino.h>
 #include <Preferences.h>
 
-wifiHandler* mInstance;
+std::shared_ptr<wifiHandler> wifiHandler::mInstance = nullptr;
+
 
 // WiFi status event
 void wifiHandler::WiFiEvent(WiFiEvent_t event){
@@ -29,7 +30,7 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event){
     case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
       // TODO convert to callbacks 
       //display.update_wifi(true);
-      this->update_credentials(temporary_ssid, temporary_password);
+      //update_credentials(temporary_ssid, temporary_password);
       break;
     case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
     case ARDUINO_EVENT_WIFI_STA_LOST_IP:
@@ -41,15 +42,14 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event){
   }
 }
 
-wifiHandler* wifiHandler::getInstance()
+std::shared_ptr<wifiHandler> wifiHandler::getInstance()
 {
-    if(instance == nullptr)
+    if(mInstance)
     {
-        instance = new wifiHandler();
+      return mInstance;
     }
-
-    return instance;
-}
+    return std::shared_ptr<wifiHandler>(new wifiHandler());
+};
 
 String wifiHandler::getFoundSSID(unsigned int index)
 {
@@ -92,7 +92,6 @@ void wifiHandler::scan()
 void wifiHandler::begin()
 {
     //this->display = display;
-    mInstance = wifiHandler::getInstance();
     WiFi.setHostname("OMOTE");
     WiFi.mode(WIFI_STA);
     WiFi.onEvent([] (WiFiEvent_t event) {mInstance->WiFiEvent(event);});
@@ -137,6 +136,10 @@ void wifiHandler::turnOff()
   WiFi.mode(WIFI_OFF);
 }
 
+void wifiHandler::disconnect(){
+  WiFi.disconnect();
+}
+
 bool wifiHandler::isConnected()
 {
     return WiFi.isConnected();
@@ -147,7 +150,7 @@ char* wifiHandler::getSSID()
     return this->SSID;
 }
 
-String wifiHandler::getIP()
+std::string wifiHandler::getIP()
 {
-    return WiFi.localIP().toString();
+    return std::string(WiFi.localIP().toString().c_str());
 }

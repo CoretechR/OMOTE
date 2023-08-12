@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include "BatteryInterface.h"
+#include "wifiHandlerInterface.h"
 
 class HardwareAbstract {
 public:
@@ -20,7 +21,9 @@ public:
   };
   virtual std::optional<batteryStatus> getBatteryStatus();
 
-  HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery = nullptr);
+  HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery = nullptr,
+                   std::shared_ptr<wifiHandlerInterface> aWifiHandler = nullptr
+  );
 
   /// @brief Override in order to do setup of hardware devices
   virtual void init() = 0;
@@ -31,4 +34,5 @@ public:
 
   private:
     std::shared_ptr<BatteryInterface> mBattery;
+    std::shared_ptr<wifiHandlerInterface> mWifiHandler;
 };

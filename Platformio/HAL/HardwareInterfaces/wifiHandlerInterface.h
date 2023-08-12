@@ -1,6 +1,5 @@
 #pragma once
-#include <Arduino.h>
-#include "DisplayInterface.h"
+#include <string>
 
 class wifiHandlerInterface{
     public:
@@ -11,5 +10,5 @@ class wifiHandlerInterface{
         virtual void turnOff() = 0;
         virtual void scan() = 0;
         virtual char* getSSID() = 0;
-        virtual String getIP() = 0;
+        virtual std::string getIP() = 0;
 };
