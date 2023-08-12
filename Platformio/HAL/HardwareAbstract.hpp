@@ -36,9 +36,16 @@ public:
   /// @param message - Debug message
   virtual void debugPrint(std::string message) = 0;
 
-  // Didn't actually implement this but would need to set up something to intermittently notify of batteryChange.
-  void notifyBatteryChange(batteryStatus aStatus);
+  /// @brief Register function to be ran when hardware notifies battery 
+  ///        status has changed. 
+  /// @param onBatteryStatusChangeHandler - Callable to be ran when batter status changes
   void onBatteryChange(std::function<void(batteryStatus)> onBatteryStatusChangeHandler);
+  
+  protected:
+  /// @brief Call in child class implementation to alert users
+  ///        the battery status has changed
+  /// @param aStatus - Current Battery Status
+  void notifyBatteryChange(batteryStatus aStatus);
 
   private:
     std::shared_ptr<BatteryInterface> mBattery;
