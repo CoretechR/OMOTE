@@ -11,12 +11,6 @@ public:
     std::cout << message;
   }
 
-  virtual void sendIR() override {}
-
-  virtual void MQTTPublish(const char *topic, const char *payload) override{
-
-  };
-
   virtual void init() override;
 
   virtual std::optional<HardwareAbstract::batteryStatus> getBatteryStatus() override {

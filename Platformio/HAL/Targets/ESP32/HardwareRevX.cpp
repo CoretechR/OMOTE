@@ -89,18 +89,23 @@ void HardwareRevX::debugPrint(std::string aDebugMessage) {
   Serial.print(aDebugMessage.c_str());
 }
 
-void HardwareRevX::sendIR() {}
+// void HardwareRevX::MQTTPublish(const char *topic, const char *payload) {
+// #ifdef ENABLE_WIFI
+//   if (client.connected()) {
+//     client.publish(topic, payload);
+//   } else {
+//     debugPrint("MQTT Client Not Connected When Attempting Publish.");
+//   }
+// #else
+//   debugPrint("Attempting To Publish MQTT with wifi Disabled!");
+// #endif
+// }
 
-void HardwareRevX::MQTTPublish(const char *topic, const char *payload) {
-#ifdef ENABLE_WIFI
-  if (client.connected()) {
-    client.publish(topic, payload);
-  } else {
-    debugPrint("MQTT Client Not Connected When Attempting Publish.");
+std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
+  if (!mInstance) {
+    mInstance = std::shared_ptr<HardwareRevX>(new HardwareRevX());
   }
-#else
-  debugPrint("Attempting To Publish MQTT with wifi Disabled!");
-#endif
+  return mInstance;
 }
 
 void HardwareRevX::initLVGL() {

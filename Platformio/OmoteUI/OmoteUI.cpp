@@ -33,7 +33,6 @@ void OmoteUI::bl_slider_event_cb(lv_event_t *e) {
 // Apple Key Event handler
 void OmoteUI::appleKey_event_cb(lv_event_t *e) {
   // Send IR command based on the event user data
-  mHardware->sendIR();
   //mHardware->debugPrint(std::to_string(50 + (int)e->user_data));
 }
 

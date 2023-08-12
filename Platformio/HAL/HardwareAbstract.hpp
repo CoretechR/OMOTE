@@ -22,9 +22,11 @@ public:
 
   HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery = nullptr);
 
+  /// @brief Override in order to do setup of hardware devices
   virtual void init() = 0;
-  virtual void sendIR() = 0;
-  virtual void MQTTPublish(const char *topic, const char *payload) = 0;
+  
+  /// @brief Override to allow printing of a message for debugging
+  /// @param message - Debug message
   virtual void debugPrint(std::string message) = 0;
 
   private:

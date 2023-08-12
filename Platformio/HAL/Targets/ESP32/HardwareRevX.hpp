@@ -25,18 +25,11 @@ class HardwareRevX : public HardwareAbstract {
 public:
   enum class WakeReason { RESET, IMU, KEYPAD };
 
-  static std::shared_ptr<HardwareRevX> getInstance() {
-    if (!mInstance) {
-      mInstance = std::shared_ptr<HardwareRevX>(new HardwareRevX());
-    }
-    return mInstance;
-  }
+  static std::shared_ptr<HardwareRevX> getInstance();
   static std::weak_ptr<HardwareRevX> getRefrence() { return getInstance(); }
 
   // HardwareAbstract
   virtual void init() override;
-  virtual void sendIR() override;
-  virtual void MQTTPublish(const char *topic, const char *payload) override;
   virtual void debugPrint(std::string aDebugMessage) override;
 
   void loopHandler();
