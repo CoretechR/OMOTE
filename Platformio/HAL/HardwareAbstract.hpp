@@ -11,10 +11,15 @@
 #include "BatteryInterface.h"
 #include "DisplayInterface.h"
 #include "wifiHandlerInterface.h"
+#include "Notification.hpp"
 
 class HardwareAbstract {
 public:
-
+  HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery = nullptr,
+                   std::shared_ptr<wifiHandlerInterface> aWifiHandler = nullptr,
+                   std::shared_ptr<DisplayInterface> aDisplay = nullptr
+  );
+  
   struct batteryStatus {
       /// @brief Percent of battery remaining (0-100]
       int percentage;
@@ -24,11 +29,11 @@ public:
   };
   virtual std::optional<batteryStatus> getBatteryStatus();
 
-  HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery = nullptr,
-                   std::shared_ptr<wifiHandlerInterface> aWifiHandler = nullptr,
-                   std::shared_ptr<DisplayInterface> aDisplay = nullptr
-  );
-
+  /// @brief Register function to be ran when hardware notifies battery 
+  ///        status has changed. 
+  /// @param onBatteryStatusChangeHandler - Callable to be ran when batter status changes
+  void onBatteryChange(std::function<void(batteryStatus)> onBatteryStatusChangeHandler);
+  
   /// @brief Override in order to do setup of hardware devices
   virtual void init() = 0;
   
@@ -36,17 +41,9 @@ public:
   /// @param message - Debug message
   virtual void debugPrint(std::string message) = 0;
 
-  /// @brief Register function to be ran when hardware notifies battery 
-  ///        status has changed. 
-  /// @param onBatteryStatusChangeHandler - Callable to be ran when batter status changes
-  void onBatteryChange(std::function<void(batteryStatus)> onBatteryStatusChangeHandler);
-  
   protected:
-  /// @brief Call in child class implementation to alert users
-  ///        the battery status has changed
-  /// @param aStatus - Current Battery Status
-  void notifyBatteryChange(batteryStatus aStatus);
-
+    Notification<batteryStatus> mBatteryNotification;
+    
   private:
     std::shared_ptr<BatteryInterface> mBattery;
     std::shared_ptr<wifiHandlerInterface> mWifiHandler;

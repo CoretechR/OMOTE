@@ -20,12 +20,6 @@ std::optional<HardwareAbstract::batteryStatus> HardwareAbstract::getBatteryStatu
     return std::nullopt;
 }
 
-  void HardwareAbstract::notifyBatteryChange(HardwareAbstract::batteryStatus aStatus){
-    for (auto handler : mBatteryUpdateHandlers){
-        handler(aStatus);
-    }
-  }
-
-  void HardwareAbstract::onBatteryChange(std::function<void(HardwareAbstract::batteryStatus)> onBatteryStatusChangeHandler){
-    mBatteryUpdateHandlers.push_back(std::move(onBatteryStatusChangeHandler));
-  }
+void HardwareAbstract::onBatteryChange(std::function<void(HardwareAbstract::batteryStatus)> onBatteryStatusChangeHandler){
+  mBatteryNotification.onNotify(std::move(onBatteryStatusChangeHandler));
+}
