@@ -96,8 +96,6 @@ private:
   IRsend IrSender = IRsend(IR_LED, true);
   IRrecv IrReceiver = IRrecv(IR_RX);
 
-  Battery battery;
-
   // LVGL Screen Buffers
   lv_disp_draw_buf_t mdraw_buf;
   lv_color_t mbufA[SCREEN_WIDTH * SCREEN_HEIGHT / 10];
