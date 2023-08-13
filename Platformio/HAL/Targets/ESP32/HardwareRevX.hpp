@@ -2,7 +2,6 @@
 #include "SparkFunLIS3DH.h"
 
 #include "HardwareAbstract.hpp"
-#include <WiFi.h>
 #include "Wire.h"
 #include "lvgl.h"
 #include "battery.hpp"
@@ -45,7 +44,6 @@ protected:
   void initLVGL();
   void setupIMU();
   void setupIR();
-  void setupWifi();
 
   void activityDetection();
   void enterSleep();
@@ -55,8 +53,6 @@ protected:
   void handleDisplayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
                           lv_color_t *color_p);
   void handleTouchPadRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
-
-  void handleWifiEvent(WiFiEvent_t event);
 
   // Tasks
   void startTasks();
@@ -69,9 +65,6 @@ private:
   HardwareRevX();
 
   // Static Wrappers Needed to Satisfy C APIs
-  static void wiFiEventImpl(WiFiEvent_t event) {
-    mInstance->handleWifiEvent(event);
-  }
   static void displayFlushImpl(lv_disp_drv_t *disp, const lv_area_t *area,
                                lv_color_t *color_p) {
     mInstance->handleDisplayFlush(disp, area, color_p);
@@ -80,11 +73,6 @@ private:
                                lv_indev_data_t *data) {
     mInstance->handleTouchPadRead(indev_driver, data);
   }
-
-#ifdef ENABLE_WIFI
-  WiFiClient espClient;
-  PubSubClient client = PubSubClient(espClient);
-#endif
 
   Adafruit_FT6206 touch = Adafruit_FT6206();
   TS_Point touchPoint;

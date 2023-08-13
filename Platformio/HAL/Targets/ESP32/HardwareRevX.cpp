@@ -81,7 +81,6 @@ void HardwareRevX::init() {
   setupTFT();
   setupTouchScreen();
   initLVGL();
-  setupWifi();
   setupIMU();
   setupIR();
 
@@ -91,18 +90,6 @@ void HardwareRevX::init() {
 void HardwareRevX::debugPrint(std::string aDebugMessage) {
   Serial.print(aDebugMessage.c_str());
 }
-
-// void HardwareRevX::MQTTPublish(const char *topic, const char *payload) {
-// #ifdef ENABLE_WIFI
-//   if (client.connected()) {
-//     client.publish(topic, payload);
-//   } else {
-//     debugPrint("MQTT Client Not Connected When Attempting Publish.");
-//   }
-// #else
-//   debugPrint("Attempting To Publish MQTT with wifi Disabled!");
-// #endif
-// }
 
 std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
   if (!mInstance) {
@@ -217,12 +204,6 @@ void HardwareRevX::enterSleep() {
   configIMUInterrupts();
   IMU.readRegister(&intDataRead,
                    LIS3DH_INT1_SRC); // really clear interrupt
-
-#ifdef ENABLE_WIFI
-  // Power down modem
-  WiFi.disconnect();
-  WiFi.mode(WIFI_OFF);
-#endif
 
   // Prepare IO states
   digitalWrite(LCD_DC, LOW); // LCD control signals off
@@ -391,40 +372,11 @@ void HardwareRevX::slowDisplayWakeup() {
   delay(100); // Wait for the LCD driver to power on
 }
 
-void HardwareRevX::handleWifiEvent(WiFiEvent_t event) {
-#ifdef ENABLE_WIFI
-  // Serial.printf("[WiFi-event] event: %d\n", event);
-  if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP) {
-    client.setServer(MQTT_SERVER, 1883); // MQTT initialization
-    client.connect("OMOTE");             // Connect using a client id
-  }
-  // Set status bar icon based on WiFi status
-  // TODO allow UI to register a Handler for these events
-
-  //   if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP ||
-  //       event == ARDUINO_EVENT_WIFI_STA_GOT_IP6) {
-  //     lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);
-  //   } else {
-  //     lv_label_set_text(WifiLabel, "");
-  //   }
-#endif
-}
-
 void HardwareRevX::setupIR() {
   // Setup IR
   IrSender.begin();
   digitalWrite(IR_VCC, HIGH); // Turn on IR receiver
   IrReceiver.enableIRIn();    // Start the receiver
-}
-
-void HardwareRevX::setupWifi() {
-#ifdef ENABLE_WIFI
-  // Setup WiFi
-  WiFi.setHostname("OMOTE"); // define hostname
-  WiFi.onEvent(wiFiEventImpl);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  WiFi.setSleep(true);
-#endif
 }
 
 void HardwareRevX::startTasks() {
