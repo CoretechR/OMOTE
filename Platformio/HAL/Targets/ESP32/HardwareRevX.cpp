@@ -428,10 +428,19 @@ void HardwareRevX::setupWifi() {
 }
 
 void HardwareRevX::startTasks() {
-  // if (xTaskCreate(&HardwareRevX::updateBatteryTask, "Battery Percent Update",
-  //                 1024, nullptr, 5, &batteryUpdateTskHndl) != pdPASS) {
-  //   debugPrint("ERROR Could not Create Battery Update Task!");
-  // }
+  if (xTaskCreate(&HardwareRevX::updateBatteryTask, "Battery Percent Update",
+                  1024, nullptr, 5, &batteryUpdateTskHndl) != pdPASS) {
+    debugPrint("ERROR Could not Create Battery Update Task!");
+  }
+}
+
+void HardwareRevX::updateBatteryTask(void*){
+  while(true){
+    if(auto status = mInstance->getBatteryStatus(); status.has_value()){
+      mInstance->mBatteryNotification.notify(status.value());
+    }
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+  }
 }
 
 void HardwareRevX::loopHandler() {
