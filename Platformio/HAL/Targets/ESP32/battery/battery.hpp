@@ -1,6 +1,6 @@
 #pragma once
 #include "BatteryInterface.h"
-#include "DisplayInterface.h"
+#include "DisplayAbstract.h"
 
 class Battery: public BatteryInterface {
     public:

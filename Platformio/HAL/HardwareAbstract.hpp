@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 #include "BatteryInterface.h"
-#include "DisplayInterface.h"
+#include "DisplayAbstract.h"
 #include "wifiHandlerInterface.h"
 #include "Notification.hpp"
 

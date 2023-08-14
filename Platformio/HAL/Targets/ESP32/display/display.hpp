@@ -1,5 +1,5 @@
 #pragma once
-#include "DisplayInterface.h"
+#include "DisplayAbstract.h"
 #include <Adafruit_FT6206.h>
 #include <memory>
 #include <TFT_eSPI.h>
