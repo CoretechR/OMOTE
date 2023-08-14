@@ -2,10 +2,8 @@
 #include "SparkFunLIS3DH.h"
 
 #include "HardwareAbstract.hpp"
-#include "Wire.h"
 #include "lvgl.h"
 #include "battery.hpp"
-#include <Adafruit_FT6206.h>
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
@@ -13,7 +11,6 @@
 #include <Keypad.h> // modified for inverted logic
 #include <Preferences.h>
 #include <PubSubClient.h>
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <functional>
 #include <memory>
 
@@ -39,20 +36,12 @@ protected:
   void setupBacklight();
   void restorePreferences();
   void slowDisplayWakeup();
-  void setupTFT();
-  void setupTouchScreen();
-  void initLVGL();
   void setupIMU();
   void setupIR();
 
   void activityDetection();
   void enterSleep();
   void configIMUInterrupts();
-
-  // UI/UX Handlers
-  void handleDisplayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
-                          lv_color_t *color_p);
-  void handleTouchPadRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
 
   // Tasks
   void startTasks();
@@ -63,22 +52,6 @@ protected:
 
 private:
   HardwareRevX();
-
-  // Static Wrappers Needed to Satisfy C APIs
-  static void displayFlushImpl(lv_disp_drv_t *disp, const lv_area_t *area,
-                               lv_color_t *color_p) {
-    mInstance->handleDisplayFlush(disp, area, color_p);
-  }
-  static void touchPadReadImpl(lv_indev_drv_t *indev_driver,
-                               lv_indev_data_t *data) {
-    mInstance->handleTouchPadRead(indev_driver, data);
-  }
-
-  Adafruit_FT6206 touch = Adafruit_FT6206();
-  TS_Point touchPoint;
-  TS_Point oldPoint;
-
-  TFT_eSPI tft = TFT_eSPI();
 
   // IMU Motion Detection
   LIS3DH IMU = LIS3DH(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
@@ -96,10 +69,7 @@ private:
   IRsend IrSender = IRsend(IR_LED, true);
   IRrecv IrReceiver = IRrecv(IR_RX);
 
-  // LVGL Screen Buffers
-  lv_disp_draw_buf_t mdraw_buf;
-  lv_color_t mbufA[SCREEN_WIDTH * SCREEN_HEIGHT / 10];
-  lv_color_t mbufB[SCREEN_WIDTH * SCREEN_HEIGHT / 10];
+
 
   lv_color_t color_primary = lv_color_hex(0x303030); // gray
 

@@ -10,6 +10,7 @@ HardwareAbstract::HardwareAbstract(
   mDisplay(std::move(aDisplay))
 {}
 
+
 std::optional<HardwareAbstract::batteryStatus> HardwareAbstract::getBatteryStatus(){
     if(mBattery){
         HardwareAbstract::batteryStatus currentStatus;

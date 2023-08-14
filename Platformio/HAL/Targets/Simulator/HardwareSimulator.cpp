@@ -25,8 +25,6 @@ static int tick_thread(void * data)
 }
 
 
-
-
 void HardwareSimulator::init()  { 
     lv_init(); 
     // Workaround for sdl2 `-m32` crash

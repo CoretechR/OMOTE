@@ -48,4 +48,6 @@ public:
     std::shared_ptr<BatteryInterface> mBattery;
     std::shared_ptr<wifiHandlerInterface> mWifiHandler;
     std::shared_ptr<DisplayInterface> mDisplay;
+    
+
 };

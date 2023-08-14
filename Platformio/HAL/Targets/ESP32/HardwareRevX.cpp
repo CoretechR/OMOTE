@@ -55,7 +55,7 @@ HardwareRevX::HardwareRevX():
   HardwareAbstract(
     std::make_shared<Battery>(ADC_BAT,CRG_STAT),
     wifiHandler::getInstance(),
-    Display::getInstance()
+    Display::getInstance(standbyTimer)
   ){}
 
 HardwareRevX::WakeReason getWakeReason() {
@@ -80,9 +80,6 @@ void HardwareRevX::init() {
   Serial.begin(115200);
   restorePreferences();
   slowDisplayWakeup();
-  setupTFT();
-  setupTouchScreen();
-  initLVGL();
   setupIMU();
   setupIR();
 
@@ -100,72 +97,6 @@ std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
   return mInstance;
 }
 
-void HardwareRevX::initLVGL() {
-  lv_init();
-
-  lv_disp_draw_buf_init(&mdraw_buf, mbufA, mbufB,
-                        SCREEN_WIDTH * SCREEN_HEIGHT / 10);
-
-  // Initialize the display driver
-  static lv_disp_drv_t disp_drv;
-  lv_disp_drv_init(&disp_drv);
-  disp_drv.hor_res = SCREEN_WIDTH;
-  disp_drv.ver_res = SCREEN_HEIGHT;
-  disp_drv.flush_cb = &HardwareRevX::displayFlushImpl;
-  disp_drv.draw_buf = &mdraw_buf;
-  lv_disp_drv_register(&disp_drv);
-
-  // Initialize the touchscreen driver
-  static lv_indev_drv_t indev_drv;
-  lv_indev_drv_init(&indev_drv);
-  indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = &HardwareRevX::touchPadReadImpl;
-  lv_indev_drv_register(&indev_drv);
-}
-
-void HardwareRevX::handleDisplayFlush(lv_disp_drv_t *disp,
-                                      const lv_area_t *area,
-                                      lv_color_t *color_p) {
-  uint32_t w = (area->x2 - area->x1 + 1);
-  uint32_t h = (area->y2 - area->y1 + 1);
-
-  tft.startWrite();
-  tft.setAddrWindow(area->x1, area->y1, w, h);
-  tft.pushPixelsDMA((uint16_t *)&color_p->full, w * h);
-  tft.endWrite();
-
-  lv_disp_flush_ready(disp);
-}
-
-void HardwareRevX::handleTouchPadRead(lv_indev_drv_t *indev_driver,
-                                      lv_indev_data_t *data) {
-  // int16_t touchX, touchY;
-  touchPoint = touch.getPoint();
-  int16_t touchX = touchPoint.x;
-  int16_t touchY = touchPoint.y;
-  bool touched = false;
-  if ((touchX > 0) || (touchY > 0)) {
-    touched = true;
-    standbyTimer = SLEEP_TIMEOUT;
-  }
-
-  if (!touched) {
-    data->state = LV_INDEV_STATE_REL;
-  } else {
-    data->state = LV_INDEV_STATE_PR;
-
-    // Set the coordinates
-    data->point.x = SCREEN_WIDTH - touchX;
-    data->point.y = SCREEN_HEIGHT - touchY;
-
-    // Serial.print( "touchpoint: x" );
-    // Serial.print( touchX );
-    // Serial.print( " y" );
-    // Serial.println( touchY );
-    // tft.drawFastHLine(0, screenHeight - touchY, screenWidth, TFT_RED);
-    // tft.drawFastVLine(screenWidth - touchX, 0, screenHeight, TFT_RED);
-  }
-}
 
 void HardwareRevX::activityDetection() {
   static int accXold;
@@ -332,20 +263,7 @@ void HardwareRevX::restorePreferences() {
   }
 }
 
-void HardwareRevX::setupTFT() {
-  // Setup TFT
-  tft.init();
-  tft.initDMA();
-  tft.setRotation(0);
-  tft.fillScreen(TFT_BLACK);
-  tft.setSwapBytes(true);
-}
 
-void HardwareRevX::setupTouchScreen() {
-  // Configure i2c pins and set frequency to 400kHz
-  Wire.begin(SDA, SCL, 400000);
-  touch.begin(128); // Initialize touchscreen and set sensitivity threshold
-}
 
 void HardwareRevX::setupIMU() {
   // Setup hal
