@@ -5,13 +5,13 @@
 
 class HardwareSimulator : public HardwareAbstract {
 public:
-  HardwareSimulator() : HardwareAbstract(){};
+  HardwareSimulator();
 
   virtual void debugPrint(std::string message) override {
     std::cout << message;
   }
 
-  virtual void init() override;
+  virtual void init() override {};
 
   virtual std::optional<HardwareAbstract::batteryStatus> getBatteryStatus() override {
     HardwareAbstract::batteryStatus fakeStatus;
