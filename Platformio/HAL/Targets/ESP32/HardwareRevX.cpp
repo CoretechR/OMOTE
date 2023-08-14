@@ -53,9 +53,9 @@ void HardwareRevX::initIO() {
 
 HardwareRevX::HardwareRevX():
   HardwareAbstract(
+    Display::getInstance(standbyTimer),
     std::make_shared<Battery>(ADC_BAT,CRG_STAT),
-    wifiHandler::getInstance(),
-    Display::getInstance(standbyTimer)
+    wifiHandler::getInstance()
   ){}
 
 HardwareRevX::WakeReason getWakeReason() {

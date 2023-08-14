@@ -1,9 +1,9 @@
 #include "HardwareAbstract.hpp"
 
 HardwareAbstract::HardwareAbstract(
+    std::shared_ptr<DisplayAbstract> aDisplay,
     std::shared_ptr<BatteryInterface> aBattery,
-    std::shared_ptr<wifiHandlerInterface> aWifiHandler,
-    std::shared_ptr<DisplayAbstract> aDisplay
+    std::shared_ptr<wifiHandlerInterface> aWifiHandler
 )
 : mBattery(std::move(aBattery)),
   mWifiHandler(std::move(aWifiHandler)),
