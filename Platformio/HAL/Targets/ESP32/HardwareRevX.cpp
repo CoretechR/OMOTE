@@ -1,4 +1,5 @@
 #include "HardwareRevX.hpp"
+#include "display.hpp"
 #include "wifihandler.hpp"
 #include "driver/ledc.h"
 
@@ -53,7 +54,8 @@ void HardwareRevX::initIO() {
 HardwareRevX::HardwareRevX():
   HardwareAbstract(
     std::make_shared<Battery>(ADC_BAT,CRG_STAT),
-    wifiHandler::getInstance()
+    wifiHandler::getInstance(),
+    Display::getInstance()
   ){}
 
 HardwareRevX::WakeReason getWakeReason() {

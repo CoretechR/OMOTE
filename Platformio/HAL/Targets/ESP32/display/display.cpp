@@ -1,17 +1,20 @@
 
 #include "display.hpp"
+#include "omoteconfig.h"
 
-Display* Display::getInstance()
+std::shared_ptr<Display> Display::mInstance = nullptr;
+
+std::shared_ptr<Display> Display::getInstance()
 {
-    if (instance == nullptr)
+    if (mInstance == nullptr)
     {
-        instance = new Display();
+        mInstance = std::shared_ptr<Display>(new Display(LCD_EN, LCD_BL));
     }
 
-    return instance;
+    return mInstance;
 }
 
-void Display::setup(int backlight_pin, int enable_pin)
+Display::Display(int backlight_pin, int enable_pin)
 {
     this->enable_pin = enable_pin;
     this->backlight_pin = backlight_pin;

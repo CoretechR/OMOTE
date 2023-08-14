@@ -1,6 +1,7 @@
 #pragma once
 #include "DisplayInterface.h"
 #include <TFT_eSPI.h>
+#include <memory>
 #include "driver/ledc.h"
 
 /*LEDC Channel to use for the LCD backlight*/
@@ -13,19 +14,22 @@
 #define DEFAULT_BACKLIGHT_BRIGHTNESS 128
 
 
-class Display:public DisplayInterface
+class Display: public DisplayInterface
 {
     public:
-        static Display* getInstance();
+        static std::shared_ptr<Display> getInstance();
         
-        virtual void setup(int backlight_pin, int enable_pin) override;
-        virtual void pushPixel(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint16_t* pixel_values) override;
         virtual void setBrightness(uint8_t brightness) override;
         virtual void turnOff() override;
+    
+    protected:
+        virtual void flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {};
+        virtual void pushPixel(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint16_t* pixel_values) override;
+
     private:
-        static Display* instance;
+        static std::shared_ptr<Display> mInstance;
         int enable_pin;
         int backlight_pin;
-        Display();
+        Display(int backlight_pin, int enable_pin);
         TFT_eSPI tft;
 };
