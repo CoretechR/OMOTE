@@ -5,14 +5,14 @@
 
 std::shared_ptr<Display> Display::getInstance(int& standby_timer)
 {
-    if (DisplayInterface::mInstance == nullptr)
+    if (DisplayAbstract::mInstance == nullptr)
     {
-        DisplayInterface::mInstance  = std::shared_ptr<Display>(new Display(LCD_EN, LCD_BL, standby_timer));
+        DisplayAbstract::mInstance  = std::shared_ptr<Display>(new Display(LCD_EN, LCD_BL, standby_timer));
     }
     return std::static_pointer_cast<Display>(mInstance);
 }
 
-Display::Display(int backlight_pin, int enable_pin, int& standby_timer): DisplayInterface(),
+Display::Display(int backlight_pin, int enable_pin, int& standby_timer): DisplayAbstract(),
     mBacklightPin(backlight_pin),
     mEnablePin(enable_pin),
     tft(TFT_eSPI()),

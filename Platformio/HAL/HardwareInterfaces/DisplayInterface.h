@@ -1,16 +1,16 @@
 #pragma once
 #include <memory> 
 #include "lvgl.h"
-class DisplayInterface 
+class DisplayAbstract 
 {
     public:
-        DisplayInterface();
+        DisplayAbstract();
         virtual void setBrightness(uint8_t brightness) = 0;
         virtual void turnOff() = 0;
     
     protected:
         // Set this with a getInstance method in the Child Class
-        static std::shared_ptr<DisplayInterface> mInstance; 
+        static std::shared_ptr<DisplayAbstract> mInstance; 
         
         virtual void flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) = 0;
         virtual void screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) = 0;

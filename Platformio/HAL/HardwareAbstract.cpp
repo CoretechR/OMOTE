@@ -3,7 +3,7 @@
 HardwareAbstract::HardwareAbstract(
     std::shared_ptr<BatteryInterface> aBattery,
     std::shared_ptr<wifiHandlerInterface> aWifiHandler,
-    std::shared_ptr<DisplayInterface> aDisplay
+    std::shared_ptr<DisplayAbstract> aDisplay
 )
 : mBattery(std::move(aBattery)),
   mWifiHandler(std::move(aWifiHandler)),

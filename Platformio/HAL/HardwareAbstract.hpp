@@ -17,7 +17,7 @@ class HardwareAbstract {
 public:
   HardwareAbstract(std::shared_ptr<BatteryInterface> aBattery = nullptr,
                    std::shared_ptr<wifiHandlerInterface> aWifiHandler = nullptr,
-                   std::shared_ptr<DisplayInterface> aDisplay = nullptr
+                   std::shared_ptr<DisplayAbstract> aDisplay = nullptr
   );
   
   struct batteryStatus {
@@ -47,7 +47,7 @@ public:
   private:
     std::shared_ptr<BatteryInterface> mBattery;
     std::shared_ptr<wifiHandlerInterface> mWifiHandler;
-    std::shared_ptr<DisplayInterface> mDisplay;
+    std::shared_ptr<DisplayAbstract> mDisplay;
     
 
 };

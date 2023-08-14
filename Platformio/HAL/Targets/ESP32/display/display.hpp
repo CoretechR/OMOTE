@@ -15,7 +15,7 @@
 #define DEFAULT_BACKLIGHT_BRIGHTNESS 128
 
 
-class Display: public DisplayInterface
+class Display: public DisplayAbstract
 {
     public:
         static std::shared_ptr<Display> getInstance(int& standby_timer);
