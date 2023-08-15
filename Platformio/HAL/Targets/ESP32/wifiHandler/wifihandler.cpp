@@ -51,16 +51,6 @@ std::shared_ptr<wifiHandler> wifiHandler::getInstance()
     return std::shared_ptr<wifiHandler>(new wifiHandler());
 };
 
-String wifiHandler::getFoundSSID(unsigned int index)
-{
-  return WiFi.SSID(index);
-}
-
-int wifiHandler::getFoundRSSI(unsigned int index)
-{
-  return WiFi.RSSI(index);
-}
-
 wifiHandler::wifiHandler()
 {
     this->password[0] = '\0';

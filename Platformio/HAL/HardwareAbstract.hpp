@@ -13,6 +13,11 @@
 #include "wifiHandlerInterface.h"
 #include "Notification.hpp"
 
+typedef struct {
+  std::string ssid;
+  int rssi;
+} WifiInfo;
+
 class HardwareAbstract {
 public:
   HardwareAbstract(
@@ -35,6 +40,11 @@ public:
   /// @param onBatteryStatusChangeHandler - Callable to be ran when batter status changes
   void onBatteryChange(std::function<void(batteryStatus)> onBatteryStatusChangeHandler);
 
+  void onStartWifiScan(std::function<void()> cb_func);
+  void onWifiScanDone(std::function<void(std::shared_ptr<std::vector<WifiInfo>>)> cb_func);
+  void notifyStartWifiScan();
+  void notifyWifiScanDone(std::shared_ptr<std::vector<WifiInfo>> info);
+
   /// @brief Override in order to do setup of hardware devices
   virtual void init() = 0;
 
@@ -46,6 +56,8 @@ public:
     Notification<batteryStatus> mBatteryNotification;
 
   private:
+    std::vector<std::function<void()>> wifi_scan_start_cb;
+    std::vector<std::function<void(std::shared_ptr<std::vector<WifiInfo>>)>> wifi_scan_done_cb;
     std::shared_ptr<BatteryInterface> mBattery;
     std::shared_ptr<wifiHandlerInterface> mWifiHandler;
     std::shared_ptr<DisplayAbstract> mDisplay;

@@ -17,6 +17,7 @@
 
 #include "omoteconfig.h"
 
+
 class HardwareRevX : public HardwareAbstract {
 public:
   enum class WakeReason { RESET, IMU, KEYPAD };
@@ -69,9 +70,6 @@ private:
   IRsend IrSender = IRsend(IR_LED, true);
   IRrecv IrReceiver = IRrecv(IR_RX);
 
-
-
-  lv_color_t color_primary = lv_color_hex(0x303030); // gray
 
   // Keypad declarations
   static const byte ROWS = 5; // four rows
