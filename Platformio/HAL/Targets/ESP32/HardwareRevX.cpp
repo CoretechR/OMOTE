@@ -53,10 +53,13 @@ void HardwareRevX::initIO() {
 
 HardwareRevX::HardwareRevX():
   HardwareAbstract(
-    Display::getInstance(standbyTimer),
+    Display::getInstance(),
     std::make_shared<Battery>(ADC_BAT,CRG_STAT),
     wifiHandler::getInstance()
-  ){}
+  ){
+    // Reset Sleep Timer on Touch Events
+    Display::getInstance()->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = SLEEP_TIMEOUT;});
+  }
 
 HardwareRevX::WakeReason getWakeReason() {
   // Find out wakeup cause
@@ -361,11 +364,11 @@ void HardwareRevX::loopHandler() {
   //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_FULL);
   //     else if (battery_percentage > 75)
   //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_3);
-  //     else if (battery_percentage > 50)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_2);
-  //     else if (battery_percentage > 25)
+  //     elsse if (battery_percentage > 25)
   //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_1);
-  //     else
+  //     e if (battery_percentage > 50)
+  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_2);
+  //     elelse
   //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_EMPTY);
   //   }
   // }

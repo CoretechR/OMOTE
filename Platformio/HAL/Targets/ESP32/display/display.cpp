@@ -3,21 +3,20 @@
 #include "omoteconfig.h"
 #include "Wire.h"
 
-std::shared_ptr<Display> Display::getInstance(int& standby_timer)
+std::shared_ptr<Display> Display::getInstance()
 {
     if (DisplayAbstract::mInstance == nullptr)
     {
-        DisplayAbstract::mInstance  = std::shared_ptr<Display>(new Display(LCD_EN, LCD_BL, standby_timer));
+        DisplayAbstract::mInstance  = std::shared_ptr<Display>(new Display(LCD_EN, LCD_BL));
     }
     return std::static_pointer_cast<Display>(mInstance);
 }
 
-Display::Display(int backlight_pin, int enable_pin, int& standby_timer): DisplayAbstract(),
+Display::Display(int backlight_pin, int enable_pin): DisplayAbstract(),
     mBacklightPin(backlight_pin),
     mEnablePin(enable_pin),
     tft(TFT_eSPI()),
-    touch(Adafruit_FT6206()),
-    standbyTimer(standby_timer)
+    touch(Adafruit_FT6206())
 {
     pinMode(mEnablePin, OUTPUT);
     digitalWrite(mEnablePin, HIGH);
@@ -39,6 +38,10 @@ Display::Display(int backlight_pin, int enable_pin, int& standby_timer): Display
     }  
 
     setupTouchScreen();
+}
+
+void Display::onTouch(Notification<TS_Point>::HandlerTy aTouchHandler){
+  mTouchEvent.onNotify(std::move(aTouchHandler));
 }
 
 void Display::setupTFT() {
@@ -78,7 +81,7 @@ void Display::screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data){
   bool touched = false;
   if ((touchX > 0) || (touchY > 0)) {
     touched = true;
-    standbyTimer = SLEEP_TIMEOUT;
+    mTouchEvent.notify(touchPoint);
   }
 
   if (!touched) {
