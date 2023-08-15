@@ -5,16 +5,18 @@
 template <class... notifyData>
 class Notification{
     public:
+        typedef std::function<void(notifyData...)> HandlerTy;
+
         Notification() = default;
-        void onNotify(std::function<void(notifyData...)> aHandler);
+        void onNotify(HandlerTy aHandler);
         void notify(notifyData... notifySendData);
 
     private:
-        std::vector<std::function<void(notifyData...)>> mFunctionHandlers;
+        std::vector<HandlerTy> mFunctionHandlers;
 };
 
 template <class... handlerData>
-void Notification<handlerData...>::onNotify(std::function<void(handlerData...)> aHandler){
+void Notification<handlerData...>::onNotify(HandlerTy aHandler){
     mFunctionHandlers.push_back(std::move(aHandler));
 }
 
