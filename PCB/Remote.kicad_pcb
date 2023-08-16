@@ -480,11 +480,11 @@
     (tags "kb_params=eyJBbGlnbm1lbnRDaG9pY2UiOiAiUmlnaHQiLCAiQ2FwTGVmdENob2ljZSI6ICIiLCAiQ2FwUmlnaHRDaG9pY2UiOiAiIiwgIkZvbnRDb21ib0JveCI6ICJGcmVkb2thT25lIiwgIkhlaWdodEN0cmwiOiAiMC45IiwgIkxheWVyQ29tYm9Cb3giOiAiRi5TaWxrUyIsICJNdWx0aUxpbmVUZXh0IjogIloiLCAiUGFkZGluZ0JvdHRvbUN0cmwiOiAiNSIsICJQYWRkaW5nTGVmdEN0cmwiOiAiNSIsICJQYWRkaW5nUmlnaHRDdHJsIjogIjUiLCAiUGFkZGluZ1RvcEN0cmwiOiAiNSIsICJXaWR0aEN0cmwiOiAiMC44In0=")
     (attr board_only exclude_from_pos_files exclude_from_bom)
     (fp_text reference "kibuzzard-64A91C1C" (at 0 -3.57378 90) (layer "F.SilkS") hide
-        (effects (font (size 0 0)))
+        (effects (font (size 0 0) (thickness 0.15)))
       (tstamp 070e09a0-dd95-4271-ac5b-b42afc8004a5)
     )
     (fp_text value "G***" (at 0 3.57378 90) (layer "F.SilkS") hide
-        (effects (font (size 0 0)))
+        (effects (font (size 0 0) (thickness 0.15)))
       (tstamp df6e1f4f-e5de-40c8-932c-b502e892206c)
     )
     (fp_poly
@@ -1029,7 +1029,7 @@
     (property "ki_keywords" "cap capacitor")
     (path "/5d818a81-71ff-4f40-8854-04efda688b48")
     (attr smd)
-    (fp_text reference "C13" (at -3.25 -1.68) (layer "F.SilkS")
+    (fp_text reference "C13" (at -3.238895 0.068182) (layer "F.SilkS")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 15439bba-04d4-4528-ad0e-855324eb39a5)
     )
@@ -3616,11 +3616,11 @@
     (tags "kb_params=eyJBbGlnbm1lbnRDaG9pY2UiOiAiUmlnaHQiLCAiQ2FwTGVmdENob2ljZSI6ICIiLCAiQ2FwUmlnaHRDaG9pY2UiOiAiIiwgIkZvbnRDb21ib0JveCI6ICJGcmVkb2thT25lIiwgIkhlaWdodEN0cmwiOiAiMC45IiwgIkxheWVyQ29tYm9Cb3giOiAiRi5TaWxrUyIsICJNdWx0aUxpbmVUZXh0IjogIlgiLCAiUGFkZGluZ0JvdHRvbUN0cmwiOiAiNSIsICJQYWRkaW5nTGVmdEN0cmwiOiAiNSIsICJQYWRkaW5nUmlnaHRDdHJsIjogIjUiLCAiUGFkZGluZ1RvcEN0cmwiOiAiNSIsICJXaWR0aEN0cmwiOiAiMC44In0=")
     (attr board_only exclude_from_pos_files exclude_from_bom)
     (fp_text reference "kibuzzard-64A91BF0" (at 0 -3.592354 90) (layer "F.SilkS") hide
-        (effects (font (size 0 0)))
+        (effects (font (size 0 0) (thickness 0.15)))
       (tstamp 2b2beffb-740b-4ae7-96a7-10a22fd102ba)
     )
     (fp_text value "G***" (at 0 3.592354 90) (layer "F.SilkS") hide
-        (effects (font (size 0 0)))
+        (effects (font (size 0 0) (thickness 0.15)))
       (tstamp 600b3ea1-1480-4f7f-9e06-ec4a43128b2c)
     )
     (fp_poly
@@ -4564,7 +4564,7 @@
       (stroke (width 0.2) (type solid)) (layer "Edge.Cuts") (tstamp 447423d6-c274-4788-886a-fcbcc77e2164))
     (fp_arc (start -13.80519 22.502074) (mid -14.653718 22.150602) (end -15.00519 21.302074)
       (stroke (width 0.2) (type solid)) (layer "Edge.Cuts") (tstamp feab422a-7214-4220-bea4-adb77a508450))
-    (fp_arc (start 5.997926 25.19481) (mid 6.349398 24.34628) (end 7.197926 23.99481)
+    (fp_arc (start 5.997926 25.19481) (mid 6.349398 24.346284) (end 7.197926 23.99481)
       (stroke (width 0.2) (type solid)) (layer "Edge.Cuts") (tstamp 2d238c93-b270-42d0-92f8-81286e985a3b))
     (fp_arc (start 7.19481 37.002074) (mid 6.346285 36.650604) (end 5.99481 35.802074)
       (stroke (width 0.2) (type solid)) (layer "Edge.Cuts") (tstamp d3374b8b-7961-4a5f-8297-7233fdb07d4c))
@@ -5003,11 +5003,11 @@
     (tags "kb_params=eyJBbGlnbm1lbnRDaG9pY2UiOiAiUmlnaHQiLCAiQ2FwTGVmdENob2ljZSI6ICIiLCAiQ2FwUmlnaHRDaG9pY2UiOiAiIiwgIkZvbnRDb21ib0JveCI6ICJGcmVkb2thT25lIiwgIkhlaWdodEN0cmwiOiAiMC45IiwgIkxheWVyQ29tYm9Cb3giOiAiRi5TaWxrUyIsICJNdWx0aUxpbmVUZXh0IjogIlkiLCAiUGFkZGluZ0JvdHRvbUN0cmwiOiAiNSIsICJQYWRkaW5nTGVmdEN0cmwiOiAiNSIsICJQYWRkaW5nUmlnaHRDdHJsIjogIjUiLCAiUGFkZGluZ1RvcEN0cmwiOiAiNSIsICJXaWR0aEN0cmwiOiAiMC44In0=")
     (attr board_only exclude_from_pos_files exclude_from_bom)
     (fp_text reference "kibuzzard-64A91C24" (at 0 -3.580924 90) (layer "F.SilkS") hide
-        (effects (font (size 0 0)))
+        (effects (font (size 0 0) (thickness 0.15)))
       (tstamp fa130e4e-ca14-4523-83f7-4c4d722e1a1f)
     )
     (fp_text value "G***" (at 0 3.580924 90) (layer "F.SilkS") hide
-        (effects (font (size 0 0)))
+        (effects (font (size 0 0) (thickness 0.15)))
       (tstamp 6b0263e1-e329-48ea-9c59-9533a81fdbfc)
     )
     (fp_poly
@@ -6445,7 +6445,7 @@
     (property "ki_keywords" "cap capacitor")
     (path "/a888a00f-5496-4d09-af9f-455dba2d8767")
     (attr smd)
-    (fp_text reference "C14" (at 3.5 -1.85) (layer "F.SilkS")
+    (fp_text reference "C14" (at 3.488895 -0.14998) (layer "F.SilkS")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 5ecdc16d-4df0-4830-8429-f936a2864918)
     )
@@ -17731,7 +17731,7 @@
     (pts (xy 51.9 91.85) (xy 244.4 94.35))
     (height -30)
     (orientation 0)
-    (gr_text "192.5000 mm" (at 148.15 60.05) (layer "Dwgs.User") (tstamp 069f508d-69c3-437a-b2bc-075411e467ac)
+    (gr_text "7.5787 in" (at 148.15 60.05) (layer "Dwgs.User") (tstamp 069f508d-69c3-437a-b2bc-075411e467ac)
       (effects (font (size 1.5 1.5) (thickness 0.3)))
     )
     (format (prefix "") (suffix "") (units 3) (units_format 1) (precision 4))
@@ -17741,7 +17741,7 @@
     (pts (xy 60 77) (xy 61.5 127))
     (height -22.5)
     (orientation 1)
-    (gr_text "50.0000 mm" (at 35.7 102 90) (layer "Dwgs.User") (tstamp 3da29f5a-2ac0-44ee-93a1-15033dd79f5c)
+    (gr_text "1.9685 in" (at 35.7 102 90) (layer "Dwgs.User") (tstamp 3da29f5a-2ac0-44ee-93a1-15033dd79f5c)
       (effects (font (size 1.5 1.5) (thickness 0.3)))
     )
     (format (prefix "") (suffix "") (units 3) (units_format 1) (precision 4))
