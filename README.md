@@ -89,7 +89,7 @@ Distributed under the GPL v3 License. See [LICENSE](https://github.com/CoretechR
 
 ## Contact
 
-Maximilian Kern - [kernm.de](kernm.de)
+Maximilian Kern - [kernm.de](https://kernm.de)
 
 Omote Discord: [https://discord.gg/5PnYFAsKsG](https://discord.gg/5PnYFAsKsG)
 
