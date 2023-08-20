@@ -15,6 +15,7 @@ class Notification{
         std::vector<HandlerTy> mFunctionHandlers;
 };
 
+
 template <class... handlerData>
 void Notification<handlerData...>::onNotify(HandlerTy aHandler){
     mFunctionHandlers.push_back(std::move(aHandler));

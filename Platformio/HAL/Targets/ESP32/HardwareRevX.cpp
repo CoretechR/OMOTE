@@ -52,13 +52,7 @@ void HardwareRevX::initIO() {
 }
 
 HardwareRevX::HardwareRevX():
-  HardwareAbstract(
-    Display::getInstance(),
-    std::make_shared<Battery>(ADC_BAT,CRG_STAT),
-    wifiHandler::getInstance()
-  ){
-    // Reset Sleep Timer on Touch Events
-    Display::getInstance()->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = SLEEP_TIMEOUT;});
+  HardwareAbstract(){
   }
 
 HardwareRevX::WakeReason getWakeReason() {
@@ -77,6 +71,9 @@ void HardwareRevX::init() {
   // Make sure ESP32 is running at full speed
   setCpuFrequencyMhz(240);
 
+  mDisplay = Display::getInstance(std::shared_ptr<HardwareAbstract>(this));
+  mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
+  mWifiHandler = wifiHandler::getInstance(std::shared_ptr<HardwareAbstract>(this));
   wakeup_reason = getWakeReason();
   initIO();
   setupBacklight();
@@ -86,12 +83,26 @@ void HardwareRevX::init() {
   setupIMU();
   setupIR();
 
-  debugPrint(std::string("Finished Hardware Setup in %d", millis()));
+  debugPrint("Finished Hardware Setup in %d", millis());
 }
 
+#if 0
 void HardwareRevX::debugPrint(std::string aDebugMessage) {
   Serial.print(aDebugMessage.c_str());
 }
+#else
+void HardwareRevX::debugPrint(const char* fmt, ...)
+{
+  char result[100];
+  va_list arguments;
+
+  va_start(arguments, fmt);
+  vsnprintf(result, 100, fmt, arguments);
+  va_end (arguments);
+
+  Serial.print(result);
+}
+#endif
 
 std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
   if (!mInstance) {

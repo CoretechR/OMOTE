@@ -3,20 +3,21 @@
 #include "omoteconfig.h"
 #include "Wire.h"
 
-std::shared_ptr<Display> Display::getInstance()
+std::shared_ptr<Display> Display::getInstance(std::shared_ptr<HardwareAbstract> aHardware)
 {
     if (DisplayAbstract::mInstance == nullptr)
     {
-        DisplayAbstract::mInstance  = std::shared_ptr<Display>(new Display(LCD_EN, LCD_BL));
+        DisplayAbstract::mInstance  = std::shared_ptr<Display>(new Display(LCD_EN, LCD_BL, aHardware));
     }
     return std::static_pointer_cast<Display>(mInstance);
 }
 
-Display::Display(int backlight_pin, int enable_pin): DisplayAbstract(),
+Display::Display(int backlight_pin, int enable_pin, std::shared_ptr<HardwareAbstract> aHardware): DisplayAbstract(),
     mBacklightPin(backlight_pin),
     mEnablePin(enable_pin),
     tft(TFT_eSPI()),
-    touch(Adafruit_FT6206())
+    touch(Adafruit_FT6206()),
+    mHardware(aHardware)
 {
     pinMode(mEnablePin, OUTPUT);
     digitalWrite(mEnablePin, HIGH);

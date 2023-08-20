@@ -19,6 +19,12 @@ public:
     lv_obj_t* addLeftGradiant(lv_obj_t* parent);
     lv_obj_t* addRightGradiant(lv_obj_t* parent);
 
+    lv_obj_t* addWifiNoSignal(lv_obj_t* parent);
+    lv_obj_t* addWifiLowSignal(lv_obj_t* parent);
+    lv_obj_t* addWifiMidSignal(lv_obj_t* parent);
+    lv_obj_t* addWifiHighSignal(lv_obj_t* parent);
+
+
 private:
     // Make Image based on anImageDesc then 
     // add that image to parent. 
@@ -36,6 +42,9 @@ private:
     lv_img_dsc_t gradientLeft;
     lv_img_dsc_t gradientRight;
 
-    
+    lv_img_dsc_t wifiNoSignal;
+    lv_img_dsc_t wifiLowSignal;
+    lv_img_dsc_t wifiMidSignal;
+    lv_img_dsc_t wifiHighSignal;
 
 };

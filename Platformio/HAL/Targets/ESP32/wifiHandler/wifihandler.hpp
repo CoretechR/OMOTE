@@ -1,12 +1,14 @@
 #pragma once
 #include "wifiHandlerInterface.h"
+#include "HardwareAbstract.hpp"
 #include <WiFi.h>
 
 #define STRING_SIZE 50
 
 class wifiHandler: public wifiHandlerInterface {
     public:
-        static std::shared_ptr<wifiHandler> getInstance();
+        wifiHandler(std::shared_ptr<HardwareAbstract> aHardware);
+        static std::shared_ptr<wifiHandler> getInstance(std::shared_ptr<HardwareAbstract> aHardware);
         /**
          * @brief Function to initialize the wifi handler 
          * 
@@ -19,7 +21,7 @@ class wifiHandler: public wifiHandlerInterface {
          * @param SSID 
          * @param password 
          */
-        void connect(const char* SSID, const char* password);
+        //void connect(const char* SSID, const char* password);
 
         /**
          * @brief Function to disconnect from the network 
@@ -48,13 +50,6 @@ class wifiHandler: public wifiHandlerInterface {
         void scan();
 
         /**
-         * @brief Function to get SSID of the currently connected wifi network
-         * 
-         * @return char* SSID of the currently connected network
-         */
-        char* getSSID();
-
-        /**
          * @brief Function to update the wifi credentials. This function is called in the wifi event callback function
          * after a connection is established. Only then is the new credentials stored and the old stored credentials 
          * overwritten.
@@ -62,7 +57,7 @@ class wifiHandler: public wifiHandlerInterface {
          * @param temporary_ssid 
          * @param temporary_password 
          */
-        void update_credentials(const char* temporary_ssid, const char* temporary_password);
+        void update_credentials();
 
         void WiFiEvent(WiFiEvent_t event);
 
@@ -72,24 +67,27 @@ class wifiHandler: public wifiHandlerInterface {
          * @return String IP Address of the device
          */
         std::string getIP();
+        Notification<std::shared_ptr<std::vector<WifiInfo>>> scan_done;
     private:
 
-        wifiHandler();
-
+        wifiStatus wifi_status;
         static std::shared_ptr<wifiHandler> mInstance;
-        char temporary_password[STRING_SIZE];
-        char temporary_ssid[STRING_SIZE];
+        std::shared_ptr<HardwareAbstract> mHardware;
+        std::shared_ptr<std::string> temporary_password;
+        std::shared_ptr<std::string> temporary_ssid;
 
+        void connect(std::shared_ptr<std::string> ssid, std::shared_ptr<std::string> password);
+        void update_status();
         /**
          * @brief Internal variable to store the wifi password 
          * 
          */
-        char password[STRING_SIZE];
+        std::string password;
 
         /**
          * @brief Internal variable to store the wifi SSID 
          * 
          */
-        char SSID[STRING_SIZE];
+        std::string SSID;
 
 };

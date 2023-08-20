@@ -78,7 +78,7 @@ private:
   std::shared_ptr<HardwareAbstract> mHardware;
   void reset_settings_menu();
   void attach_keyboard(lv_obj_t* textarea);
-
+  std::shared_ptr<std::vector<WifiInfo>> found_wifi_networks;
  /**
  * @brief Keyboard object used whenever a keyboard is needed.
  * 
@@ -180,6 +180,7 @@ void create_keyboard();
   unsigned int no_wifi_networks;
 
 
+  void wifi_status(std::shared_ptr<wifiStatus> status);
   /**
    * @brief callback function to get next wifi subpage. This callback can be used to get the next or previous page
    * 

@@ -1,5 +1,8 @@
 #include "OmoteUI.hpp"
 
+#define WIFI_SUBPAGE_SIZE 3
+static char* ssid;
+
 lv_obj_t* OmoteUI::create_wifi_selection_page(lv_obj_t* menu)
 {
   /* Create sub page for wifi*/
@@ -49,7 +52,7 @@ void OmoteUI::password_field_event_cb(lv_event_t* e)
   const char* password = lv_textarea_get_text(ta);
   switch(code){
     case LV_EVENT_READY:
-      //wifihandler.connect(ssid, password);
+      this->mHardware->wifi_connect.notify(std::make_shared<std::string>(std::string(ssid)), std::make_shared<std::string>(std::string(password)));
       lv_obj_clear_state(ta, LV_STATE_FOCUSED);
       this->hide_keyboard();
       this->reset_settings_menu();
@@ -70,11 +73,13 @@ void OmoteUI::connect_btn_cb(lv_event_t* event)
   lv_obj_t* ta = (lv_obj_t*) event->user_data;
   const char* password = lv_textarea_get_text(ta);
 
+  this->mHardware->wifi_connect.notify(std::make_shared<std::string>(std::string(ssid)), std::make_shared<std::string>(std::string(password)));
 //Trigger wifi connection here
   //wifihandler.connect(ssid, password);
   lv_obj_clear_state(ta, LV_STATE_FOCUSED);
-  this->hide_keyboard();
+  this->hide_keyboard(); 
   this->reset_settings_menu();
+  
 }
 
 void OmoteUI::create_wifi_main_page(lv_obj_t* parent)
@@ -107,10 +112,120 @@ void OmoteUI::create_wifi_main_page(lv_obj_t* parent)
 
 void OmoteUI::wifi_scan_done(std::shared_ptr<std::vector<WifiInfo>> info)
 {
-    for (WifiInfo i:*info)
+  unsigned int size = info->size();
+  this->no_subpages = (size + WIFI_SUBPAGE_SIZE - 1)/WIFI_SUBPAGE_SIZE;
+  this->no_wifi_networks = size;
+  this->found_wifi_networks = info;
+
+  if (size == 0)
+  {
+    lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
+    lv_obj_set_size(menuBox, lv_pct(100), 45);
+    lv_obj_set_scrollbar_mode(menuBox, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_t* menuLabel = lv_label_create(menuBox);
+    lv_label_set_text(menuLabel, "no networks found");
+  }
+  else
+  {
+    this->update_wifi_selection_subpage(0);
+  }
+}
+void OmoteUI::next_wifi_selection_subpage(lv_event_t* e)
+{
+  int subpage = (int) lv_event_get_user_data(e);
+  this->update_wifi_selection_subpage(subpage);
+}
+
+
+/**
+ * @brief Callback function in case a wifi is selected. This callback function will change the label of the wifi password
+ * sub page to the selected wifi network. 
+ * 
+ * @param e Pointer to event object for the event where this callback is called
+ */
+static void wifi_selected_cb(lv_event_t* e)
+{
+  lv_obj_t* label = lv_obj_get_child(e->target, 0);
+  lv_label_set_text((lv_obj_t*) e->user_data, lv_label_get_text(label));
+  ssid = lv_label_get_text(label);
+}
+
+
+void OmoteUI::update_wifi_selection_subpage(int page)
+{
+  if (page < this->no_subpages)
+  {
+    lv_obj_clean(this->wifi_setting_cont);
+
+    lv_obj_t* pageLabel = lv_label_create(this->wifi_setting_cont);
+    lv_label_set_text_fmt(pageLabel, "Page %d/%d", page + 1, this->no_subpages);
+    if (page > 0)
     {
-        mHardware->debugPrint(i.ssid);
+      lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
+      lv_obj_set_size(menuBox, lv_pct(100), 45);
+      lv_obj_set_scrollbar_mode(menuBox, LV_SCROLLBAR_MODE_OFF);
+
+      lv_obj_t* menuLabel = lv_label_create(menuBox);
+      lv_label_set_text(menuLabel, "Previous");
+      lv_obj_align(menuLabel, LV_ALIGN_TOP_RIGHT, 0, 0);
+      lv_obj_add_event_cb(menuBox, [](lv_event_t* e) {mInstance->next_wifi_selection_subpage(e);},LV_EVENT_CLICKED, (void*)(page - 1));
+      lv_obj_t* arrow = lv_label_create(menuBox);
+      lv_label_set_text(arrow, LV_SYMBOL_LEFT);
+      lv_obj_align(arrow, LV_ALIGN_TOP_LEFT, 0, 0);
     }
+
+    for (int i = 0; i < WIFI_SUBPAGE_SIZE && (page*WIFI_SUBPAGE_SIZE + i) < this->no_wifi_networks; i++)
+    {
+      lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
+      lv_obj_set_size(menuBox, lv_pct(100), 45);
+      lv_obj_set_scrollbar_mode(menuBox, LV_SCROLLBAR_MODE_OFF);
+
+      lv_obj_add_flag(menuBox, LV_OBJ_FLAG_EVENT_BUBBLE);
+
+      lv_obj_t* menuLabel = lv_label_create(menuBox);
+      lv_label_set_text(menuLabel, this->found_wifi_networks->at(page*WIFI_SUBPAGE_SIZE + i).ssid.c_str());
+      lv_obj_t* wifi_image;
+
+      int RSSI = this->found_wifi_networks->at(page*WIFI_SUBPAGE_SIZE + i).rssi;
+
+      if (RSSI > -50)
+      {
+        wifi_image = imgs.addWifiHighSignal(menuBox);
+      }
+      else if (RSSI > -60)
+      {
+        wifi_image = imgs.addWifiMidSignal(menuBox);
+      }
+      else if (RSSI > -70)
+      {
+        wifi_image = imgs.addWifiLowSignal(menuBox);
+      }
+      else
+      {
+        wifi_image = imgs.addWifiLowSignal(menuBox);
+      }
+      lv_obj_align(wifi_image, LV_ALIGN_TOP_RIGHT, 0, 0);
+      lv_menu_set_load_page_event(this->settingsMenu, menuBox, this->wifi_password_page);
+      lv_obj_add_event_cb(menuBox, wifi_selected_cb, LV_EVENT_CLICKED, this->wifi_password_label);
+      }
+
+    if ((page + 1) < this->no_subpages)
+    {
+      lv_obj_t* menuBox = lv_obj_create(this->wifi_setting_cont);
+      lv_obj_set_size(menuBox, lv_pct(100), 45);
+      lv_obj_set_scrollbar_mode(menuBox, LV_SCROLLBAR_MODE_OFF);
+
+      lv_obj_t* menuLabel = lv_label_create(menuBox);
+      lv_label_set_text(menuLabel, "Next");
+      lv_obj_add_event_cb(menuBox, [](lv_event_t* e) {mInstance->next_wifi_selection_subpage(e);}, LV_EVENT_CLICKED, (void*)(page + 1));
+
+      lv_obj_t* arrow = lv_label_create(menuBox);
+      lv_label_set_text(arrow, LV_SYMBOL_RIGHT);
+      lv_obj_align(arrow, LV_ALIGN_TOP_RIGHT, 0, 0);
+
+    }
+    lv_obj_scroll_to_y(this->wifi_setting_cont, 0, LV_ANIM_OFF);
+  }
 }
 
 void OmoteUI::create_wifi_settings(lv_obj_t* menu, lv_obj_t* parent)
@@ -118,7 +233,31 @@ void OmoteUI::create_wifi_settings(lv_obj_t* menu, lv_obj_t* parent)
   this->wifi_selection_page = this->create_wifi_selection_page(menu);
   this->wifi_password_page = this->create_wifi_password_page(this->settingsMenu);
   this->create_wifi_main_page(parent);
-  this->mHardware->onWifiScanDone([this] (std::shared_ptr<std::vector<WifiInfo>> info) {this->wifi_scan_done(info);});
+  this->mHardware->wifi_scan_done.onNotify([this] (std::shared_ptr<std::vector<WifiInfo>> info) {this->wifi_scan_done(info);});
+  this->mHardware->wifi_status_update.onNotify([this] (std::shared_ptr<wifiStatus> status) {this->wifi_status(status);});
+}
+
+void OmoteUI::wifi_status(std::shared_ptr<wifiStatus> status)
+{
+  this->mHardware->debugPrint("connected %d\n", status->isConnected);
+  this->mHardware->debugPrint("IP %s\n", status->IP);
+  this->mHardware->debugPrint("SSID %s\n", status->ssid);
+
+  lv_obj_t* ip_label = lv_obj_get_child(this->wifiOverview, 3);
+  lv_obj_t* ssid_label = lv_obj_get_child(this->wifiOverview, 0);
+
+  if (status->isConnected)
+  {
+    lv_label_set_text(this->WifiLabel, LV_SYMBOL_WIFI);
+    lv_label_set_text(ssid_label, status->ssid.c_str());
+    lv_label_set_text(ip_label, status->IP.c_str());
+  }
+  else
+  {
+    lv_label_set_text(this->WifiLabel, "");
+    lv_label_set_text(ssid_label, "Disconnected");
+    lv_label_set_text(ip_label, "-");
+  }
 }
 
 lv_obj_t* OmoteUI::create_wifi_password_page(lv_obj_t* menu)
@@ -165,6 +304,8 @@ void OmoteUI::wifi_settings_cb(lv_event_t* event)
   lv_obj_clean(cont);
   lv_obj_t* label = lv_label_create(cont);
   lv_label_set_text(label, "Searching for wifi networks");
+  mHardware->debugPrint("Wifi settings cb called\n");
+  mHardware->wifi_scan_start.notify();
   //This will trigger an asynchronouse network scan
   // We need to trigger wifi search via HAL
   //wifihandler.scan();
