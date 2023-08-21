@@ -3,10 +3,10 @@
 #pragma once
 #include "BatteryInterface.h"
 #include "DisplayAbstract.h"
+#include "IRTxInterface.h"
 #include "KeyPressAbstract.hpp"
-#include "wifiHandlerInterface.h"
-
 #include "Notification.hpp"
+#include "wifiHandlerInterface.h"
 
 #include <memory>
 
