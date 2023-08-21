@@ -60,19 +60,18 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event){
 bool wifiHandler::isAvailable(){
   return true;
 }
-std::shared_ptr<wifiHandler> wifiHandler::getInstance(std::shared_ptr<HardwareAbstract> aHardware)
+std::shared_ptr<wifiHandler> wifiHandler::getInstance()
 {
     if(mInstance)
     {
       return mInstance;
     }
-    mInstance = std::shared_ptr<wifiHandler>(new wifiHandler(aHardware));
+    mInstance = std::shared_ptr<wifiHandler>(new wifiHandler());
     return mInstance;
 };
 
-wifiHandler::wifiHandler(std::shared_ptr<HardwareAbstract> aHardware)
+wifiHandler::wifiHandler()
 {
-    this->mHardware = aHardware;
     this->password = "";
     this->SSID = "";
     this->begin();

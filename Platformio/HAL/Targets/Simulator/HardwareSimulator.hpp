@@ -1,23 +1,21 @@
 ﻿#pragma once
 #include "HardwareAbstract.hpp"
+#include "wifiHandlerSim.hpp"
 #include <iostream>
 #include <string>
+#include "SDLDisplay.hpp"
 
 class HardwareSimulator : public HardwareAbstract {
 public:
   HardwareSimulator();
-#if 0
-  virtual void debugPrint(std::string message) override {
-    std::cout << message;
-  }
-  #else
   virtual void debugPrint(const char* fmt, ...) override {
     va_list arguments;
     va_start(arguments, fmt);
     vprintf(fmt, arguments);
     va_end(arguments);
   }
-  #endif
+
+  std::shared_ptr<wifiHandlerInterface> wifi();
 
   virtual void init() override {};
 
@@ -27,4 +25,7 @@ public:
     fakeStatus.percentage = 100;
     return fakeStatus;
   }
+private:
+  std::shared_ptr<wifiHandlerSim> mWifiHandler;
+  std::shared_ptr<SDLDisplay> mDisplay;
 };

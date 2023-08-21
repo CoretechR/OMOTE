@@ -132,7 +132,7 @@ void OmoteUI::wifi_scan_done(std::shared_ptr<std::vector<WifiInfo>> info)
 }
 void OmoteUI::next_wifi_selection_subpage(lv_event_t* e)
 {
-  int subpage = (int) lv_event_get_user_data(e);
+  int subpage = (uintptr_t) lv_event_get_user_data(e);
   this->update_wifi_selection_subpage(subpage);
 }
 

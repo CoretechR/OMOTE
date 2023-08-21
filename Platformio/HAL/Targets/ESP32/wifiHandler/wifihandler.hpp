@@ -1,6 +1,5 @@
 #pragma once
 #include "wifiHandlerInterface.h"
-#include "HardwareAbstract.hpp"
 #include "Notification.hpp"
 #include "memory.h"
 #include <WiFi.h>
@@ -9,8 +8,8 @@
 
 class wifiHandler: public wifiHandlerInterface {
     public:
-        wifiHandler(std::shared_ptr<HardwareAbstract> aHardware);
-        static std::shared_ptr<wifiHandler> getInstance(std::shared_ptr<HardwareAbstract> aHardware);
+        wifiHandler();
+        static std::shared_ptr<wifiHandler> getInstance();
         /**
          * @brief Function to initialize the wifi handler 
          * 
@@ -67,7 +66,6 @@ class wifiHandler: public wifiHandlerInterface {
         std::string getIP();
         wifiStatus wifi_status;
         static std::shared_ptr<wifiHandler> mInstance;
-        std::shared_ptr<HardwareAbstract> mHardware;
         std::shared_ptr<std::string> temporary_password;
         std::shared_ptr<std::string> temporary_ssid;
 

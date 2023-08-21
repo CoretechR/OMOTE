@@ -27,10 +27,16 @@ static int tick_thread(void * data)
     return 0;
 }
 
-HardwareSimulator::HardwareSimulator(): HardwareAbstract(SDLDisplay::getInstance()){
+HardwareSimulator::HardwareSimulator(): HardwareAbstract(){
     /* Tick init.
      * You have to call 'lv_tick_inc()' in periodically to inform LittelvGL about how much time were elapsed
      * Create an SDL thread to do this*/
+    this->mDisplay = SDLDisplay::getInstance();
+    this->mWifiHandler = std::make_shared<wifiHandlerSim>(wifiHandlerSim());
     SDL_CreateThread(tick_thread, "tick", NULL);
+}
 
+std::shared_ptr<wifiHandlerInterface> HardwareSimulator::wifi()
+{
+    return this->mWifiHandler;
 }
