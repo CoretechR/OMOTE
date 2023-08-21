@@ -71,9 +71,9 @@ void HardwareRevX::init() {
   // Make sure ESP32 is running at full speed
   setCpuFrequencyMhz(240);
 
-  mDisplay = Display::getInstance(std::shared_ptr<HardwareAbstract>(this));
-  mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
-  mWifiHandler = wifiHandler::getInstance(std::shared_ptr<HardwareAbstract>(this));
+  this->mDisplay = Display::getInstance(std::shared_ptr<HardwareAbstract>(this));
+  this->mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
+  this->mWifiHandler = wifiHandler::getInstance(std::shared_ptr<HardwareAbstract>(this));
   wakeup_reason = getWakeReason();
   initIO();
   setupBacklight();
@@ -111,6 +111,10 @@ std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
   return mInstance;
 }
 
+std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi()
+{
+  return this->mWifiHandler;
+}
 
 void HardwareRevX::activityDetection() {
   static int accXold;

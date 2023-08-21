@@ -1,7 +1,7 @@
 ﻿// OMOTE Hardware Abstraction
 // 2023 Matthew Colvin
-#ifndef _HARDWAREABSTRACT_H_
-#define _HARDWAREABSTRACT_H_
+#pragma once
+#include "wifiHandlerInterface.h"
 #include <functional>
 #include <lvgl.h>
 #include <memory>
@@ -9,17 +9,6 @@
 #include <string>
 #include <vector>
 #include "Notification.hpp"
-
-typedef struct {
-  std::string ssid;
-  int rssi;
-} WifiInfo;
-
-typedef struct {
-  bool isConnected;
-  std::string IP;
-  std::string ssid;
-}wifiStatus;
 
 class HardwareAbstract {
 public:
@@ -40,7 +29,7 @@ public:
   /// @param onBatteryStatusChangeHandler - Callable to be ran when batter status changes
   void onBatteryChange(std::function<void(batteryStatus)> onBatteryStatusChangeHandler);
   
-
+  virtual std::shared_ptr<wifiHandlerInterface> wifi() = 0;
   /// @brief Override in order to do setup of hardware devices
   virtual void init() = 0;
 
@@ -48,15 +37,9 @@ public:
   /// @param message - Debug message
   virtual void debugPrint(const char* fmt, ...) = 0;
 
-  Notification<std::shared_ptr<std::vector<WifiInfo>>> wifi_scan_done;
-  Notification<> wifi_scan_start;
-  Notification<std::shared_ptr<std::string>, std::shared_ptr<std::string>> wifi_connect;
-  Notification<std::shared_ptr<wifiStatus>> wifi_status_update;
-
   protected:
     Notification<batteryStatus> mBatteryNotification;
 
   private:
 
 };
-#endif

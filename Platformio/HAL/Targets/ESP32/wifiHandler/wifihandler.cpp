@@ -36,7 +36,7 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event){
         Serial.print(" found\n");
         //this->display.wifi_scan_complete( no_networks);
       }
-      mHardware->wifi_scan_done.notify(info);
+      this->scan_notification.notify(info);
       break;
     }
     case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -57,6 +57,9 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event){
   Serial.println(WiFi.status());
 }
 
+bool wifiHandler::isAvailable(){
+  return true;
+}
 std::shared_ptr<wifiHandler> wifiHandler::getInstance(std::shared_ptr<HardwareAbstract> aHardware)
 {
     if(mInstance)
@@ -70,8 +73,6 @@ std::shared_ptr<wifiHandler> wifiHandler::getInstance(std::shared_ptr<HardwareAb
 wifiHandler::wifiHandler(std::shared_ptr<HardwareAbstract> aHardware)
 {
     this->mHardware = aHardware;
-    this->mHardware->wifi_scan_start.onNotify([this](){this->mHardware->debugPrint("scan called\n"); this->scan();});
-    this->mHardware->wifi_connect.onNotify([this] (std::shared_ptr<std::string> ssid, std::shared_ptr<std::string> password){this->connect(ssid, password);});
     this->password = "";
     this->SSID = "";
     this->begin();
@@ -98,7 +99,7 @@ void wifiHandler::update_status()
   
 
   //Serial.println(WiFi.localIP());
-  this->mHardware->wifi_status_update.notify(status);
+  this->status_update.notify(status);
 }
 
 void wifiHandler::update_credentials()
@@ -176,6 +177,14 @@ void wifiHandler::begin()
     }
 
     WiFi.setSleep(true);
+}
+
+void wifiHandler::onScanDone(std::function<void (std::shared_ptr<std::vector<WifiInfo>>)> function){
+  this->scan_notification.onNotify(std::move(function));
+}
+
+void wifiHandler::onStatusUpdate(std::function<void (std::shared_ptr<wifiStatus>)> function){
+  this->status_update.onNotify(std::move(function));
 }
 
 void wifiHandler::connect(std::shared_ptr<std::string> ssid, std::shared_ptr<std::string> password)

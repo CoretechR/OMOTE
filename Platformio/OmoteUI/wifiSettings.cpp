@@ -52,7 +52,7 @@ void OmoteUI::password_field_event_cb(lv_event_t* e)
   const char* password = lv_textarea_get_text(ta);
   switch(code){
     case LV_EVENT_READY:
-      this->mHardware->wifi_connect.notify(std::make_shared<std::string>(std::string(ssid)), std::make_shared<std::string>(std::string(password)));
+      this->mHardware->wifi()->connect(std::make_shared<std::string>(std::string(ssid)), std::make_shared<std::string>(std::string(password)));
       lv_obj_clear_state(ta, LV_STATE_FOCUSED);
       this->hide_keyboard();
       this->reset_settings_menu();
@@ -73,7 +73,7 @@ void OmoteUI::connect_btn_cb(lv_event_t* event)
   lv_obj_t* ta = (lv_obj_t*) event->user_data;
   const char* password = lv_textarea_get_text(ta);
 
-  this->mHardware->wifi_connect.notify(std::make_shared<std::string>(std::string(ssid)), std::make_shared<std::string>(std::string(password)));
+  this->mHardware->wifi()->connect(std::make_shared<std::string>(std::string(ssid)), std::make_shared<std::string>(std::string(password)));
 //Trigger wifi connection here
   //wifihandler.connect(ssid, password);
   lv_obj_clear_state(ta, LV_STATE_FOCUSED);
@@ -233,8 +233,8 @@ void OmoteUI::create_wifi_settings(lv_obj_t* menu, lv_obj_t* parent)
   this->wifi_selection_page = this->create_wifi_selection_page(menu);
   this->wifi_password_page = this->create_wifi_password_page(this->settingsMenu);
   this->create_wifi_main_page(parent);
-  this->mHardware->wifi_scan_done.onNotify([this] (std::shared_ptr<std::vector<WifiInfo>> info) {this->wifi_scan_done(info);});
-  this->mHardware->wifi_status_update.onNotify([this] (std::shared_ptr<wifiStatus> status) {this->wifi_status(status);});
+  this->mHardware->wifi()->onScanDone([] (std::shared_ptr<std::vector<WifiInfo>> info) {mInstance->wifi_scan_done(info);});
+  this->mHardware->wifi()->onStatusUpdate([] (std::shared_ptr<wifiStatus> status) {mInstance->wifi_status(status);});
 }
 
 void OmoteUI::wifi_status(std::shared_ptr<wifiStatus> status)
@@ -305,7 +305,7 @@ void OmoteUI::wifi_settings_cb(lv_event_t* event)
   lv_obj_t* label = lv_label_create(cont);
   lv_label_set_text(label, "Searching for wifi networks");
   mHardware->debugPrint("Wifi settings cb called\n");
-  mHardware->wifi_scan_start.notify();
+  mHardware->wifi()->scan();
   //This will trigger an asynchronouse network scan
   // We need to trigger wifi search via HAL
   //wifihandler.scan();

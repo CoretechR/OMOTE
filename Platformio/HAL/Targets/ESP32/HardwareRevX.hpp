@@ -13,6 +13,7 @@
 #include <PubSubClient.h>
 #include <functional>
 #include <memory>
+#include "wifihandler.hpp"
 
 
 #include "omoteconfig.h"
@@ -30,13 +31,11 @@ public:
 
   // HardwareAbstract
   virtual void init() override;
-  #if 0
-  virtual void debugPrint(std::string aDebugMessage) override;
-  #else
   void debugPrint(const char* fmt, ...);
-  #endif
 
   void loopHandler();
+
+  std::shared_ptr<wifiHandlerInterface> wifi();
 
 protected:
   // Init Functions to setup hardware

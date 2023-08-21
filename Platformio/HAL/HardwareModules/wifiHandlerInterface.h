@@ -1,14 +1,24 @@
 #pragma once
 #include <string>
-#include "HardwareAbstract.hpp"
+#include <memory>
+#include <functional>
+
+typedef struct {
+  std::string ssid;
+  int rssi;
+} WifiInfo;
+
+typedef struct {
+  bool isConnected;
+  std::string IP;
+  std::string ssid;
+}wifiStatus;
 
 class wifiHandlerInterface{
     public:
-        virtual void begin() = 0;
-        //virtual void connect(const char* SSID, const char* password) = 0;
-        virtual void disconnect() = 0;
-        virtual bool isConnected() = 0;
-        virtual void turnOff() = 0;
+        virtual bool isAvailable() = 0;
         virtual void scan() = 0;
-        virtual std::string getIP() = 0;
+        virtual void connect(std::shared_ptr<std::string> ssid, std::shared_ptr<std::string> password) = 0;
+        virtual void onScanDone(std::function<void (std::shared_ptr<std::vector<WifiInfo>>)> function) = 0;
+        virtual void onStatusUpdate(std::function<void (std::shared_ptr<wifiStatus>)> function) = 0;
 };
