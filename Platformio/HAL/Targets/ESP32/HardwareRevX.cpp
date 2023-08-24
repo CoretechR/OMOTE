@@ -71,9 +71,12 @@ void HardwareRevX::init() {
   // Make sure ESP32 is running at full speed
   setCpuFrequencyMhz(240);
 
-  mDisplay = Display::getInstance(std::shared_ptr<HardwareAbstract>());
+  mDisplay = Display::getInstance();
   mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
   mWifiHandler = wifiHandler::getInstance();
+
+  mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = SLEEP_TIMEOUT;});
+
   wakeup_reason = getWakeReason();
   initIO();
   setupBacklight();
@@ -301,15 +304,7 @@ void HardwareRevX::setupIMU() {
 }
 
 void HardwareRevX::slowDisplayWakeup() {
-  // Slowly charge the VSW voltage to prevent a brownout
-  // Workaround for hardware rev 1!
-  for (int i = 0; i < 100; i++) {
-    digitalWrite(LCD_EN, HIGH); // LCD Logic off
-    delayMicroseconds(1);
-    digitalWrite(LCD_EN, LOW); // LCD Logic on
-  }
 
-  delay(100); // Wait for the LCD driver to power on
 }
 
 void HardwareRevX::setupIR() {

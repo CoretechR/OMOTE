@@ -20,7 +20,7 @@
 class Display: public DisplayAbstract
 {
     public:
-        static std::shared_ptr<Display> getInstance(std::shared_ptr<HardwareAbstract> aHardware);
+        static std::shared_ptr<Display> getInstance();
         
         virtual void setBrightness(uint8_t brightness) override;
         virtual void turnOff() override;
@@ -32,7 +32,7 @@ class Display: public DisplayAbstract
         virtual void screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) override;
         
     private:
-        Display(int backlight_pin, int enable_pin, std::shared_ptr<HardwareAbstract> aHardware);
+        Display(int backlight_pin, int enable_pin);
         void setupTFT();
         void setupTouchScreen();
         
@@ -43,6 +43,5 @@ class Display: public DisplayAbstract
         Adafruit_FT6206 touch;
         TS_Point touchPoint;
         TS_Point oldPoint;
-        std::shared_ptr<HardwareAbstract> mHardware; 
         Notification<TS_Point> mTouchEvent;
 };
