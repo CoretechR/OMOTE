@@ -58,9 +58,15 @@ void Display::setupTouchScreen(){
     touch.begin(128); // Initialize touchscreen and set sensitivity threshold
 }
 
-void Display::setBrightness(uint8_t brigthness)
+void Display::setBrightness(uint8_t brightness)
 {
-    ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, brigthness);
+  mAwakeBrightness = brightness;
+  startFade();
+}
+
+void Display::setCurrentBrightness(uint8_t brightness){
+  mBrightness = brightness;
+  ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, mBrightness);
 }
 
 void Display::turnOff()
@@ -99,6 +105,40 @@ void Display::screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data){
     // Serial.println( touchY );
     // tft.drawFastHLine(0, screenHeight - touchY, screenWidth, TFT_RED);
     // tft.drawFastVLine(screenWidth - touchX, 0, screenHeight, TFT_RED);
+  }
+}
+
+void Display::fadeImpl(void* ){
+  bool fadeDone = false;
+  while(!fadeDone){
+    fadeDone = getInstance()->fade();
+    vTaskDelay(3 / portTICK_PERIOD_MS); // 3 miliseconds between steps 
+    // 0 - 255 will take about .75 seconds to fade up. 
+  }
+  vTaskDelete(getInstance()->mDisplayFadeTask);
+  getInstance()->mDisplayFadeTask = nullptr;
+}
+
+bool Display::fade(){
+  //Early return no fade needed. 
+  if (mBrightness == mAwakeBrightness ||
+      isAsleep && mBrightness == 0){return true;} 
+  
+  bool fadeDown = isAsleep || mBrightness > mAwakeBrightness; 
+  if (fadeDown){
+    setCurrentBrightness(mBrightness - 1);
+    auto setPoint = isAsleep ? 0 : mAwakeBrightness;
+    return mBrightness == setPoint;
+  }else{
+    setCurrentBrightness(mBrightness + 1);
+    return mBrightness == mAwakeBrightness;
+  }
+}
+
+void Display::startFade(){
+  if(mDisplayFadeTask != nullptr){// Already have fade task no need to start another.
+    xTaskCreate(&Display::fadeImpl, "Display Fade Task",
+                  1024, nullptr, 5, &mDisplayFadeTask);
   }
 }
 
