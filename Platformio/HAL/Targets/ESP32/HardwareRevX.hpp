@@ -19,8 +19,7 @@
 #include "omoteconfig.h"
 #include "BatteryInterface.h"
 #include "wifiHandlerInterface.h"
-#include "DisplayAbstract.h"
-
+#include "display.hpp"
 
 class HardwareRevX : public HardwareAbstract {
 public:
@@ -31,12 +30,15 @@ public:
 
   // HardwareAbstract
   virtual void init() override;
-  void debugPrint(const char* fmt, ...);
+  virtual void debugPrint(const char* fmt, ...) override;
 
+  virtual std::shared_ptr<BatteryInterface> battery() override;
+  virtual std::shared_ptr<DisplayAbstract> display() override;
+  virtual std::shared_ptr<wifiHandlerInterface> wifi() override;
+  
+  /// @brief To be ran in loop out in main
+  // TODO move to a freertos task
   void loopHandler();
-
-  std::shared_ptr<wifiHandlerInterface> wifi();
-
 protected:
   // Init Functions to setup hardware
   void initIO();
@@ -60,9 +62,9 @@ protected:
 private:
   HardwareRevX();
 
-  std::shared_ptr<BatteryInterface> mBattery;
-  std::shared_ptr<wifiHandlerInterface> mWifiHandler;
-  std::shared_ptr<DisplayAbstract> mDisplay;
+  std::shared_ptr<Battery> mBattery;
+  std::shared_ptr<Display> mDisplay;
+  std::shared_ptr<wifiHandler> mWifiHandler;
   // IMU Motion Detection
   LIS3DH IMU = LIS3DH(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
   int standbyTimer = SLEEP_TIMEOUT;

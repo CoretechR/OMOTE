@@ -71,9 +71,9 @@ void HardwareRevX::init() {
   // Make sure ESP32 is running at full speed
   setCpuFrequencyMhz(240);
 
-  this->mDisplay = Display::getInstance(std::shared_ptr<HardwareAbstract>(this));
-  this->mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
-  this->mWifiHandler = wifiHandler::getInstance(std::shared_ptr<HardwareAbstract>(this));
+  mDisplay = Display::getInstance(std::shared_ptr<HardwareAbstract>());
+  mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
+  mWifiHandler = wifiHandler::getInstance();
   wakeup_reason = getWakeReason();
   initIO();
   setupBacklight();
@@ -86,11 +86,6 @@ void HardwareRevX::init() {
   debugPrint("Finished Hardware Setup in %d", millis());
 }
 
-#if 0
-void HardwareRevX::debugPrint(std::string aDebugMessage) {
-  Serial.print(aDebugMessage.c_str());
-}
-#else
 void HardwareRevX::debugPrint(const char* fmt, ...)
 {
   char result[100];
@@ -102,7 +97,6 @@ void HardwareRevX::debugPrint(const char* fmt, ...)
 
   Serial.print(result);
 }
-#endif
 
 std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
   if (!mInstance) {
@@ -113,7 +107,15 @@ std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
 
 std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi()
 {
-  return this->mWifiHandler;
+  return mWifiHandler;
+}
+
+std::shared_ptr<BatteryInterface> HardwareRevX::battery(){
+  return mBattery;
+}
+
+std::shared_ptr<DisplayAbstract> HardwareRevX::display(){
+  return mDisplay;
 }
 
 void HardwareRevX::activityDetection() {
@@ -326,9 +328,7 @@ void HardwareRevX::startTasks() {
 
 void HardwareRevX::updateBatteryTask(void*){
   while(true){
-    if(auto status = mInstance->getBatteryStatus(); status.has_value()){
-      mInstance->mBatteryNotification.notify(status.value());
-    }
+    mInstance->battery()->NotifyCurrentStatus();
     vTaskDelay(5000 / portTICK_PERIOD_MS);
   }
 }

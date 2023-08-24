@@ -31,12 +31,18 @@ HardwareSimulator::HardwareSimulator(): HardwareAbstract(){
     /* Tick init.
      * You have to call 'lv_tick_inc()' in periodically to inform LittelvGL about how much time were elapsed
      * Create an SDL thread to do this*/
-    this->mDisplay = SDLDisplay::getInstance();
-    this->mWifiHandler = std::make_shared<wifiHandlerSim>(wifiHandlerSim());
+    mBattery = std::make_shared<BatterySimulator>();
+    mDisplay = SDLDisplay::getInstance();
+    mWifiHandler = std::make_shared<wifiHandlerSim>();
     SDL_CreateThread(tick_thread, "tick", NULL);
 }
 
-std::shared_ptr<wifiHandlerInterface> HardwareSimulator::wifi()
-{
-    return this->mWifiHandler;
+std::shared_ptr<BatteryInterface> HardwareSimulator::battery(){
+    return mBattery;
+}
+std::shared_ptr<DisplayAbstract> HardwareSimulator::display(){
+    return mDisplay;
+}
+std::shared_ptr<wifiHandlerInterface> HardwareSimulator::wifi(){
+    return mWifiHandler;
 }
