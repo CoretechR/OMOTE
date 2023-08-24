@@ -29,8 +29,8 @@ class Display: public DisplayAbstract
     
         void onTouch(Notification<TS_Point>::HandlerTy aTouchHandler);
 
-        void wake() {isAsleep = false; startFade();}
-        void sleep() {isAsleep = true; startFade();}
+        inline void wake() {if(isAsleep) {isAsleep = false; startFade();}}
+        inline void sleep() {if(!isAsleep){isAsleep = true; startFade();}}
 
     protected:
         virtual void flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p);
@@ -42,7 +42,7 @@ class Display: public DisplayAbstract
         bool fade();
         /// @brief Start the Fade task 
         void startFade();
-        
+
         /// @brief Set the actual display brightness right now
         /// @param brightness 
         void setCurrentBrightness(uint8_t brightness);

@@ -254,6 +254,7 @@ void HardwareRevX::configIMUInterrupts() {
   IMU.writeRegister(LIS3DH_CTRL_REG3, dataToWrite);
 }
 
+// TODO move to display 
 void HardwareRevX::setupBacklight() {
   // Configure the backlight PWM
   // Manual setup because ledcSetup() briefly turns on the backlight
@@ -286,8 +287,6 @@ void HardwareRevX::restorePreferences() {
   }
 }
 
-
-
 void HardwareRevX::setupIMU() {
   // Setup hal
   IMU.settings.accelSampleRate =
@@ -303,8 +302,17 @@ void HardwareRevX::setupIMU() {
   IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
 }
 
+// TODO move to display
 void HardwareRevX::slowDisplayWakeup() {
+  // Slowly charge the VSW voltage to prevent a brownout
+  // Workaround for hardware rev 1!
+  for (int i = 0; i < 100; i++) {
+    digitalWrite(LCD_EN, HIGH); // LCD Logic off
+    delayMicroseconds(1);
+    digitalWrite(LCD_EN, LOW); // LCD Logic on
+  }
 
+  delay(100); // Wait for the LCD driver to power on
 }
 
 void HardwareRevX::setupIR() {
@@ -329,21 +337,8 @@ void HardwareRevX::updateBatteryTask(void*){
 }
 
 void HardwareRevX::loopHandler() {
-
-  // TODO Move the backlight handling into task that spawns when the backlight
-  // setting changes and then gets deleted when the setting is achieved.
-  // Update Backlight brightness
-  static int fadeInTimer = millis(); // fadeInTimer = time after setup
-  if (millis() <
-      fadeInTimer + backlight_brightness) { // Fade in the backlight brightness
-    ledcWrite(5, millis() - fadeInTimer);
-  } else { // Dim Backlight before entering standby
-    if (standbyTimer < 2000)
-      ledcWrite(5, 85); // Backlight dim
-    else
-      ledcWrite(5, backlight_brightness); // Backlight on
-  }
-
+  standbyTimer < 2000 ? mDisplay->sleep() : mDisplay->wake();
+  
   // TODO move to debug task
   // Blink debug LED at 1 Hz
   digitalWrite(USER_LED, millis() % 1000 > 500);
@@ -358,30 +353,6 @@ void HardwareRevX::loopHandler() {
     }
     IMUTaskTimer = millis();
   }
-
-  // TODO Convert to free RTOS task
-
-  // TODO Create batter change notification for UI
-
-  //   if (battery_ischarging || (!battery_ischarging && battery_voltage >
-  //   4350)) {
-  //     lv_label_set_text(objBattPercentage, "");
-  //     lv_label_set_text(objBattIcon, LV_SYMBOL_USB);
-  //   } else {
-  //     // Update status bar battery indicator
-  //     // lv_label_set_text_fmt(objBattPercentage, "%d%%",
-  //     battery_percentage); if (battery_percentage > 95)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_FULL);
-  //     else if (battery_percentage > 75)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_3);
-  //     elsse if (battery_percentage > 25)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_1);
-  //     e if (battery_percentage > 50)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_2);
-  //     elelse
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_EMPTY);
-  //   }
-  // }
 
   // Keypad Handling
   customKeypad.getKey(); // Populate key list
