@@ -15,8 +15,7 @@
 /// of resources.
 class OmoteUI {
 public:
-  OmoteUI(std::shared_ptr<HardwareAbstract> aHardware)
-      : mHardware(aHardware){};
+  OmoteUI(std::shared_ptr<HardwareAbstract> aHardware);
 
   static std::weak_ptr<OmoteUI> getRefrence() { return getInstance(); };
   static std::shared_ptr<OmoteUI>

@@ -9,6 +9,16 @@ std::shared_ptr<OmoteUI> OmoteUI::mInstance = nullptr;
 // #if defined(IS_SIMULATOR) && (IS_SIMULATOR == true)
 // #endif
 
+OmoteUI::OmoteUI(std::shared_ptr<HardwareAbstract> aHardware) : mHardware(aHardware){
+  mHardware->battery()->onBatteryStatusChange([this](int percent, bool isCharging){ 
+      if(percent > 95) lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_FULL);
+      else if(percent > 75) lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_3);
+      else if(percent > 50) lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_2);
+      else if(percent > 25) lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_1);
+      else lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_EMPTY);
+  });
+}
+
 // Set the page indicator scroll position relative to the tabview scroll
 // position
 void OmoteUI::store_scroll_value_event_cb(lv_event_t *e) {
