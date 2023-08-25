@@ -26,6 +26,7 @@ class wifiHandlerSim: public wifiHandlerInterface {
          */
         void scan();
         bool isAvailable();
+        void begin();
         void onScanDone(std::function<void (std::shared_ptr<std::vector<WifiInfo>>)> function);
         void onStatusUpdate(std::function<void (std::shared_ptr<wifiStatus>)> function);
     private:

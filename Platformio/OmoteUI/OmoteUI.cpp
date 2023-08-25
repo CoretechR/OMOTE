@@ -463,4 +463,5 @@ void OmoteUI::layout_UI() {
   lv_obj_set_size(img2, 30, 30);
 
   this->create_status_bar();
+  this->mHardware->wifi()->begin();
 }

@@ -16,6 +16,10 @@ wifiHandlerSim::wifiHandlerSim(){
 
 }
 
+void wifiHandlerSim::begin(){
+
+}
+
 static wifiStatus status = {
     .isConnected = true
     , .IP = "172.0.0.1"

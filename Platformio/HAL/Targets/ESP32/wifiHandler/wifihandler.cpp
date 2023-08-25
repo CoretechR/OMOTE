@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <Preferences.h>
 #include "HardwareAbstract.hpp"
+#include "WiFi.h"
 
 std::shared_ptr<wifiHandler> wifiHandler::mInstance = nullptr;
 
@@ -37,6 +38,10 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event){
         //this->display.wifi_scan_complete( no_networks);
       }
       this->scan_notification.notify(info);
+      if (WiFi.isConnected() == false)
+      {
+        WiFi.reconnect();
+      }
       break;
     }
     case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -47,6 +52,8 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event){
     case ARDUINO_EVENT_WIFI_STA_STOP:
       this->update_status();
     default:
+      Serial.print("Wifi Status: ");
+      Serial.println(WiFi.status());
       break;
   }
   if (WiFi.status() == WL_CONNECT_FAILED)
@@ -74,7 +81,6 @@ wifiHandler::wifiHandler()
 {
     this->password = "";
     this->SSID = "";
-    this->begin();
 }
 
 void wifiHandler::update_status()
@@ -137,6 +143,12 @@ void wifiHandler::update_credentials()
 void wifiHandler::scan()
 {
   Serial.println("scan called");
+  /* If the */
+  WiFi.status();
+  if (WiFi.isConnected() != true)
+  {
+    WiFi.disconnect();
+  }
     WiFi.scanNetworks(true);
 }
 
@@ -164,7 +176,7 @@ void wifiHandler::begin()
         //strcpy(this->password, password.c_str());
         this->SSID = ssid.c_str();
         this->password = password.c_str();
-        //this->connect(this->SSID, this->password);
+        //this->connect(std::make_shared<std::string>(std::string(this->SSID)), std::make_shared<std::string>(std::string(this->password)));
     }
     else
     {
