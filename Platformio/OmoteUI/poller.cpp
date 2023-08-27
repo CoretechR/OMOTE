@@ -1,0 +1,23 @@
+#include "poller.hpp"
+
+#include <functional>
+#include <memory>
+
+using namespace std::chrono;
+
+poller::poller(milliseconds aPollTime,std::function<void()> aCallback){
+    mTimer = lv_timer_create(poller::onPoll,aPollTime.count(),this);
+    lv_timer_set_repeat_count(mTimer,-1); // Call forever
+}
+
+poller::~poller(){
+    lv_timer_del(mTimer);
+}
+
+void poller::onPoll(_lv_timer_t* aTimer){
+    poller* currentPoller = reinterpret_cast<poller*>(aTimer->user_data);
+    
+    if(currentPoller->anIntermittentCallback){
+        currentPoller->anIntermittentCallback();
+    }
+}

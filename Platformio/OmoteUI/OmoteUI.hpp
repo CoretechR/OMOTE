@@ -9,7 +9,7 @@
 #include <memory>
 #include <stdio.h>
 #include <string>
-
+#include "poller.hpp"
 
 /// @brief Singleton to allow UI code to live separately from the Initialization
 /// of resources.
