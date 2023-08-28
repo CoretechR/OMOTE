@@ -116,7 +116,7 @@ void OmoteUI::create_status_bar(){
   lv_obj_align(this->objBattIcon, LV_ALIGN_RIGHT_MID, 8, 0);
   lv_obj_set_style_text_font(this->objBattIcon, &lv_font_montserrat_16, LV_PART_MAIN);
 
-   batteryPoller = poller([&batteryIcon = objBattIcon, battery = mHardware->battery()](){ 
+   batteryPoller = std::make_unique<poller>([&batteryIcon = objBattIcon, battery = mHardware->battery()](){ 
       auto percent = battery->getPercentage();
       if(percent > 95) lv_label_set_text(batteryIcon, LV_SYMBOL_BATTERY_FULL);
       else if(percent > 75) lv_label_set_text(batteryIcon, LV_SYMBOL_BATTERY_3);

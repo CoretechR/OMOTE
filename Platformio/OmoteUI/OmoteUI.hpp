@@ -76,7 +76,7 @@ private:
   static std::shared_ptr<OmoteUI> mInstance;
   std::shared_ptr<HardwareAbstract> mHardware;
   
-  poller batteryPoller;
+  std::unique_ptr<poller> batteryPoller;
   
   void reset_settings_menu();
   void attach_keyboard(lv_obj_t* textarea);

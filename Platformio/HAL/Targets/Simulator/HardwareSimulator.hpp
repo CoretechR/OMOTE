@@ -5,6 +5,8 @@
 #include "SDLDisplay.hpp"
 #include "wifiHandlerSim.hpp"
 
+#include <thread>
+
 class HardwareSimulator : public HardwareAbstract {
 public:
   HardwareSimulator();
@@ -23,6 +25,8 @@ public:
   virtual std::shared_ptr<wifiHandlerInterface> wifi() override;
 
 private:
+  std::thread mTickThread;
+
   std::shared_ptr<BatterySimulator> mBattery;
   std::shared_ptr<SDLDisplay> mDisplay;
   std::shared_ptr<wifiHandlerSim> mWifiHandler;

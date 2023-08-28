@@ -13,6 +13,7 @@ poller::poller(std::function<void()> aOnPollCb, milliseconds aPollTime):mIntermi
 poller::~poller(){
     if(mTimer){
         lv_timer_del(mTimer);
+        mTimer = nullptr;
     }
 }
 

@@ -54,10 +54,6 @@ protected:
 
   // Tasks
   void startTasks();
-  /// @brief Send Battery Notification every 5 Seconds
-  static void updateBatteryTask(void *);
-
-  TaskHandle_t batteryUpdateTskHndl = nullptr;
 
 private:
   HardwareRevX();

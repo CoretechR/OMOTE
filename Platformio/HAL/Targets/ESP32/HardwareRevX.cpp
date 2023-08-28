@@ -322,19 +322,7 @@ void HardwareRevX::setupIR() {
   IrReceiver.enableIRIn();    // Start the receiver
 }
 
-void HardwareRevX::startTasks() {
-  if (xTaskCreate(&HardwareRevX::updateBatteryTask, "Battery Percent Update",
-                  1024, nullptr, 5, &batteryUpdateTskHndl) != pdPASS) {
-    debugPrint("ERROR Could not Create Battery Update Task!");
-  }
-}
-
-void HardwareRevX::updateBatteryTask(void*){
-  while(true){
-    mInstance->battery()->NotifyCurrentStatus();
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
-  }
-}
+void HardwareRevX::startTasks() {}
 
 void HardwareRevX::loopHandler() {
   standbyTimer < 2000 ? mDisplay->sleep() : mDisplay->wake();

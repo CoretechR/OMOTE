@@ -5,7 +5,6 @@
 
 class poller{
 public:
-    poller(){};
     poller(std::function<void()> aOnPollCb, std::chrono::milliseconds pollTime = std::chrono::seconds(5));
     virtual ~poller();
 
