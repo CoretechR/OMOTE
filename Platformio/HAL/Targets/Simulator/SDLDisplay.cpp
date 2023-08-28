@@ -13,6 +13,10 @@ void SDLDisplay::setBrightness(uint8_t brightness){
 
 }
 
+uint8_t SDLDisplay::getBrightness(){
+    
+}
+
 void SDLDisplay::turnOff(){
 
 }

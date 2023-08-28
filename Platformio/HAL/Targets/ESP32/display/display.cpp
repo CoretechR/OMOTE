@@ -64,6 +64,10 @@ void Display::setBrightness(uint8_t brightness)
   startFade();
 }
 
+uint8_t Display::getBrightness(){
+  return mAwakeBrightness;
+}
+
 void Display::setCurrentBrightness(uint8_t brightness){
   mBrightness = brightness;
   ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, mBrightness);

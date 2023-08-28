@@ -69,7 +69,6 @@ private:
 
   Preferences preferences;
   bool wakeupByIMUEnabled = true;
-  int backlight_brightness = 255;
   byte currentDevice = 1; // Current Device to control (allows switching
                           // mappings between devices)
 

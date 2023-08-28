@@ -25,6 +25,7 @@ class Display: public DisplayAbstract
         /// @brief Set brightness setting and fade to it
         /// @param brightness 
         virtual void setBrightness(uint8_t brightness) override;
+        virtual uint8_t getBrightness() override;
         virtual void turnOff() override;
     
         void onTouch(Notification<TS_Point>::HandlerTy aTouchHandler);

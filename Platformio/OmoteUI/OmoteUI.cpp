@@ -29,7 +29,8 @@ void OmoteUI::tabview_device_event_cb(lv_event_t *e) {
 // Slider Event handler
 void OmoteUI::bl_slider_event_cb(lv_event_t *e) {
   lv_obj_t *slider = lv_event_get_target(e);
-  backlight_brightness = std::clamp(lv_slider_get_value(slider), 60, 255);
+  auto newBrightness = std::clamp(lv_slider_get_value(slider), 60, 255);
+  mHardware->display()->setBrightness(newBrightness);
 }
 
 // Apple Key Event handler

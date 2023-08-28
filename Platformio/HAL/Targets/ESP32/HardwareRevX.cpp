@@ -148,7 +148,7 @@ void HardwareRevX::activityDetection() {
 void HardwareRevX::enterSleep() {
   // Save settings to internal flash memory
   preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
-  preferences.putUChar("blBrightness", backlight_brightness);
+  preferences.putUChar("blBrightness", mDisplay->getBrightness());
   preferences.putUChar("currentDevice", currentDevice);
   if (!preferences.getBool("alreadySetUp"))
     preferences.putBool("alreadySetUp", true);
@@ -279,12 +279,14 @@ void HardwareRevX::setupBacklight() {
 
 void HardwareRevX::restorePreferences() {
   // Restore settings from internal flash memory
+  int backlight_brightness = 255;
   preferences.begin("settings", false);
   if (preferences.getBool("alreadySetUp")) {
     wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
     backlight_brightness = preferences.getUChar("blBrightness");
     currentDevice = preferences.getUChar("currentDevice");
   }
+  mDisplay->setBrightness(backlight_brightness);
 }
 
 void HardwareRevX::setupIMU() {

@@ -6,6 +6,7 @@ class DisplayAbstract
     public:
         DisplayAbstract();
         virtual void setBrightness(uint8_t brightness) = 0;
+        virtual uint8_t getBrightness() = 0;
         virtual void turnOff() = 0;
     
     protected:

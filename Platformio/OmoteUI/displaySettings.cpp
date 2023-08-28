@@ -18,12 +18,12 @@ void OmoteUI::display_settings(lv_obj_t* parent)
   lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
   lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_set_style_bg_color(slider, lv_color_lighten(color_primary, 50), LV_PART_MAIN);
-  lv_slider_set_value(slider, this->backlight_brightness, LV_ANIM_OFF);
+  lv_slider_set_value(slider, mHardware->display()->getBrightness() , LV_ANIM_OFF);
   lv_obj_set_size(slider, lv_pct(66), 10);
   lv_obj_align(slider, LV_ALIGN_TOP_MID, 0, 3);
   brightnessIcon = imgs.addHighBrightnessIcon(menuBox);
   lv_obj_align(brightnessIcon, LV_ALIGN_TOP_RIGHT, 0, -1);
-  lv_obj_add_event_cb(slider, [] (lv_event_t* e) {mInstance->bl_slider_event_cb(e);}, LV_EVENT_VALUE_CHANGED, &this->backlight_brightness);
+  lv_obj_add_event_cb(slider, [] (lv_event_t* e) {mInstance->bl_slider_event_cb(e);}, LV_EVENT_VALUE_CHANGED, nullptr);
   
   menuLabel = lv_label_create(menuBox);
   lv_label_set_text(menuLabel, "Lift to Wake");

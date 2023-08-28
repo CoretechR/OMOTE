@@ -229,12 +229,6 @@ void create_keyboard();
    */
   void update_wifi_selection_subpage(int page);
 
-/************************************** Display settings menu ********************************************************/
-  /**
-   * Variable to store the current backlight brightness level
-  */
-  unsigned int backlight_brightness;
-
   /**
    * @brief Function to create the display settings page.
    * 

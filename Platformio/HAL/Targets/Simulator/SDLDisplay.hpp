@@ -6,8 +6,9 @@ class SDLDisplay : public DisplayAbstract{
 public:
     static std::shared_ptr<SDLDisplay> getInstance();
 
-    void setBrightness(uint8_t brightness);
-    void turnOff();
+    virtual void setBrightness(uint8_t brightness) override;
+    virtual uint8_t getBrightness() override;
+    virtual void turnOff() override;
 
 protected:
     virtual void flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) override;
