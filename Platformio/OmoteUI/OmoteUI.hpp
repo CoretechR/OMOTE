@@ -75,6 +75,9 @@ public:
 private:
   static std::shared_ptr<OmoteUI> mInstance;
   std::shared_ptr<HardwareAbstract> mHardware;
+  
+  poller batteryPoller;
+  
   void reset_settings_menu();
   void attach_keyboard(lv_obj_t* textarea);
   std::shared_ptr<std::vector<WifiInfo>> found_wifi_networks;

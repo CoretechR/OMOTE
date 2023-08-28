@@ -5,7 +5,8 @@
 
 class poller{
 public:
-    poller(std::chrono::milliseconds pollTime = std::chrono::seconds(5), std::function<void()> anIntermittentCallback = nullptr);
+    poller(){};
+    poller(std::function<void()> aOnPollCb, std::chrono::milliseconds pollTime = std::chrono::seconds(5));
     virtual ~poller();
 
     void setPollPeriod(std::chrono::milliseconds aPollPeriod){ lv_timer_set_period(mTimer, aPollPeriod.count());}
@@ -15,8 +16,8 @@ public:
     inline void runNext() { lv_timer_ready(mTimer);}
 
 private: 
-    lv_timer_t* mTimer;
-    std::function<void()> anIntermittentCallback;
+    lv_timer_t* mTimer = nullptr;
+    std::function<void()> mIntermittentCallback = nullptr;
     
     // Static function registered to every timers callback to pass this object as context
     static void onPoll(_lv_timer_t* aTimer);
