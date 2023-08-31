@@ -1,13 +1,7 @@
 #include "HardwareSimulator.hpp"
-#include <unistd.h>
-#include "SDL2/SDL.h"
-#include "display/monitor.h"
-#include "indev/mouse.h"
-#include "indev/mousewheel.h"
-#include "indev/keyboard.h"
-#include "sdl/sdl.h"
 
 #include "SDLDisplay.hpp"
+#include <sstream>
 
 HardwareSimulator::HardwareSimulator(): HardwareAbstract(), 
     mTickThread([](){
@@ -18,7 +12,30 @@ HardwareSimulator::HardwareSimulator(): HardwareAbstract(),
     mBattery(std::make_shared<BatterySimulator>()),
     mDisplay(SDLDisplay::getInstance()),
     mWifiHandler(std::make_shared<wifiHandlerSim>())
-{}
+{
+    mHardwareStatusTitleUpdate = std::thread([this] {
+        int dataToShow = 0;
+        while (true)
+        {
+            std::stringstream title;
+            switch (dataToShow){
+                case 0:
+                    title << "Batt:" << mBattery->getPercentage() << "%" << std::endl;
+                    break;
+                case 1:
+                    title << "BKLght: " << static_cast<int>(mDisplay->getBrightness()) << std::endl;
+                    dataToShow = -1;
+                    break;
+                default:
+                    dataToShow = -1;
+            }
+            dataToShow++;
+            
+            mDisplay->setTitle(title.str());
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+        }
+    });
+}
 
 std::shared_ptr<BatteryInterface> HardwareSimulator::battery(){
     return mBattery;

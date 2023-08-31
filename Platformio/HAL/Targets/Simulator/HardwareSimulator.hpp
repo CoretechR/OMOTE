@@ -26,6 +26,7 @@ public:
 
 private:
   std::thread mTickThread;
+  std::thread mHardwareStatusTitleUpdate;
 
   std::shared_ptr<BatterySimulator> mBattery;
   std::shared_ptr<SDLDisplay> mDisplay;
