@@ -63,6 +63,7 @@ class Display: public DisplayAbstract
         Notification<TS_Point> mTouchEvent;
 
         TaskHandle_t mDisplayFadeTask = nullptr;
+        SemaphoreHandle_t mFadeTaskMutex = nullptr;
         static void fadeImpl(void* aBrightness);
 
         uint8_t mBrightness = 0; // Current display brightness

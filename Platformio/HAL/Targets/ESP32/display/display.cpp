@@ -7,7 +7,7 @@ std::shared_ptr<Display> Display::getInstance()
 {
     if (DisplayAbstract::mInstance == nullptr)
     {
-        DisplayAbstract::mInstance  = std::shared_ptr<Display>(new Display(LCD_EN, LCD_BL));
+        DisplayAbstract::mInstance  = std::shared_ptr<Display>(new Display(LCD_BL, LCD_EN));
     }
     return std::static_pointer_cast<Display>(mInstance);
 }
@@ -38,6 +38,8 @@ Display::Display(int backlight_pin, int enable_pin): DisplayAbstract(),
     }  
 
     setupTouchScreen();
+    mFadeTaskMutex = xSemaphoreCreateBinary();
+    xSemaphoreGive(mFadeTaskMutex);
 }
 
 void Display::onTouch(Notification<TS_Point>::HandlerTy aTouchHandler){
@@ -61,6 +63,8 @@ void Display::setupTouchScreen(){
 void Display::setBrightness(uint8_t brightness)
 {
   mAwakeBrightness = brightness;
+  Serial.print("Set Brightness:");
+  Serial.println(mAwakeBrightness);
   startFade();
 }
 
@@ -70,7 +74,10 @@ uint8_t Display::getBrightness(){
 
 void Display::setCurrentBrightness(uint8_t brightness){
   mBrightness = brightness;
-  ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, mBrightness);
+  auto duty = abs(255 - static_cast<int>(mBrightness));
+  ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, duty);
+  Serial.print("Current Brightness:");
+  Serial.println(mBrightness);
 }
 
 void Display::turnOff()
@@ -119,8 +126,12 @@ void Display::fadeImpl(void* ){
     vTaskDelay(3 / portTICK_PERIOD_MS); // 3 miliseconds between steps 
     // 0 - 255 will take about .75 seconds to fade up. 
   }
-  vTaskDelete(getInstance()->mDisplayFadeTask);
+  
+  xSemaphoreTake(getInstance()->mFadeTaskMutex,portMAX_DELAY);
   getInstance()->mDisplayFadeTask = nullptr;
+  xSemaphoreGive(getInstance()->mFadeTaskMutex);
+
+  vTaskDelete(nullptr); // Delete Fade Task
 }
 
 bool Display::fade(){
@@ -140,10 +151,13 @@ bool Display::fade(){
 }
 
 void Display::startFade(){
-  if(mDisplayFadeTask != nullptr){// Already have fade task no need to start another.
+  xSemaphoreTake(mFadeTaskMutex,portMAX_DELAY);
+  // Only Create Task if it is needed
+  if(mDisplayFadeTask == nullptr){
     xTaskCreate(&Display::fadeImpl, "Display Fade Task",
                   1024, nullptr, 5, &mDisplayFadeTask);
   }
+  xSemaphoreGive(mFadeTaskMutex);
 }
 
 void Display::flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {

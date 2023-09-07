@@ -14,7 +14,7 @@ void OmoteUI::display_settings(lv_obj_t* parent)
   lv_obj_t* brightnessIcon = imgs.addLowBrightnessIcon(menuBox);
   lv_obj_align(brightnessIcon, LV_ALIGN_TOP_LEFT, 0, 0);
   lv_obj_t* slider = lv_slider_create(menuBox);
-  lv_slider_set_range(slider, 30, 255);
+  lv_slider_set_range(slider, 0, 255);
   lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
   lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_set_style_bg_color(slider, lv_color_lighten(color_primary, 50), LV_PART_MAIN);
