@@ -288,6 +288,9 @@ void OmoteUI::layout_UI() {
 
   appleImg = imgs.addAppleDisplayImage(button);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, -3, 0);
+  lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_align(appleImg, LV_ALIGN_CENTER, -3, 0);
 
   button = lv_btn_create(tab3);
   lv_obj_align(button, LV_ALIGN_BOTTOM_RIGHT, -10, 0);
@@ -297,6 +300,9 @@ void OmoteUI::layout_UI() {
   lv_obj_add_event_cb(button, [] (lv_event_t* e) {mInstance->appleKey_event_cb(e);}, LV_EVENT_CLICKED, (void*)2);
 
   appleImg = imgs.addAppleDisplayImage(button);
+  lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, 0);
 
   this->setup_settings(tab1);

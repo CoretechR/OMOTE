@@ -16,6 +16,7 @@
 #include "wifihandler.hpp"
 
 
+
 #include "omoteconfig.h"
 #include "BatteryInterface.h"
 #include "wifiHandlerInterface.h"
