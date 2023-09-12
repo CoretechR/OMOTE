@@ -26,11 +26,6 @@ Display::Display(int backlight_pin, int enable_pin): DisplayAbstract(),
 
     setupBacklight(); // This eliminates the flash of the backlight
 
-    // This backlight init causes the backlight to come on full during startup
-    // ledcSetup(LCD_BACKLIGHT_LEDC_CHANNEL, LCD_BACKLIGHT_LEDC_FREQUENCY, LCD_BACKLIGHT_LEDC_BIT_RESOLUTION);
-    // ledcAttachPin(mBacklightPin, LCD_BACKLIGHT_LEDC_CHANNEL);
-    // ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, 0);
-
     // Slowly charge the VSW voltage to prevent a brownout
     // Workaround for hardware rev 1!
     for(int i = 0; i < 100; i++){
