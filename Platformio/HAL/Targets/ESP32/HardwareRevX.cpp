@@ -1,7 +1,6 @@
 #include "HardwareRevX.hpp"
 #include "display.hpp"
 #include "wifihandler.hpp"
-#include "driver/ledc.h"
 
 std::shared_ptr<HardwareRevX> HardwareRevX::mInstance = nullptr;
 
@@ -70,19 +69,17 @@ HardwareRevX::WakeReason getWakeReason() {
 void HardwareRevX::init() {
   // Make sure ESP32 is running at full speed
   setCpuFrequencyMhz(240);
+  wakeup_reason = getWakeReason();
+  initIO();
+  Serial.begin(115200);
 
   mDisplay = Display::getInstance();
   mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
   mWifiHandler = wifiHandler::getInstance();
+  restorePreferences();
 
   mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = SLEEP_TIMEOUT;});
 
-  wakeup_reason = getWakeReason();
-  initIO();
-  setupBacklight();
-  Serial.begin(115200);
-  restorePreferences();
-  slowDisplayWakeup();
   setupIMU();
   setupIR();
 
@@ -254,29 +251,6 @@ void HardwareRevX::configIMUInterrupts() {
   IMU.writeRegister(LIS3DH_CTRL_REG3, dataToWrite);
 }
 
-// TODO move to display 
-void HardwareRevX::setupBacklight() {
-  // Configure the backlight PWM
-  // Manual setup because ledcSetup() briefly turns on the backlight
-  ledc_channel_config_t ledc_channel_left;
-  ledc_channel_left.gpio_num = (gpio_num_t)LCD_BL;
-  ledc_channel_left.speed_mode = LEDC_HIGH_SPEED_MODE;
-  ledc_channel_left.channel = LEDC_CHANNEL_5;
-  ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
-  ledc_channel_left.timer_sel = LEDC_TIMER_1;
-  ledc_channel_left.flags.output_invert = 1; // Can't do this with ledcSetup()
-  ledc_channel_left.duty = 0;
-
-  ledc_timer_config_t ledc_timer;
-  ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
-  ledc_timer.duty_resolution = LEDC_TIMER_8_BIT;
-  ledc_timer.timer_num = LEDC_TIMER_1;
-  ledc_timer.freq_hz = 640;
-
-  ledc_channel_config(&ledc_channel_left);
-  ledc_timer_config(&ledc_timer);
-}
-
 void HardwareRevX::restorePreferences() {
   // Restore settings from internal flash memory
   int backlight_brightness = 255;
@@ -302,19 +276,6 @@ void HardwareRevX::setupIMU() {
   IMU.begin();
   uint8_t intDataRead;
   IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
-}
-
-// TODO move to display
-void HardwareRevX::slowDisplayWakeup() {
-  // Slowly charge the VSW voltage to prevent a brownout
-  // Workaround for hardware rev 1!
-  for (int i = 0; i < 100; i++) {
-    digitalWrite(LCD_EN, HIGH); // LCD Logic off
-    delayMicroseconds(1);
-    digitalWrite(LCD_EN, LOW); // LCD Logic on
-  }
-
-  delay(100); // Wait for the LCD driver to power on
 }
 
 void HardwareRevX::setupIR() {

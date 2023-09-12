@@ -2,6 +2,7 @@
 #include "display.hpp"
 #include "omoteconfig.h"
 #include "Wire.h"
+#include "driver/ledc.h"
 
 std::shared_ptr<Display> Display::getInstance()
 {
@@ -23,11 +24,7 @@ Display::Display(int backlight_pin, int enable_pin): DisplayAbstract(),
     pinMode(mBacklightPin, OUTPUT);
     digitalWrite(mBacklightPin, HIGH);
 
-    ledcSetup(LCD_BACKLIGHT_LEDC_CHANNEL, LCD_BACKLIGHT_LEDC_FREQUENCY, LCD_BACKLIGHT_LEDC_BIT_RESOLUTION);
-    ledcAttachPin(mBacklightPin, LCD_BACKLIGHT_LEDC_CHANNEL);
-    ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, 0);
-
-    setupTFT();
+    setupBacklight(); // This eliminates the flash of the backlight
 
     // Slowly charge the VSW voltage to prevent a brownout
     // Workaround for hardware rev 1!
@@ -37,9 +34,32 @@ Display::Display(int backlight_pin, int enable_pin): DisplayAbstract(),
         digitalWrite(this->mEnablePin, LOW);  // LCD Logic on
     }  
 
+    setupTFT();
     setupTouchScreen();
     mFadeTaskMutex = xSemaphoreCreateBinary();
     xSemaphoreGive(mFadeTaskMutex);
+}
+
+void Display::setupBacklight() {
+  // Configure the backlight PWM
+  // Manual setup because ledcSetup() briefly turns on the backlight
+  ledc_channel_config_t ledc_channel_left;
+  ledc_channel_left.gpio_num = (gpio_num_t)mBacklightPin;
+  ledc_channel_left.speed_mode = LEDC_HIGH_SPEED_MODE;
+  ledc_channel_left.channel = LEDC_CHANNEL_5;
+  ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
+  ledc_channel_left.timer_sel = LEDC_TIMER_1;
+  ledc_channel_left.flags.output_invert = 1; // Can't do this with ledcSetup()
+  ledc_channel_left.duty = 0;
+  ledc_channel_left.hpoint = 0;
+  ledc_timer_config_t ledc_timer;
+  ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
+  ledc_timer.duty_resolution = LEDC_TIMER_8_BIT;
+  ledc_timer.timer_num = LEDC_TIMER_1;
+  ledc_timer.clk_cfg = LEDC_AUTO_CLK;
+  ledc_timer.freq_hz = 640;
+  ledc_channel_config(&ledc_channel_left);
+  ledc_timer_config(&ledc_timer);
 }
 
 void Display::onTouch(Notification<TS_Point>::HandlerTy aTouchHandler){
@@ -47,6 +67,7 @@ void Display::onTouch(Notification<TS_Point>::HandlerTy aTouchHandler){
 }
 
 void Display::setupTFT() {
+  delay(100);
   tft.init();
   tft.initDMA();
   tft.setRotation(0);
@@ -74,10 +95,10 @@ uint8_t Display::getBrightness(){
 
 void Display::setCurrentBrightness(uint8_t brightness){
   mBrightness = brightness;
-  auto duty = abs(255 - static_cast<int>(mBrightness));
+  auto duty = static_cast<int>(mBrightness);
   ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, duty);
-  Serial.print("Current Brightness:");
-  Serial.println(mBrightness);
+  // Serial.print("Current Brightness:");
+  // Serial.println(mBrightness);
 }
 
 void Display::turnOff()
