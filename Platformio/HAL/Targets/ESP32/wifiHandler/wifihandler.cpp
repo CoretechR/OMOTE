@@ -179,7 +179,7 @@ void wifiHandler::begin()
         //strcpy(this->password, password.c_str());
         this->SSID = ssid.c_str();
         this->password = password.c_str();
-        //this->connect(std::make_shared<std::string>(std::string(this->SSID)), std::make_shared<std::string>(std::string(this->password)));
+        this->connect(std::make_shared<std::string>(std::string(this->SSID)), std::make_shared<std::string>(std::string(this->password)));
     }
     else
     {
