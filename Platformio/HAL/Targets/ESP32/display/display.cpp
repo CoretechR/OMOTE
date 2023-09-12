@@ -100,8 +100,7 @@ uint8_t Display::getBrightness(){
 
 void Display::setCurrentBrightness(uint8_t brightness){
   mBrightness = brightness;
-  // auto duty = abs(255 - static_cast<int>(mBrightness));
-  auto duty = abs(static_cast<int>(mBrightness));
+  auto duty = static_cast<int>(mBrightness);
   ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, duty);
   // Serial.print("Current Brightness:");
   // Serial.println(mBrightness);
