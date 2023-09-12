@@ -52,6 +52,7 @@ class Display: public DisplayAbstract
         Display(int backlight_pin, int enable_pin);
         void setupTFT();
         void setupTouchScreen();
+        void setupBacklight();
         
         int mEnablePin;
         int mBacklightPin;

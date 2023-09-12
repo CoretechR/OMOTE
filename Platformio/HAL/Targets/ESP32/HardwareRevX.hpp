@@ -43,7 +43,6 @@ public:
 protected:
   // Init Functions to setup hardware
   void initIO();
-  void setupBacklight();
   void restorePreferences();
   void slowDisplayWakeup();
   void setupIMU();
