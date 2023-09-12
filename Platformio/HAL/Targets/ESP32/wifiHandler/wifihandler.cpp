@@ -109,6 +109,8 @@ void wifiHandler::update_status()
 
 void wifiHandler::update_credentials()
 {
+  // No connection was attempted so don't try to to save the creds
+  if(!this->connect_attempt) return;
 #if 0
     if (strcmp(temporary_password, wifiHandler::password) != 0 || strcmp(temporary_ssid, wifiHandler::SSID) != 0)
     {
@@ -138,6 +140,7 @@ void wifiHandler::update_credentials()
     preferences.end();
   }
 #endif
+this->connect_attempt = false;
 }
 
 void wifiHandler::scan()
@@ -200,6 +203,7 @@ void wifiHandler::onStatusUpdate(std::function<void (std::shared_ptr<wifiStatus>
 
 void wifiHandler::connect(std::shared_ptr<std::string> ssid, std::shared_ptr<std::string> password)
 {
+  this->connect_attempt = true;
   this->temporary_password = password;
   this->temporary_ssid = ssid;
   WiFi.begin(ssid->c_str(), password->c_str());

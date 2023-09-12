@@ -66,6 +66,7 @@ class wifiHandler: public wifiHandlerInterface {
         std::string getIP();
         wifiStatus wifi_status;
         static std::shared_ptr<wifiHandler> mInstance;
+        bool connect_attempt = false;
         std::shared_ptr<std::string> temporary_password;
         std::shared_ptr<std::string> temporary_ssid;
 
