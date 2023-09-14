@@ -1,29 +1,34 @@
 ﻿#pragma once
-#include "HardwareInterface.h"
-#include <iostream>
-#include <string>
+#include "HardwareAbstract.hpp"
 
-class HardwareSimulator : public HardwareInterface {
+#include "batterySimulator.hpp"
+#include "SDLDisplay.hpp"
+#include "wifiHandlerSim.hpp"
+
+#include <thread>
+
+class HardwareSimulator : public HardwareAbstract {
 public:
-  HardwareSimulator() = default;
+  HardwareSimulator();
+  
+  virtual void init() override {};
 
-  virtual void debugPrint(std::string message) override {
-    std::cout << message;
+  virtual void debugPrint(const char* fmt, ...) override {
+    va_list arguments;
+    va_start(arguments, fmt);
+    vprintf(fmt, arguments);
+    va_end(arguments);
   }
 
-  virtual void sendIR() override {}
+  virtual std::shared_ptr<BatteryInterface> battery() override; 
+  virtual std::shared_ptr<DisplayAbstract> display() override;
+  virtual std::shared_ptr<wifiHandlerInterface> wifi() override;
 
-  virtual void MQTTPublish(const char *topic, const char *payload) override{
+private:
+  std::thread mTickThread;
+  std::thread mHardwareStatusTitleUpdate;
 
-  };
-
-  virtual void init() override;
-
-  virtual batteryStatus getBatteryPercentage() {
-    batteryStatus fakeStatus;
-    fakeStatus.isCharging = false;
-    fakeStatus.percentage = 100;
-    fakeStatus.voltage = 4200;
-    return fakeStatus;
-  }
+  std::shared_ptr<BatterySimulator> mBattery;
+  std::shared_ptr<SDLDisplay> mDisplay;
+  std::shared_ptr<wifiHandlerSim> mWifiHandler;
 };

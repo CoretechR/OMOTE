@@ -89,6 +89,8 @@ Distributed under the GPL v3 License. See [LICENSE](https://github.com/CoretechR
 
 ## Contact
 
-Maximilian Kern - [kernm.de](kernm.de)
+Maximilian Kern - [kernm.de](https://kernm.de)
 
-Project Link: [https://hackaday.io/project/191752-omote-diy-universal-remote](https://hackaday.io/project/191752-omote-diy-universal-remote)
+Omote Discord: [https://discord.gg/5PnYFAsKsG](https://discord.gg/5PnYFAsKsG)
+
+Project Page on Hackaday.io: [https://hackaday.io/project/191752-omote-diy-universal-remote](https://hackaday.io/project/191752-omote-diy-universal-remote)

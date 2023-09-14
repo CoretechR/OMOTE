@@ -1,5 +1,6 @@
 #include "HardwareRevX.hpp"
-#include "driver/ledc.h"
+#include "display.hpp"
+#include "wifihandler.hpp"
 
 std::shared_ptr<HardwareRevX> HardwareRevX::mInstance = nullptr;
 
@@ -49,6 +50,10 @@ void HardwareRevX::initIO() {
   gpio_deep_sleep_hold_dis();
 }
 
+HardwareRevX::HardwareRevX():
+  HardwareAbstract(){
+  }
+
 HardwareRevX::WakeReason getWakeReason() {
   // Find out wakeup cause
   if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1) {
@@ -64,110 +69,53 @@ HardwareRevX::WakeReason getWakeReason() {
 void HardwareRevX::init() {
   // Make sure ESP32 is running at full speed
   setCpuFrequencyMhz(240);
-
   wakeup_reason = getWakeReason();
   initIO();
-  setupBacklight();
   Serial.begin(115200);
+
+  mDisplay = Display::getInstance();
+  mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
+  mWifiHandler = wifiHandler::getInstance();
   restorePreferences();
-  slowDisplayWakeup();
-  setupTFT();
-  setupTouchScreen();
-  initLVGL();
-  setupWifi();
+
+  mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = SLEEP_TIMEOUT;});
+
   setupIMU();
   setupIR();
 
-  debugPrint(std::string("Finished Hardware Setup in %d", millis()));
+  debugPrint("Finished Hardware Setup in %d", millis());
 }
 
-void HardwareRevX::debugPrint(std::string aDebugMessage) {
-  Serial.print(aDebugMessage.c_str());
+void HardwareRevX::debugPrint(const char* fmt, ...)
+{
+  char result[100];
+  va_list arguments;
+
+  va_start(arguments, fmt);
+  vsnprintf(result, 100, fmt, arguments);
+  va_end (arguments);
+
+  Serial.print(result);
 }
 
-void HardwareRevX::sendIR() {}
-
-void HardwareRevX::MQTTPublish(const char *topic, const char *payload) {
-#ifdef ENABLE_WIFI
-  if (client.connected()) {
-    client.publish(topic, payload);
-  } else {
-    debugPrint("MQTT Client Not Connected When Attempting Publish.");
+std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
+  if (!mInstance) {
+    mInstance = std::shared_ptr<HardwareRevX>(new HardwareRevX());
   }
-#else
-  debugPrint("Attempting To Publish MQTT with wifi Disabled!");
-#endif
+  return mInstance;
 }
 
-HardwareInterface::batteryStatus HardwareRevX::getBatteryPercentage() {
-  return battery;
+std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi()
+{
+  return mWifiHandler;
 }
 
-void HardwareRevX::initLVGL() {
-  lv_init();
-
-  lv_disp_draw_buf_init(&mdraw_buf, mbufA, mbufB,
-                        SCREEN_WIDTH * SCREEN_HEIGHT / 10);
-
-  // Initialize the display driver
-  static lv_disp_drv_t disp_drv;
-  lv_disp_drv_init(&disp_drv);
-  disp_drv.hor_res = SCREEN_WIDTH;
-  disp_drv.ver_res = SCREEN_HEIGHT;
-  disp_drv.flush_cb = &HardwareRevX::displayFlushImpl;
-  disp_drv.draw_buf = &mdraw_buf;
-  lv_disp_drv_register(&disp_drv);
-
-  // Initialize the touchscreen driver
-  static lv_indev_drv_t indev_drv;
-  lv_indev_drv_init(&indev_drv);
-  indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = &HardwareRevX::touchPadReadImpl;
-  lv_indev_drv_register(&indev_drv);
+std::shared_ptr<BatteryInterface> HardwareRevX::battery(){
+  return mBattery;
 }
 
-void HardwareRevX::handleDisplayFlush(lv_disp_drv_t *disp,
-                                      const lv_area_t *area,
-                                      lv_color_t *color_p) {
-  uint32_t w = (area->x2 - area->x1 + 1);
-  uint32_t h = (area->y2 - area->y1 + 1);
-
-  tft.startWrite();
-  tft.setAddrWindow(area->x1, area->y1, w, h);
-  tft.pushPixelsDMA((uint16_t *)&color_p->full, w * h);
-  tft.endWrite();
-
-  lv_disp_flush_ready(disp);
-}
-
-void HardwareRevX::handleTouchPadRead(lv_indev_drv_t *indev_driver,
-                                      lv_indev_data_t *data) {
-  // int16_t touchX, touchY;
-  touchPoint = touch.getPoint();
-  int16_t touchX = touchPoint.x;
-  int16_t touchY = touchPoint.y;
-  bool touched = false;
-  if ((touchX > 0) || (touchY > 0)) {
-    touched = true;
-    standbyTimer = SLEEP_TIMEOUT;
-  }
-
-  if (!touched) {
-    data->state = LV_INDEV_STATE_REL;
-  } else {
-    data->state = LV_INDEV_STATE_PR;
-
-    // Set the coordinates
-    data->point.x = SCREEN_WIDTH - touchX;
-    data->point.y = SCREEN_HEIGHT - touchY;
-
-    // Serial.print( "touchpoint: x" );
-    // Serial.print( touchX );
-    // Serial.print( " y" );
-    // Serial.println( touchY );
-    // tft.drawFastHLine(0, screenHeight - touchY, screenWidth, TFT_RED);
-    // tft.drawFastVLine(screenWidth - touchX, 0, screenHeight, TFT_RED);
-  }
+std::shared_ptr<DisplayAbstract> HardwareRevX::display(){
+  return mDisplay;
 }
 
 void HardwareRevX::activityDetection() {
@@ -197,7 +145,7 @@ void HardwareRevX::activityDetection() {
 void HardwareRevX::enterSleep() {
   // Save settings to internal flash memory
   preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
-  preferences.putUChar("blBrightness", backlight_brightness);
+  preferences.putUChar("blBrightness", mDisplay->getBrightness());
   preferences.putUChar("currentDevice", currentDevice);
   if (!preferences.getBool("alreadySetUp"))
     preferences.putBool("alreadySetUp", true);
@@ -209,12 +157,6 @@ void HardwareRevX::enterSleep() {
   configIMUInterrupts();
   IMU.readRegister(&intDataRead,
                    LIS3DH_INT1_SRC); // really clear interrupt
-
-#ifdef ENABLE_WIFI
-  // Power down modem
-  WiFi.disconnect();
-  WiFi.mode(WIFI_OFF);
-#endif
 
   // Prepare IO states
   digitalWrite(LCD_DC, LOW); // LCD control signals off
@@ -309,51 +251,16 @@ void HardwareRevX::configIMUInterrupts() {
   IMU.writeRegister(LIS3DH_CTRL_REG3, dataToWrite);
 }
 
-void HardwareRevX::setupBacklight() {
-  // Configure the backlight PWM
-  // Manual setup because ledcSetup() briefly turns on the backlight
-  ledc_channel_config_t ledc_channel_left;
-  ledc_channel_left.gpio_num = (gpio_num_t)LCD_BL;
-  ledc_channel_left.speed_mode = LEDC_HIGH_SPEED_MODE;
-  ledc_channel_left.channel = LEDC_CHANNEL_5;
-  ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
-  ledc_channel_left.timer_sel = LEDC_TIMER_1;
-  ledc_channel_left.flags.output_invert = 1; // Can't do this with ledcSetup()
-  ledc_channel_left.duty = 0;
-
-  ledc_timer_config_t ledc_timer;
-  ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
-  ledc_timer.duty_resolution = LEDC_TIMER_8_BIT;
-  ledc_timer.timer_num = LEDC_TIMER_1;
-  ledc_timer.freq_hz = 640;
-
-  ledc_channel_config(&ledc_channel_left);
-  ledc_timer_config(&ledc_timer);
-}
-
 void HardwareRevX::restorePreferences() {
   // Restore settings from internal flash memory
+  int backlight_brightness = 255;
   preferences.begin("settings", false);
   if (preferences.getBool("alreadySetUp")) {
     wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
     backlight_brightness = preferences.getUChar("blBrightness");
     currentDevice = preferences.getUChar("currentDevice");
   }
-}
-
-void HardwareRevX::setupTFT() {
-  // Setup TFT
-  tft.init();
-  tft.initDMA();
-  tft.setRotation(0);
-  tft.fillScreen(TFT_BLACK);
-  tft.setSwapBytes(true);
-}
-
-void HardwareRevX::setupTouchScreen() {
-  // Configure i2c pins and set frequency to 400kHz
-  Wire.begin(SDA, SCL, 400000);
-  touch.begin(128); // Initialize touchscreen and set sensitivity threshold
+  mDisplay->setBrightness(backlight_brightness);
 }
 
 void HardwareRevX::setupIMU() {
@@ -371,37 +278,6 @@ void HardwareRevX::setupIMU() {
   IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
 }
 
-void HardwareRevX::slowDisplayWakeup() {
-  // Slowly charge the VSW voltage to prevent a brownout
-  // Workaround for hardware rev 1!
-  for (int i = 0; i < 100; i++) {
-    digitalWrite(LCD_EN, HIGH); // LCD Logic off
-    delayMicroseconds(1);
-    digitalWrite(LCD_EN, LOW); // LCD Logic on
-  }
-
-  delay(100); // Wait for the LCD driver to power on
-}
-
-void HardwareRevX::handleWifiEvent(WiFiEvent_t event) {
-#ifdef ENABLE_WIFI
-  // Serial.printf("[WiFi-event] event: %d\n", event);
-  if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP) {
-    client.setServer(MQTT_SERVER, 1883); // MQTT initialization
-    client.connect("OMOTE");             // Connect using a client id
-  }
-  // Set status bar icon based on WiFi status
-  // TODO allow UI to register a Handler for these events
-
-  //   if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP ||
-  //       event == ARDUINO_EVENT_WIFI_STA_GOT_IP6) {
-  //     lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);
-  //   } else {
-  //     lv_label_set_text(WifiLabel, "");
-  //   }
-#endif
-}
-
 void HardwareRevX::setupIR() {
   // Setup IR
   IrSender.begin();
@@ -409,52 +285,11 @@ void HardwareRevX::setupIR() {
   IrReceiver.enableIRIn();    // Start the receiver
 }
 
-void HardwareRevX::setupWifi() {
-#ifdef ENABLE_WIFI
-  // Setup WiFi
-  WiFi.setHostname("OMOTE"); // define hostname
-  WiFi.onEvent(wiFiEventImpl);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  WiFi.setSleep(true);
-#endif
-}
-
-void HardwareRevX::startTasks() {
-  if (xTaskCreate(&HardwareRevX::updateBatteryTask, "Battery Percent Update",
-                  1024, nullptr, 5, &batteryUpdateTskHndl) != pdPASS) {
-    debugPrint("ERROR Could not Create Battery Update Task!");
-  }
-}
-
-void HardwareRevX::updateBatteryTask([[maybe_unused]] void *aData) {
-  while (true) {
-    mInstance->battery.voltage =
-        analogRead(ADC_BAT) * 2 * 3300 / 4095 + 350; // 350mV ADC offset
-    mInstance->battery.percentage =
-        constrain(map(mInstance->battery.voltage, 3700, 4200, 0, 100), 0, 100);
-    mInstance->battery.isCharging = !digitalRead(CRG_STAT);
-    // Check if battery is charging, fully charged or disconnected
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    // Update battery at 1Hz
-  }
-}
+void HardwareRevX::startTasks() {}
 
 void HardwareRevX::loopHandler() {
-
-  // TODO Move the backlight handling into task that spawns when the backlight
-  // setting changes and then gets deleted when the setting is achieved.
-  // Update Backlight brightness
-  static int fadeInTimer = millis(); // fadeInTimer = time after setup
-  if (millis() <
-      fadeInTimer + backlight_brightness) { // Fade in the backlight brightness
-    ledcWrite(5, millis() - fadeInTimer);
-  } else { // Dim Backlight before entering standby
-    if (standbyTimer < 2000)
-      ledcWrite(5, 85); // Backlight dim
-    else
-      ledcWrite(5, backlight_brightness); // Backlight on
-  }
-
+  standbyTimer < 2000 ? mDisplay->sleep() : mDisplay->wake();
+  
   // TODO move to debug task
   // Blink debug LED at 1 Hz
   digitalWrite(USER_LED, millis() % 1000 > 500);
@@ -469,30 +304,6 @@ void HardwareRevX::loopHandler() {
     }
     IMUTaskTimer = millis();
   }
-
-  // TODO Convert to free RTOS task
-
-  // TODO Create batter change notification for UI
-
-  //   if (battery_ischarging || (!battery_ischarging && battery_voltage >
-  //   4350)) {
-  //     lv_label_set_text(objBattPercentage, "");
-  //     lv_label_set_text(objBattIcon, LV_SYMBOL_USB);
-  //   } else {
-  //     // Update status bar battery indicator
-  //     // lv_label_set_text_fmt(objBattPercentage, "%d%%",
-  //     battery_percentage); if (battery_percentage > 95)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_FULL);
-  //     else if (battery_percentage > 75)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_3);
-  //     else if (battery_percentage > 50)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_2);
-  //     else if (battery_percentage > 25)
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_1);
-  //     else
-  //       lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_EMPTY);
-  //   }
-  // }
 
   // Keypad Handling
   customKeypad.getKey(); // Populate key list

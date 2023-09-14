@@ -1,11 +1,9 @@
 #pragma once
 #include "SparkFunLIS3DH.h"
 
-#include "HardwareInterface.h"
-#include <WiFi.h>
-#include "Wire.h"
+#include "HardwareAbstract.hpp"
 #include "lvgl.h"
-#include <Adafruit_FT6206.h>
+#include "battery.hpp"
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
@@ -13,90 +11,56 @@
 #include <Keypad.h> // modified for inverted logic
 #include <Preferences.h>
 #include <PubSubClient.h>
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <functional>
 #include <memory>
+#include "wifihandler.hpp"
+
 
 
 #include "omoteconfig.h"
+#include "BatteryInterface.h"
+#include "wifiHandlerInterface.h"
+#include "display.hpp"
 
-class HardwareRevX : public HardwareInterface {
+class HardwareRevX : public HardwareAbstract {
 public:
   enum class WakeReason { RESET, IMU, KEYPAD };
 
-  static std::shared_ptr<HardwareRevX> getInstance() {
-    if (!mInstance) {
-      mInstance = std::make_shared<HardwareRevX>();
-    }
-    return mInstance;
-  }
+  static std::shared_ptr<HardwareRevX> getInstance();
   static std::weak_ptr<HardwareRevX> getRefrence() { return getInstance(); }
 
-  HardwareRevX() : HardwareInterface(){};
-  // HardwareInterface
+  // HardwareAbstract
   virtual void init() override;
-  virtual void sendIR() override;
-  virtual void MQTTPublish(const char *topic, const char *payload) override;
-  virtual batteryStatus getBatteryPercentage() override;
-  virtual void debugPrint(std::string aDebugMessage) override;
+  virtual void debugPrint(const char* fmt, ...) override;
 
+  virtual std::shared_ptr<BatteryInterface> battery() override;
+  virtual std::shared_ptr<DisplayAbstract> display() override;
+  virtual std::shared_ptr<wifiHandlerInterface> wifi() override;
+  
+  /// @brief To be ran in loop out in main
+  // TODO move to a freertos task
   void loopHandler();
-
 protected:
   // Init Functions to setup hardware
   void initIO();
-  void setupBacklight();
   void restorePreferences();
   void slowDisplayWakeup();
-  void setupTFT();
-  void setupTouchScreen();
-  void initLVGL();
   void setupIMU();
   void setupIR();
-  void setupWifi();
 
   void activityDetection();
   void enterSleep();
   void configIMUInterrupts();
 
-  // UI/UX Handlers
-  void handleDisplayFlush(lv_disp_drv_t *disp, const lv_area_t *area,
-                          lv_color_t *color_p);
-  void handleTouchPadRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
-
-  void handleWifiEvent(WiFiEvent_t event);
-
   // Tasks
   void startTasks();
 
-  static void updateBatteryTask([[maybe_unused]] void *aData);
-  TaskHandle_t batteryUpdateTskHndl = nullptr;
-
 private:
-  // Static Wrappers Needed to Satisfy C APIs
-  static void wiFiEventImpl(WiFiEvent_t event) {
-    mInstance->handleWifiEvent(event);
-  }
-  static void displayFlushImpl(lv_disp_drv_t *disp, const lv_area_t *area,
-                               lv_color_t *color_p) {
-    mInstance->handleDisplayFlush(disp, area, color_p);
-  }
-  static void touchPadReadImpl(lv_indev_drv_t *indev_driver,
-                               lv_indev_data_t *data) {
-    mInstance->handleTouchPadRead(indev_driver, data);
-  }
+  HardwareRevX();
 
-#ifdef ENABLE_WIFI
-  WiFiClient espClient;
-  PubSubClient client = PubSubClient(espClient);
-#endif
-
-  Adafruit_FT6206 touch = Adafruit_FT6206();
-  TS_Point touchPoint;
-  TS_Point oldPoint;
-
-  TFT_eSPI tft = TFT_eSPI();
-
+  std::shared_ptr<Battery> mBattery;
+  std::shared_ptr<Display> mDisplay;
+  std::shared_ptr<wifiHandler> mWifiHandler;
   // IMU Motion Detection
   LIS3DH IMU = LIS3DH(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
   int standbyTimer = SLEEP_TIMEOUT;
@@ -105,7 +69,6 @@ private:
 
   Preferences preferences;
   bool wakeupByIMUEnabled = true;
-  int backlight_brightness = 255;
   byte currentDevice = 1; // Current Device to control (allows switching
                           // mappings between devices)
 
@@ -113,14 +76,6 @@ private:
   IRsend IrSender = IRsend(IR_LED, true);
   IRrecv IrReceiver = IRrecv(IR_RX);
 
-  HardwareInterface::batteryStatus battery;
-
-  // LVGL Screen Buffers
-  lv_disp_draw_buf_t mdraw_buf;
-  lv_color_t mbufA[SCREEN_WIDTH * SCREEN_HEIGHT / 10];
-  lv_color_t mbufB[SCREEN_WIDTH * SCREEN_HEIGHT / 10];
-
-  lv_color_t color_primary = lv_color_hex(0x303030); // gray
 
   // Keypad declarations
   static const byte ROWS = 5; // four rows
