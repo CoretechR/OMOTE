@@ -5,6 +5,8 @@
 
 class wifiHandlerInterface {
 public:
+  virtual ~wifiHandlerInterface(){};
+
   wifiHandlerInterface() = default;
   struct WifiInfo {
     WifiInfo() = default;
@@ -52,4 +54,8 @@ protected:
       std::make_shared<ScanNotificationTy>();
   std::shared_ptr<Notification<wifiStatus>> mStatusUpdate =
       std::make_shared<Notification<wifiStatus>>();
+
+  // MQTT Interface
+  virtual void setupMqttBroker(std::string aBrokerIpAddress, int aPort) = 0;
+  virtual void mqttSend(std::string aTopic, std::string aMessage) = 0;
 };

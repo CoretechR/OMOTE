@@ -1,8 +1,8 @@
 #include "wifihandler.hpp"
 #include "HardwareAbstract.hpp"
+#include "WiFi.h"
 #include <Arduino.h>
 #include <Preferences.h>
-#include <WiFi.h>
 
 std::shared_ptr<wifiHandler> wifiHandler::mInstance = nullptr;
 std::shared_ptr<wifiHandler> wifiHandler::getInstance() {
@@ -45,16 +45,48 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t aEventInfo) {
   default:
     break;
   }
+  if (WiFi.status() == WL_CONNECT_FAILED) {
+    Serial.println("connection failed.");
+    WiFi.disconnect();
+  }
+  Serial.println(WiFi.status());
 }
 
-void wifiHandler::UpdateStatus() {
-  Serial.println("UpdateStatus");
-  mCurrentStatus.isConnected = WiFi.isConnected();
-  mCurrentStatus.IP = WiFi.localIP().toString().c_str();
-  mCurrentStatus.ssid =
-      mCurrentStatus.isConnected ? WiFi.SSID().c_str() : mConnectionAttemptSSID;
+bool wifiHandler::isAvailable() { return true; }
+std::shared_ptr<wifiHandler> wifiHandler::getInstance() {
+  if (mInstance) {
+    return mInstance;
+  }
+  mInstance = std::shared_ptr<wifiHandler>(new wifiHandler());
+  return mInstance;
+};
 
-  mStatusUpdate->notify(mCurrentStatus);
+wifiHandler::wifiHandler() {
+  this->password = "";
+  this->SSID = "";
+}
+
+void wifiHandler::update_status() {
+  Serial.println("update_status");
+  std::shared_ptr<wifiStatus> status =
+      std::make_shared<wifiStatus>(wifiStatus());
+  // wifiStatus *status = new wifiStatus();
+  status->isConnected = WiFi.isConnected();
+  // status->IP = WiFi.localIP();
+  IPAddress ip = WiFi.localIP();
+  String ip_str = ip.toString();
+  status->IP = ip.toString().c_str();
+
+  // ip.copy(status->IP, ip.length());
+  String ssid = WiFi.SSID();
+  status->ssid = WiFi.SSID().c_str();
+
+  // this->wifi_status.isConnected = WiFi.isConnected();
+  // this->wifi_status.IP = WiFi.localIP();
+  // this->wifi_status.isConnected = true;
+
+  // Serial.println(WiFi.localIP());
+  this->status_update.notify(status);
 }
 
 void wifiHandler::StoreCredentials() {
@@ -113,4 +145,23 @@ void wifiHandler::connect(std::string ssid, std::string password) {
   mConnectionAttemptSSID = ssid;
   auto status = WiFi.begin(mConnectionAttemptSSID.c_str(),
                            mConnectionAttemptPassword.c_str());
+}
+
+void wifiHandler::mqttSend(std::string aTopic, std::string aMessage) {
+  if (mMqttClient.connected() || mMqttClient.connect(MQTT_CLIENT_NAME)) {
+    mMqttClient.publish(aTopic.c_str(), aMessage.c_str());
+    return;
+  } else {
+    Serial.println("Failed to Send MQTT due to Connection Failure");
+  }
+}
+
+void wifiHandler::setupMqttBroker(std::string aBrokerIpAddress, int aPort) {
+  mMqttClient.setServer(aBrokerIpAddress.c_str(), aPort);
+  if (!mMqttClient.connect(MQTT_CLIENT_NAME)) {
+    Serial.print("Failed to Connect to MQTT Server at:");
+    Serial.print(aBrokerIpAddress.c_str());
+    Serial.print("  Port:");
+    Serial.println(aPort);
+  };
 }

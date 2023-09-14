@@ -2,7 +2,9 @@
 #include "Notification.hpp"
 #include "memory.h"
 #include "wifiHandlerInterface.h"
+#include <PubSubClient.h>
 #include <WiFi.h>
+#include <WiFiClient.h>
 
 class wifiHandler : public wifiHandlerInterface {
 public:
