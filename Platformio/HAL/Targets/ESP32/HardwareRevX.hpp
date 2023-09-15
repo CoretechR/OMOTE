@@ -43,8 +43,8 @@ public:
   virtual bool getWakeupByIMUEnabled() override;
   virtual void setWakeupByIMUEnabled(bool wakeupByIMUEnabled) override;
 
-  virtual uint16_t getSleepTimeout();
-  virtual void setSleepTimeout(uint16_t sleepTimeout);
+  virtual uint16_t getSleepTimeout() override;
+  virtual void setSleepTimeout(uint16_t sleepTimeout) override;
 
   /// @brief To be ran in loop out in main
   // TODO move to a freertos task
