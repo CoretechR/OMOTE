@@ -78,7 +78,7 @@ void HardwareRevX::init() {
   mWifiHandler = wifiHandler::getInstance();
   restorePreferences();
 
-  mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = SLEEP_TIMEOUT;});
+  mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = this->getSleepTimeout();});
 
   setupIMU();
   setupIR();
@@ -134,7 +134,7 @@ void HardwareRevX::activityDetection() {
     standbyTimer = 0;
   // If the motion exceeds the threshold, the standbyTimer is reset
   if (motion > MOTION_THRESHOLD)
-    standbyTimer = SLEEP_TIMEOUT;
+    standbyTimer = sleepTimeout;
 
   // Store the current acceleration and time
   accXold = accX;
@@ -142,11 +142,37 @@ void HardwareRevX::activityDetection() {
   accZold = accZ;
 }
 
+char HardwareRevX::getCurrentDevice(){
+  return currentDevice;
+}
+
+void HardwareRevX::setCurrentDevice(char currentDevice){
+  this->currentDevice = currentDevice;
+}
+
+bool HardwareRevX::getWakeupByIMUEnabled(){
+  return wakeupByIMUEnabled;
+}
+
+void HardwareRevX::setWakeupByIMUEnabled(bool wakeupByIMUEnabled){
+  this->wakeupByIMUEnabled = wakeupByIMUEnabled;
+}
+
+uint16_t HardwareRevX::getSleepTimeout(){
+  return sleepTimeout;
+}
+
+void HardwareRevX::setSleepTimeout(uint16_t sleepTimeout){
+  this->sleepTimeout = sleepTimeout;
+  standbyTimer = sleepTimeout;
+}
+
 void HardwareRevX::enterSleep() {
   // Save settings to internal flash memory
   preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
   preferences.putUChar("blBrightness", mDisplay->getBrightness());
   preferences.putUChar("currentDevice", currentDevice);
+  preferences.putUInt("sleepTimeout", sleepTimeout);
   if (!preferences.getBool("alreadySetUp"))
     preferences.putBool("alreadySetUp", true);
   preferences.end();
@@ -259,6 +285,11 @@ void HardwareRevX::restorePreferences() {
     wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
     backlight_brightness = preferences.getUChar("blBrightness");
     currentDevice = preferences.getUChar("currentDevice");
+    sleepTimeout = preferences.getUInt("sleepTimeout");
+    // setting the default to prevent a 0ms sleep timeout
+    if(sleepTimeout == 0){
+      sleepTimeout = SLEEP_TIMEOUT;
+    }
   }
   mDisplay->setBrightness(backlight_brightness);
 }
@@ -312,7 +343,7 @@ void HardwareRevX::loopHandler() {
     if (customKeypad.key[i].kstate == PRESSED ||
         customKeypad.key[i].kstate == HOLD) {
       standbyTimer =
-          SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
+          sleepTimeout; // Reset the sleep timer when a button is pressed
       int keyCode = customKeypad.key[i].kcode;
       Serial.println(customKeypad.key[i].kchar);
       // Send IR codes depending on the current device (tabview page)
