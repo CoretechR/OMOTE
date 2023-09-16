@@ -1,16 +1,17 @@
-﻿#include "HardwareSimulator.hpp"
-#include "omoteconfig.h"
+﻿#include "BasicUI.hpp"
+#include "HardwareSimulator.hpp"
 #include "OmoteUI.hpp"
-#include <memory> 
+#include "omoteconfig.h"
+#include <memory>
 
-int main(){
-    auto hwSim = std::make_shared<HardwareSimulator>();
-    hwSim->init();
+int main() {
+  auto hwSim = std::make_shared<HardwareSimulator>();
+  hwSim->init();
 
-    auto ui = UI::Basic::OmoteUI::getInstance(hwSim);
-    ui->layout_UI();
+  auto ui = UI::BasicUI(hwSim);
+  // ui->layout_UI();
 
-    while (true){
-        ui->loopHandler();
-    }
+  while (true) {
+    ui.loopHandler();
+  }
 }

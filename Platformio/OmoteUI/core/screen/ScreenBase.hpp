@@ -17,7 +17,6 @@ public:
   void AddWidget(Widget::Base::Ptr aWidget);
 
 private:
-  lv_obj_t *mScreen;
   std::vector<Widget::Base::Ptr> mWidgets;
 };
 

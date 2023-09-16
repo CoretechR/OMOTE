@@ -2,4 +2,7 @@
 
 using namespace UI::Screen;
 
-HomeScreen::HomeScreen() : Base(UI::ID::Screens::Home) {}
+HomeScreen::HomeScreen() : Base(UI::ID::Screens::Home) {
+    
+
+}

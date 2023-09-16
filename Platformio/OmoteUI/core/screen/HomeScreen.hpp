@@ -4,6 +4,7 @@
 namespace UI::Screen {
 
 class HomeScreen : public Base {
+public:
   HomeScreen();
 };
 

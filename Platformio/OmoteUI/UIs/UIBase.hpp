@@ -11,6 +11,8 @@ class UIBase {
 public:
   UIBase(std::shared_ptr<HardwareAbstract> aHardware);
 
+  void loopHandler();
+
 protected:
   std::shared_ptr<HardwareAbstract> mHardware;
 };
