@@ -12,6 +12,5 @@ int main(){
 
     while (true){
         ui->loopHandler();
-        lv_task_handler();
     }
 }

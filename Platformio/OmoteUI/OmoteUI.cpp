@@ -91,6 +91,7 @@ void OmoteUI::virtualKeypad_event_cb(lv_event_t *e) {
 
 void OmoteUI::loopHandler(){
   lv_timer_handler();
+  lv_task_handler();
 }
 
 void OmoteUI::create_status_bar(){
