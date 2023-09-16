@@ -2,11 +2,7 @@
 
 namespace UI::Widget{
 
-Base::Base(lv_obj_t* aLvglSelf): 
-   mLvglSelf(aLvglSelf)
-{
-    mLvglSelf->user_data = this;
-}
+Base::Base(lv_obj_t* aLvglSelf) : UIElement(aLvglSelf){}
 
 
 }
