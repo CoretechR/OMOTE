@@ -2,7 +2,7 @@
 // 2023 Matthew Colvin
 #pragma once
 
-#include "HardwareAbstract.hpp"
+#include "UIBase.hpp"
 #include "Images.hpp"
 #include "lvgl.h"
 #include <algorithm>
@@ -13,7 +13,7 @@
 
 /// @brief Singleton to allow UI code to live separately from the Initialization
 /// of resources.
-class OmoteUI {
+class OmoteUI : public UIBase  {
 public:
   OmoteUI(std::shared_ptr<HardwareAbstract> aHardware);
 
@@ -74,7 +74,6 @@ public:
 
 private:
   static std::shared_ptr<OmoteUI> mInstance;
-  std::shared_ptr<HardwareAbstract> mHardware;
   
   std::unique_ptr<poller> batteryPoller;
   

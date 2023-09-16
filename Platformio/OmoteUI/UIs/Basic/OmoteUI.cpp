@@ -9,7 +9,7 @@ std::shared_ptr<OmoteUI> OmoteUI::mInstance = nullptr;
 // #if defined(IS_SIMULATOR) && (IS_SIMULATOR == true)
 // #endif
 
-OmoteUI::OmoteUI(std::shared_ptr<HardwareAbstract> aHardware) : mHardware(aHardware){}
+OmoteUI::OmoteUI(std::shared_ptr<HardwareAbstract> aHardware) : UIBase(aHardware){}
 
 // Set the page indicator scroll position relative to the tabview scroll
 // position
