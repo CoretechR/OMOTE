@@ -12,7 +12,7 @@ class Base : UIElement {
 public:
   typedef std::unique_ptr<Base> Ptr;
 
-  Base(uint16_t aId = 0);
+  Base(ID aId);
 
   void AddWidget(Widget::Base::Ptr aWidget);
 
