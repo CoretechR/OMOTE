@@ -3,6 +3,8 @@
 #define WIFI_SUBPAGE_SIZE 3
 static char* ssid;
 
+using namespace UI::Basic;
+
 lv_obj_t* OmoteUI::create_wifi_selection_page(lv_obj_t* menu)
 {
   /* Create sub page for wifi*/

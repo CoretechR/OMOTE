@@ -7,7 +7,7 @@ int main(){
     auto hwSim = std::make_shared<HardwareSimulator>();
     hwSim->init();
 
-    auto ui = OmoteUI::getInstance(hwSim);
+    auto ui = UI::Basic::OmoteUI::getInstance(hwSim);
     ui->layout_UI();
 
     while (true){

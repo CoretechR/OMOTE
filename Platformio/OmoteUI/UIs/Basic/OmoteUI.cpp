@@ -3,6 +3,8 @@
 #include "omoteconfig.h"
 #include <functional>
 
+using namespace UI::Basic;
+
 std::shared_ptr<OmoteUI> OmoteUI::mInstance = nullptr;
 
 // This can be used to flag out specific code for SIM only

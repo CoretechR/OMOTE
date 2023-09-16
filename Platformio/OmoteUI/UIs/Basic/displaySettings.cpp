@@ -1,5 +1,8 @@
 #include "OmoteUI.hpp"
 
+using namespace UI::Basic;
+
+
 void OmoteUI::display_settings(lv_obj_t* parent)
 {
 

@@ -11,6 +11,7 @@
 #include <string>
 #include "poller.hpp"
 
+namespace UI::Basic{
 /// @brief Singleton to allow UI code to live separately from the Initialization
 /// of resources.
 class OmoteUI : public UIBase  {
@@ -235,3 +236,5 @@ void create_keyboard();
    */
     void display_settings(lv_obj_t* parent);
 };
+
+}
