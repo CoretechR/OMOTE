@@ -1,8 +1,5 @@
 #include "WidgetBase.hpp"
 
-namespace UI::Widget{
+using namespace UI::Widget;
 
-Base::Base(lv_obj_t* aLvglSelf) : UIElement(aLvglSelf){}
-
-
-}
+Base::Base(lv_obj_t *aLvglSelf) : UIElement(aLvglSelf) {}

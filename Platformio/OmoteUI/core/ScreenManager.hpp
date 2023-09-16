@@ -1,20 +1,20 @@
 #include "ScreenBase.hpp"
-#include <stack>
 #include <memory>
+#include <stack>
 
-namespace UI::Screen{
+namespace UI::Screen {
 
-class Manager{
+class Manager {
 public:
-    static Manager& getInstance();
+  static Manager &getInstance();
 
-    void pushScreen(std::unique_ptr<UI::Screen::Base> aPage);
+  void pushScreen(std::unique_ptr<UI::Screen::Base> aPage);
 
 private:
-    Manager();
-    static Manager mManager;
+  Manager();
+  static Manager mManager;
 
-    std::stack<std::unique_ptr<UI::Screen::Base>> pages;
+  std::stack<std::unique_ptr<UI::Screen::Base>> pages;
 };
 
-}
+} // namespace UI::Screen

@@ -5,15 +5,14 @@
 #include "HardwareAbstract.hpp"
 #include <memory>
 
-namespace UI{
+namespace UI {
 
-class UIBase{
+class UIBase {
 public:
-    UIBase(std::shared_ptr<HardwareAbstract> aHardware);
-    
-protected:
-    std::shared_ptr<HardwareAbstract> mHardware;
+  UIBase(std::shared_ptr<HardwareAbstract> aHardware);
 
+protected:
+  std::shared_ptr<HardwareAbstract> mHardware;
 };
 
-}
+} // namespace UI

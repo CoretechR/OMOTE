@@ -1,3 +1,4 @@
-class IHandleButtons{
-    virtual void OnKeyTap() = 0;
+#pragma once
+class IHandleButtons {
+  virtual void OnKeyTap() = 0;
 };
