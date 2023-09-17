@@ -24,6 +24,15 @@ public:
   virtual std::shared_ptr<DisplayAbstract> display() override;
   virtual std::shared_ptr<wifiHandlerInterface> wifi() override;
 
+  virtual char getCurrentDevice() override;
+  virtual void setCurrentDevice(char currentDevice) override;
+
+  virtual bool getWakeupByIMUEnabled() override;
+  virtual void setWakeupByIMUEnabled(bool wakeupByIMUEnabled) override;
+
+  virtual uint16_t getSleepTimeout() override;
+  virtual void setSleepTimeout(uint16_t sleepTimeout) override;
+
 private:
   std::thread mTickThread;
   std::thread mHardwareStatusTitleUpdate;

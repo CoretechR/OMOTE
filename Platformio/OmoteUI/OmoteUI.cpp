@@ -24,6 +24,7 @@ void OmoteUI::store_scroll_value_event_cb(lv_event_t *e) {
 // Update current device when the tabview page is changes
 void OmoteUI::tabview_device_event_cb(lv_event_t *e) {
   currentDevice = lv_tabview_get_tab_act(lv_event_get_target(e));
+  this->mHardware->setCurrentDevice(currentDevice);
 }
 
 // Slider Event handler
@@ -41,8 +42,15 @@ void OmoteUI::appleKey_event_cb(lv_event_t *e) {
 
 // Wakeup by IMU Switch Event handler
 void OmoteUI::WakeEnableSetting_event_cb(lv_event_t *e) {
-  wakeupByIMUEnabled =
-      lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED);
+  this->mHardware->setWakeupByIMUEnabled(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED));
+}
+
+// Wakeup timeout dropdown Event handler
+void OmoteUI::wakeTimeoutSetting_event_cb(lv_event_t *e){
+  lv_obj_t * drop = lv_event_get_target(e);
+
+  int sleepTimeout = sleepTimeoutMap[lv_dropdown_get_selected(drop)];
+  mHardware->setSleepTimeout(sleepTimeout);
 }
 
 // Smart Home Toggle Event handler
@@ -391,7 +399,8 @@ void OmoteUI::layout_UI() {
 
 
   // Set current page according to the current Device
-  lv_tabview_set_act(tabview, 0, LV_ANIM_OFF); 
+  currentDevice = this->mHardware->getCurrentDevice();
+  lv_tabview_set_act(tabview, currentDevice, LV_ANIM_OFF);
 
 
   // Create a page indicator

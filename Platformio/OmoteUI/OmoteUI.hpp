@@ -33,6 +33,8 @@ public:
   void store_scroll_value_event_cb(lv_event_t *e);
   // Update current device when the tabview page is changes
   void tabview_device_event_cb(lv_event_t *e);
+  // Update wake timeout handler
+  void wakeTimeoutSetting_event_cb(lv_event_t *e);
   // Slider Event handler
   void bl_slider_event_cb(lv_event_t *e);
   // Apple Key Event handler
@@ -78,6 +80,8 @@ private:
   
   std::unique_ptr<poller> batteryPoller;
   
+  int sleepTimeoutMap[5] = {10000,30000,60000,180000,600000};
+
   void reset_settings_menu();
   void attach_keyboard(lv_obj_t* textarea);
   std::shared_ptr<std::vector<WifiInfo>> found_wifi_networks;
@@ -130,7 +134,6 @@ void create_keyboard();
   Images imgs = Images();
   uint_fast8_t currentDevice = 4;
   lv_color_t color_primary = lv_color_hex(0x303030); // gray
-  bool wakeupByIMUEnabled = true;
 
   inline static const uint_fast8_t virtualKeyMapTechnisat[10] = {
       0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0x0};

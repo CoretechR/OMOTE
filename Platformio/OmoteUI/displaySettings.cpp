@@ -33,7 +33,7 @@ void OmoteUI::display_settings(lv_obj_t* parent)
   lv_obj_align(wakeToggle, LV_ALIGN_TOP_RIGHT, 0, 29);
   lv_obj_set_style_bg_color(wakeToggle, lv_color_hex(0x505050), LV_PART_MAIN);
   lv_obj_add_event_cb(wakeToggle, [] (lv_event_t* e) {mInstance->WakeEnableSetting_event_cb(e);}, LV_EVENT_VALUE_CHANGED, NULL);
-  if(wakeupByIMUEnabled) lv_obj_add_state(wakeToggle, LV_STATE_CHECKED); // set default state
+  if(mHardware->getWakeupByIMUEnabled()) lv_obj_add_state(wakeToggle, LV_STATE_CHECKED); // set default state
 
   menuLabel = lv_label_create(menuBox);
   lv_label_set_text(menuLabel, "Timeout");
@@ -52,5 +52,10 @@ void OmoteUI::display_settings(lv_obj_t* parent)
   lv_obj_set_style_bg_color(lv_dropdown_get_list(drop), color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(lv_dropdown_get_list(drop), 1, LV_PART_MAIN);
   lv_obj_set_style_border_color(lv_dropdown_get_list(drop), lv_color_hex(0x505050), LV_PART_MAIN);
-
+  int sleepTimeoutMapSize = sizeof(sleepTimeoutMap)/sizeof(sleepTimeoutMap[0]);
+  int currentTimeout = mHardware->getSleepTimeout();
+  for(int i = 0; i < sleepTimeoutMapSize; i++){
+    if(currentTimeout == sleepTimeoutMap[i]) lv_dropdown_set_selected(drop, i);
+  }
+  lv_obj_add_event_cb(drop, [] (lv_event_t* e) {mInstance->wakeTimeoutSetting_event_cb(e);}, LV_EVENT_VALUE_CHANGED, NULL);
 }

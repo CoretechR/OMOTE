@@ -46,3 +46,27 @@ std::shared_ptr<DisplayAbstract> HardwareSimulator::display(){
 std::shared_ptr<wifiHandlerInterface> HardwareSimulator::wifi(){
     return mWifiHandler;
 }
+
+char HardwareSimulator::getCurrentDevice(){
+    return 0;
+}
+
+void HardwareSimulator::setCurrentDevice(char currentDevice){
+
+}
+
+bool HardwareSimulator::getWakeupByIMUEnabled(){
+    return true;
+}
+
+void HardwareSimulator::setWakeupByIMUEnabled(bool wakeupByIMUEnabled){
+
+}
+
+uint16_t HardwareSimulator::getSleepTimeout(){
+    return 20000;
+}
+
+void HardwareSimulator::setSleepTimeout(uint16_t sleepTimeout){
+
+}
