@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ScreenBase.hpp"
 #include <memory>
 #include <stack>
@@ -8,13 +10,14 @@ class Manager {
 public:
   static Manager &getInstance();
 
-  void pushScreen(std::unique_ptr<UI::Screen::Base> aPage);
+  void pushScreen(Screen::Base::Ptr aScreen);
+  void pushScreen(Screen::Base::Ptr aScreen, lv_scr_load_anim_t aPushAnimation);
 
 private:
   Manager();
   static Manager mManager;
 
-  std::stack<std::unique_ptr<UI::Screen::Base>> pages;
+  std::stack<Screen::Base::Ptr> mScreens;
 };
 
 } // namespace UI::Screen

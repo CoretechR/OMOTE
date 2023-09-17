@@ -10,6 +10,10 @@ public:
 
   Base(lv_obj_t *aLvglSelf);
 
+protected:
+  void OnShow() override{};
+  void OnHide() override{};
+
 private:
 };
 
