@@ -50,9 +50,7 @@ void HardwareRevX::initIO() {
   gpio_deep_sleep_hold_dis();
 }
 
-HardwareRevX::HardwareRevX():
-  HardwareAbstract(){
-  }
+HardwareRevX::HardwareRevX() : HardwareAbstract() {}
 
 HardwareRevX::WakeReason getWakeReason() {
   // Find out wakeup cause
@@ -74,11 +72,13 @@ void HardwareRevX::init() {
   Serial.begin(115200);
 
   mDisplay = Display::getInstance();
-  mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
+  mBattery = std::make_shared<Battery>(ADC_BAT, CRG_STAT);
   mWifiHandler = wifiHandler::getInstance();
   restorePreferences();
 
-  mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = SLEEP_TIMEOUT;});
+  mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint) {
+    standbyTimer = this->getSleepTimeout();
+  });
 
   setupIMU();
   setupIR();
@@ -86,37 +86,31 @@ void HardwareRevX::init() {
   debugPrint("Finished Hardware Setup in %d", millis());
 }
 
-void HardwareRevX::debugPrint(const char* fmt, ...)
-{
+void HardwareRevX::debugPrint(const char *fmt, ...) {
   char result[100];
   va_list arguments;
 
   va_start(arguments, fmt);
   vsnprintf(result, 100, fmt, arguments);
-  va_end (arguments);
+  va_end(arguments);
 
   Serial.print(result);
 }
 
-std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
+std::shared_ptr<HardwareRevX> HardwareRevX::getInstance() {
   if (!mInstance) {
     mInstance = std::shared_ptr<HardwareRevX>(new HardwareRevX());
   }
   return mInstance;
 }
 
-std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi()
-{
+std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi() {
   return mWifiHandler;
 }
 
-std::shared_ptr<BatteryInterface> HardwareRevX::battery(){
-  return mBattery;
-}
+std::shared_ptr<BatteryInterface> HardwareRevX::battery() { return mBattery; }
 
-std::shared_ptr<DisplayAbstract> HardwareRevX::display(){
-  return mDisplay;
-}
+std::shared_ptr<DisplayAbstract> HardwareRevX::display() { return mDisplay; }
 
 void HardwareRevX::activityDetection() {
   static int accXold;
@@ -134,7 +128,7 @@ void HardwareRevX::activityDetection() {
     standbyTimer = 0;
   // If the motion exceeds the threshold, the standbyTimer is reset
   if (motion > MOTION_THRESHOLD)
-    standbyTimer = SLEEP_TIMEOUT;
+    standbyTimer = sleepTimeout;
 
   // Store the current acceleration and time
   accXold = accX;
@@ -142,11 +136,31 @@ void HardwareRevX::activityDetection() {
   accZold = accZ;
 }
 
+char HardwareRevX::getCurrentDevice() { return currentDevice; }
+
+void HardwareRevX::setCurrentDevice(char currentDevice) {
+  this->currentDevice = currentDevice;
+}
+
+bool HardwareRevX::getWakeupByIMUEnabled() { return wakeupByIMUEnabled; }
+
+void HardwareRevX::setWakeupByIMUEnabled(bool wakeupByIMUEnabled) {
+  this->wakeupByIMUEnabled = wakeupByIMUEnabled;
+}
+
+uint16_t HardwareRevX::getSleepTimeout() { return sleepTimeout; }
+
+void HardwareRevX::setSleepTimeout(uint16_t sleepTimeout) {
+  this->sleepTimeout = sleepTimeout;
+  standbyTimer = sleepTimeout;
+}
+
 void HardwareRevX::enterSleep() {
   // Save settings to internal flash memory
   preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
   preferences.putUChar("blBrightness", mDisplay->getBrightness());
   preferences.putUChar("currentDevice", currentDevice);
+  preferences.putUInt("sleepTimeout", sleepTimeout);
   if (!preferences.getBool("alreadySetUp"))
     preferences.putBool("alreadySetUp", true);
   preferences.end();
@@ -259,6 +273,11 @@ void HardwareRevX::restorePreferences() {
     wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
     backlight_brightness = preferences.getUChar("blBrightness");
     currentDevice = preferences.getUChar("currentDevice");
+    sleepTimeout = preferences.getUInt("sleepTimeout");
+    // setting the default to prevent a 0ms sleep timeout
+    if (sleepTimeout == 0) {
+      sleepTimeout = SLEEP_TIMEOUT;
+    }
   }
   mDisplay->setBrightness(backlight_brightness);
 }
@@ -289,7 +308,7 @@ void HardwareRevX::startTasks() {}
 
 void HardwareRevX::loopHandler() {
   standbyTimer < 2000 ? mDisplay->sleep() : mDisplay->wake();
-  
+
   // TODO move to debug task
   // Blink debug LED at 1 Hz
   digitalWrite(USER_LED, millis() % 1000 > 500);
@@ -312,7 +331,7 @@ void HardwareRevX::loopHandler() {
     if (customKeypad.key[i].kstate == PRESSED ||
         customKeypad.key[i].kstate == HOLD) {
       standbyTimer =
-          SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
+          sleepTimeout; // Reset the sleep timer when a button is pressed
       int keyCode = customKeypad.key[i].kcode;
       Serial.println(customKeypad.key[i].kchar);
       // Send IR codes depending on the current device (tabview page)

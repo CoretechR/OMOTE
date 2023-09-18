@@ -24,7 +24,16 @@ public:
   virtual std::shared_ptr<BatteryInterface> battery() = 0; 
   virtual std::shared_ptr<DisplayAbstract> display() = 0;
   virtual std::shared_ptr<wifiHandlerInterface> wifi() = 0;
+
+  virtual char getCurrentDevice() = 0;
+  virtual void setCurrentDevice(char currentDevice) = 0;
   
+  virtual bool getWakeupByIMUEnabled() = 0;
+  virtual void setWakeupByIMUEnabled(bool wakeupByIMUEnabled) = 0;
+
+  virtual uint16_t getSleepTimeout() = 0;
+  virtual void setSleepTimeout(uint16_t sleepTimeout) = 0;
+
   protected:
 
 };
