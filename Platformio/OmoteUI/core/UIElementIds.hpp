@@ -16,9 +16,15 @@ public:
     INVALID_WIDGET_ID
   };
 
+  enum class Pages {
+    Settings = static_cast<int>(Widgets::INVALID_WIDGET_ID) + 1,
+    INVALID_PAGE_ID
+  };
+
   ID() : mId(INVALID){};
   ID(ID::Screens aScreenId) : mId(static_cast<int>(aScreenId)){};
   ID(ID::Widgets aWidgetId) : mId(static_cast<int>(aWidgetId)){};
+  ID(ID::Pages aPageId) : mId(static_cast<int>(aPageId)){};
 
 private:
   const int mId;

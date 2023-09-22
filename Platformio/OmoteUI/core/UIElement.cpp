@@ -6,6 +6,10 @@ UIElement::UIElement(lv_obj_t *aLvglSelf, ID aId)
   mLvglSelf->user_data = this;
 }
 
+void UIElement::AddElement(UIElement *anUIElement) {
+  lv_obj_set_parent(anUIElement->mLvglSelf, mLvglSelf);
+}
+
 bool UIElement::IsVisible() { return lv_obj_is_visible(mLvglSelf); }
 
 void UIElement::SetVisiblity(bool aVisible) {

@@ -3,9 +3,9 @@
 #include "lvgl.h"
 
 #include "UIElement.hpp"
-#include "WidgetBase.hpp"
 
-#include <vector>
+#include <memory>
+
 namespace UI::Screen {
 class Manager;
 
@@ -17,7 +17,6 @@ public:
 
   Base(ID aId);
 
-  void AddWidget(Widget::Base::Ptr aWidget);
   void SetPushAnimation(lv_scr_load_anim_t aPushAnimation);
 
 protected:
@@ -26,7 +25,6 @@ protected:
   void OnHide() override{};
 
 private:
-  std::vector<Widget::Base::Ptr> mWidgets;
   lv_scr_load_anim_t mPushAnimation = LV_SCR_LOAD_ANIM_NONE;
 };
 

@@ -10,13 +10,15 @@ class UIElement {
 public:
   UIElement(lv_obj_t *aLvglSelf, const ID aId = ID());
 
-  void SetBgColor(lv_color_t value,
-                  lv_style_selector_t selector = LV_PART_MAIN);
+  virtual void SetBgColor(lv_color_t value,
+                          lv_style_selector_t selector = LV_PART_MAIN);
 
   void SetVisiblity(bool aVisibility);
   bool IsVisible();
 
-  lv_obj_t *operator()() { return mLvglSelf; }
+  virtual void AddElement(UIElement *anElement);
+
+  ID GetID() { return mId; };
 
 protected:
   /// @brief get Lvgl object refernce to use in LVGL APIs
