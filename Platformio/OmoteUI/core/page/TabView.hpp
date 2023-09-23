@@ -5,7 +5,7 @@ namespace UI::Page {
 class TabView : public Base {
 public:
   TabView(ID aId);
-  void AddTab(Page::Base::Ptr aPage);
+  void AddTab(Page::Base::Ptr aPage, std::string aTitle);
 
 protected:
   void OnShow() {}

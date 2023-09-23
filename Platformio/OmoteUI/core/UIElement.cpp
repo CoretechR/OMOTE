@@ -12,6 +12,18 @@ void UIElement::AddElement(UIElement *anUIElement) {
 
 bool UIElement::IsVisible() { return lv_obj_is_visible(mLvglSelf); }
 
+void UIElement::SetWidth(uint16_t aWidth) {
+  lv_obj_set_width(mLvglSelf, aWidth);
+}
+
+void UIElement::SetHeight(uint16_t aHeight) {
+  lv_obj_set_height(mLvglSelf, aHeight);
+}
+
+int16_t UIElement::GetHeight() { return lv_obj_get_height(mLvglSelf); };
+
+int16_t UIElement::GetWidth() { return lv_obj_get_width(mLvglSelf); }
+
 void UIElement::SetVisiblity(bool aVisible) {
   if (aVisible == IsVisible()) {
     return;

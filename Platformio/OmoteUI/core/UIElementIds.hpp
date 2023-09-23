@@ -7,7 +7,8 @@ public:
   static constexpr auto INVALID = 0;
 
   enum class Screens {
-    Home = static_cast<int>(INVALID) + 1,
+    Background = static_cast<int>(INVALID) + 1,
+    Home,
     INVALID_SCREEN_ID
   };
 
