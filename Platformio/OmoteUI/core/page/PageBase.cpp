@@ -13,5 +13,6 @@ Base::Base(lv_obj_t *aLvglSelf, ID aID) : UIElement(aLvglSelf, aID) {
 }
 
 void Base::AddWidget(Widget::Base::Ptr aWidget) {
+  AddElement(aWidget.get());
   mWidgets.push_back(std::move(aWidget));
 }

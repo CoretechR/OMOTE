@@ -15,6 +15,7 @@ public:
   Base(lv_obj_t *aLvglSelf, ID aID);
 
   void AddWidget(Widget::Base::Ptr aWidget);
+  size_t GetNumWidgets() { return mWidgets.size(); }
 
 protected:
   void OnShow() override{};

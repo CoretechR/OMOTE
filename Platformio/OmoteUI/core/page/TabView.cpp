@@ -4,6 +4,15 @@
 
 using namespace UI::Page;
 
+Tab::Tab(lv_obj_t *aTab, ID aId) : Base(aTab, aId) {}
+
+void Tab::GiveContent(Page::Base::Ptr aContent) {
+  AddElement(aContent.get());
+  mContent = std::move(aContent);
+}
+
+Base::Ptr Tab::TakeContent() { return std::move(mContent); }
+
 TabView::TabView(ID aId)
     : Base(lv_tabview_create(Screen::BackgroundScreen::getLvInstance(),
                              LV_DIR_TOP, 0),
@@ -13,11 +22,10 @@ TabView::TabView(ID aId)
 }
 
 void TabView::AddTab(Page::Base::Ptr aPage, std::string aTitle) {
-  auto tab = std::make_unique<Base>(
+  auto tab = std::make_unique<Tab>(
       lv_tabview_add_tab(LvglSelf(), aTitle.c_str()), aPage->GetID());
 
-  tab->AddElement(aPage.get());
-
+  tab->GiveContent(std::move(aPage));
   mTabs.push_back(std::move(tab));
 }
 
@@ -35,7 +43,13 @@ void TabView::HandleTabChange() {
   // Notify the page that it is now showing and the other that the are now
   // hidden
   for (int i = 0; i < mTabs.size(); i++) {
-    GetCurrentTabIdx() == i ? mTabs[i]->OnShow() : mTabs[i]->OnHide();
+    auto content = mTabs[i]->TakeContent();
+    if (GetCurrentTabIdx() == i) {
+      content->OnShow();
+    } else {
+      content->OnHide();
+    }
+    mTabs[i]->GiveContent(std::move(content));
   }
 }
 

@@ -12,17 +12,35 @@ void UIElement::AddElement(UIElement *anUIElement) {
 
 bool UIElement::IsVisible() { return lv_obj_is_visible(mLvglSelf); }
 
-void UIElement::SetWidth(uint16_t aWidth) {
+void UIElement::SetWidth(lv_coord_t aWidth) {
   lv_obj_set_width(mLvglSelf, aWidth);
 }
 
-void UIElement::SetHeight(uint16_t aHeight) {
+void UIElement::SetHeight(lv_coord_t aHeight) {
   lv_obj_set_height(mLvglSelf, aHeight);
 }
 
-int16_t UIElement::GetHeight() { return lv_obj_get_height(mLvglSelf); };
+lv_coord_t UIElement::GetHeight() {
+  lv_obj_update_layout(mLvglSelf);
+  return lv_obj_get_height(mLvglSelf);
+};
 
-int16_t UIElement::GetWidth() { return lv_obj_get_width(mLvglSelf); }
+lv_coord_t UIElement::GetWidth() {
+  lv_obj_update_layout(mLvglSelf);
+  return lv_obj_get_width(mLvglSelf);
+}
+
+void UIElement::SetY(lv_coord_t aY) { lv_obj_set_y(mLvglSelf, aY); }
+void UIElement::SetX(lv_coord_t aX) { lv_obj_set_x(mLvglSelf, aX); }
+
+lv_coord_t UIElement::GetY() {
+  lv_obj_update_layout(mLvglSelf);
+  return lv_obj_get_y(mLvglSelf);
+}
+lv_coord_t UIElement::GetX() {
+  lv_obj_update_layout(mLvglSelf);
+  return lv_obj_get_x(mLvglSelf);
+}
 
 void UIElement::SetVisiblity(bool aVisible) {
   if (aVisible == IsVisible()) {

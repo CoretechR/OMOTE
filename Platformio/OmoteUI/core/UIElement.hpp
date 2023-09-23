@@ -16,11 +16,17 @@ public:
   void SetVisiblity(bool aVisibility);
   bool IsVisible();
 
-  virtual void SetWidth(uint16_t aWidth);
-  virtual void SetHeight(uint16_t aHeight);
+  virtual void SetWidth(lv_coord_t aWidth);
+  virtual void SetHeight(lv_coord_t aHeight);
 
-  int16_t GetWidth();
-  int16_t GetHeight();
+  lv_coord_t GetWidth();
+  lv_coord_t GetHeight();
+
+  virtual void SetY(lv_coord_t aY);
+  virtual void SetX(lv_coord_t aX);
+
+  lv_coord_t GetY();
+  lv_coord_t GetX();
 
   virtual void AddElement(UIElement *anElement);
 
