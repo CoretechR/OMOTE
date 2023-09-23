@@ -3,9 +3,11 @@
 #include "WidgetBase.hpp"
 
 #include <vector>
-
 namespace UI::Page {
+class TabView;
 class Base : public UIElement {
+  friend TabView; // Allow Tab view to call OnShow and OnHide Since it can show
+                  // and Hide pages by swiping
 public:
   typedef std::unique_ptr<Base> Ptr;
 
