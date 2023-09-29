@@ -3,6 +3,8 @@
 #include "UIElementIds.hpp"
 #include "lvgl.h"
 
+#include "KeyPressAbstract.hpp"
+
 namespace UI {
 
 class UIElement {
@@ -47,6 +49,14 @@ protected:
   virtual void OnShow() = 0;
   /// @brief Override in child class to run something after element is hidden
   virtual void OnHide() = 0;
+
+  /// @brief Set KeyEvent to the UI element to see if it wants to handle it
+  virtual bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent);
+
+  /// @brief Override to Handle KeyEvent for the specific element
+  /// @return true - Key event was used
+  ///         fasle - Key event was unused
+  virtual bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) = 0;
 
 private:
   lv_obj_t *mLvglSelf;

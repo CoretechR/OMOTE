@@ -18,3 +18,8 @@ void Manager::pushScreen(Screen::Base::Ptr aScreen) {
   mScreens.push(std::move(aScreen));
   mScreens.top()->Show();
 }
+
+bool Manager::distributeKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  // Send Key Even to top Screen for handling
+  return mScreens.top()->KeyEvent(aKeyEvent);
+}

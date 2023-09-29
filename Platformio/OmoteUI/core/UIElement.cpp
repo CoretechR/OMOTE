@@ -67,4 +67,8 @@ void UIElement::Hide() {
   OnHide();
 }
 
+bool UIElement::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  return OnKeyEvent(aKeyEvent);
+}
+
 } // namespace UI

@@ -13,6 +13,9 @@ public:
 protected:
   void OnShow() override{};
   void OnHide() override{};
+  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override {
+    return false;
+  };
 
 private:
 };
