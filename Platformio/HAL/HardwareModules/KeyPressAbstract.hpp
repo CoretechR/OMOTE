@@ -47,10 +47,12 @@ public:
     const KeyId mId;
     const Type mType;
   };
-  /// @brief When Constructing pass a callable to be ran for Handling
-  ///        KeyEvents
-  /// @param aKeyEventHandler
-  KeyPressAbstract(std::function<bool(KeyEvent)> aKeyEventHandler);
+
+  KeyPressAbstract();
+
+  /// @brief Register a SINGLE handler to be used for proccessing keys
+  /// @param aKeyEventHandler - Callable the Handles KeyEvent
+  void RegisterKeyPressHandler(std::function<bool(KeyEvent)> aKeyEventHandler);
 
 protected:
   /// @brief Function ment to be called regularly to allow

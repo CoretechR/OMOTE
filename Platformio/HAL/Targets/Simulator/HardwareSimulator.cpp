@@ -13,7 +13,7 @@ HardwareSimulator::HardwareSimulator()
       mBattery(std::make_shared<BatterySimulator>()),
       mDisplay(SDLDisplay::getInstance()),
       mWifiHandler(std::make_shared<wifiHandlerSim>()),
-      mKeys(std::make_shared<KeyPressSim>([](auto keypress) { return true; })) {
+      mKeys(std::make_shared<KeyPressSim>()) {
   mHardwareStatusTitleUpdate = std::thread([this] {
     int dataToShow = 0;
     while (true) {

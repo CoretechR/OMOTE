@@ -3,9 +3,8 @@
 
 #include <memory>
 
-KeyPressSim::KeyPressSim(
-    std::function<bool(KeyPressAbstract::KeyEvent)> aKeyHandler)
-    : KeyPressAbstract(std::move(aKeyHandler)), mKeyGrabberThread([this] {
+KeyPressSim::KeyPressSim()
+    : mKeyGrabberThread([this] {
         while (true) {
           HandleKeyPresses();
           std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -35,9 +34,9 @@ void KeyPressSim::GrabKeys() {
 void KeyPressSim::HandleKeyPresses() {
   std::lock_guard lock(mQueueGaurd);
   while (!mKeyEventQueue.empty()) {
-    printf(mKeyEventQueue.front().mType == KeyEvent::Type::Release ? "release"
-                                                                   : "press");
-    mKeyEventHandler(mKeyEventQueue.front());
+    if (mKeyEventHandler) {
+      mKeyEventHandler(mKeyEventQueue.front());
+    }
     mKeyEventQueue.pop();
   }
 };

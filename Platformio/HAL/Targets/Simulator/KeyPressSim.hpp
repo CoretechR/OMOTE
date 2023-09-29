@@ -10,7 +10,7 @@ class KeyPressSim : public KeyPressAbstract {
 public:
   static constexpr auto MaxQueueableKeyEvents = 3;
 
-  KeyPressSim(std::function<bool(KeyPressAbstract::KeyEvent)> aKeyHandler);
+  KeyPressSim();
 
   void GrabKeys();
   void HandleKeyPresses() override;
