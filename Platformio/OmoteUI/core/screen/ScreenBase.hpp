@@ -23,9 +23,7 @@ protected:
   void Show() override;
   void OnShow() override{};
   void OnHide() override{};
-  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override {
-    return false;
-  };
+  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 
 private:
   lv_scr_load_anim_t mPushAnimation = LV_SCR_LOAD_ANIM_NONE;

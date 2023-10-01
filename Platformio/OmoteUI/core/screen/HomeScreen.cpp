@@ -19,3 +19,14 @@ void HomeScreen::SetBgColor(lv_color_t value, lv_style_selector_t selector) {
   mTabView.SetBgColor(value, selector);
   UI::UIElement::SetBgColor(value, selector);
 }
+
+bool HomeScreen::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  return false;
+};
+
+bool HomeScreen::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  if (OnKeyEvent(aKeyEvent)) {
+    return true;
+  }
+  return mTabView.KeyEvent(aKeyEvent);
+};

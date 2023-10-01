@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UIElementIds.hpp"
-#include "lvgl.h"
+#include <lvgl.h>
 
 #include "KeyPressAbstract.hpp"
 
@@ -11,6 +11,7 @@ class UIElement {
 
 public:
   UIElement(lv_obj_t *aLvglSelf, const ID aId = ID());
+  virtual ~UIElement();
 
   virtual void SetBgColor(lv_color_t value,
                           lv_style_selector_t selector = LV_PART_MAIN);

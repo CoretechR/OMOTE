@@ -12,6 +12,11 @@ public:
   void SetBgColor(lv_color_t value,
                   lv_style_selector_t selector = LV_PART_MAIN) override;
 
+  bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
+
+protected:
+  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
+
 private:
   Page::TabView mTabView;
 };

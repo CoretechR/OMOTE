@@ -1,5 +1,5 @@
-#include "BackgroundScreen.hpp"
 #include "TabView.hpp"
+#include "BackgroundScreen.hpp"
 #include <string>
 
 using namespace UI::Page;
@@ -12,6 +12,16 @@ void Tab::GiveContent(Page::Base::Ptr aContent) {
 }
 
 Base::Ptr Tab::TakeContent() { return std::move(mContent); }
+
+bool Tab::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  return mContent->OnKeyEvent(aKeyEvent);
+}
+
+bool Tab::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  return mContent->KeyEvent(aKeyEvent);
+}
+
+/////////////////////TabView/////////////////////////////////////
 
 TabView::TabView(ID aId)
     : Base(lv_tabview_create(Screen::BackgroundScreen::getLvInstance(),
@@ -60,3 +70,10 @@ void TabView::HandleTabChangeImpl(lv_event_t *aTabChangeEvent) {
     self->HandleTabChange();
   }
 }
+
+bool TabView::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  if (OnKeyEvent(aKeyEvent)) {
+    return true;
+  }
+  return mTabs[GetCurrentTabIdx()]->KeyEvent(aKeyEvent);
+};

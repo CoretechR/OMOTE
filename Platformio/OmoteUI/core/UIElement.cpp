@@ -6,6 +6,12 @@ UIElement::UIElement(lv_obj_t *aLvglSelf, ID aId)
   mLvglSelf->user_data = this;
 }
 
+UIElement::~UIElement() {
+  if (lv_obj_is_valid(mLvglSelf)) {
+    lv_obj_del(mLvglSelf);
+  }
+}
+
 void UIElement::AddElement(UIElement *anUIElement) {
   lv_obj_set_parent(anUIElement->mLvglSelf, mLvglSelf);
 }

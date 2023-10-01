@@ -1,5 +1,5 @@
-#include "BackgroundScreen.hpp"
 #include "PageBase.hpp"
+#include "BackgroundScreen.hpp"
 
 using namespace UI::Page;
 
@@ -11,8 +11,37 @@ Base::Base(lv_obj_t *aLvglSelf, ID aID) : UIElement(aLvglSelf, aID) {
   SetWidth(lv_pct(100));
   lv_obj_set_align(aLvglSelf, LV_ALIGN_CENTER);
 }
-
-void Base::AddWidget(Widget::Base::Ptr aWidget) {
+// Return non owning refrence to widget
+UI::Widget::Base *Base::AddWidget(Widget::Base::Ptr aWidget) {
   AddElement(aWidget.get());
   mWidgets.push_back(std::move(aWidget));
+  return mWidgets[mWidgets.size() - 1].get();
 }
+
+UI::Widget::Base::Ptr Base::RemoveWidget(Widget::Base *aWidgetRefrence) {
+  auto widgetToRemoveIter = std::find_if(
+      mWidgets.begin(), mWidgets.end(), [aWidgetRefrence](auto &aWidget) {
+        return aWidget.get() == aWidgetRefrence;
+      });
+  if (widgetToRemoveIter != mWidgets.end()) {
+    auto widget = std::move(*widgetToRemoveIter);
+    mWidgets.erase(widgetToRemoveIter);
+    return widget;
+  }
+  return nullptr;
+}
+
+bool Base::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  if (OnKeyEvent(aKeyEvent)) {
+    return true;
+  }
+  for (auto &widget : mWidgets) {
+    auto used = widget->KeyEvent(aKeyEvent);
+    if (used) {
+      return true;
+    }
+  }
+  return false;
+};
+
+bool Base::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) { return false; };
