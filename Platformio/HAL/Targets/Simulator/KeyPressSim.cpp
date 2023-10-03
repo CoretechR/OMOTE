@@ -4,29 +4,27 @@
 #include <memory>
 
 KeyPressSim::KeyPressSim()
-    : mKeyGrabberThread([this] {
+    : mKeyHandlerThread([this] {
         while (true) {
           HandleKeyPresses();
           std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
-      }),
-      mKeyHandlerThread([this] {
-        while (true) {
-          GrabKeys();
-          std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        }
-      }){};
+      }) {
+  SDL_AddEventWatch(KeyPressSim::GrabKeyImpl, this);
+};
 
-void KeyPressSim::GrabKeys() {
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-      auto keyEventType = event.type == SDL_KEYDOWN ? KeyEvent::Type::Press
+int KeyPressSim::GrabKeyImpl(void *aSelf, SDL_Event *aEvent) {
+  reinterpret_cast<KeyPressSim *>(aSelf)->GrabKeys(aEvent);
+  return 0;
+}
+
+void KeyPressSim::GrabKeys(SDL_Event *aEvent) {
+  if (aEvent->type == SDL_KEYDOWN || aEvent->type == SDL_KEYUP) {
+    auto keyEventType = aEvent->type == SDL_KEYDOWN ? KeyEvent::Type::Press
                                                     : KeyEvent::Type::Release;
-      const auto SDLK_key = event.key.keysym.sym;
-      if (KeyMap.count(SDLK_key) > 0) {
-        QueueKeyEvent(KeyEvent(KeyMap.at(SDLK_key), keyEventType));
-      }
+    const auto SDLK_key = aEvent->key.keysym.sym;
+    if (KeyMap.count(SDLK_key) > 0) {
+      QueueKeyEvent(KeyEvent(KeyMap.at(SDLK_key), keyEventType));
     }
   }
 };

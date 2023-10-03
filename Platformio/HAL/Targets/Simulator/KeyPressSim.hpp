@@ -12,7 +12,9 @@ public:
 
   KeyPressSim();
 
-  void GrabKeys();
+  static int GrabKeyImpl(void *aSelf, SDL_Event *aEvent);
+  void GrabKeys(SDL_Event *aEvent);
+
   void HandleKeyPresses() override;
   void QueueKeyEvent(KeyEvent aJustOccuredKeyEvent) override;
 

@@ -18,6 +18,9 @@ public:
   bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
   bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 
+  void OnShow() override;
+  void OnHide() override;
+
 private:
   Base::Ptr mContent;
 };

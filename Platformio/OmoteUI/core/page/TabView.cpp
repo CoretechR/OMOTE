@@ -21,6 +21,9 @@ bool Tab::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   return mContent->KeyEvent(aKeyEvent);
 }
 
+void Tab::OnShow() { mContent->OnShow(); };
+void Tab::OnHide() { mContent->OnHide(); };
+
 /////////////////////TabView/////////////////////////////////////
 
 TabView::TabView(ID aId)
@@ -53,13 +56,11 @@ void TabView::HandleTabChange() {
   // Notify the page that it is now showing and the other that the are now
   // hidden
   for (int i = 0; i < mTabs.size(); i++) {
-    auto content = mTabs[i]->TakeContent();
     if (GetCurrentTabIdx() == i) {
-      content->OnShow();
+      mTabs[i]->OnShow();
     } else {
-      content->OnHide();
+      mTabs[i]->OnHide();
     }
-    mTabs[i]->GiveContent(std::move(content));
   }
 }
 
