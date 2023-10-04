@@ -45,8 +45,8 @@
 #define IR_VCC 25  // IR receiver power
 #define IR_LED 33  // IR LED output
 
-#define SCL 22
-#define SDA 19
+#define TFT_SCL 22
+#define TFT_SDA 19
 #define ACC_INT 20
 
 #define CRG_STAT 21 // battery charger feedback

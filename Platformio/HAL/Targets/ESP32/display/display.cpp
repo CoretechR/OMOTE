@@ -1,43 +1,39 @@
 
 #include "display.hpp"
-#include "omoteconfig.h"
 #include "Wire.h"
 #include "driver/ledc.h"
+#include "omoteconfig.h"
 
-std::shared_ptr<Display> Display::getInstance()
-{
-    if (DisplayAbstract::mInstance == nullptr)
-    {
-        DisplayAbstract::mInstance  = std::shared_ptr<Display>(new Display(LCD_BL, LCD_EN));
-    }
-    return std::static_pointer_cast<Display>(mInstance);
+std::shared_ptr<Display> Display::getInstance() {
+  if (DisplayAbstract::mInstance == nullptr) {
+    DisplayAbstract::mInstance =
+        std::shared_ptr<Display>(new Display(LCD_BL, LCD_EN));
+  }
+  return std::static_pointer_cast<Display>(mInstance);
 }
 
-Display::Display(int backlight_pin, int enable_pin): DisplayAbstract(),
-    mBacklightPin(backlight_pin),
-    mEnablePin(enable_pin),
-    tft(TFT_eSPI()),
-    touch(Adafruit_FT6206())
-{
-    pinMode(mEnablePin, OUTPUT);
-    digitalWrite(mEnablePin, HIGH);
-    pinMode(mBacklightPin, OUTPUT);
-    digitalWrite(mBacklightPin, HIGH);
+Display::Display(int backlight_pin, int enable_pin)
+    : DisplayAbstract(), mBacklightPin(backlight_pin), mEnablePin(enable_pin),
+      tft(TFT_eSPI()), touch(Adafruit_FT6206()) {
+  pinMode(mEnablePin, OUTPUT);
+  digitalWrite(mEnablePin, HIGH);
+  pinMode(mBacklightPin, OUTPUT);
+  digitalWrite(mBacklightPin, HIGH);
 
-    setupBacklight(); // This eliminates the flash of the backlight
+  setupBacklight(); // This eliminates the flash of the backlight
 
-    // Slowly charge the VSW voltage to prevent a brownout
-    // Workaround for hardware rev 1!
-    for(int i = 0; i < 100; i++){
-        digitalWrite(this->mEnablePin, HIGH);  // LCD Logic off
-        delayMicroseconds(1);
-        digitalWrite(this->mEnablePin, LOW);  // LCD Logic on
-    }  
+  // Slowly charge the VSW voltage to prevent a brownout
+  // Workaround for hardware rev 1!
+  for (int i = 0; i < 100; i++) {
+    digitalWrite(this->mEnablePin, HIGH); // LCD Logic off
+    delayMicroseconds(1);
+    digitalWrite(this->mEnablePin, LOW); // LCD Logic on
+  }
 
-    setupTFT();
-    setupTouchScreen();
-    mFadeTaskMutex = xSemaphoreCreateBinary();
-    xSemaphoreGive(mFadeTaskMutex);
+  setupTFT();
+  setupTouchScreen();
+  mFadeTaskMutex = xSemaphoreCreateBinary();
+  xSemaphoreGive(mFadeTaskMutex);
 }
 
 void Display::setupBacklight() {
@@ -62,7 +58,7 @@ void Display::setupBacklight() {
   ledc_timer_config(&ledc_timer);
 }
 
-void Display::onTouch(Notification<TS_Point>::HandlerTy aTouchHandler){
+void Display::onTouch(Notification<TS_Point>::HandlerTy aTouchHandler) {
   mTouchEvent.onNotify(std::move(aTouchHandler));
 }
 
@@ -75,25 +71,22 @@ void Display::setupTFT() {
   tft.setSwapBytes(true);
 }
 
-void Display::setupTouchScreen(){
-    // Configure i2c pins and set frequency to 400kHz
-    Wire.begin(SDA, SCL, 400000);
-    touch.begin(128); // Initialize touchscreen and set sensitivity threshold
+void Display::setupTouchScreen() {
+  // Configure i2c pins and set frequency to 400kHz
+  Wire.begin(TFT_SDA, TFT_SCL, 400000);
+  touch.begin(128); // Initialize touchscreen and set sensitivity threshold
 }
 
-void Display::setBrightness(uint8_t brightness)
-{
+void Display::setBrightness(uint8_t brightness) {
   mAwakeBrightness = brightness;
   Serial.print("Set Brightness:");
   Serial.println(mAwakeBrightness);
   startFade();
 }
 
-uint8_t Display::getBrightness(){
-  return mAwakeBrightness;
-}
+uint8_t Display::getBrightness() { return mAwakeBrightness; }
 
-void Display::setCurrentBrightness(uint8_t brightness){
+void Display::setCurrentBrightness(uint8_t brightness) {
   mBrightness = brightness;
   auto duty = static_cast<int>(mBrightness);
   ledcWrite(LCD_BACKLIGHT_LEDC_CHANNEL, duty);
@@ -101,18 +94,17 @@ void Display::setCurrentBrightness(uint8_t brightness){
   // Serial.println(mBrightness);
 }
 
-void Display::turnOff()
-{
-    digitalWrite(this->mBacklightPin, HIGH);
-    digitalWrite(this->mEnablePin, HIGH);
-    pinMode(this->mBacklightPin, INPUT);
-    pinMode(this->mEnablePin, INPUT);
-    gpio_hold_en((gpio_num_t) mBacklightPin);
-    gpio_hold_en((gpio_num_t) mEnablePin);
+void Display::turnOff() {
+  digitalWrite(this->mBacklightPin, HIGH);
+  digitalWrite(this->mEnablePin, HIGH);
+  pinMode(this->mBacklightPin, INPUT);
+  pinMode(this->mEnablePin, INPUT);
+  gpio_hold_en((gpio_num_t)mBacklightPin);
+  gpio_hold_en((gpio_num_t)mEnablePin);
 }
 
-void Display::screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data){
- // int16_t touchX, touchY;
+void Display::screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
+  // int16_t touchX, touchY;
   touchPoint = touch.getPoint();
   int16_t touchX = touchPoint.x;
   int16_t touchY = touchPoint.y;
@@ -140,48 +132,50 @@ void Display::screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data){
   }
 }
 
-void Display::fadeImpl(void* ){
+void Display::fadeImpl(void *) {
   bool fadeDone = false;
-  while(!fadeDone){
+  while (!fadeDone) {
     fadeDone = getInstance()->fade();
-    vTaskDelay(3 / portTICK_PERIOD_MS); // 3 miliseconds between steps 
-    // 0 - 255 will take about .75 seconds to fade up. 
+    vTaskDelay(3 / portTICK_PERIOD_MS); // 3 miliseconds between steps
+    // 0 - 255 will take about .75 seconds to fade up.
   }
-  
-  xSemaphoreTake(getInstance()->mFadeTaskMutex,portMAX_DELAY);
+
+  xSemaphoreTake(getInstance()->mFadeTaskMutex, portMAX_DELAY);
   getInstance()->mDisplayFadeTask = nullptr;
   xSemaphoreGive(getInstance()->mFadeTaskMutex);
 
   vTaskDelete(nullptr); // Delete Fade Task
 }
 
-bool Display::fade(){
-  //Early return no fade needed. 
-  if (mBrightness == mAwakeBrightness ||
-      isAsleep && mBrightness == 0){return true;} 
-  
-  bool fadeDown = isAsleep || mBrightness > mAwakeBrightness; 
-  if (fadeDown){
+bool Display::fade() {
+  // Early return no fade needed.
+  if (mBrightness == mAwakeBrightness || isAsleep && mBrightness == 0) {
+    return true;
+  }
+
+  bool fadeDown = isAsleep || mBrightness > mAwakeBrightness;
+  if (fadeDown) {
     setCurrentBrightness(mBrightness - 1);
     auto setPoint = isAsleep ? 0 : mAwakeBrightness;
     return mBrightness == setPoint;
-  }else{
+  } else {
     setCurrentBrightness(mBrightness + 1);
     return mBrightness == mAwakeBrightness;
   }
 }
 
-void Display::startFade(){
-  xSemaphoreTake(mFadeTaskMutex,portMAX_DELAY);
+void Display::startFade() {
+  xSemaphoreTake(mFadeTaskMutex, portMAX_DELAY);
   // Only Create Task if it is needed
-  if(mDisplayFadeTask == nullptr){
-    xTaskCreate(&Display::fadeImpl, "Display Fade Task",
-                  1024, nullptr, 5, &mDisplayFadeTask);
+  if (mDisplayFadeTask == nullptr) {
+    xTaskCreate(&Display::fadeImpl, "Display Fade Task", 1024, nullptr, 5,
+                &mDisplayFadeTask);
   }
   xSemaphoreGive(mFadeTaskMutex);
 }
 
-void Display::flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
+void Display::flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area,
+                           lv_color_t *color_p) {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
 

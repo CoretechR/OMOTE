@@ -74,6 +74,7 @@ void HardwareRevX::init() {
   mDisplay = Display::getInstance();
   mBattery = std::make_shared<Battery>(ADC_BAT, CRG_STAT);
   mWifiHandler = wifiHandler::getInstance();
+  mKeys = std::make_shared<Keys>();
   restorePreferences();
 
   mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint) {
@@ -111,6 +112,8 @@ std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi() {
 std::shared_ptr<BatteryInterface> HardwareRevX::battery() { return mBattery; }
 
 std::shared_ptr<DisplayAbstract> HardwareRevX::display() { return mDisplay; }
+
+std::shared_ptr<KeyPressAbstract> HardwareRevX::keys() { return mKeys; }
 
 void HardwareRevX::activityDetection() {
   static int accXold;
@@ -323,31 +326,4 @@ void HardwareRevX::loopHandler() {
     }
     IMUTaskTimer = millis();
   }
-
-  // Keypad Handling
-  customKeypad.getKey(); // Populate key list
-  for (int i = 0; i < LIST_MAX;
-       i++) { // Handle multiple keys (Not really necessary in this case)
-    if (customKeypad.key[i].kstate == PRESSED ||
-        customKeypad.key[i].kstate == HOLD) {
-      standbyTimer =
-          sleepTimeout; // Reset the sleep timer when a button is pressed
-      int keyCode = customKeypad.key[i].kcode;
-      Serial.println(customKeypad.key[i].kchar);
-      // Send IR codes depending on the current device (tabview page)
-      if (currentDevice == 1) {
-        IrSender.sendRC5(IrSender.encodeRC5X(
-            0x00, keyMapTechnisat[keyCode / ROWS][keyCode % ROWS]));
-      } else if (currentDevice == 2) {
-        IrSender.sendSony((keyCode / ROWS) * (keyCode % ROWS), 15);
-      }
-    }
-  }
-  // IR Test
-  // tft.drawString("IR Command: ", 10, 90, 1);
-  // decode_results results;
-  // if (IrReceiver.decode(&results)) {
-  // IrReceiver.resume(); // Enable receiving of the next value
-  //}  //tft.drawString(String(results.command) + "        ", 80, 90, 1);
-  //
 }
