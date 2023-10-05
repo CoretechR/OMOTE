@@ -35,17 +35,19 @@ public:
     Aux1,
     Aux2,
     Aux3,
-    Aux4
+    Aux4,
+    INVALID
   };
 
   class KeyEvent {
   public:
-    enum class Type { Press, Release };
+    enum class Type { Press, Release, INVALID };
 
+    KeyEvent() = default;
     KeyEvent(const KeyId aId, const Type aType) : mId(aId), mType(aType) {}
 
-    const KeyId mId;
-    const Type mType;
+    KeyId mId = KeyId::INVALID;
+    Type mType = Type::INVALID;
   };
 
   KeyPressAbstract();

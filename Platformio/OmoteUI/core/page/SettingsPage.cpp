@@ -3,7 +3,8 @@
 
 using namespace UI::Page;
 
-SettingsPage::SettingsPage() : Base(ID::Pages::Settings) {
+SettingsPage::SettingsPage(std::shared_ptr<HardwareAbstract> aHardware)
+    : Base(ID::Pages::Settings), mHardware(aHardware) {
   SetBgColor(lv_color_make(255, 0, 0));
 }
 
