@@ -3,6 +3,9 @@
 #include "WidgetBase.hpp"
 
 #include <vector>
+namespace UI::Screen {
+class PopUpScreen;
+}
 namespace UI::Page {
 class Tab;
 class TabView;
@@ -10,6 +13,9 @@ class Base : public UIElement {
   friend Tab;     // Allow Tab to Forward all Key Events to its page
   friend TabView; // Allow Tab view to call OnShow and OnHide Since it can show
                   // and Hide pages by swiping
+  friend UI::Screen::PopUpScreen; // Allow Pop up Screens pass events to the
+                                  // page it owns
+
 public:
   typedef std::unique_ptr<Base> Ptr;
 

@@ -9,6 +9,7 @@ public:
   enum class Screens {
     Background = static_cast<int>(INVALID) + 1,
     Home,
+    PopUp,
     INVALID_SCREEN_ID
   };
 
