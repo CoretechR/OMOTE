@@ -14,10 +14,13 @@ void SettingsPage::AddSlider() {
   auto fakeSlider = std::make_unique<UI::Widget::Base>(
       lv_slider_create(UI::Screen::BackgroundScreen::getLvInstance()));
   fakeSlider->SetHeight(lv_pct(10));
-
   fakeSlider->SetWidth(GetWidth());
-  auto sliderHeight = fakeSlider->GetHeight();
-  fakeSlider->SetY(sliderHeight * GetNumWidgets());
+  if (sliders.empty()) {
+    fakeSlider->SetY(0);
+  } else {
+    auto nextY = sliders.back()->GetY() + sliders.back()->GetHeight();
+    fakeSlider->SetY(nextY + 10);
+  }
 
   sliders.push_back(AddWidget(std::move(fakeSlider)));
 }

@@ -31,6 +31,9 @@ public:
   lv_coord_t GetY();
   lv_coord_t GetX();
 
+  void AlignTo(UIElement *anElementToAlignWith,lv_align_t anAlignment,
+                        lv_coord_t aXoffset = 0, lv_coord_t aYOffset = 0);
+
   virtual void AddElement(UIElement *anElement);
 
   ID GetID() { return mId; };

@@ -68,6 +68,14 @@ lv_coord_t UIElement::GetX() {
   return lv_obj_get_x(mLvglSelf);
 }
 
+void UIElement::AlignTo(UIElement *anElementToAlignTo, lv_align_t anAlignment,
+                        lv_coord_t aXoffset, lv_coord_t aYOffset) {
+  LvglResourceManger::GetInstance().AttemptNow([=] {
+    lv_obj_align_to(mLvglSelf, anElementToAlignTo->mLvglSelf, anAlignment,
+                    aXoffset, aYOffset);
+  });
+}
+
 void UIElement::SetVisiblity(bool aVisible) {
   if (aVisible == IsVisible()) {
     return;
