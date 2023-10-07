@@ -30,9 +30,10 @@ public:
 
   lv_coord_t GetY();
   lv_coord_t GetX();
+  lv_coord_t GetBottom();
 
-  void AlignTo(UIElement *anElementToAlignWith,lv_align_t anAlignment,
-                        lv_coord_t aXoffset = 0, lv_coord_t aYOffset = 0);
+  void AlignTo(UIElement *anElementToAlignWith, lv_align_t anAlignment,
+               lv_coord_t aXoffset = 0, lv_coord_t aYOffset = 0);
 
   virtual void AddElement(UIElement *anElement);
 
@@ -54,6 +55,9 @@ protected:
   /// @brief Override in child class to run something after element is hidden
   virtual void OnHide() = 0;
 
+  // Override in object to handle LVGL events for that object
+  virtual void OnLvglEvent(lv_event_t *anEvent){};
+
   /// @brief Set KeyEvent to the UI element to see if it wants to handle it
   virtual bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent);
 
@@ -63,6 +67,8 @@ protected:
   virtual bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) = 0;
 
 private:
+  static void LvglEventHandler(lv_event_t *anEvent);
+
   lv_obj_t *mLvglSelf;
   const ID mId;
 };

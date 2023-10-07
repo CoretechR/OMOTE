@@ -16,7 +16,7 @@ public:
     return mInstance;
   }
 
-  [[nodiscard]] std::scoped_lock<std::mutex> scopeLock() {
+  [[nodiscard]] std::scoped_lock<std::recursive_mutex> scopeLock() {
     return std::scoped_lock(mLvglMutex);
   }
 
@@ -45,5 +45,5 @@ protected:
   }
 
   std::queue<std::function<void()>> mLvglTasks;
-  std::mutex mLvglMutex;
+  std::recursive_mutex mLvglMutex;
 };

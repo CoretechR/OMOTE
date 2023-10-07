@@ -1,11 +1,18 @@
 #include "SettingsPage.hpp"
 #include "BackgroundScreen.hpp"
+#include "Button.hpp"
 
 using namespace UI::Page;
 
 SettingsPage::SettingsPage(std::shared_ptr<HardwareAbstract> aHardware)
     : Base(ID::Pages::Settings), mHardware(aHardware) {
   SetBgColor(lv_color_make(255, 0, 0));
+  auto button = std::make_unique<UI::Widget::Button>([this] { AddSlider(); });
+  button->SetY(0);
+  button->SetHeight(lv_pct(10));
+  button->SetWidth(lv_pct(10));
+
+  mButton = AddWidget(std::move(button));
 }
 
 void SettingsPage::OnShow() {}
@@ -16,7 +23,7 @@ void SettingsPage::AddSlider() {
   fakeSlider->SetHeight(lv_pct(10));
   fakeSlider->SetWidth(GetWidth());
   if (sliders.empty()) {
-    fakeSlider->SetY(0);
+    fakeSlider->SetY(mButton->GetBottom());
   } else {
     auto nextY = sliders.back()->GetY() + sliders.back()->GetHeight();
     fakeSlider->SetY(nextY + 10);
@@ -50,7 +57,7 @@ bool SettingsPage::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   case id::Aux4:
     break;
   default:
-    used = false;
+    used = Page::Base::OnKeyEvent(aKeyEvent);
     break;
   }
   return used;

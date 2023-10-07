@@ -14,6 +14,7 @@ protected:
   void OnShow() override;
 
   std::vector<Widget::Base *> sliders;
+  Widget::Base *mButton;
   std::shared_ptr<HardwareAbstract> mHardware;
 };
 } // namespace UI::Page

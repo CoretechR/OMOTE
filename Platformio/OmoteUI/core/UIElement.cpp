@@ -6,6 +6,10 @@ UIElement::UIElement(lv_obj_t *aLvglSelf, ID aId)
     : mLvglSelf(aLvglSelf), mId(aId) {
   auto lock = LvglResourceManger::GetInstance().scopeLock();
   mLvglSelf->user_data = this;
+  // Register Handler so that all object are able to override OnLvglEvent to
+  // handle events easilyOnLvEvent
+  lv_obj_add_event_cb(mLvglSelf, UIElement::LvglEventHandler, LV_EVENT_ALL,
+                      this);
 }
 
 UIElement::~UIElement() {
@@ -68,6 +72,8 @@ lv_coord_t UIElement::GetX() {
   return lv_obj_get_x(mLvglSelf);
 }
 
+lv_coord_t UIElement::GetBottom() { return GetY() + GetHeight(); };
+
 void UIElement::AlignTo(UIElement *anElementToAlignTo, lv_align_t anAlignment,
                         lv_coord_t aXoffset, lv_coord_t aYOffset) {
   LvglResourceManger::GetInstance().AttemptNow([=] {
@@ -112,6 +118,13 @@ void UIElement::Hide() {
 
 bool UIElement::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   return OnKeyEvent(aKeyEvent);
+}
+
+//////////////////// Statics //////////////////////////
+
+void UIElement::LvglEventHandler(lv_event_t *anEvent) {
+  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  reinterpret_cast<UIElement *>(anEvent->user_data)->OnLvglEvent(anEvent);
 }
 
 } // namespace UI

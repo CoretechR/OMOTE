@@ -14,5 +14,5 @@ BasicUI::BasicUI(std::shared_ptr<HardwareAbstract> aHardware)
   });
 
   Screen::Manager::getInstance().pushScreen(
-      std::make_unique<Screen::HomeScreen>());
+      std::make_unique<Screen::HomeScreen>(aHardware));
 }
