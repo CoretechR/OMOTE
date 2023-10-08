@@ -1,6 +1,8 @@
 #pragma once
+#include "Button.hpp"
 #include "PageBase.hpp"
 #include "ScreenBase.hpp"
+
 namespace UI::Screen {
 
 /// @brief A Screen that allows easy display of a page that
@@ -13,6 +15,7 @@ public:
 
 private:
   UI::Page::Base::Ptr mContentPage;
+  std::unique_ptr<Widget::Button> mExitButton;
 };
 
 } // namespace UI::Screen

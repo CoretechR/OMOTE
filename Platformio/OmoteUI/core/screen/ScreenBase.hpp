@@ -19,6 +19,9 @@ public:
 
   void SetPushAnimation(lv_scr_load_anim_t aPushAnimation);
 
+  uint32_t GetTransitionTime();
+  void SetTransitionTimes(uint32_t aAnimationTime, uint32_t aDelay = 0);
+
 protected:
   void Show() override;
   void OnShow() override{};
@@ -27,6 +30,8 @@ protected:
 
 private:
   lv_scr_load_anim_t mPushAnimation = LV_SCR_LOAD_ANIM_NONE;
+  uint32_t mTransitionAnimationTime = 1000; // 1000 ms / 1 sec
+  uint32_t mTransitionDelayTime = 0;
 };
 
 } // namespace UI::Screen

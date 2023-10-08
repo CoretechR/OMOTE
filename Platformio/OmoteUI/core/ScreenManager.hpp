@@ -3,7 +3,7 @@
 #include "PageBase.hpp"
 #include "ScreenBase.hpp"
 #include <memory>
-#include <stack>
+#include <vector>
 
 namespace UI::Screen {
 
@@ -19,13 +19,15 @@ public:
   pushPopUp(UI::Page::Base::Ptr aPopUpPage,
             lv_scr_load_anim_t aPushAnimation = LV_SCR_LOAD_ANIM_OVER_LEFT);
 
+  Screen::Base::Ptr popScreen(Screen::Base *aScreenToRemove);
+
   bool distributeKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent);
 
 private:
   Manager();
   static Manager mManager;
 
-  std::stack<Screen::Base::Ptr> mScreens;
+  std::vector<Screen::Base::Ptr> mScreens;
 };
 
 } // namespace UI::Screen

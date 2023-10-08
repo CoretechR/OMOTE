@@ -14,8 +14,13 @@ UIElement::UIElement(lv_obj_t *aLvglSelf, ID aId)
 
 UIElement::~UIElement() {
   auto lock = LvglResourceManger::GetInstance().scopeLock();
-  if (lv_obj_is_valid(mLvglSelf)) {
-    lv_obj_del(mLvglSelf);
+  if (lv_obj_is_valid(LvglSelf())) {
+    if (mLvglKeepAliveTime > 0) {
+      lv_obj_del_delayed(LvglSelf(), mLvglKeepAliveTime);
+    } else {
+      lv_obj_del(LvglSelf());
+    }
+    lv_obj_remove_event_cb(mLvglSelf, UIElement::LvglEventHandler);
   }
 }
 

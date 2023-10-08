@@ -41,6 +41,15 @@ public:
 
   template <class UIElemTy> static UIElemTy GetElement(lv_obj_t *aLvglObject);
 
+  /// @brief There are use cases in which objects
+  ///        need to stay alive in LVGL but can die
+  ///        in terms of our usage this is a helper for these
+  ///        use Sparengly!!!
+  /// @param aTimeToKeepLvglObj
+  void SetKeepAliveTime(uint32_t aTimeToKeepLvglObj) {
+    mLvglKeepAliveTime = aTimeToKeepLvglObj;
+  }
+
 protected:
   /// @brief get Lvgl object refernce to use in LVGL APIs
   /// @return lvgl object a
@@ -71,6 +80,7 @@ private:
 
   lv_obj_t *mLvglSelf;
   const ID mId;
+  uint32_t mLvglKeepAliveTime = 0;
 };
 
 /**
