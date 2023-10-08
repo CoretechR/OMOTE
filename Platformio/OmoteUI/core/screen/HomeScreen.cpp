@@ -1,4 +1,5 @@
 #include "HomeScreen.hpp"
+#include "Colors.hpp"
 #include "SettingsPage.hpp"
 
 using namespace UI::Screen;
@@ -6,7 +7,7 @@ using namespace UI::Screen;
 HomeScreen::HomeScreen(std::shared_ptr<HardwareAbstract> aHardware)
     : Base(UI::ID::Screens::Home), mHardware(aHardware),
       mTabView(ID(ID::Pages::INVALID_PAGE_ID)) {
-  SetBgColor(lv_color_black());
+  SetBgColor(UI::Color::BLACK);
   SetPushAnimation(LV_SCR_LOAD_ANIM_FADE_IN);
 
   AddElement(&mTabView); // Adds Tabview to Homescreen

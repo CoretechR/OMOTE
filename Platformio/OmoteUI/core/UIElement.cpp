@@ -57,6 +57,24 @@ lv_coord_t UIElement::GetWidth() {
   return lv_obj_get_width(mLvglSelf);
 }
 
+void UIElement::SetContentWidth(lv_coord_t aWidth) {
+  LvglResourceManger::GetInstance().AttemptNow(
+      [this, aWidth] { lv_obj_set_content_width(mLvglSelf, aWidth); });
+}
+void UIElement::SetContentHeight(lv_coord_t aHeight) {
+  LvglResourceManger::GetInstance().AttemptNow(
+      [this, aHeight] { lv_obj_set_content_height(mLvglSelf, aHeight); });
+}
+
+lv_coord_t UIElement::GetContentWidth() {
+  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  return lv_obj_get_content_width(mLvglSelf);
+}
+lv_coord_t UIElement::GetContentHeight() {
+  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  return lv_obj_get_content_height(mLvglSelf);
+}
+
 void UIElement::SetY(lv_coord_t aY) {
   LvglResourceManger::GetInstance().AttemptNow(
       [this, aY] { lv_obj_set_y(mLvglSelf, aY); });
@@ -78,6 +96,71 @@ lv_coord_t UIElement::GetX() {
 }
 
 lv_coord_t UIElement::GetBottom() { return GetY() + GetHeight(); };
+
+void UIElement::SetBorder(Border aNewBorder, lv_style_selector_t aStyle) {
+  LvglResourceManger::GetInstance().AttemptNow([this, aNewBorder, aStyle] {
+    lv_obj_set_style_border_color(mLvglSelf, aNewBorder.color, aStyle);
+    lv_obj_set_style_border_opa(mLvglSelf, aNewBorder.opacity, aStyle);
+    lv_obj_set_style_border_side(mLvglSelf, aNewBorder.sides, aStyle);
+    lv_obj_set_style_border_width(mLvglSelf, aNewBorder.width, aStyle);
+  });
+}
+
+Border UIElement::GetBorder(lv_style_selector_t aStyle) {
+  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  return Border()
+      .Color(lv_obj_get_style_border_color(mLvglSelf, aStyle))
+      .Opacity(lv_obj_get_style_border_opa(mLvglSelf, aStyle))
+      .Sides(lv_obj_get_style_border_side(mLvglSelf, aStyle))
+      .Width(lv_obj_get_style_border_width(mLvglSelf, aStyle));
+}
+
+void UIElement::SetOutline(Outline aNewOutline, lv_style_selector_t aStyle) {
+  LvglResourceManger::GetInstance().AttemptNow([this, aNewOutline, aStyle] {
+    lv_obj_set_style_outline_color(mLvglSelf, aNewOutline.color, aStyle);
+    lv_obj_set_style_outline_opa(mLvglSelf, aNewOutline.opacity, aStyle);
+    lv_obj_set_style_outline_width(mLvglSelf, aNewOutline.width, aStyle);
+    lv_obj_set_style_outline_pad(mLvglSelf, aNewOutline.padding, aStyle);
+  });
+};
+
+Outline UIElement::GetOutline(lv_style_selector_t aStyle) {
+  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  return Outline()
+      .Color(lv_obj_get_style_outline_color(mLvglSelf, aStyle))
+      .Opacity(lv_obj_get_style_outline_opa(mLvglSelf, aStyle))
+      .Padding(lv_obj_get_style_outline_pad(mLvglSelf, aStyle))
+      .Width(lv_obj_get_style_outline_width(mLvglSelf, aStyle));
+};
+
+void UIElement::SetPadding(Padding aNewPadding, lv_style_selector_t aStyle) {
+  LvglResourceManger::GetInstance().AttemptNow([this, aNewPadding, aStyle] {
+    lv_obj_set_style_pad_top(mLvglSelf, aNewPadding.top, aStyle);
+    lv_obj_set_style_pad_bottom(mLvglSelf, aNewPadding.bottom, aStyle);
+    lv_obj_set_style_pad_left(mLvglSelf, aNewPadding.left, aStyle);
+    lv_obj_set_style_pad_right(mLvglSelf, aNewPadding.right, aStyle);
+    lv_obj_set_style_pad_row(mLvglSelf, aNewPadding.row, aStyle);
+    lv_obj_set_style_pad_column(mLvglSelf, aNewPadding.column, aStyle);
+  });
+};
+
+void UIElement::SetAllPadding(lv_coord_t aNewPadding,
+                              lv_style_selector_t aStyle) {
+  LvglResourceManger::GetInstance().AttemptNow([this, aNewPadding, aStyle] {
+    lv_obj_set_style_pad_all(mLvglSelf, aNewPadding, aStyle);
+  });
+}
+
+Padding UIElement::GetPadding(lv_style_selector_t aStyle) {
+  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  return Padding()
+      .Top(lv_obj_get_style_pad_top(mLvglSelf, aStyle))
+      .Bottom(lv_obj_get_style_pad_bottom(mLvglSelf, aStyle))
+      .Left(lv_obj_get_style_pad_left(mLvglSelf, aStyle))
+      .Right(lv_obj_get_style_pad_right(mLvglSelf, aStyle))
+      .Row(lv_obj_get_style_pad_row(mLvglSelf, aStyle))
+      .Column(lv_obj_get_style_pad_column(mLvglSelf, aStyle));
+};
 
 void UIElement::AlignTo(UIElement *anElementToAlignTo, lv_align_t anAlignment,
                         lv_coord_t aXoffset, lv_coord_t aYOffset) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BorderOutlinePadding.hpp"
 #include "UIElementIds.hpp"
 #include <lvgl.h>
 
@@ -25,6 +26,12 @@ public:
   lv_coord_t GetWidth();
   lv_coord_t GetHeight();
 
+  virtual void SetContentWidth(lv_coord_t aWidth);
+  virtual void SetContentHeight(lv_coord_t aHeight);
+
+  lv_coord_t GetContentWidth();
+  lv_coord_t GetContentHeight();
+
   virtual void SetY(lv_coord_t aY);
   virtual void SetX(lv_coord_t aX);
 
@@ -34,6 +41,20 @@ public:
 
   void AlignTo(UIElement *anElementToAlignWith, lv_align_t anAlignment,
                lv_coord_t aXoffset = 0, lv_coord_t aYOffset = 0);
+
+  virtual void SetBorder(Border aNewBorder,
+                         lv_style_selector_t aStyle = LV_PART_MAIN);
+  Border GetBorder(lv_style_selector_t aStyle = LV_PART_MAIN);
+
+  virtual void SetOutline(Outline aNewOutline,
+                          lv_style_selector_t aStyle = LV_PART_MAIN);
+  Outline GetOutline(lv_style_selector_t aStyle = LV_PART_MAIN);
+
+  virtual void SetPadding(Padding aNewPadding,
+                          lv_style_selector_t aStyle = LV_PART_MAIN);
+  virtual void SetAllPadding(lv_coord_t aNewPadding,
+                             lv_style_selector_t aStyle = LV_PART_MAIN);
+  Padding GetPadding(lv_style_selector_t aStyle = LV_PART_MAIN);
 
   virtual void AddElement(UIElement *anElement);
 
