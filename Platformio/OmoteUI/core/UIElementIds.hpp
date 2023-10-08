@@ -20,6 +20,7 @@ public:
 
   enum class Pages {
     Settings = static_cast<int>(Widgets::INVALID_WIDGET_ID) + 1,
+    DisplaySettings,
     INVALID_PAGE_ID
   };
 

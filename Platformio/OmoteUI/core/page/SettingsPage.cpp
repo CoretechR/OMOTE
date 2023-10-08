@@ -1,13 +1,16 @@
 #include "SettingsPage.hpp"
 #include "BackgroundScreen.hpp"
 #include "Button.hpp"
+#include "DisplaySettings.hpp"
+#include "PopUpScreen.hpp"
+#include "ScreenManager.hpp"
 
 using namespace UI::Page;
 
 SettingsPage::SettingsPage(std::shared_ptr<HardwareAbstract> aHardware)
     : Base(ID::Pages::Settings), mHardware(aHardware) {
   SetBgColor(lv_color_make(255, 0, 0));
-  auto button = std::make_unique<UI::Widget::Button>([this] { AddSlider(); });
+  auto button = std::make_unique<UI::Widget::Button>([this] { PushDisplaySettings(); });
   button->SetY(0);
   button->SetHeight(lv_pct(10));
   button->SetWidth(lv_pct(10));
@@ -16,6 +19,11 @@ SettingsPage::SettingsPage(std::shared_ptr<HardwareAbstract> aHardware)
 }
 
 void SettingsPage::OnShow() {}
+
+void SettingsPage::PushDisplaySettings() {
+  UI::Screen::Manager::getInstance().pushPopUp(
+      std::make_unique<DisplaySettings>(mHardware->display()));
+}
 
 void SettingsPage::AddSlider() {
   auto fakeSlider = std::make_unique<UI::Widget::Base>(

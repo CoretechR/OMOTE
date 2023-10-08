@@ -9,6 +9,7 @@ public:
   bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 
   void AddSlider();
+  void PushDisplaySettings();
 
 protected:
   void OnShow() override;

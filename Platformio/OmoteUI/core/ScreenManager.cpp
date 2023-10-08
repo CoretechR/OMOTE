@@ -1,4 +1,5 @@
 #include "ScreenManager.hpp"
+#include "PopUpScreen.hpp"
 
 using namespace UI::Screen;
 
@@ -17,6 +18,12 @@ void Manager::pushScreen(Screen::Base::Ptr aScreen,
 void Manager::pushScreen(Screen::Base::Ptr aScreen) {
   mScreens.push(std::move(aScreen));
   mScreens.top()->Show();
+}
+
+void Manager::pushPopUp(Page::Base::Ptr aPopUpPage,
+                        lv_scr_load_anim_t aPushAnimation) {
+  pushScreen(std::make_unique<PopUpScreen>(std::move(aPopUpPage)),
+             aPushAnimation);
 }
 
 bool Manager::distributeKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
