@@ -37,12 +37,12 @@ public:
   bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 
 protected:
-  void OnShow() {}
-  void OnHide() {}
+  void OnLvglEvent(lv_event_t *anEvent) override;
+  void OnShow() override {}
+  void OnHide() override {}
 
 private:
   void HandleTabChange();
-  static void HandleTabChangeImpl(lv_event_t *aTabChangeEvent);
 
   std::vector<Page::Tab::Ptr> mTabs;
 };

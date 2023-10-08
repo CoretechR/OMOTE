@@ -29,10 +29,7 @@ void Tab::OnHide() { mContent->OnHide(); };
 TabView::TabView(ID aId)
     : Base(lv_tabview_create(Screen::BackgroundScreen::getLvInstance(),
                              LV_DIR_TOP, 0),
-           aId) {
-  lv_obj_add_event_cb(LvglSelf(), HandleTabChangeImpl, LV_EVENT_VALUE_CHANGED,
-                      nullptr);
-}
+           aId) {}
 
 void TabView::AddTab(Page::Base::Ptr aPage, std::string aTitle) {
   auto tab = std::make_unique<Tab>(
@@ -64,17 +61,15 @@ void TabView::HandleTabChange() {
   }
 }
 
-void TabView::HandleTabChangeImpl(lv_event_t *aTabChangeEvent) {
-  auto self =
-      UIElement::GetElement<TabView *>(lv_event_get_target(aTabChangeEvent));
-  if (self) {
-    self->HandleTabChange();
-  }
-}
-
 bool TabView::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   if (OnKeyEvent(aKeyEvent)) {
     return true;
   }
   return mTabs[GetCurrentTabIdx()]->KeyEvent(aKeyEvent);
 };
+
+void TabView::OnLvglEvent(lv_event_t *anEvent) {
+  if (anEvent->code == LV_EVENT_VALUE_CHANGED) {
+    HandleTabChange();
+  }
+}
