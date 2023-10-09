@@ -10,7 +10,9 @@ Manager &Manager::getInstance() { return mManager; }
 Manager::Manager() {}
 
 void Manager::pushScreen(Screen::Base::Ptr aScreen) {
-  mScreens.back()->OnHide();
+  if (!mScreens.empty()) {
+    mScreens.back()->OnHide();
+  }
   mScreens.push_back(std::move(aScreen));
   mScreens.back()->Show();
 }
