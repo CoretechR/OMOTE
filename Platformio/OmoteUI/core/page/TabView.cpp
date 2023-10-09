@@ -73,3 +73,7 @@ void TabView::OnLvglEvent(lv_event_t *anEvent) {
     HandleTabChange();
   }
 }
+
+void TabView::OnShow() { mTabs[GetCurrentTabIdx()]->OnShow(); }
+
+void TabView::OnHide() { mTabs[GetCurrentTabIdx()]->OnHide(); }

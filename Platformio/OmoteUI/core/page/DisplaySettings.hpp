@@ -7,6 +7,9 @@ class DisplaySettings : public Base {
 public:
   DisplaySettings(std::shared_ptr<DisplayAbstract> aDisplay);
 
+  void OnShow() override{};
+  void OnHide() override{};
+
 private:
   std::shared_ptr<DisplayAbstract> mDisplay;
 };

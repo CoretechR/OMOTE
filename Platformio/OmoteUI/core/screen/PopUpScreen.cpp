@@ -22,3 +22,6 @@ PopUpScreen::PopUpScreen(Page::Base::Ptr aPage)
 bool PopUpScreen::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   return mContentPage->OnKeyEvent(aKeyEvent);
 }
+
+void PopUpScreen::OnShow() { mContentPage->OnShow(); };
+void PopUpScreen::OnHide() { mContentPage->OnHide(); };

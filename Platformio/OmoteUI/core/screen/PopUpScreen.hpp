@@ -13,6 +13,10 @@ public:
 
   bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 
+protected:
+  void OnShow() override;
+  void OnHide() override;
+
 private:
   UI::Page::Base::Ptr mContentPage;
   std::unique_ptr<Widget::Button> mExitButton;

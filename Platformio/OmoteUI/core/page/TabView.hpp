@@ -36,10 +36,11 @@ public:
 
   bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 
+  void OnShow() override;
+  void OnHide() override;
+
 protected:
   void OnLvglEvent(lv_event_t *anEvent) override;
-  void OnShow() override {}
-  void OnHide() override {}
 
 private:
   void HandleTabChange();

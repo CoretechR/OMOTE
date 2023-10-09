@@ -26,6 +26,9 @@ bool HomeScreen::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   return false;
 };
 
+void HomeScreen::OnShow() { mTabView.OnShow(); };
+void HomeScreen::OnHide() { mTabView.OnHide(); };
+
 bool HomeScreen::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   if (OnKeyEvent(aKeyEvent)) {
     return true;
