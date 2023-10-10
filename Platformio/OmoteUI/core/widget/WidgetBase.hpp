@@ -4,9 +4,9 @@
 #include <memory>
 
 namespace UI {
-namespace Page {
-class Base;
-}
+
+class WidgetContainer;
+
 namespace Screen {
 class PopUpScreen;
 }
@@ -16,7 +16,7 @@ namespace UI::Widget {
 
 class Base : public UIElement {
   // Classes that Own Widgets
-  friend class UI::Page::Base;
+  friend class UI::WidgetContainer;
   friend class UI::Screen::PopUpScreen;
 
 public:

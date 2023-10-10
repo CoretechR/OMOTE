@@ -1,6 +1,6 @@
 #pragma once
 #include "UIElement.hpp"
-#include "WidgetBase.hpp"
+#include "WidgetContainer.hpp"
 
 #include <string>
 #include <vector>
@@ -10,7 +10,7 @@ class PopUpScreen;
 namespace UI::Page {
 class Tab;
 class TabView;
-class Base : public UIElement {
+class Base : public WidgetContainer {
   // Classes that Own Pages
   friend Tab;     // Allow Tab to Forward all Key Events to its page
   friend TabView; // Allow Tab view to call OnShow and OnHide Since it can show
@@ -25,32 +25,13 @@ public:
   Base(lv_obj_t *aLvglSelf, ID aID);
   virtual ~Base() = default;
 
-  template <class ElementTy> ElementTy *AddWidget(Widget::Base::Ptr aWidget);
-
-  Widget::Base *AddWidget(Widget::Base::Ptr aWidget);
-  Widget::Base::Ptr RemoveWidget(Widget::Base *aWidgetRefrence);
-  size_t GetNumWidgets() { return mWidgets.size(); }
-
   // Override to have a title associated with your page.
   virtual std::string GetTitle() { return ""; };
 
 protected:
-  /// @brief Forward To widgets that are visible
-  void OnShow() override;
-
-  /// @brief Forward To widgets that are visible
-  void OnHide() override;
-
-  bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
-  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
+  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) { return false; };
 
 private:
-  std::vector<Widget::Base::Ptr> mWidgets;
 };
-
-template <class ElementTy>
-ElementTy *Base::AddWidget(Widget::Base::Ptr aWidget) {
-  return static_cast<ElementTy *>(AddWidget(std::move(aWidget)));
-}
 
 } // namespace UI::Page
