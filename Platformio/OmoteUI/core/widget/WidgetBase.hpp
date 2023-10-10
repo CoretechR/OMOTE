@@ -3,15 +3,21 @@
 #include "UIElement.hpp"
 #include <memory>
 
-namespace UI::Page {
+namespace UI {
+namespace Page {
 class Base;
 }
+namespace Screen {
+class PopUpScreen;
+}
+} // namespace UI
 
 namespace UI::Widget {
 
 class Base : public UIElement {
-
+  // Classes that Own Widgets
   friend class UI::Page::Base;
+  friend class UI::Screen::PopUpScreen;
 
 public:
   typedef std::unique_ptr<Base> Ptr;

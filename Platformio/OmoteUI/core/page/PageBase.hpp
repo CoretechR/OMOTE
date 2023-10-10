@@ -11,6 +11,7 @@ namespace UI::Page {
 class Tab;
 class TabView;
 class Base : public UIElement {
+  // Classes that Own Pages
   friend Tab;     // Allow Tab to Forward all Key Events to its page
   friend TabView; // Allow Tab view to call OnShow and OnHide Since it can show
                   // and Hide pages by swiping
@@ -34,8 +35,11 @@ public:
   virtual std::string GetTitle() { return ""; };
 
 protected:
-  void OnShow() override{};
-  void OnHide() override{};
+  /// @brief Forward To widgets that are visible
+  void OnShow() override;
+
+  /// @brief Forward To widgets that are visible
+  void OnHide() override;
 
   bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
   bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;

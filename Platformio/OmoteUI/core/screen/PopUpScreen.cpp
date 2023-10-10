@@ -33,5 +33,13 @@ bool PopUpScreen::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   return mContentPage->OnKeyEvent(aKeyEvent);
 }
 
-void PopUpScreen::OnShow() { mContentPage->OnShow(); };
-void PopUpScreen::OnHide() { mContentPage->OnHide(); };
+void PopUpScreen::OnShow() {
+  mContentPage->OnShow();
+  mExitButton->OnShow();
+  mTitle->OnShow();
+};
+void PopUpScreen::OnHide() {
+  mContentPage->OnHide();
+  mExitButton->OnHide();
+  mTitle->OnHide();
+};

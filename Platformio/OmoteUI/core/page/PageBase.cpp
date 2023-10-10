@@ -45,3 +45,19 @@ bool Base::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
 };
 
 bool Base::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) { return false; };
+
+void Base::OnShow() {
+  for (auto &widget : mWidgets) {
+    if (widget->IsVisible()) {
+      widget->OnShow();
+    }
+  }
+};
+
+void Base::OnHide() {
+  for (auto &widget : mWidgets) {
+    if (widget->IsVisible()) {
+      widget->OnHide();
+    }
+  }
+};

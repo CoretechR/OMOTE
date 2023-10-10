@@ -217,6 +217,9 @@ void UIElement::SetBgColor(lv_color_t aColor, lv_style_selector_t aStyle) {
 };
 
 void UIElement::Show() {
+  if (IsVisible()) {
+    return;
+  }
   {
     auto lock = LvglResourceManger::GetInstance().scopeLock();
     lv_obj_clear_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN);
@@ -225,7 +228,9 @@ void UIElement::Show() {
 }
 
 void UIElement::Hide() {
-
+  if (!IsVisible()) {
+    return;
+  }
   {
     auto lock = LvglResourceManger::GetInstance().scopeLock();
     lv_obj_add_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN);
