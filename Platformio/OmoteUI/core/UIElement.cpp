@@ -68,10 +68,12 @@ void UIElement::SetContentHeight(lv_coord_t aHeight) {
 
 lv_coord_t UIElement::GetContentWidth() {
   auto lock = LvglResourceManger::GetInstance().scopeLock();
+  lv_obj_update_layout(mLvglSelf);
   return lv_obj_get_content_width(mLvglSelf);
 }
 lv_coord_t UIElement::GetContentHeight() {
   auto lock = LvglResourceManger::GetInstance().scopeLock();
+  lv_obj_update_layout(mLvglSelf);
   return lv_obj_get_content_height(mLvglSelf);
 }
 
@@ -161,6 +163,33 @@ Padding UIElement::GetPadding(lv_style_selector_t aStyle) {
       .Row(lv_obj_get_style_pad_row(mLvglSelf, aStyle))
       .Column(lv_obj_get_style_pad_column(mLvglSelf, aStyle));
 };
+
+void UIElement::SetTextStyle(TextStyle aNewTextStyle,
+                             lv_style_selector_t aStyle) {
+  LvglResourceManger::GetInstance().AttemptNow([this, aNewTextStyle, aStyle] {
+    lv_obj_set_style_text_align(mLvglSelf, aNewTextStyle.align, aStyle);
+    lv_obj_set_style_text_color(mLvglSelf, aNewTextStyle.color, aStyle);
+    lv_obj_set_style_text_decor(mLvglSelf, aNewTextStyle.decor, aStyle);
+    lv_obj_set_style_text_font(mLvglSelf, aNewTextStyle.font, aStyle);
+    lv_obj_set_style_text_letter_space(mLvglSelf, aNewTextStyle.letter_space,
+                                       aStyle);
+    lv_obj_set_style_text_line_space(mLvglSelf, aNewTextStyle.line_space,
+                                     aStyle);
+    lv_obj_set_style_text_opa(mLvglSelf, aNewTextStyle.opacity, aStyle);
+  });
+}
+
+TextStyle UIElement::GetTextStyle(lv_style_selector_t aStyle) {
+  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  return TextStyle()
+      .Align(lv_obj_get_style_text_align(mLvglSelf, aStyle))
+      .Color(lv_obj_get_style_text_color(mLvglSelf, aStyle))
+      .Decor(lv_obj_get_style_text_decor(mLvglSelf, aStyle))
+      .Font(lv_obj_get_style_text_font(mLvglSelf, aStyle))
+      .LetterSpacing(lv_obj_get_style_text_letter_space(mLvglSelf, aStyle))
+      .LineSpacing(lv_obj_get_style_text_line_space(mLvglSelf, aStyle))
+      .Opacity(lv_obj_get_style_text_opa(mLvglSelf, aStyle));
+}
 
 void UIElement::AlignTo(UIElement *anElementToAlignTo, lv_align_t anAlignment,
                         lv_coord_t aXoffset, lv_coord_t aYOffset) {

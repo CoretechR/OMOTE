@@ -1,5 +1,6 @@
 #pragma once
 #include "Button.hpp"
+#include "Label.hpp"
 #include "PageBase.hpp"
 #include "ScreenBase.hpp"
 
@@ -20,6 +21,7 @@ protected:
 private:
   UI::Page::Base::Ptr mContentPage;
   std::unique_ptr<Widget::Button> mExitButton;
+  std::unique_ptr<Widget::Label> mTitle;
 };
 
 } // namespace UI::Screen

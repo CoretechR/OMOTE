@@ -4,12 +4,25 @@
 using namespace UI::Page;
 
 DisplaySettings::DisplaySettings(std::shared_ptr<DisplayAbstract> aDisplay)
-    : Base(UI::ID::Pages::DisplaySettings), mDisplay(aDisplay) {
-  auto slider = std::make_unique<Widget::Slider>(
-      [this](auto aNewBrightness) { mDisplay->setBrightness(aNewBrightness); },
-      0, 255);
-  slider->AlignTo(this, LV_ALIGN_CENTER);
-  slider->SetWidth(GetContentWidth());
-  slider->SetHeight(lv_pct(10));
-  AddWidget(std::move(slider));
+    : Base(UI::ID::Pages::DisplaySettings), mDisplay(aDisplay),
+      mBrightnessSlider(
+          AddWidget<Widget::Slider>(std::make_unique<Widget::Slider>(
+              [this](auto aNewBrightness) {
+                mDisplay->setBrightness(aNewBrightness);
+              },
+              0, 255))) {
+  SetBgColor(Color::GREY);
+  auto usableWidth = GetContentWidth();
+
+  mBrightnessSlider->SetWidth(usableWidth - (usableWidth * 0.20f));
+  mBrightnessSlider->SetHeight(lv_pct(10));
+  mBrightnessSlider->AlignTo(this, LV_ALIGN_TOP_MID);
 }
+
+void DisplaySettings::OnShow() {
+  mBrightnessSlider->SetValue(mDisplay->getBrightness());
+};
+
+void DisplaySettings::OnHide(){
+
+};

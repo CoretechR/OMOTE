@@ -2,6 +2,7 @@
 #include "UIElement.hpp"
 #include "WidgetBase.hpp"
 
+#include <string>
 #include <vector>
 namespace UI::Screen {
 class PopUpScreen;
@@ -23,9 +24,14 @@ public:
   Base(lv_obj_t *aLvglSelf, ID aID);
   virtual ~Base() = default;
 
+  template <class ElementTy> ElementTy *AddWidget(Widget::Base::Ptr aWidget);
+
   Widget::Base *AddWidget(Widget::Base::Ptr aWidget);
   Widget::Base::Ptr RemoveWidget(Widget::Base *aWidgetRefrence);
   size_t GetNumWidgets() { return mWidgets.size(); }
+
+  // Override to have a title associated with your page.
+  virtual std::string GetTitle() { return ""; };
 
 protected:
   void OnShow() override{};
@@ -37,4 +43,10 @@ protected:
 private:
   std::vector<Widget::Base::Ptr> mWidgets;
 };
+
+template <class ElementTy>
+ElementTy *Base::AddWidget(Widget::Base::Ptr aWidget) {
+  return static_cast<ElementTy *>(AddWidget(std::move(aWidget)));
+}
+
 } // namespace UI::Page

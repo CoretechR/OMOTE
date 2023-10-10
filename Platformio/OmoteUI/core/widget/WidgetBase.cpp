@@ -2,4 +2,7 @@
 
 using namespace UI::Widget;
 
-Base::Base(lv_obj_t *aLvglSelf) : UIElement(aLvglSelf) {}
+Base::Base(lv_obj_t *aLvglSelf) : UIElement(aLvglSelf) {
+  SetWidth(lv_pct(100));
+  SetHeight(lv_pct(100));
+}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BorderOutlinePadding.hpp"
+#include "TextStyle.hpp"
 #include "UIElementIds.hpp"
 #include <lvgl.h>
 
@@ -55,6 +56,10 @@ public:
   virtual void SetAllPadding(lv_coord_t aNewPadding,
                              lv_style_selector_t aStyle = LV_PART_MAIN);
   Padding GetPadding(lv_style_selector_t aStyle = LV_PART_MAIN);
+
+  virtual void SetTextStyle(TextStyle aNewStyle,
+                            lv_style_selector_t aStyle = LV_PART_MAIN);
+  TextStyle GetTextStyle(lv_style_selector_t aStyle = LV_PART_MAIN);
 
   virtual void AddElement(UIElement *anElement);
 
