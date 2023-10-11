@@ -15,6 +15,9 @@ public:
 
   enum class Widgets {
     Slider = static_cast<int>(Screens::INVALID_SCREEN_ID) + 1,
+    Button,
+    Label,
+    BrightnessSlider,
     INVALID_WIDGET_ID
   };
 

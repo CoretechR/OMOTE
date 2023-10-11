@@ -1,6 +1,7 @@
 #include "SettingsPage.hpp"
 #include "BackgroundScreen.hpp"
 #include "Button.hpp"
+#include "Slider.hpp"
 #include "Colors.hpp"
 #include "DisplaySettings.hpp"
 #include "PopUpScreen.hpp"
@@ -30,8 +31,7 @@ void SettingsPage::PushDisplaySettings() {
 }
 
 void SettingsPage::AddSlider() {
-  auto fakeSlider = std::make_unique<UI::Widget::Base>(
-      lv_slider_create(UI::Screen::BackgroundScreen::getLvInstance()));
+  auto fakeSlider = std::make_unique<Widget::Slider>([](auto data){});
   fakeSlider->SetHeight(lv_pct(10));
   fakeSlider->SetWidth(GetContentWidth());
   if (sliders.empty()) {

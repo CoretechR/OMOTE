@@ -3,7 +3,7 @@
 #include "PageBase.hpp"
 
 namespace UI::Widget {
-class Slider;
+class BrightnessSlider;
 }
 
 namespace UI::Page {
@@ -18,6 +18,6 @@ public:
 
 private:
   std::shared_ptr<DisplayAbstract> mDisplay;
-  Widget::Slider *mBrightnessSlider;
+  Widget::BrightnessSlider *mBrightnessSlider;
 };
 } // namespace UI::Page

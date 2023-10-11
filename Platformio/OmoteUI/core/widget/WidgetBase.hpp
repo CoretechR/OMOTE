@@ -19,7 +19,8 @@ class Base : public UIElement {
 public:
   typedef std::unique_ptr<Base> Ptr;
 
-  Base(lv_obj_t *aLvglSelf);
+  Base(ID anId);
+  Base(lv_obj_t *aLvglSelf, ID anId);
   virtual ~Base() override = default;
 
 protected:
