@@ -1,10 +1,10 @@
 #include "UIElement.hpp"
-#include "LvglResourceManger.hpp"
+#include "LvglResourceManager.hpp"
 
 namespace UI {
 UIElement::UIElement(lv_obj_t *aLvglSelf, ID aId)
     : mLvglSelf(aLvglSelf), mId(aId) {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   mLvglSelf->user_data = this;
   // Register Handler so that all object are able to override OnLvglEvent to
   // handle events easilyOnLvEvent
@@ -13,7 +13,7 @@ UIElement::UIElement(lv_obj_t *aLvglSelf, ID aId)
 }
 
 UIElement::~UIElement() {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   if (lv_obj_is_valid(LvglSelf())) {
     if (mLvglKeepAliveTime > 0) {
       lv_obj_del_delayed(LvglSelf(), mLvglKeepAliveTime);
@@ -25,7 +25,7 @@ UIElement::~UIElement() {
 }
 
 UIElement *UIElement::AddElement(UIElement::Ptr anUIElement) {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_set_parent(anUIElement->mLvglSelf, mLvglSelf);
   mContainedElements.push_back(std::move(anUIElement));
   return mContainedElements[mContainedElements.size() - 1].get();
@@ -58,68 +58,68 @@ bool UIElement::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
 };
 
 bool UIElement::IsVisible() {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   return lv_obj_is_visible(mLvglSelf);
 }
 
 void UIElement::SetWidth(lv_coord_t aWidth) {
-  LvglResourceManger::GetInstance().AttemptNow(
+  LvglResourceManager::GetInstance().AttemptNow(
       [this, aWidth] { lv_obj_set_width(mLvglSelf, aWidth); });
 }
 
 void UIElement::SetHeight(lv_coord_t aHeight) {
-  LvglResourceManger::GetInstance().AttemptNow(
+  LvglResourceManager::GetInstance().AttemptNow(
       [this, aHeight] { lv_obj_set_height(mLvglSelf, aHeight); });
 }
 
 lv_coord_t UIElement::GetHeight() {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_update_layout(mLvglSelf);
   return lv_obj_get_height(mLvglSelf);
 };
 
 lv_coord_t UIElement::GetWidth() {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_update_layout(mLvglSelf);
   return lv_obj_get_width(mLvglSelf);
 }
 
 void UIElement::SetContentWidth(lv_coord_t aWidth) {
-  LvglResourceManger::GetInstance().AttemptNow(
+  LvglResourceManager::GetInstance().AttemptNow(
       [this, aWidth] { lv_obj_set_content_width(mLvglSelf, aWidth); });
 }
 void UIElement::SetContentHeight(lv_coord_t aHeight) {
-  LvglResourceManger::GetInstance().AttemptNow(
+  LvglResourceManager::GetInstance().AttemptNow(
       [this, aHeight] { lv_obj_set_content_height(mLvglSelf, aHeight); });
 }
 
 lv_coord_t UIElement::GetContentWidth() {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_update_layout(mLvglSelf);
   return lv_obj_get_content_width(mLvglSelf);
 }
 lv_coord_t UIElement::GetContentHeight() {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_update_layout(mLvglSelf);
   return lv_obj_get_content_height(mLvglSelf);
 }
 
 void UIElement::SetY(lv_coord_t aY) {
-  LvglResourceManger::GetInstance().AttemptNow(
+  LvglResourceManager::GetInstance().AttemptNow(
       [this, aY] { lv_obj_set_y(mLvglSelf, aY); });
 };
 void UIElement::SetX(lv_coord_t aX) {
-  LvglResourceManger::GetInstance().AttemptNow(
+  LvglResourceManager::GetInstance().AttemptNow(
       [this, aX] { lv_obj_set_x(mLvglSelf, aX); });
 }
 
 lv_coord_t UIElement::GetY() {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_update_layout(mLvglSelf);
   return lv_obj_get_y(mLvglSelf);
 }
 lv_coord_t UIElement::GetX() {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_update_layout(mLvglSelf);
   return lv_obj_get_x(mLvglSelf);
 }
@@ -127,7 +127,7 @@ lv_coord_t UIElement::GetX() {
 lv_coord_t UIElement::GetBottom() { return GetY() + GetHeight(); };
 
 void UIElement::SetBorder(Border aNewBorder, lv_style_selector_t aStyle) {
-  LvglResourceManger::GetInstance().AttemptNow([this, aNewBorder, aStyle] {
+  LvglResourceManager::GetInstance().AttemptNow([this, aNewBorder, aStyle] {
     lv_obj_set_style_border_color(mLvglSelf, aNewBorder.color, aStyle);
     lv_obj_set_style_border_opa(mLvglSelf, aNewBorder.opacity, aStyle);
     lv_obj_set_style_border_side(mLvglSelf, aNewBorder.sides, aStyle);
@@ -136,7 +136,7 @@ void UIElement::SetBorder(Border aNewBorder, lv_style_selector_t aStyle) {
 }
 
 Border UIElement::GetBorder(lv_style_selector_t aStyle) {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   return Border()
       .Color(lv_obj_get_style_border_color(mLvglSelf, aStyle))
       .Opacity(lv_obj_get_style_border_opa(mLvglSelf, aStyle))
@@ -145,7 +145,7 @@ Border UIElement::GetBorder(lv_style_selector_t aStyle) {
 }
 
 void UIElement::SetOutline(Outline aNewOutline, lv_style_selector_t aStyle) {
-  LvglResourceManger::GetInstance().AttemptNow([this, aNewOutline, aStyle] {
+  LvglResourceManager::GetInstance().AttemptNow([this, aNewOutline, aStyle] {
     lv_obj_set_style_outline_color(mLvglSelf, aNewOutline.color, aStyle);
     lv_obj_set_style_outline_opa(mLvglSelf, aNewOutline.opacity, aStyle);
     lv_obj_set_style_outline_width(mLvglSelf, aNewOutline.width, aStyle);
@@ -154,7 +154,7 @@ void UIElement::SetOutline(Outline aNewOutline, lv_style_selector_t aStyle) {
 };
 
 Outline UIElement::GetOutline(lv_style_selector_t aStyle) {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   return Outline()
       .Color(lv_obj_get_style_outline_color(mLvglSelf, aStyle))
       .Opacity(lv_obj_get_style_outline_opa(mLvglSelf, aStyle))
@@ -163,7 +163,7 @@ Outline UIElement::GetOutline(lv_style_selector_t aStyle) {
 };
 
 void UIElement::SetPadding(Padding aNewPadding, lv_style_selector_t aStyle) {
-  LvglResourceManger::GetInstance().AttemptNow([this, aNewPadding, aStyle] {
+  LvglResourceManager::GetInstance().AttemptNow([this, aNewPadding, aStyle] {
     lv_obj_set_style_pad_top(mLvglSelf, aNewPadding.top, aStyle);
     lv_obj_set_style_pad_bottom(mLvglSelf, aNewPadding.bottom, aStyle);
     lv_obj_set_style_pad_left(mLvglSelf, aNewPadding.left, aStyle);
@@ -175,13 +175,13 @@ void UIElement::SetPadding(Padding aNewPadding, lv_style_selector_t aStyle) {
 
 void UIElement::SetAllPadding(lv_coord_t aNewPadding,
                               lv_style_selector_t aStyle) {
-  LvglResourceManger::GetInstance().AttemptNow([this, aNewPadding, aStyle] {
+  LvglResourceManager::GetInstance().AttemptNow([this, aNewPadding, aStyle] {
     lv_obj_set_style_pad_all(mLvglSelf, aNewPadding, aStyle);
   });
 }
 
 Padding UIElement::GetPadding(lv_style_selector_t aStyle) {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   return Padding()
       .Top(lv_obj_get_style_pad_top(mLvglSelf, aStyle))
       .Bottom(lv_obj_get_style_pad_bottom(mLvglSelf, aStyle))
@@ -193,7 +193,7 @@ Padding UIElement::GetPadding(lv_style_selector_t aStyle) {
 
 void UIElement::SetTextStyle(TextStyle aNewTextStyle,
                              lv_style_selector_t aStyle) {
-  LvglResourceManger::GetInstance().AttemptNow([this, aNewTextStyle, aStyle] {
+  LvglResourceManager::GetInstance().AttemptNow([this, aNewTextStyle, aStyle] {
     lv_obj_set_style_text_align(mLvglSelf, aNewTextStyle.align, aStyle);
     lv_obj_set_style_text_color(mLvglSelf, aNewTextStyle.color, aStyle);
     lv_obj_set_style_text_decor(mLvglSelf, aNewTextStyle.decor, aStyle);
@@ -207,7 +207,7 @@ void UIElement::SetTextStyle(TextStyle aNewTextStyle,
 }
 
 TextStyle UIElement::GetTextStyle(lv_style_selector_t aStyle) {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   return TextStyle()
       .Align(lv_obj_get_style_text_align(mLvglSelf, aStyle))
       .Color(lv_obj_get_style_text_color(mLvglSelf, aStyle))
@@ -220,7 +220,7 @@ TextStyle UIElement::GetTextStyle(lv_style_selector_t aStyle) {
 
 void UIElement::AlignTo(UIElement *anElementToAlignTo, lv_align_t anAlignment,
                         lv_coord_t aXoffset, lv_coord_t aYOffset) {
-  LvglResourceManger::GetInstance().AttemptNow([=] {
+  LvglResourceManager::GetInstance().AttemptNow([=] {
     lv_obj_align_to(mLvglSelf, anElementToAlignTo->mLvglSelf, anAlignment,
                     aXoffset, aYOffset);
   });
@@ -238,7 +238,7 @@ void UIElement::SetVisiblity(bool aVisible) {
 }
 
 void UIElement::SetBgColor(lv_color_t aColor, lv_style_selector_t aStyle) {
-  LvglResourceManger::GetInstance().AttemptNow([this, aColor, aStyle] {
+  LvglResourceManager::GetInstance().AttemptNow([this, aColor, aStyle] {
     lv_obj_set_style_bg_color(mLvglSelf, aColor, aStyle);
   });
 };
@@ -251,7 +251,7 @@ void UIElement::Show() {
     elem->OnShow();
   }
   {
-    auto lock = LvglResourceManger::GetInstance().scopeLock();
+    auto lock = LvglResourceManager::GetInstance().scopeLock();
     lv_obj_clear_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN);
   }
   OnShow();
@@ -265,7 +265,7 @@ void UIElement::Hide() {
     elem->OnHide();
   }
   {
-    auto lock = LvglResourceManger::GetInstance().scopeLock();
+    auto lock = LvglResourceManager::GetInstance().scopeLock();
     lv_obj_add_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN);
   }
   OnHide();
@@ -274,7 +274,7 @@ void UIElement::Hide() {
 //////////////////// Statics //////////////////////////
 
 void UIElement::LvglEventHandler(lv_event_t *anEvent) {
-  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
   reinterpret_cast<UIElement *>(anEvent->user_data)->OnLvglEvent(anEvent);
 }
 

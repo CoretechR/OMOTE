@@ -7,12 +7,12 @@ namespace UI {
 class UIBase;
 } // namespace UI
 
-class LvglResourceManger {
+class LvglResourceManager {
   friend UI::UIBase;
 
 public:
-  static LvglResourceManger &GetInstance() {
-    static LvglResourceManger mInstance;
+  static LvglResourceManager &GetInstance() {
+    static LvglResourceManager mInstance;
     return mInstance;
   }
 
@@ -34,7 +34,7 @@ public:
   }
 
 protected:
-  LvglResourceManger(){};
+  LvglResourceManager(){};
 
   void HandleQueuedTasks() {
     auto lock = scopeLock();
