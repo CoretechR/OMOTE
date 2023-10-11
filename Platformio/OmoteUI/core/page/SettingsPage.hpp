@@ -1,6 +1,9 @@
 #include "HardwareAbstract.hpp"
 #include "PageBase.hpp"
 
+namespace UI::Widget{
+  class Button;
+}
 namespace UI::Page {
 class SettingsPage : public Base {
 public:
@@ -16,7 +19,7 @@ protected:
   void OnHide() override{};
 
   std::vector<UIElement *> sliders;
-  Widget::Base *mButton;
+  Widget::Button *mButton;
   std::shared_ptr<HardwareAbstract> mHardware;
 };
 } // namespace UI::Page

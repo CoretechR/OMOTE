@@ -4,7 +4,7 @@ template <typename T>
 SimulatorSPSCQueue<T>::SimulatorSPSCQueue(uint32_t size)
 {
     this->size = size;
-    this->data = new T[](this->size + 1);
+    this->data = new T[this->size + 1];
     this->rd_index = 0;
     this->wr_index = 0;
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include "Notification.hpp"
-#include "SPSCQueueInterface.hpp"
 
 #include <memory>
 class KeyPressAbstract {

@@ -1,5 +1,4 @@
 #include "KeyPressSim.hpp"
-#include "SimulatorSPSCQueue.hpp"
 
 #include <memory>
 
