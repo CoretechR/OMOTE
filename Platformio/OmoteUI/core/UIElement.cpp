@@ -24,11 +24,38 @@ UIElement::~UIElement() {
   }
 }
 
-void UIElement::AddElement(UIElement *anUIElement) {
-  LvglResourceManger::GetInstance().AttemptNow([this, anUIElement] {
-    lv_obj_set_parent(anUIElement->mLvglSelf, mLvglSelf);
-  });
+UIElement *UIElement::AddElement(UIElement::Ptr anUIElement) {
+  auto lock = LvglResourceManger::GetInstance().scopeLock();
+  lv_obj_set_parent(anUIElement->mLvglSelf, mLvglSelf);
+  mContainedElements.push_back(std::move(anUIElement));
+  return mContainedElements[mContainedElements.size() - 1].get();
 }
+
+UIElement::Ptr UIElement::RemoveElement(UIElement *anElementRef) {
+  auto ElemToRemoveIter =
+      std::find_if(mContainedElements.begin(), mContainedElements.end(),
+                   [anElementRef](auto &anElement) {
+                     return anElement.get() == anElementRef;
+                   });
+  if (ElemToRemoveIter != mContainedElements.end()) {
+    auto widget = std::move(*ElemToRemoveIter);
+    mContainedElements.erase(ElemToRemoveIter);
+    return widget;
+  }
+  return nullptr;
+}
+
+bool UIElement::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  if (OnKeyEvent(aKeyEvent)) {
+    return true;
+  }
+  for (auto &elem : mContainedElements) {
+    if (elem->KeyEvent(aKeyEvent)) {
+      return true;
+    }
+  }
+  return false;
+};
 
 bool UIElement::IsVisible() {
   auto lock = LvglResourceManger::GetInstance().scopeLock();
@@ -220,6 +247,9 @@ void UIElement::Show() {
   if (IsVisible()) {
     return;
   }
+  for (auto &elem : mContainedElements) {
+    elem->OnShow();
+  }
   {
     auto lock = LvglResourceManger::GetInstance().scopeLock();
     lv_obj_clear_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN);
@@ -231,15 +261,14 @@ void UIElement::Hide() {
   if (!IsVisible()) {
     return;
   }
+  for (auto &elem : mContainedElements) {
+    elem->OnHide();
+  }
   {
     auto lock = LvglResourceManger::GetInstance().scopeLock();
     lv_obj_add_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN);
   }
   OnHide();
-}
-
-bool UIElement::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
-  return OnKeyEvent(aKeyEvent);
 }
 
 //////////////////// Statics //////////////////////////

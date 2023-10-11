@@ -19,7 +19,7 @@ SettingsPage::SettingsPage(std::shared_ptr<HardwareAbstract> aHardware)
   button->SetHeight(lv_pct(10));
   button->SetWidth(lv_pct(10));
 
-  mButton = AddWidget(std::move(button));
+  mButton = AddElement<Widget::Button>(std::move(button));
 }
 
 void SettingsPage::OnShow() {}
@@ -41,7 +41,7 @@ void SettingsPage::AddSlider() {
     fakeSlider->SetY(nextY + 10);
   }
 
-  sliders.push_back(AddWidget(std::move(fakeSlider)));
+  sliders.push_back(AddElement(std::move(fakeSlider)));
 }
 
 bool SettingsPage::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
@@ -57,7 +57,7 @@ bool SettingsPage::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   case id::Aux2:
     if (aKeyEvent.mType == eventType::Release) {
       if (sliders.size() > 0) {
-        auto widget = RemoveWidget(sliders[0]);
+        RemoveElement(sliders[0]);
         sliders.erase(
             sliders.begin()); // sliders is non owning so after removing delete
                               // it from non owning array

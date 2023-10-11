@@ -22,7 +22,7 @@ public:
   void OnHide() override;
 
 private:
-  Base::Ptr mContent;
+  Base *mContent;
 };
 
 class TabView : public Base {

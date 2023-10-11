@@ -7,11 +7,8 @@ using namespace UI::Page;
 Tab::Tab(lv_obj_t *aTab, ID aId) : Base(aTab, aId) {}
 
 void Tab::GiveContent(Page::Base::Ptr aContent) {
-  AddElement(aContent.get());
-  mContent = std::move(aContent);
+  mContent = AddElement<Page::Base>(std::move(aContent));
 }
-
-Base::Ptr Tab::TakeContent() { return std::move(mContent); }
 
 bool Tab::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   return mContent->OnKeyEvent(aKeyEvent);

@@ -14,14 +14,10 @@ public:
 
   bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 
-protected:
-  void OnShow() override;
-  void OnHide() override;
-
 private:
-  UI::Page::Base::Ptr mContentPage;
-  std::unique_ptr<Widget::Button> mExitButton;
-  std::unique_ptr<Widget::Label> mTitle;
+  UI::Page::Base *mContentPage = nullptr;
+  Widget::Button *mExitButton = nullptr;
+  Widget::Label *mTitle = nullptr;
 };
 
 } // namespace UI::Screen

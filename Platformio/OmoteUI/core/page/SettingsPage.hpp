@@ -13,8 +13,9 @@ public:
 
 protected:
   void OnShow() override;
+  void OnHide() override{};
 
-  std::vector<Widget::Base *> sliders;
+  std::vector<UIElement *> sliders;
   Widget::Base *mButton;
   std::shared_ptr<HardwareAbstract> mHardware;
 };

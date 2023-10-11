@@ -6,12 +6,15 @@
 #include <lvgl.h>
 
 #include "KeyPressAbstract.hpp"
+#include <vector>
 
 namespace UI {
 
 class UIElement {
 
 public:
+  using Ptr = std::unique_ptr<UIElement>;
+
   UIElement(lv_obj_t *aLvglSelf, const ID aId = ID());
   virtual ~UIElement();
 
@@ -61,7 +64,12 @@ public:
                             lv_style_selector_t aStyle = LV_PART_MAIN);
   TextStyle GetTextStyle(lv_style_selector_t aStyle = LV_PART_MAIN);
 
-  virtual void AddElement(UIElement *anElement);
+  UIElement *AddElement(UIElement::Ptr anElement);
+  template <class UIElemTy> UIElemTy *AddElement(UIElement::Ptr aWidget);
+
+  UIElement::Ptr RemoveElement(UIElement *aUIElementRef);
+
+  size_t GetNumContainedElements() { return mContainedElements.size(); }
 
   ID GetID() { return mId; };
 
@@ -107,6 +115,9 @@ private:
   lv_obj_t *mLvglSelf;
   const ID mId;
   uint32_t mLvglKeepAliveTime = 0;
+
+  /// @brief Elements that are currently in this element
+  std::vector<UIElement::Ptr> mContainedElements;
 };
 
 /**
@@ -128,6 +139,11 @@ UIElemTy UIElement::GetElement(lv_obj_t *aLvglObject) {
     return static_cast<UIElemTy>(UIElement);
   }
   return nullptr;
+}
+
+template <class UIElemTy>
+UIElemTy *UIElement::AddElement(UIElement::Ptr anElement) {
+  return static_cast<UIElemTy *>(AddElement(std::move(anElement)));
 }
 
 } // namespace UI

@@ -1,6 +1,5 @@
 #pragma once
 #include "UIElement.hpp"
-#include "WidgetContainer.hpp"
 
 #include <string>
 #include <vector>
@@ -10,7 +9,7 @@ class PopUpScreen;
 namespace UI::Page {
 class Tab;
 class TabView;
-class Base : public WidgetContainer {
+class Base : public UIElement {
   // Classes that Own Pages
   friend Tab;     // Allow Tab to Forward all Key Events to its page
   friend TabView; // Allow Tab view to call OnShow and OnHide Since it can show
