@@ -10,25 +10,19 @@ class Tab : public Base {
 public:
   typedef std::unique_ptr<Tab> Ptr;
 
-  Tab(lv_obj_t *aTab, ID aId);
+  Tab(lv_obj_t *aTab, Base::Ptr aContent);
 
-  void GiveContent(Page::Base::Ptr aContent);
-  [[nodiscard]] Base::Ptr TakeContent();
-
-  bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
-  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
-
-  void OnShow() override;
-  void OnHide() override;
+  void OnShow() override{mContent->OnShow();};
+  void OnHide() override{mContent->OnHide();};
 
 private:
-  Base *mContent;
+ Base* mContent;
 };
 
 class TabView : public Base {
 public:
   TabView(ID aId);
-  void AddTab(Page::Base::Ptr aPage, std::string aTitle);
+  void AddTab(Page::Base::Ptr aPage);
 
   uint16_t GetCurrentTabIdx();
   void SetCurrentTabIdx(uint16_t aTabToSetActive,

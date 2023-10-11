@@ -5,18 +5,17 @@
 using namespace UI::Screen;
 
 HomeScreen::HomeScreen(std::shared_ptr<HardwareAbstract> aHardware)
-    : Base(UI::ID::Screens::Home), mHardware(aHardware) {
-
-  mTabView = AddElement<Page::TabView>(std::make_unique<Page::TabView>(
-      ID(ID::Pages::INVALID_PAGE_ID))); // Adds Tabview to Homescreen
+    : Base(UI::ID::Screens::Home),
+     mTabView( AddElement<Page::TabView>(std::make_unique<Page::TabView>(
+      ID(ID::Pages::INVALID_PAGE_ID)))),
+     mHardware(aHardware) {
 
   SetBgColor(UI::Color::BLACK);
   SetPushAnimation(LV_SCR_LOAD_ANIM_FADE_IN);
 
   // Adds pages to the Tab view
-  mTabView->AddTab(std::make_unique<Page::SettingsPage>(aHardware), "Settings");
-  mTabView->AddTab(std::make_unique<Page::SettingsPage>(aHardware),
-                   "Settings1");
+  mTabView->AddTab(std::make_unique<Page::SettingsPage>(aHardware));
+  mTabView->AddTab(std::make_unique<Page::SettingsPage>(aHardware));
 }
 
 void HomeScreen::SetBgColor(lv_color_t value, lv_style_selector_t selector) {

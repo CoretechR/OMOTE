@@ -4,22 +4,9 @@
 
 using namespace UI::Page;
 
-Tab::Tab(lv_obj_t *aTab, ID aId) : Base(aTab, aId) {}
-
-void Tab::GiveContent(Page::Base::Ptr aContent) {
-  mContent = AddElement<Page::Base>(std::move(aContent));
-}
-
-bool Tab::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
-  return mContent->OnKeyEvent(aKeyEvent);
-}
-
-bool Tab::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
-  return mContent->KeyEvent(aKeyEvent);
-}
-
-void Tab::OnShow() { mContent->OnShow(); };
-void Tab::OnHide() { mContent->OnHide(); };
+Tab::Tab(lv_obj_t *aTab, Base::Ptr aContent) :
+  Base(aTab, aContent->GetID()),
+  mContent(AddElement<Base>(std::move(aContent))) {}
 
 /////////////////////TabView/////////////////////////////////////
 
@@ -28,11 +15,10 @@ TabView::TabView(ID aId)
                              LV_DIR_TOP, 0),
            aId) {}
 
-void TabView::AddTab(Page::Base::Ptr aPage, std::string aTitle) {
+void TabView::AddTab(Page::Base::Ptr aPage) {
   auto tab = std::make_unique<Tab>(
-      lv_tabview_add_tab(LvglSelf(), aTitle.c_str()), aPage->GetID());
+      lv_tabview_add_tab(LvglSelf(), aPage->GetTitle().c_str()), std::move(aPage));
 
-  tab->GiveContent(std::move(aPage));
   mTabs.push_back(std::move(tab));
 }
 
