@@ -26,6 +26,7 @@ public:
 
   void SetVisiblity(bool aVisibility);
   bool IsVisible();
+  bool IsSetVisible();
 
   virtual void SetWidth(lv_coord_t aWidth);
   virtual void SetHeight(lv_coord_t aHeight);
@@ -87,7 +88,6 @@ public:
     mLvglKeepAliveTime = aTimeToKeepLvglObj;
   }
 
-
   void StartLvglEventHandler();
   void StopLvglEventHandler();
 
@@ -101,9 +101,9 @@ protected:
   /// @brief Hide Element
   virtual void Hide();
   /// @brief Override in child class to run something after element is shown
-  virtual void OnShow() = 0;
+  virtual void OnShow();
   /// @brief Override in child class to run something after element is hidden
-  virtual void OnHide() = 0;
+  virtual void OnHide();
 
   // Override in object to handle LVGL events for that object
   virtual void OnLvglEvent(lv_event_t *anEvent){};

@@ -62,6 +62,11 @@ bool UIElement::IsVisible() {
   return lv_obj_is_visible(mLvglSelf);
 }
 
+bool UIElement::IsSetVisible() {
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
+  return !lv_obj_has_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN);
+}
+
 void UIElement::SetWidth(lv_coord_t aWidth) {
   LvglResourceManager::GetInstance().AttemptNow(
       [this, aWidth] { lv_obj_set_width(mLvglSelf, aWidth); });
@@ -227,7 +232,7 @@ void UIElement::AlignTo(UIElement *anElementToAlignTo, lv_align_t anAlignment,
 }
 
 void UIElement::SetVisiblity(bool aVisible) {
-  if (aVisible == IsVisible()) {
+  if (aVisible == !lv_obj_has_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN)) {
     return;
   }
   if (aVisible) {
@@ -249,25 +254,26 @@ void UIElement::SetBgOpacity(lv_opa_t aOpacity, lv_style_selector_t aStyle) {
   });
 }
 
-void UIElement::StartLvglEventHandler(){
-  if(mIsHandlingLvglEvents){ return; }
+void UIElement::StartLvglEventHandler() {
+  if (mIsHandlingLvglEvents) {
+    return;
+  }
   lv_obj_add_event_cb(mLvglSelf, UIElement::LvglEventHandler, LV_EVENT_ALL,
                       this);
   mIsHandlingLvglEvents = true;
 }
-void UIElement::StopLvglEventHandler(){
-  if(!mIsHandlingLvglEvents){return;}
-  lv_obj_remove_event_cb_with_user_data(mLvglSelf,UIElement::LvglEventHandler,
+void UIElement::StopLvglEventHandler() {
+  if (!mIsHandlingLvglEvents) {
+    return;
+  }
+  lv_obj_remove_event_cb_with_user_data(mLvglSelf, UIElement::LvglEventHandler,
                                         this);
   mIsHandlingLvglEvents = false;
 }
 
 void UIElement::Show() {
-  if (IsVisible()) {
+  if (IsSetVisible()) {
     return;
-  }
-  for (auto &elem : mContainedElements) {
-    elem->OnShow();
   }
   {
     auto lock = LvglResourceManager::GetInstance().scopeLock();
@@ -277,17 +283,30 @@ void UIElement::Show() {
 }
 
 void UIElement::Hide() {
-  if (!IsVisible()) {
+  if (!IsSetVisible()) {
     return;
-  }
-  for (auto &elem : mContainedElements) {
-    elem->OnHide();
   }
   {
     auto lock = LvglResourceManager::GetInstance().scopeLock();
     lv_obj_add_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN);
   }
   OnHide();
+}
+
+void UIElement::OnHide() {
+  for (auto &elem : mContainedElements) {
+    if (!IsSetVisible()) {
+      elem->OnHide();
+    }
+  }
+}
+
+void UIElement::OnShow() {
+  for (auto &elem : mContainedElements) {
+    if (!lv_obj_has_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN)) {
+      elem->OnShow();
+    }
+  }
 }
 
 //////////////////// Statics //////////////////////////

@@ -15,10 +15,12 @@ BrightnessSlider::BrightnessSlider(std::shared_ptr<DisplayAbstract> aDisplay)
   mLabel->AlignTo(this, LV_ALIGN_TOP_MID);
   mSlider->AlignTo(mLabel, LV_ALIGN_OUT_BOTTOM_MID);
   mSlider->SetWidth(GetContentWidth() - GetContentWidth() * 0.25f);
+  SetVisiblity(false);
 }
 
 void BrightnessSlider::OnShow() {
   mSlider->SetValue(mDisplay->getBrightness());
+  Base::OnShow();
 }
 
 void BrightnessSlider::SetHeight(lv_coord_t aHeight) {
@@ -30,4 +32,14 @@ void BrightnessSlider::SetHeight(lv_coord_t aHeight) {
   mLabel->AlignTo(this, LV_ALIGN_TOP_MID);
   mSlider->AlignTo(mLabel, LV_ALIGN_OUT_BOTTOM_MID, 0,
                    mLabel->GetContentHeight());
+}
+
+bool BrightnessSlider::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
+  using ID = KeyPressAbstract::KeyId;
+  using Type = KeyPressAbstract::KeyEvent::Type;
+  if (aKeyEvent.mId == ID::Aux1 && aKeyEvent.mType == Type::Press) {
+    SetVisiblity(!IsSetVisible());
+    return true;
+  }
+  return false;
 }

@@ -11,9 +11,6 @@ class DisplaySettings : public Base {
 public:
   DisplaySettings(std::shared_ptr<DisplayAbstract> aDisplay);
 
-  void OnShow() override;
-  void OnHide() override;
-
   std::string GetTitle() override { return "Display Settings"; };
 
 private:
