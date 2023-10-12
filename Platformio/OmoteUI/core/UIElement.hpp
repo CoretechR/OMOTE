@@ -81,11 +81,15 @@ public:
   /// @brief There are use cases in which objects
   ///        need to stay alive in LVGL but can die
   ///        in terms of our usage this is a helper for these
-  ///        use Sparengly!!!
+  ///        use Sparingly!!!
   /// @param aTimeToKeepLvglObj
   void SetKeepAliveTime(uint32_t aTimeToKeepLvglObj) {
     mLvglKeepAliveTime = aTimeToKeepLvglObj;
   }
+
+
+  void StartLvglEventHandler();
+  void StopLvglEventHandler();
 
 protected:
   /// @brief get Lvgl object refernce to use in LVGL APIs
@@ -118,6 +122,7 @@ private:
   lv_obj_t *mLvglSelf;
   const ID mId;
   uint32_t mLvglKeepAliveTime = 0;
+  bool mIsHandlingLvglEvents = true;
 
   /// @brief Elements that are currently in this element
   std::vector<UIElement::Ptr> mContainedElements;

@@ -3,23 +3,23 @@
 
 namespace UI::Widget{
   class Button;
+  class List;
 }
 namespace UI::Page {
 class SettingsPage : public Base {
 public:
   SettingsPage(std::shared_ptr<HardwareAbstract> aHardware = nullptr);
 
-  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
+  bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override{return false;};
 
-  void AddSlider();
   void PushDisplaySettings();
 
 protected:
-  void OnShow() override;
+  void OnShow() override{};
   void OnHide() override{};
 
-  std::vector<UIElement *> sliders;
   Widget::Button *mButton;
+  Widget::List *mSettingsList;
   std::shared_ptr<HardwareAbstract> mHardware;
 };
 } // namespace UI::Page

@@ -249,6 +249,19 @@ void UIElement::SetBgOpacity(lv_opa_t aOpacity, lv_style_selector_t aStyle) {
   });
 }
 
+void UIElement::StartLvglEventHandler(){
+  if(mIsHandlingLvglEvents){ return; }
+  lv_obj_add_event_cb(mLvglSelf, UIElement::LvglEventHandler, LV_EVENT_ALL,
+                      this);
+  mIsHandlingLvglEvents = true;
+}
+void UIElement::StopLvglEventHandler(){
+  if(!mIsHandlingLvglEvents){return;}
+  lv_obj_remove_event_cb_with_user_data(mLvglSelf,UIElement::LvglEventHandler,
+                                        this);
+  mIsHandlingLvglEvents = false;
+}
+
 void UIElement::Show() {
   if (IsVisible()) {
     return;

@@ -17,6 +17,7 @@ public:
     Slider = static_cast<int>(Screens::INVALID_SCREEN_ID) + 1,
     Button,
     Label,
+    List,
     BrightnessSlider,
     INVALID_WIDGET_ID
   };
@@ -24,6 +25,7 @@ public:
   enum class Pages {
     Settings = static_cast<int>(Widgets::INVALID_WIDGET_ID) + 1,
     DisplaySettings,
+    Demo,
     INVALID_PAGE_ID
   };
 
