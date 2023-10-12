@@ -243,6 +243,12 @@ void UIElement::SetBgColor(lv_color_t aColor, lv_style_selector_t aStyle) {
   });
 };
 
+void UIElement::SetBgOpacity(lv_opa_t aOpacity, lv_style_selector_t aStyle) {
+  LvglResourceManager::GetInstance().AttemptNow([this, aOpacity, aStyle] {
+    lv_obj_set_style_bg_opa(mLvglSelf, aOpacity, aStyle);
+  });
+}
+
 void UIElement::Show() {
   if (IsVisible()) {
     return;

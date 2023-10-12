@@ -6,7 +6,8 @@ using namespace UI::Widget;
 
 Slider::Slider(std::function<void(int32_t)> aOnSliderValueChange,
                int32_t aMinVal, int32_t aMaxVal)
-    : Base(lv_slider_create(UI::Screen::BackgroundScreen::getLvInstance()),ID::Widgets::Slider),
+    : Base(lv_slider_create(UI::Screen::BackgroundScreen::getLvInstance()),
+           ID::Widgets::Slider),
       mOnSliderChange(std::move(aOnSliderValueChange)) {
   auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_slider_set_range(LvglSelf(), aMinVal, aMaxVal);

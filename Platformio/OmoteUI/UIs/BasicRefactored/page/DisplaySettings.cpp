@@ -9,7 +9,7 @@ DisplaySettings::DisplaySettings(std::shared_ptr<DisplayAbstract> aDisplay)
   SetBgColor(Color::GREY);
 
   mBrightnessSlider->SetWidth(GetContentWidth());
-  mBrightnessSlider->SetHeight(50);
+  mBrightnessSlider->SetHeight(80);
   mBrightnessSlider->AlignTo(this, LV_ALIGN_TOP_MID);
 }
 

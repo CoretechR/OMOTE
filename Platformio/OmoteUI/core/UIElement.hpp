@@ -21,6 +21,9 @@ public:
   virtual void SetBgColor(lv_color_t value,
                           lv_style_selector_t selector = LV_PART_MAIN);
 
+  virtual void SetBgOpacity(lv_opa_t aOpacity,
+                            lv_style_selector_t aStyle = LV_PART_MAIN);
+
   void SetVisiblity(bool aVisibility);
   bool IsVisible();
 
