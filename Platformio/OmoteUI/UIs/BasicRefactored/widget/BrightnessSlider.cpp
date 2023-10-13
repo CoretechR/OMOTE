@@ -15,7 +15,6 @@ BrightnessSlider::BrightnessSlider(std::shared_ptr<DisplayAbstract> aDisplay)
   mLabel->AlignTo(this, LV_ALIGN_TOP_MID);
   mSlider->AlignTo(mLabel, LV_ALIGN_OUT_BOTTOM_MID);
   mSlider->SetWidth(GetContentWidth() - GetContentWidth() * 0.25f);
-  SetVisiblity(false);
 }
 
 void BrightnessSlider::OnShow() {
