@@ -18,6 +18,7 @@ public:
     Button,
     Label,
     List,
+    DropDown,
     BrightnessSlider,
     INVALID_WIDGET_ID
   };

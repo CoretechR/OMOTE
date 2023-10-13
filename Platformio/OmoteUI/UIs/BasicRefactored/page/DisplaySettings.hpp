@@ -1,10 +1,11 @@
 #pragma once
 #include "DisplayAbstract.h"
+#include "DropDown.hpp"
 #include "PageBase.hpp"
 
 namespace UI::Widget {
 class BrightnessSlider;
-}
+} // namespace UI::Widget
 
 namespace UI::Page {
 class DisplaySettings : public Base {
@@ -16,5 +17,6 @@ public:
 private:
   std::shared_ptr<DisplayAbstract> mDisplay;
   Widget::BrightnessSlider *mBrightnessSlider;
+  Widget::DropDown<int> *mScreenTimeOutDropDown;
 };
 } // namespace UI::Page

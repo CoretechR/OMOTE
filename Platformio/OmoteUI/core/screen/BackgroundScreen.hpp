@@ -1,3 +1,4 @@
+#pragma once
 #include "ScreenBase.hpp"
 namespace UI::Screen {
 /// @brief Due to the way LVGL utilizes screens we basically need a canvas to
