@@ -17,6 +17,5 @@ public:
 private:
   std::shared_ptr<DisplayAbstract> mDisplay;
   Widget::BrightnessSlider *mBrightnessSlider;
-  Widget::DropDown<int> *mScreenTimeOutDropDown;
 };
 } // namespace UI::Page

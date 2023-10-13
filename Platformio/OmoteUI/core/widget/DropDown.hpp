@@ -20,6 +20,14 @@ public:
                            LV_DROPDOWN_POS_LAST);
     mOptionsData.push_back(aOptionData);
   }
+
+  void SetSelected(T aOptionData) {
+    for (int i = 0; i < mOptionsData.size(); i++) {
+      if (mOptionsData[i] == aOptionData) {
+        lv_dropdown_set_selected(LvglSelf(), i);
+      }
+    }
+  }
   // TODO Could Implement a remove Item but need to make sure
   // correct order is retained in data vector.
 
