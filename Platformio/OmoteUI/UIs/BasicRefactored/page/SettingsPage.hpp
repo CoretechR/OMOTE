@@ -16,6 +16,7 @@ public:
 
   void PushDisplaySettings();
   void PushSystemSettings();
+  void PushWifiSettings();
 
 protected:
   void OnShow() override{};

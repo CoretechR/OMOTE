@@ -1,5 +1,6 @@
 #include "List.hpp"
 #include "BackgroundScreen.hpp"
+#include "LvglResourceManager.hpp"
 using namespace UI;
 using namespace UI::Widget;
 
@@ -22,7 +23,11 @@ List::List()
 
 void List::AddItem(std::string aTitle, const char *aSymbol,
                    std::function<void()> onItemSelected) {
-  auto lvListItem = lv_list_add_btn(LvglSelf(), aSymbol, aTitle.c_str());
+  lv_obj_t *lvListItem = nullptr;
+  {
+    auto lock = LvglResourceManager::GetInstance().scopeLock();
+    lvListItem = lv_list_add_btn(LvglSelf(), aSymbol, aTitle.c_str());
+  }
   mListItems.push_back(
       std::make_unique<ListItem>(lvListItem, std::move(onItemSelected)));
   mListItems.back()->SetHeight(lv_pct(20));

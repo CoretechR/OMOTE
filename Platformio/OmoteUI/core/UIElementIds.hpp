@@ -26,6 +26,7 @@ public:
   enum class Pages {
     Settings = static_cast<int>(Widgets::INVALID_WIDGET_ID) + 1,
     DisplaySettings,
+    WifiSettings,
     SystemSettings,
     Demo,
     INVALID_PAGE_ID

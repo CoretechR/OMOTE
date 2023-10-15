@@ -8,6 +8,7 @@
 #include "ScreenManager.hpp"
 #include "Slider.hpp"
 #include "SystemSettings.hpp"
+#include "WifiSettings.hpp"
 
 using namespace UI::Page;
 using namespace UI::Color;
@@ -19,7 +20,8 @@ SettingsPage::SettingsPage(std::shared_ptr<HardwareAbstract> aHardware)
 
   mSettingsList->AddItem("Display", LV_SYMBOL_EYE_OPEN,
                          [this] { PushDisplaySettings(); });
-  mSettingsList->AddItem("Wifi", LV_SYMBOL_WIFI, [] {});
+  mSettingsList->AddItem("Wifi", LV_SYMBOL_WIFI,
+                         [this] { PushWifiSettings(); });
   mSettingsList->AddItem("System", LV_SYMBOL_SETTINGS,
                          [this] { PushSystemSettings(); });
 }
@@ -32,4 +34,9 @@ void SettingsPage::PushDisplaySettings() {
 void SettingsPage::PushSystemSettings() {
   UI::Screen::Manager::getInstance().pushPopUp(
       std::make_unique<SystemSettings>(mHardware));
+}
+
+void SettingsPage::PushWifiSettings() {
+  UI::Screen::Manager::getInstance().pushPopUp(
+      std::make_unique<WifiSettings>(mHardware->wifi()));
 }
