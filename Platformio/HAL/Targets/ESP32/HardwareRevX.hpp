@@ -90,4 +90,5 @@ private:
   IRrecv IrReceiver = IRrecv(IR_RX);
 
   static std::shared_ptr<HardwareRevX> mInstance;
+  Handler<TS_Point> mTouchHandler;
 };

@@ -1,6 +1,5 @@
 ﻿#include "BasicUI.hpp"
 #include "HardwareSimulator.hpp"
-#include "OmoteUI.hpp"
 #include "omoteconfig.h"
 #include <memory>
 

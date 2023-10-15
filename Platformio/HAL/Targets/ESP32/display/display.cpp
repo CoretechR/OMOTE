@@ -58,10 +58,6 @@ void Display::setupBacklight() {
   ledc_timer_config(&ledc_timer);
 }
 
-void Display::onTouch(Notification<TS_Point>::HandlerTy aTouchHandler) {
-  mTouchEvent.onNotify(std::move(aTouchHandler));
-}
-
 void Display::setupTFT() {
   delay(100);
   tft.init();
@@ -111,7 +107,7 @@ void Display::screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
   bool touched = false;
   if ((touchX > 0) || (touchY > 0)) {
     touched = true;
-    mTouchEvent.notify(touchPoint);
+    mTouchEvent->notify(touchPoint);
   }
 
   if (!touched) {

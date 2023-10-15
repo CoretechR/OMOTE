@@ -77,9 +77,10 @@ void HardwareRevX::init() {
   mKeys = std::make_shared<Keys>();
   restorePreferences();
 
-  mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint) {
+  mTouchHandler.SetNotification(mDisplay->TouchNotification());
+  mTouchHandler = [this]([[maybe_unused]] auto touchPoint) {
     standbyTimer = this->getSleepTimeout();
-  });
+  };
 
   setupIMU();
   setupIR();
