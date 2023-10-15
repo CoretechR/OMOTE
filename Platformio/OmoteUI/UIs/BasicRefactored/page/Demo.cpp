@@ -3,17 +3,14 @@
 
 using namespace UI::Page;
 
-Demo::Demo(std::shared_ptr<HardwareAbstract> aHardware): Base(ID::Pages::Demo), mHardware(aHardware){
-
-
-}
+Demo::Demo() : Base(ID::Pages::Demo) {}
 
 void Demo::AddSlider() {
-  auto fakeSlider = std::make_unique<Widget::Slider>([](auto data){});
+  auto fakeSlider = std::make_unique<Widget::Slider>([](auto data) {});
   fakeSlider->SetHeight(lv_pct(10));
   fakeSlider->SetWidth(GetContentWidth());
   if (sliders.empty()) {
-    fakeSlider->AlignTo(this,LV_ALIGN_TOP_MID);
+    fakeSlider->AlignTo(this, LV_ALIGN_TOP_MID);
   } else {
     auto nextY = sliders.back()->GetY() + sliders.back()->GetHeight();
     fakeSlider->SetY(nextY + 10);

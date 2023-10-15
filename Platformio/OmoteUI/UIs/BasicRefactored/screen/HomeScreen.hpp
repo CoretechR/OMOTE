@@ -8,7 +8,7 @@ namespace UI::Screen {
 
 class HomeScreen : public Base {
 public:
-  HomeScreen(std::shared_ptr<HardwareAbstract> aHardware = nullptr);
+  HomeScreen();
 
   void SetBgColor(lv_color_t value,
                   lv_style_selector_t selector = LV_PART_MAIN) override;
@@ -18,7 +18,6 @@ protected:
 
 private:
   Page::TabView *mTabView;
-  std::shared_ptr<HardwareAbstract> mHardware = nullptr;
 };
 
 } // namespace UI::Screen

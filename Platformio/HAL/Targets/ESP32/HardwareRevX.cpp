@@ -2,8 +2,6 @@
 #include "display.hpp"
 #include "wifihandler.hpp"
 
-std::shared_ptr<HardwareRevX> HardwareRevX::mInstance = nullptr;
-
 void HardwareRevX::initIO() {
   // Button Pin Definition
   pinMode(SW_1, OUTPUT);
@@ -97,13 +95,6 @@ void HardwareRevX::debugPrint(const char *fmt, ...) {
   va_end(arguments);
 
   Serial.print(result);
-}
-
-std::shared_ptr<HardwareRevX> HardwareRevX::getInstance() {
-  if (!mInstance) {
-    mInstance = std::shared_ptr<HardwareRevX>(new HardwareRevX());
-  }
-  return mInstance;
 }
 
 std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi() {

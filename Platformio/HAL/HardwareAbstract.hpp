@@ -17,6 +17,9 @@ public:
   /// @brief Override in order to do setup of hardware devices post construction
   virtual void init() = 0;
 
+  /// @brief Override to processing in main thread
+  virtual void loopHandler() = 0;
+
   /// @brief Override to allow printing of a message for debugging
   /// @param message - Debug message
   virtual void debugPrint(const char *fmt, ...) = 0;
@@ -34,7 +37,4 @@ public:
 
   virtual uint16_t getSleepTimeout() = 0;
   virtual void setSleepTimeout(uint16_t sleepTimeout) = 0;
-
-protected:
-
 };

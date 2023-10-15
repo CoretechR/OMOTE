@@ -3,6 +3,7 @@
 #include "Button.hpp"
 #include "Colors.hpp"
 #include "DisplaySettings.hpp"
+#include "HardwareFactory.hpp"
 #include "List.hpp"
 #include "PopUpScreen.hpp"
 #include "ScreenManager.hpp"
@@ -13,10 +14,9 @@
 using namespace UI::Page;
 using namespace UI::Color;
 
-SettingsPage::SettingsPage(std::shared_ptr<HardwareAbstract> aHardware)
-    : Base(ID::Pages::Settings),
-      mSettingsList(AddElement<Widget::List>(std::make_unique<Widget::List>())),
-      mHardware(aHardware) {
+SettingsPage::SettingsPage()
+    : Base(ID::Pages::Settings), mSettingsList(AddElement<Widget::List>(
+                                     std::make_unique<Widget::List>())) {
 
   mSettingsList->AddItem("Display", LV_SYMBOL_EYE_OPEN,
                          [this] { PushDisplaySettings(); });
@@ -28,15 +28,16 @@ SettingsPage::SettingsPage(std::shared_ptr<HardwareAbstract> aHardware)
 
 void SettingsPage::PushDisplaySettings() {
   UI::Screen::Manager::getInstance().pushPopUp(
-      std::make_unique<DisplaySettings>(mHardware->display()));
+      std::make_unique<DisplaySettings>(
+          HardwareFactory::getAbstract().display()));
 }
 
 void SettingsPage::PushSystemSettings() {
   UI::Screen::Manager::getInstance().pushPopUp(
-      std::make_unique<SystemSettings>(mHardware));
+      std::make_unique<SystemSettings>());
 }
 
 void SettingsPage::PushWifiSettings() {
   UI::Screen::Manager::getInstance().pushPopUp(
-      std::make_unique<WifiSettings>(mHardware->wifi()));
+      std::make_unique<WifiSettings>(HardwareFactory::getAbstract().wifi()));
 }

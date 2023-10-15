@@ -9,12 +9,11 @@ namespace UI {
 
 class UIBase {
 public:
-  UIBase(std::shared_ptr<HardwareAbstract> aHardware);
+  UIBase();
 
-  void loopHandler();
+  virtual void loopHandler();
 
 protected:
-  std::shared_ptr<HardwareAbstract> mHardware;
 };
 
 } // namespace UI

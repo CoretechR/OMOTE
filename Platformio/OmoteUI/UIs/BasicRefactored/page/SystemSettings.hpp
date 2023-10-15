@@ -1,6 +1,5 @@
 #pragma once
 #include "DropDown.hpp"
-#include "HardwareAbstract.hpp"
 #include "PageBase.hpp"
 
 namespace UI::Widget {
@@ -11,13 +10,12 @@ namespace UI::Page {
 
 class SystemSettings : public Base {
 public:
-  SystemSettings(std::shared_ptr<HardwareAbstract> aHardware);
+  SystemSettings();
 
 protected:
   std::string GetTitle() override { return "System Settings"; }
 
 private:
-  std::shared_ptr<HardwareAbstract> mHardware;
   Widget::Label *mTimeoutLabel;
   Widget::DropDown<int> *mScreenTimeOutDropDown;
 };

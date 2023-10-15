@@ -8,7 +8,7 @@ class List;
 namespace UI::Page {
 class SettingsPage : public Base {
 public:
-  SettingsPage(std::shared_ptr<HardwareAbstract> aHardware = nullptr);
+  SettingsPage();
 
   bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override {
     return false;
@@ -24,6 +24,5 @@ protected:
 
   Widget::Button *mButton;
   Widget::List *mSettingsList;
-  std::shared_ptr<HardwareAbstract> mHardware;
 };
 } // namespace UI::Page

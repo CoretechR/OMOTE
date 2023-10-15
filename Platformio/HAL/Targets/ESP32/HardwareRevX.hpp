@@ -26,8 +26,7 @@ class HardwareRevX : public HardwareAbstract {
 public:
   enum class WakeReason { RESET, IMU, KEYPAD };
 
-  static std::shared_ptr<HardwareRevX> getInstance();
-  static std::weak_ptr<HardwareRevX> getRefrence() { return getInstance(); }
+  HardwareRevX();
 
   // HardwareAbstract
   virtual void init() override;
@@ -49,7 +48,7 @@ public:
 
   /// @brief To be ran in loop out in main
   // TODO move to a freertos task
-  void loopHandler();
+  void loopHandler() override;
 
 protected:
   // Init Functions to setup hardware
@@ -67,8 +66,6 @@ protected:
   void startTasks();
 
 private:
-  HardwareRevX();
-
   std::shared_ptr<Battery> mBattery;
   std::shared_ptr<Display> mDisplay;
   std::shared_ptr<wifiHandler> mWifiHandler;
