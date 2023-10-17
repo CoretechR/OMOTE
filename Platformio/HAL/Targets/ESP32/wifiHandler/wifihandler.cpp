@@ -107,7 +107,6 @@ void wifiHandler::update_credentials() {
 void wifiHandler::scan() {
   Serial.println("scan called");
 
-  WiFi.disconnect();
   WiFi.scanNetworks(true);
 }
 

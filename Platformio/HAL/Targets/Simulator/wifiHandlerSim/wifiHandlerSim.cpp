@@ -1,5 +1,7 @@
 #include "wifiHandlerSim.hpp"
 
+using WifiInfo = wifiHandlerInterface::WifiInfo;
+
 wifiHandlerSim::wifiHandlerSim() {}
 
 void wifiHandlerSim::begin() {}

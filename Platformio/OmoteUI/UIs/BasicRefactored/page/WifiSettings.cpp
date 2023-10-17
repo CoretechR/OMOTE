@@ -6,10 +6,12 @@
 
 using namespace UI;
 using namespace UI::Page;
+using WifiInfo = wifiHandlerInterface::WifiInfo;
 
 WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
     : Base(ID::Pages::WifiSettings), mWifi(aWifi),
       mScanCompleteHandler(mWifi->ScanCompleteNotification()),
+      mScanStatusHandler(mWifi->WifiStatusNotification()),
       mScanningText(AddElement<Widget::Label>(
           std::make_unique<Widget::Label>("Scanning..."))),
       mWifiNetworks(AddElement<Widget::List>(std::make_unique<Widget::List>())),
@@ -27,6 +29,8 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
               [this, wifiInfo](auto aUserEnteredPassword) {
                 // Attempt Connection when user finishes up with keyboard input
                 mWifi->connect(wifiInfo.ssid, aUserEnteredPassword);
+                mScanningText->SetText("Attempting Connection to " +
+                                       wifiInfo.ssid);
                 mPasswordGetter->AnimateOut();
               });
           keyboard->OnKeyboardAnimatedOut([this] {
@@ -38,6 +42,14 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
           mPasswordGetter = AddElement<Widget::Keyboard>(std::move(keyboard));
         }
       });
+    }
+  };
+
+  mScanStatusHandler = [this](auto aWifiStatus) {
+    if (aWifiStatus.isConnected) {
+      mScanningText->SetText("Connected to " + aWifiStatus.ssid);
+    } else {
+      mScanningText->SetText("Failed To Connect To" + aWifiStatus.ssid);
     }
   };
 

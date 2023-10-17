@@ -3,25 +3,25 @@
 #include <memory>
 #include <string>
 
-struct WifiInfo {
-  WifiInfo(){};
-  WifiInfo(std::string aSsid, int aRssi) : ssid(aSsid), rssi(aRssi) {}
-
-  std::string ssid = "";
-  int rssi = 0;
-};
-
-struct wifiStatus {
-  wifiStatus(bool aConnected, std::string aIp, std::string aSsid)
-      : isConnected(aConnected), IP(aIp), ssid(aSsid){};
-
-  bool isConnected;
-  std::string IP = "";
-  std::string ssid = "";
-};
-
 class wifiHandlerInterface {
 public:
+  struct WifiInfo {
+    WifiInfo(){};
+    WifiInfo(std::string aSsid, int aRssi) : ssid(aSsid), rssi(aRssi) {}
+
+    std::string ssid = "";
+    int rssi = 0;
+  };
+
+  struct wifiStatus {
+    wifiStatus(bool aConnected, std::string aIp, std::string aSsid)
+        : isConnected(aConnected), IP(aIp), ssid(aSsid){};
+
+    bool isConnected;
+    std::string IP = "";
+    std::string ssid = "";
+  };
+
   typedef std::vector<WifiInfo> ScanDoneDataTy;
   typedef Notification<ScanDoneDataTy> ScanNotificationTy;
 

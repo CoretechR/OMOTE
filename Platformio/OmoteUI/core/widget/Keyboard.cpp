@@ -14,7 +14,7 @@ Keyboard::Keyboard(std::function<void(std::string)> aOnUserCompletedTextEntry)
       mOnUserCompleteTextEntry(aOnUserCompletedTextEntry) {
   lv_keyboard_set_textarea(mKeyboard->LvglSelf(), mTextArea->LvglSelf());
 
-  mKeyboard->HandleLvglEvent([this](auto aEvent) {
+  mKeyboard->OnLvglEvent([this](auto aEvent) {
     if (aEvent->code == LV_EVENT_READY) {
       std::string userEnteredText =
           std::string(lv_textarea_get_text(mTextArea->LvglSelf()));

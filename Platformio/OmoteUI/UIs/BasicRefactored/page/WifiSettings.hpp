@@ -20,6 +20,7 @@ public:
 private:
   std::shared_ptr<wifiHandlerInterface> mWifi;
   Handler<wifiHandlerInterface::ScanDoneDataTy> mScanCompleteHandler;
+  Handler<wifiHandlerInterface::wifiStatus> mScanStatusHandler;
 
   UI::Widget::Label *mScanningText;
   UI::Widget::List *mWifiNetworks;

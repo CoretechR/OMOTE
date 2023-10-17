@@ -91,11 +91,17 @@ public:
   void StartLvglEventHandler();
   void StopLvglEventHandler();
 
-protected:
-  /// @brief get Lvgl object refernce to use in LVGL APIs
+  /// @brief Register a callback to run for Lvgl Events for objects that
+  ///        are created from base classes.
+  void OnLvglEvent(std::function<void(lv_event_t *anEvent)> aLvglEventHandler) {
+    mLvglEventHandler = aLvglEventHandler;
+  }
+
+  /// @brief get Lvgl object reference to use in LVGL APIs
   /// @return lvgl object a
   lv_obj_t *LvglSelf() { return mLvglSelf; }
 
+protected:
   /// @brief Show Element
   virtual void Show();
   /// @brief Hide Element
@@ -115,12 +121,6 @@ protected:
       mLvglEventHandler(anEvent);
     }
   };
-
-  /// @brief Register a callback to run for Lvgl Events for objects that
-  ///        are created from base classes.
-  void OnLvglEvent(std::function<void(lv_event_t *anEvent)> aLvglEventHandler) {
-    mLvglEventHandler = aLvglEventHandler;
-  }
 
   /// @brief Set KeyEvent to the UI element to see if it wants to handle it
   virtual bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent);
