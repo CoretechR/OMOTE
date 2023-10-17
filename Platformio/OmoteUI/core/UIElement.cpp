@@ -24,9 +24,20 @@ UIElement::~UIElement() {
   }
 }
 
+UIElement *UIElement::GetParent() {
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
+  if (auto parent = lv_obj_get_parent(mLvglSelf); parent) {
+    if (auto parentElem = parent->user_data; parentElem) {
+      return reinterpret_cast<UIElement *>(parentElem);
+    }
+  }
+  return nullptr;
+}
+
 UIElement *UIElement::AddElement(UIElement::Ptr anUIElement) {
   auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_set_parent(anUIElement->mLvglSelf, mLvglSelf);
+  anUIElement->OnAdded(this);
   mContainedElements.push_back(std::move(anUIElement));
   return mContainedElements[mContainedElements.size() - 1].get();
 }

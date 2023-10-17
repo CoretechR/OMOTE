@@ -105,8 +105,22 @@ protected:
   /// @brief Override in child class to run something after element is hidden
   virtual void OnHide();
 
+  /// @brief Override to run something when element is added to a parent
+  /// @param aNewParent - Parent UIElement just added to
+  virtual void OnAdded(UIElement *aNewParent){};
+
   // Override in object to handle LVGL events for that object
-  virtual void OnLvglEvent(lv_event_t *anEvent){};
+  virtual void OnLvglEvent(lv_event_t *anEvent) {
+    if (mLvglEventHandler) {
+      mLvglEventHandler(anEvent);
+    }
+  };
+
+  /// @brief Register a callback to run for Lvgl Events for objects that
+  ///        are created from base classes.
+  void OnLvglEvent(std::function<void(lv_event_t *anEvent)> aLvglEventHandler) {
+    mLvglEventHandler = aLvglEventHandler;
+  }
 
   /// @brief Set KeyEvent to the UI element to see if it wants to handle it
   virtual bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent);
@@ -117,12 +131,17 @@ protected:
   virtual bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) = 0;
 
 private:
+  /// @brief Get Pointer to Parent Element
+  /// @return - nullptr Parent was not wrapped or did not exist
+  UIElement *GetParent();
+
   static void LvglEventHandler(lv_event_t *anEvent);
 
   lv_obj_t *mLvglSelf;
   const ID mId;
   uint32_t mLvglKeepAliveTime = 0;
   bool mIsHandlingLvglEvents = true;
+  std::function<void(lv_event_t *)> mLvglEventHandler = nullptr;
 
   /// @brief Elements that are currently in this element
   std::vector<UIElement::Ptr> mContainedElements;
