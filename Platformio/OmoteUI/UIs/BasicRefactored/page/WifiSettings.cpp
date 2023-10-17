@@ -1,8 +1,8 @@
 #include "WifiSettings.hpp"
+#include "Keyboard.hpp"
 #include "Label.hpp"
 #include "List.hpp"
 #include "LvglResourceManager.hpp"
-//#include <Arduino.h>
 
 using namespace UI;
 using namespace UI::Page;
@@ -12,22 +12,36 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
       mScanCompleteHandler(mWifi->ScanCompleteNotification()),
       mScanningText(AddElement<Widget::Label>(
           std::make_unique<Widget::Label>("Scanning..."))),
-      mWifiNetworks(
-          AddElement<Widget::List>(std::make_unique<Widget::List>())) {
-
+      mWifiNetworks(AddElement<Widget::List>(std::make_unique<Widget::List>())),
+      mPasswordGetter(nullptr) {
+  // Set Handler for when the wifi scan is done
   mScanCompleteHandler = [this](auto aWifiInfos) {
-    // Serial.println("populating UI");
     mScanningText->SetText("Networks Found");
+    // Create List of wifi infos
     for (WifiInfo wifiInfo : aWifiInfos) {
-      mWifiNetworks->AddItem(wifiInfo.ssid, LV_SYMBOL_WIFI, [] {});
+      mWifiNetworks->AddItem(wifiInfo.ssid, LV_SYMBOL_WIFI, [this, wifiInfo] {
+        if (!mPasswordGetter) {
+          // Launch a Keyboard if we dont already have one when user selects
+          // list item
+          auto keyboard = std::make_unique<Widget::Keyboard>(
+              [this, wifiInfo](auto aUserEnteredPassword) {
+                // Attempt Connection when user finishes up with keyboard input
+                mWifi->connect(wifiInfo.ssid, aUserEnteredPassword);
+                mPasswordGetter->AnimateOut();
+              });
+          keyboard->OnKeyboardAnimatedOut([this] {
+            // Once keyboard is done animating out remove it and null the ref to
+            // it.
+            RemoveElement(mPasswordGetter);
+            mPasswordGetter = nullptr;
+          });
+          mPasswordGetter = AddElement<Widget::Keyboard>(std::move(keyboard));
+        }
+      });
     }
   };
 
   mWifi->scan();
-
-  // mWifi->onScanDone([this](auto aWifiInfos) {
-  //
-  // });
 }
 
 void WifiSettings::SetHeight(lv_coord_t aHeight) {

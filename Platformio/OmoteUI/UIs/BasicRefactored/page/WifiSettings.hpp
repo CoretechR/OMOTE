@@ -5,6 +5,7 @@
 namespace UI::Widget {
 class List;
 class Label;
+class Keyboard;
 } // namespace UI::Widget
 
 namespace UI::Page {
@@ -22,6 +23,7 @@ private:
 
   UI::Widget::Label *mScanningText;
   UI::Widget::List *mWifiNetworks;
+  UI::Widget::Keyboard *mPasswordGetter;
 };
 
 } // namespace UI::Page

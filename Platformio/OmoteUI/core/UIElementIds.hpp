@@ -19,6 +19,7 @@ public:
     Label,
     List,
     DropDown,
+    Keyboard,
     BrightnessSlider,
     INVALID_WIDGET_ID
   };
