@@ -1,63 +1,10 @@
 #include "wifihandler.hpp"
 #include "HardwareAbstract.hpp"
-#include "WiFi.h"
 #include <Arduino.h>
 #include <Preferences.h>
+#include <WiFi.h>
 
 std::shared_ptr<wifiHandler> wifiHandler::mInstance = nullptr;
-
-// WiFi status event
-void wifiHandler::WiFiEvent(WiFiEvent_t event) {
-  int no_networks = 0;
-  switch (event) {
-  case ARDUINO_EVENT_WIFI_SCAN_DONE: {
-    Serial.println("WIFI scan done\n");
-    no_networks = WiFi.scanComplete();
-    Serial.println("making notify vector");
-    auto info = std::vector<WifiInfo>(no_networks);
-    Serial.println("loaing notify vector");
-    for (int i = 0; i < no_networks; i++) {
-      auto ssid =
-          WiFi.SSID(i).c_str() ? std::string(WiFi.SSID(i).c_str()) : "No SSID";
-      info[i] = WifiInfo(ssid, WiFi.RSSI(i));
-    }
-    if (no_networks < 0) {
-      Serial.println("Scan failed");
-    } else {
-      // TODO Convert To callbacks
-      // this->display.clear_wifi_networks();
-      Serial.print(no_networks);
-      Serial.print(" found\n");
-      // this->display.wifi_scan_complete( no_networks);
-    }
-    Serial.println("notifying");
-    mScanNotification->notify(info);
-    Serial.println("notified");
-    if (WiFi.isConnected() == false) {
-      WiFi.reconnect();
-    }
-    break;
-  }
-  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-  case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
-    this->update_credentials();
-  case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-  case ARDUINO_EVENT_WIFI_STA_LOST_IP:
-  case ARDUINO_EVENT_WIFI_STA_STOP:
-    this->update_status();
-  default:
-    Serial.print("Wifi Status: ");
-    Serial.println(WiFi.status());
-    break;
-  }
-  if (WiFi.status() == WL_CONNECT_FAILED) {
-    Serial.println("connection failed.");
-    WiFi.disconnect();
-  }
-  Serial.println(WiFi.status());
-}
-
-bool wifiHandler::isAvailable() { return true; }
 std::shared_ptr<wifiHandler> wifiHandler::getInstance() {
   if (mInstance) {
     return mInstance;
@@ -66,42 +13,67 @@ std::shared_ptr<wifiHandler> wifiHandler::getInstance() {
   return mInstance;
 };
 
-wifiHandler::wifiHandler() {
-  this->password = "";
-  this->SSID = "";
+void wifiHandler::WiFiEvent(WiFiEvent_t event) {
+  int no_networks = 0;
+  switch (event) {
+  case ARDUINO_EVENT_WIFI_SCAN_DONE: {
+    no_networks = WiFi.scanComplete();
+    auto info = std::vector<WifiInfo>(no_networks);
+    for (int i = 0; i < no_networks; i++) {
+      auto ssid =
+          WiFi.SSID(i).c_str() ? std::string(WiFi.SSID(i).c_str()) : "No SSID";
+      info[i] = WifiInfo(ssid, WiFi.RSSI(i));
+    }
+    mScanNotification->notify(info);
+    if (WiFi.isConnected() == false) {
+      WiFi.reconnect();
+    }
+    break;
+  }
+  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+  case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
+    this->StoreCredentials();
+    break;
+  case ARDUINO_EVENT_WIFI_STA_CONNECTED:
+  case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+  case ARDUINO_EVENT_WIFI_STA_LOST_IP:
+  case ARDUINO_EVENT_WIFI_STA_STOP:
+    UpdateStatus();
+    break;
+  default:
+    break;
+  }
+  if (WiFi.status() == WL_CONNECT_FAILED) {
+    WiFi.disconnect();
+  }
 }
 
-void wifiHandler::update_status() {
-  Serial.println("update_status");
-  auto isConnected = WiFi.isConnected();
-  std::string ip(WiFi.localIP().toString().c_str());
-  std::string ssid(WiFi.SSID().c_str());
+void wifiHandler::UpdateStatus() {
+  Serial.println("UpdateStatus");
+  mCurrentStatus.isConnected = WiFi.isConnected();
+  mCurrentStatus.IP = WiFi.localIP().toString().c_str();
+  mCurrentStatus.ssid = WiFi.SSID().c_str();
 
-  wifiStatus status = wifiStatus(isConnected, ip, ssid);
-
-  // Serial.println(WiFi.localIP());
-  mStatusUpdate->notify(status);
+  mStatusUpdate->notify(mCurrentStatus);
 }
 
-void wifiHandler::update_credentials() {
+void wifiHandler::StoreCredentials() {
   // No connection was attempted so don't try to to save the creds
-  if (!connect_attempt) {
+  if (!mIsConnectionAttempt) {
     return;
   }
+  mPassword = mConnectionAttemptPassword;
+  mSSID = mConnectionAttemptSSID;
 
-  if (temporary_password == password || temporary_ssid == SSID) {
-    password = temporary_password;
-    SSID = temporary_ssid;
+  Preferences preferences;
+  preferences.begin("wifiSettings", false);
+  preferences.putString("password", mPassword.c_str());
+  preferences.putString("SSID", mSSID.c_str());
+  preferences.end();
 
-    Preferences preferences;
-    preferences.begin("wifiSettings", false);
-    String tempString = temporary_password.c_str();
-    preferences.putString("password", tempString);
-    tempString = temporary_ssid.c_str();
-    preferences.putString("SSID", tempString);
-    preferences.end();
-  }
-  this->connect_attempt = false;
+  mConnectionAttemptPassword.clear();
+  mConnectionAttemptSSID.clear();
+  mIsConnectionAttempt = false;
 }
 
 void wifiHandler::scan() {
@@ -111,10 +83,8 @@ void wifiHandler::scan() {
 }
 
 void wifiHandler::begin() {
-  // this->display = display;
   WiFi.setHostname("OMOTE");
   WiFi.mode(WIFI_STA);
-  // WiFi.onEvent([this] (WiFiEvent_t event) {mInstance->WiFiEvent(event);});
   WiFi.onEvent([](WiFiEvent_t event) { mInstance->WiFiEvent(event); });
 
   Preferences preferences;
@@ -123,19 +93,11 @@ void wifiHandler::begin() {
   String password = preferences.getString("password");
   preferences.end();
 
-  /* If the SSID is not empty, there was a value stored in the preferences and
-   * we try to use it.*/
+  // Attempt Connection with stored Credentials
   if (!ssid.isEmpty()) {
-    Serial.print("Connecting to wifi ");
-    Serial.println(ssid);
-    this->SSID = ssid.c_str();
-    this->password = password.c_str();
-    this->connect(SSID, this->password);
+    connect(mSSID, mPassword);
   } else {
     Serial.println("no SSID or password stored");
-    /*Set first character to \0 indicates an empty string*/
-    this->SSID[0] = '\0';
-    this->password[0] = '\0';
     WiFi.disconnect();
   }
 
@@ -143,21 +105,9 @@ void wifiHandler::begin() {
 }
 
 void wifiHandler::connect(std::string ssid, std::string password) {
-  this->connect_attempt = true;
-  // this->temporary_password = password;
-  // this->temporary_ssid = ssid;
+  Serial.printf("Attempting Wifi Connection To %s \n", mSSID.c_str());
+  mIsConnectionAttempt = true;
+  mConnectionAttemptPassword = password;
+  mConnectionAttemptSSID = ssid;
   WiFi.begin(ssid.c_str(), password.c_str());
-}
-
-void wifiHandler::turnOff() {
-  WiFi.disconnect();
-  WiFi.mode(WIFI_OFF);
-}
-
-void wifiHandler::disconnect() { WiFi.disconnect(); }
-
-bool wifiHandler::isConnected() { return WiFi.isConnected(); }
-
-std::string wifiHandler::getIP() {
-  return std::string(WiFi.localIP().toString().c_str());
 }

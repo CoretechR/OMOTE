@@ -5,8 +5,9 @@
 
 class wifiHandlerInterface {
 public:
+  wifiHandlerInterface() = default;
   struct WifiInfo {
-    WifiInfo(){};
+    WifiInfo() = default;
     WifiInfo(std::string aSsid, int aRssi) : ssid(aSsid), rssi(aRssi) {}
 
     std::string ssid = "";
@@ -14,10 +15,11 @@ public:
   };
 
   struct wifiStatus {
+    wifiStatus() = default;
     wifiStatus(bool aConnected, std::string aIp, std::string aSsid)
         : isConnected(aConnected), IP(aIp), ssid(aSsid){};
 
-    bool isConnected;
+    bool isConnected = false;
     std::string IP = "";
     std::string ssid = "";
   };
@@ -25,15 +27,21 @@ public:
   typedef std::vector<WifiInfo> ScanDoneDataTy;
   typedef Notification<ScanDoneDataTy> ScanNotificationTy;
 
+  /// @brief Initialize the wifi handler
   virtual void begin() = 0;
+  /// @brief Trigger a scan scan for wifi networks
   virtual void scan() = 0;
+  /// @brief Attempt a connection to the wifi using the provided credentials
   virtual void connect(std::string ssid, std::string password) = 0;
-  virtual bool isAvailable() = 0;
+  /// @brief Get the status of the current wifi connection
+  virtual wifiStatus GetStatus() = 0;
 
+  // Register for Scan Notification to handle when scans are completed
   std::shared_ptr<ScanNotificationTy> ScanCompleteNotification() {
     return mScanNotification;
   };
 
+  // Register for Status notifications to handle changes in status
   std::shared_ptr<Notification<wifiStatus>> WifiStatusNotification() {
     return mStatusUpdate;
   };

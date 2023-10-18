@@ -6,71 +6,48 @@
 
 class wifiHandler : public wifiHandlerInterface {
 public:
-  wifiHandler();
   static std::shared_ptr<wifiHandler> getInstance();
-  /**
-   * @brief Function to initialize the wifi handler
-   */
-  void begin();
 
-  /**
-   * @brief Connect to the wifi using the provided credetials
-   */
+  // wifiHandlerInterface Implementation
+  void begin() override;
+  void scan() override;
   void connect(std::string ssid, std::string password) override;
+  wifiStatus GetStatus() override { return mCurrentStatus; };
+  //
+
+protected:
+  wifiHandler() = default;
+  static std::shared_ptr<wifiHandler> mInstance;
 
   /**
-   * @brief function to trigger asynchronous scan for wifi networks
+   * @brief Function to store the credentials when we have had a
+   *        successful connection
    */
-  void scan();
-  bool isAvailable();
+  void StoreCredentials();
 
 private:
   /**
-   * @brief Function to update the wifi credentials. This function is called in
-   * the wifi event callback function after a connection is established. Only
-   * then is the new credentials stored and the old stored credentials
-   * overwritten.
-   *
-   * @param temporary_ssid
-   * @param temporary_password
+   * @brief Handler for incoming arduino wifi events
+   * @param event - a Wifi event
    */
-  void update_credentials();
-
   void WiFiEvent(WiFiEvent_t event);
 
   /**
-   * @brief Function to turn off wifi
+   * @brief Update Internal status and send out a notification
    */
-  void turnOff();
-  /**
-   * @brief Function to get the IP address of this device
-   * @return String IP Address of the device
-   */
-  std::string getIP();
-  static std::shared_ptr<wifiHandler> mInstance;
-  bool connect_attempt = false;
-  std::string temporary_password;
-  std::string temporary_ssid;
-
-  std::string password;
-  std::string SSID;
-
-  void update_status();
+  void UpdateStatus();
+  wifiStatus mCurrentStatus;
 
   /**
-   * @brief Function to disconnect from the network
+   * @brief Variables used to track wifi connection attempts
    */
-  void disconnect();
+  bool mIsConnectionAttempt = false;
+  std::string mConnectionAttemptPassword;
+  std::string mConnectionAttemptSSID;
 
   /**
-   * @brief Function to determine wether or not we are connected to a network
-   *
-   * @return true  Device is connected to wifi network
-   * @return false Device is not connected to wifi network
+   * @brief Verified Working User and Pass to Wifi network
    */
-  bool isConnected();
-  /**
-   * @brief Internal variable to store the wifi SSID
-   *
-   */
+  std::string mPassword;
+  std::string mSSID;
 };
