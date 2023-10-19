@@ -30,7 +30,7 @@ private:
    * @brief Handler for incoming arduino wifi events
    * @param event - a Wifi event
    */
-  void WiFiEvent(WiFiEvent_t event);
+  void WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t aEventInfo);
 
   /**
    * @brief Update Internal status and send out a notification

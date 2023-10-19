@@ -14,7 +14,6 @@ Label::Label(std::string aText)
 void Label::SetText(std::string aText) {
   auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_label_set_text(LvglSelf(), aText.c_str());
-  SetLongMode(LV_LABEL_LONG_SCROLL);
 }
 
 void Label::SetLongMode(lv_label_long_mode_t aLongMode) {

@@ -17,6 +17,9 @@ public:
 
   void SetHeight(lv_coord_t aHeight) override;
 
+protected:
+  void StartHandlingStatusUpdates();
+
 private:
   std::shared_ptr<wifiHandlerInterface> mWifi;
   Handler<wifiHandlerInterface::ScanDoneDataTy> mScanCompleteHandler;

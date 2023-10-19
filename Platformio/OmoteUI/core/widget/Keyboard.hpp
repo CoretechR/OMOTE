@@ -8,7 +8,8 @@ namespace UI::Widget {
 
 class Keyboard : public Base {
 public:
-  Keyboard(std::function<void(std::string)> aOnUserCompletedTextEntry);
+  Keyboard(std::function<void(std::string)> aOnUserCompletedTextEntry,
+           std::string aPrompt = "");
 
   void OnAdded(UIElement *aNewParent) override;
 

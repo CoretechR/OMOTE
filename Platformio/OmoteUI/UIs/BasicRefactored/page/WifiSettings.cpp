@@ -33,7 +33,9 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
                 mScanningText->SetText("Attempting Connection to " +
                                        wifiInfo.ssid);
                 mPasswordGetter->AnimateOut();
-              });
+                StartHandlingStatusUpdates();
+              },
+              "Password:");
           keyboard->OnKeyboardAnimatedOut([this] {
             // Once keyboard is done animating out remove it and null the ref to
             // it.
@@ -46,21 +48,24 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
     }
   };
 
+  mWifi->scan();
+}
+
+void WifiSettings::StartHandlingStatusUpdates() {
   mScanStatusHandler = [this](auto aWifiStatus) {
     if (aWifiStatus.isConnected) {
       mScanningText->SetText("Connected to " + aWifiStatus.ssid);
     } else {
-      mScanningText->SetText("Failed To Connect To" + aWifiStatus.ssid);
+      mScanningText->SetText("Failed To Connect To " + aWifiStatus.ssid);
     }
   };
-
-  mWifi->scan();
 }
 
 void WifiSettings::SetHeight(lv_coord_t aHeight) {
   Base::SetHeight(aHeight);
   mScanningText->AlignTo(this, LV_ALIGN_TOP_MID);
   mScanningText->SetHeight(20);
+  mScanningText->SetLongMode(LV_LABEL_LONG_SCROLL);
   const auto padding = 10;
   mWifiNetworks->AlignTo(mScanningText, LV_ALIGN_OUT_BOTTOM_MID, 0, padding);
   mWifiNetworks->SetHeight(GetContentHeight() - mScanningText->GetBottom() -
