@@ -28,6 +28,7 @@ public:
   virtual std::shared_ptr<DisplayAbstract> display() = 0;
   virtual std::shared_ptr<wifiHandlerInterface> wifi() = 0;
   virtual std::shared_ptr<KeyPressAbstract> keys() = 0;
+  virtual std::shared_ptr<IRInterface> ir() = 0;
 
   virtual char getCurrentDevice() = 0;
   virtual void setCurrentDevice(char currentDevice) = 0;

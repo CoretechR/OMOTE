@@ -6,9 +6,6 @@
 #include "lvgl.h"
 #include "wifihandler.hpp"
 #include <Arduino.h>
-#include <IRrecv.h>
-#include <IRremoteESP8266.h>
-#include <IRsend.h>
 #include <IRutils.h>
 #include <Preferences.h>
 #include <PubSubClient.h>
@@ -18,6 +15,7 @@
 #include "omoteconfig.h"
 
 #include "BatteryInterface.h"
+#include "IRTransceiver.hpp"
 #include "display.hpp"
 #include "keys.hpp"
 #include "wifiHandlerInterface.h"
@@ -36,6 +34,7 @@ public:
   virtual std::shared_ptr<DisplayAbstract> display() override;
   virtual std::shared_ptr<wifiHandlerInterface> wifi() override;
   virtual std::shared_ptr<KeyPressAbstract> keys() override;
+  virtual std::shared_ptr<IRInterface> ir() override;
 
   virtual char getCurrentDevice() override;
   virtual void setCurrentDevice(char currentDevice) override;
@@ -54,9 +53,7 @@ protected:
   // Init Functions to setup hardware
   void initIO();
   void restorePreferences();
-  void slowDisplayWakeup();
   void setupIMU();
-  void setupIR();
 
   void activityDetection();
   void enterSleep();
@@ -70,6 +67,7 @@ private:
   std::shared_ptr<Display> mDisplay;
   std::shared_ptr<wifiHandler> mWifiHandler;
   std::shared_ptr<Keys> mKeys;
+  std::shared_ptr<IRTransceiver> mIr;
   // IMU Motion Detection
   LIS3DH IMU = LIS3DH(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
   int standbyTimer = SLEEP_TIMEOUT;
@@ -81,10 +79,6 @@ private:
   bool wakeupByIMUEnabled = true;
   byte currentDevice = 1; // Current Device to control (allows switching
                           // mappings between devices)
-
-  // IR declarations
-  IRsend IrSender = IRsend(IR_LED, true);
-  IRrecv IrReceiver = IRrecv(IR_RX);
 
   static std::shared_ptr<HardwareRevX> mInstance;
   Handler<TS_Point> mTouchHandler;

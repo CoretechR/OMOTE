@@ -1,4 +1,13 @@
 #include "IRTransceiver.hpp"
+#include "omoteconfig.h"
+
+IRTransceiver::IRTransceiver() : IRsend(IR_LED, true), IRrecv(IR_RX) {
+  digitalWrite(IR_VCC, HIGH); // Turn on IR receiver
+}
+
+IRTransceiver::~IRTransceiver() {
+  digitalWrite(IR_VCC, LOW); // Turn off IR receiver
+}
 
 void IRTransceiver::send(int64SendTypes protocol, uint64_t data) {
   switch (protocol) {

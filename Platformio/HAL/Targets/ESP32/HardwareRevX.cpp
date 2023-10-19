@@ -1,6 +1,6 @@
 #include "HardwareRevX.hpp"
-#include "display.hpp"
 #include "IRTransceiver.hpp"
+#include "display.hpp"
 #include "wifihandler.hpp"
 
 void HardwareRevX::initIO() {
@@ -74,6 +74,8 @@ void HardwareRevX::init() {
   mBattery = std::make_shared<Battery>(ADC_BAT, CRG_STAT);
   mWifiHandler = wifiHandler::getInstance();
   mKeys = std::make_shared<Keys>();
+  // TODO Could IR be a weak ref only used when needed then deallocate?
+  mIr = std::make_shared<IRTransceiver>();
   restorePreferences();
 
   mTouchHandler.SetNotification(mDisplay->TouchNotification());
@@ -82,7 +84,6 @@ void HardwareRevX::init() {
   };
 
   setupIMU();
-  setupIR();
 
   debugPrint("Finished Hardware Setup in %d", millis());
 }
@@ -107,6 +108,8 @@ std::shared_ptr<BatteryInterface> HardwareRevX::battery() { return mBattery; }
 std::shared_ptr<DisplayAbstract> HardwareRevX::display() { return mDisplay; }
 
 std::shared_ptr<KeyPressAbstract> HardwareRevX::keys() { return mKeys; }
+
+std::shared_ptr<IRInterface> HardwareRevX::ir() { return mIr; }
 
 void HardwareRevX::activityDetection() {
   static int accXold;
@@ -291,13 +294,6 @@ void HardwareRevX::setupIMU() {
   IMU.begin();
   uint8_t intDataRead;
   IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
-}
-
-void HardwareRevX::setupIR() {
-  // Setup IR
-  IrSender.begin();
-  digitalWrite(IR_VCC, HIGH); // Turn on IR receiver
-  IrReceiver.enableIRIn();    // Start the receiver
 }
 
 void HardwareRevX::startTasks() {}
