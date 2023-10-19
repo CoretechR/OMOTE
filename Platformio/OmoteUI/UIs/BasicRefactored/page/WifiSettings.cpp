@@ -6,7 +6,6 @@
 
 using namespace UI;
 using namespace UI::Page;
-using WifiInfo = wifiHandlerInterface::WifiInfo;
 
 WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
     : Base(ID::Pages::WifiSettings), mWifi(aWifi),
@@ -19,36 +18,43 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
 
   // Set Handler for when the wifi scan is done
   mScanCompleteHandler = [this](auto aWifiInfos) {
+    if (aWifiInfos.empty()) {
+      mScanningText->SetText("No Networks Found");
+      return;
+    }
     mScanningText->SetText("Networks Found");
-    // Create List of wifi infos
+    // Create List of wifi infos that when pressed a Keyboard opens
     for (WifiInfo wifiInfo : aWifiInfos) {
       mWifiNetworks->AddItem(wifiInfo.ssid, LV_SYMBOL_WIFI, [this, wifiInfo] {
-        if (!mPasswordGetter) {
-          // Launch a Keyboard if we dont already have one when user selects
-          // list item
-          auto keyboard = std::make_unique<Widget::Keyboard>(
-              [this, wifiInfo](auto aUserEnteredPassword) {
-                // Attempt Connection when user finishes up with keyboard input
-                mWifi->connect(wifiInfo.ssid, aUserEnteredPassword);
-                mScanningText->SetText("Attempting Connection to " +
-                                       wifiInfo.ssid);
-                mPasswordGetter->AnimateOut();
-                StartHandlingStatusUpdates();
-              },
-              "Password:");
-          keyboard->OnKeyboardAnimatedOut([this] {
-            // Once keyboard is done animating out remove it and null the ref to
-            // it.
-            RemoveElement(mPasswordGetter);
-            mPasswordGetter = nullptr;
-          });
-          mPasswordGetter = AddElement<Widget::Keyboard>(std::move(keyboard));
-        }
+        OpenPasswordKeyboard(wifiInfo);
       });
     }
   };
 
   mWifi->scan();
+}
+
+void WifiSettings::OpenPasswordKeyboard(WifiInfo aNetworkToConnectTo) {
+  // We already have a Keyboard don't launch another one.
+  if (mPasswordGetter) {
+    return;
+  }
+  auto keyboard = std::make_unique<Widget::Keyboard>(
+      [this, aNetworkToConnectTo](auto aUserEnteredPassword) {
+        // Attempt Connection when user finishes up with keyboard input
+        mWifi->connect(aNetworkToConnectTo.ssid, aUserEnteredPassword);
+        mScanningText->SetText("Attempting Connection to " +
+                               aNetworkToConnectTo.ssid);
+        mPasswordGetter->AnimateOut();
+        StartHandlingStatusUpdates();
+      },
+      "Password:");
+  keyboard->OnKeyboardAnimatedOut([this] {
+    // Keyboard is done animating out remove it and null the ref
+    RemoveElement(mPasswordGetter);
+    mPasswordGetter = nullptr;
+  });
+  mPasswordGetter = AddElement<Widget::Keyboard>(std::move(keyboard));
 }
 
 void WifiSettings::StartHandlingStatusUpdates() {

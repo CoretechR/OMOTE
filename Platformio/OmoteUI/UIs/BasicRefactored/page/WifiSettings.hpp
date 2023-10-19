@@ -10,6 +10,7 @@ class Keyboard;
 
 namespace UI::Page {
 class WifiSettings : public Base {
+using WifiInfo = wifiHandlerInterface::WifiInfo;
 public:
   WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi);
 
@@ -20,7 +21,10 @@ public:
 protected:
   void StartHandlingStatusUpdates();
 
+  void OpenPasswordKeyboard(WifiInfo aNetworkToConnectTo);
+
 private:
+
   std::shared_ptr<wifiHandlerInterface> mWifi;
   Handler<wifiHandlerInterface::ScanDoneDataTy> mScanCompleteHandler;
   Handler<wifiHandlerInterface::wifiStatus> mScanStatusHandler;
