@@ -1,6 +1,6 @@
 #include "HardwareRevX.hpp"
 #include "display.hpp"
-#include "IRTransmit.hpp"
+#include "IRTransceiver.hpp"
 #include "wifihandler.hpp"
 
 void HardwareRevX::initIO() {

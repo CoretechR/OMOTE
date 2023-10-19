@@ -3,7 +3,7 @@
 #pragma once
 #include "BatteryInterface.h"
 #include "DisplayAbstract.h"
-#include "IRTxInterface.h"
+#include "IRInterface.hpp"
 #include "KeyPressAbstract.hpp"
 #include "Notification.hpp"
 #include "wifiHandlerInterface.h"
