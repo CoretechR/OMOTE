@@ -9,6 +9,8 @@ public:
   Label(std::string aText);
 
   void SetText(std::string aText);
+
+  void SetLongMode(lv_label_long_mode_t aLongMode);
 };
 
 } // namespace UI::Widget

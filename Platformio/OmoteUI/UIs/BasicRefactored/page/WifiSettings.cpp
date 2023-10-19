@@ -16,6 +16,7 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
           std::make_unique<Widget::Label>("Scanning..."))),
       mWifiNetworks(AddElement<Widget::List>(std::make_unique<Widget::List>())),
       mPasswordGetter(nullptr) {
+
   // Set Handler for when the wifi scan is done
   mScanCompleteHandler = [this](auto aWifiInfos) {
     mScanningText->SetText("Networks Found");
@@ -59,7 +60,7 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
 void WifiSettings::SetHeight(lv_coord_t aHeight) {
   Base::SetHeight(aHeight);
   mScanningText->AlignTo(this, LV_ALIGN_TOP_MID);
-  mScanningText->SetHeight(15);
+  mScanningText->SetHeight(20);
   const auto padding = 10;
   mWifiNetworks->AlignTo(mScanningText, LV_ALIGN_OUT_BOTTOM_MID, 0, padding);
   mWifiNetworks->SetHeight(GetContentHeight() - mScanningText->GetBottom() -
