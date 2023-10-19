@@ -299,6 +299,8 @@ void HardwareRevX::setupIMU() {
 void HardwareRevX::startTasks() {}
 
 void HardwareRevX::loopHandler() {
+  mIr->loopHandleRx();
+
   standbyTimer < 2000 ? mDisplay->sleep() : mDisplay->wake();
 
   // TODO move to debug task

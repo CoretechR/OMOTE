@@ -29,6 +29,7 @@ public:
     DisplaySettings,
     WifiSettings,
     SystemSettings,
+    IrLearner,
     Demo,
     INVALID_PAGE_ID
   };

@@ -1,6 +1,7 @@
 #include "HomeScreen.hpp"
 #include "Colors.hpp"
 #include "Demo.hpp"
+#include "IrLearner.hpp"
 #include "SettingsPage.hpp"
 
 using namespace UI::Screen;
@@ -16,6 +17,7 @@ HomeScreen::HomeScreen()
   // Adds pages to the Tab view
   mTabView->AddTab(std::make_unique<Page::SettingsPage>());
   mTabView->AddTab(std::make_unique<Page::Demo>());
+  mTabView->AddTab(std::make_unique<Page::IrLearner>());
 }
 
 void HomeScreen::SetBgColor(lv_color_t value, lv_style_selector_t selector) {

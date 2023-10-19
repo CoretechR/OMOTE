@@ -9,14 +9,14 @@ public:
   IRTransceiver();
   virtual ~IRTransceiver();
 
-  virtual void send(int64SendTypes protocol, uint64_t data) override;
-  virtual void send(constInt64SendTypes protocol, const uint64_t data) override;
-  virtual void send(charArrSendType protocol,
-                    const unsigned char data[]) override;
+  void send(int64SendTypes protocol, uint64_t data) override;
+  void send(constInt64SendTypes protocol, const uint64_t data) override;
+  void send(charArrSendType protocol, const unsigned char data[]) override;
+  void send(IRInterface::RawIR aRawIr) override;
 
-  virtual void enableRx() override;
-  virtual void disableRx() override;
-  virtual void loopHandleRx() override;
+  void enableRx() override;
+  void disableRx() override;
+  void loopHandleRx() override;
 
 private:
   decode_results mCurrentResults;
