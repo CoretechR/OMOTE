@@ -38,6 +38,9 @@ UIElement *UIElement::AddElement(UIElement::Ptr anUIElement) {
   auto lock = LvglResourceManager::GetInstance().scopeLock();
   lv_obj_set_parent(anUIElement->mLvglSelf, mLvglSelf);
   anUIElement->OnAdded(this);
+  if (IsVisible() && anUIElement->IsSetVisible()) {
+    anUIElement->OnShow();
+  }
   mContainedElements.push_back(std::move(anUIElement));
   return mContainedElements[mContainedElements.size() - 1].get();
 }
@@ -314,7 +317,7 @@ void UIElement::OnHide() {
 
 void UIElement::OnShow() {
   for (auto &elem : mContainedElements) {
-    if (!lv_obj_has_flag(mLvglSelf, LV_OBJ_FLAG_HIDDEN)) {
+    if (IsSetVisible()) {
       elem->OnShow();
     }
   }
