@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "HardwareAbstract.hpp"
 
+#include "IRSim.hpp"
 #include "KeyPressSim.hpp"
 #include "SDLDisplay.hpp"
 #include "batterySimulator.hpp"
@@ -26,6 +27,7 @@ public:
   std::shared_ptr<DisplayAbstract> display() override;
   std::shared_ptr<wifiHandlerInterface> wifi() override;
   std::shared_ptr<KeyPressAbstract> keys() override;
+  std::shared_ptr<IRInterface> ir() override;
 
   char getCurrentDevice() override;
   void setCurrentDevice(char currentDevice) override;
@@ -44,4 +46,5 @@ private:
   std::shared_ptr<SDLDisplay> mDisplay;
   std::shared_ptr<wifiHandlerSim> mWifiHandler;
   std::shared_ptr<KeyPressSim> mKeys;
+  std::shared_ptr<IRSim> mIr;
 };

@@ -13,7 +13,7 @@ HardwareSimulator::HardwareSimulator()
       mBattery(std::make_shared<BatterySimulator>()),
       mDisplay(SDLDisplay::getInstance()),
       mWifiHandler(std::make_shared<wifiHandlerSim>()),
-      mKeys(std::make_shared<KeyPressSim>()) {
+      mKeys(std::make_shared<KeyPressSim>()), mIr(std::make_shared<IRSim>()) {
   mHardwareStatusTitleUpdate = std::thread([this] {
     int dataToShow = 0;
     while (true) {
@@ -48,6 +48,8 @@ std::shared_ptr<wifiHandlerInterface> HardwareSimulator::wifi() {
   return mWifiHandler;
 }
 std::shared_ptr<KeyPressAbstract> HardwareSimulator::keys() { return mKeys; }
+
+std::shared_ptr<IRInterface> HardwareSimulator::ir() { return mIr; }
 
 char HardwareSimulator::getCurrentDevice() { return 0; }
 
