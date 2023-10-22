@@ -1,35 +1,21 @@
 #pragma once
-#include "wifiHandlerInterface.h"
 #include "Notification.hpp"
+#include "wifiHandlerInterface.h"
+#include <atomic>
 #include <memory>
+#include <thread>
 
-class wifiHandlerSim: public wifiHandlerInterface {
-    public:
-        wifiHandlerSim();
-        static std::shared_ptr<wifiHandlerSim> getInstance();
+class wifiHandlerSim : public wifiHandlerInterface {
+public:
+  wifiHandlerSim();
 
-        
-        /**
-         * @brief Connect to the wifi using the provided credetials 
-         * 
-         * @param SSID 
-         * @param password 
-         */
-        void connect(std::shared_ptr<std::string> ssid, std::shared_ptr<std::string> password);
-        //void connect(const char* SSID, const char* password);
+  void begin() override;
+  void scan() override;
+  void connect(std::string ssid, std::string password) override;
+  wifiStatus GetStatus() override { return mCurrentStatus; };
 
-
-
-        /**
-         * @brief function to trigger asynchronous scan for wifi networks
-         * 
-         */
-        void scan();
-        bool isAvailable();
-        void begin();
-        void onScanDone(std::function<void (std::shared_ptr<std::vector<WifiInfo>>)> function);
-        void onStatusUpdate(std::function<void (std::shared_ptr<wifiStatus>)> function);
-    private:
-        Notification<std::shared_ptr<std::vector<WifiInfo>>> scan_notification;
-        Notification<std::shared_ptr<wifiStatus>> status_update;
+private:
+  std::thread mFakeScanThread = std::thread([] {});
+  std::thread mFakeStatusThread = std::thread([] {});
+  wifiStatus mCurrentStatus = wifiStatus(true, "172.0.0.1", "FakeNet");
 };

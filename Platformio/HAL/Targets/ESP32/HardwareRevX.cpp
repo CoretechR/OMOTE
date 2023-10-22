@@ -2,8 +2,6 @@
 #include "display.hpp"
 #include "wifihandler.hpp"
 
-std::shared_ptr<HardwareRevX> HardwareRevX::mInstance = nullptr;
-
 void HardwareRevX::initIO() {
   // Button Pin Definition
   pinMode(SW_1, OUTPUT);
@@ -50,9 +48,7 @@ void HardwareRevX::initIO() {
   gpio_deep_sleep_hold_dis();
 }
 
-HardwareRevX::HardwareRevX():
-  HardwareAbstract(){
-  }
+HardwareRevX::HardwareRevX() : HardwareAbstract() {}
 
 HardwareRevX::WakeReason getWakeReason() {
   // Find out wakeup cause
@@ -74,11 +70,15 @@ void HardwareRevX::init() {
   Serial.begin(115200);
 
   mDisplay = Display::getInstance();
-  mBattery = std::make_shared<Battery>(ADC_BAT,CRG_STAT);
+  mBattery = std::make_shared<Battery>(ADC_BAT, CRG_STAT);
   mWifiHandler = wifiHandler::getInstance();
+  mKeys = std::make_shared<Keys>();
   restorePreferences();
 
-  mDisplay->onTouch([this]([[maybe_unused]] auto touchPoint){ standbyTimer = this->getSleepTimeout();});
+  mTouchHandler.SetNotification(mDisplay->TouchNotification());
+  mTouchHandler = [this]([[maybe_unused]] auto touchPoint) {
+    standbyTimer = this->getSleepTimeout();
+  };
 
   setupIMU();
   setupIR();
@@ -86,37 +86,26 @@ void HardwareRevX::init() {
   debugPrint("Finished Hardware Setup in %d", millis());
 }
 
-void HardwareRevX::debugPrint(const char* fmt, ...)
-{
+void HardwareRevX::debugPrint(const char *fmt, ...) {
   char result[100];
   va_list arguments;
 
   va_start(arguments, fmt);
   vsnprintf(result, 100, fmt, arguments);
-  va_end (arguments);
+  va_end(arguments);
 
   Serial.print(result);
 }
 
-std::shared_ptr<HardwareRevX> HardwareRevX::getInstance(){
-  if (!mInstance) {
-    mInstance = std::shared_ptr<HardwareRevX>(new HardwareRevX());
-  }
-  return mInstance;
-}
-
-std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi()
-{
+std::shared_ptr<wifiHandlerInterface> HardwareRevX::wifi() {
   return mWifiHandler;
 }
 
-std::shared_ptr<BatteryInterface> HardwareRevX::battery(){
-  return mBattery;
-}
+std::shared_ptr<BatteryInterface> HardwareRevX::battery() { return mBattery; }
 
-std::shared_ptr<DisplayAbstract> HardwareRevX::display(){
-  return mDisplay;
-}
+std::shared_ptr<DisplayAbstract> HardwareRevX::display() { return mDisplay; }
+
+std::shared_ptr<KeyPressAbstract> HardwareRevX::keys() { return mKeys; }
 
 void HardwareRevX::activityDetection() {
   static int accXold;
@@ -142,27 +131,21 @@ void HardwareRevX::activityDetection() {
   accZold = accZ;
 }
 
-char HardwareRevX::getCurrentDevice(){
-  return currentDevice;
-}
+char HardwareRevX::getCurrentDevice() { return currentDevice; }
 
-void HardwareRevX::setCurrentDevice(char currentDevice){
+void HardwareRevX::setCurrentDevice(char currentDevice) {
   this->currentDevice = currentDevice;
 }
 
-bool HardwareRevX::getWakeupByIMUEnabled(){
-  return wakeupByIMUEnabled;
-}
+bool HardwareRevX::getWakeupByIMUEnabled() { return wakeupByIMUEnabled; }
 
-void HardwareRevX::setWakeupByIMUEnabled(bool wakeupByIMUEnabled){
+void HardwareRevX::setWakeupByIMUEnabled(bool wakeupByIMUEnabled) {
   this->wakeupByIMUEnabled = wakeupByIMUEnabled;
 }
 
-uint16_t HardwareRevX::getSleepTimeout(){
-  return sleepTimeout;
-}
+uint16_t HardwareRevX::getSleepTimeout() { return sleepTimeout; }
 
-void HardwareRevX::setSleepTimeout(uint16_t sleepTimeout){
+void HardwareRevX::setSleepTimeout(uint16_t sleepTimeout) {
   this->sleepTimeout = sleepTimeout;
   standbyTimer = sleepTimeout;
 }
@@ -287,7 +270,7 @@ void HardwareRevX::restorePreferences() {
     currentDevice = preferences.getUChar("currentDevice");
     sleepTimeout = preferences.getUInt("sleepTimeout");
     // setting the default to prevent a 0ms sleep timeout
-    if(sleepTimeout == 0){
+    if (sleepTimeout == 0) {
       sleepTimeout = SLEEP_TIMEOUT;
     }
   }
@@ -320,7 +303,7 @@ void HardwareRevX::startTasks() {}
 
 void HardwareRevX::loopHandler() {
   standbyTimer < 2000 ? mDisplay->sleep() : mDisplay->wake();
-  
+
   // TODO move to debug task
   // Blink debug LED at 1 Hz
   digitalWrite(USER_LED, millis() % 1000 > 500);
@@ -335,31 +318,4 @@ void HardwareRevX::loopHandler() {
     }
     IMUTaskTimer = millis();
   }
-
-  // Keypad Handling
-  customKeypad.getKey(); // Populate key list
-  for (int i = 0; i < LIST_MAX;
-       i++) { // Handle multiple keys (Not really necessary in this case)
-    if (customKeypad.key[i].kstate == PRESSED ||
-        customKeypad.key[i].kstate == HOLD) {
-      standbyTimer =
-          sleepTimeout; // Reset the sleep timer when a button is pressed
-      int keyCode = customKeypad.key[i].kcode;
-      Serial.println(customKeypad.key[i].kchar);
-      // Send IR codes depending on the current device (tabview page)
-      if (currentDevice == 1) {
-        IrSender.sendRC5(IrSender.encodeRC5X(
-            0x00, keyMapTechnisat[keyCode / ROWS][keyCode % ROWS]));
-      } else if (currentDevice == 2) {
-        IrSender.sendSony((keyCode / ROWS) * (keyCode % ROWS), 15);
-      }
-    }
-  }
-  // IR Test
-  // tft.drawString("IR Command: ", 10, 90, 1);
-  // decode_results results;
-  // if (IrReceiver.decode(&results)) {
-  // IrReceiver.resume(); // Enable receiving of the next value
-  //}  //tft.drawString(String(results.command) + "        ", 80, 90, 1);
-  //
 }
