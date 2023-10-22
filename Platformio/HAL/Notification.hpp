@@ -58,8 +58,8 @@ public:
   void operator=(Handler &other) = delete;
 
   Handler() = default;
-  Handler(std::shared_ptr<Notification<notifyData...>> aNotification,
-          callableTy aCallable = nullptr)
+  explicit Handler(std::shared_ptr<Notification<notifyData...>> aNotification,
+                   callableTy aCallable = nullptr)
       : mNotification(aNotification),
         mHandlerId(aNotification->onNotify(aCallable)) {}
 

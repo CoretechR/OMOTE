@@ -8,7 +8,7 @@ public:
   wifiHandlerInterface() = default;
   struct WifiInfo {
     WifiInfo() = default;
-    WifiInfo(std::string aSsid, int aRssi) : ssid(aSsid), rssi(aRssi) {}
+    WifiInfo(const std::string &aSsid, int aRssi) : ssid(aSsid), rssi(aRssi) {}
 
     std::string ssid = "";
     int rssi = 0;
@@ -16,7 +16,8 @@ public:
 
   struct wifiStatus {
     wifiStatus() = default;
-    wifiStatus(bool aConnected, std::string aIp, std::string aSsid)
+    wifiStatus(bool aConnected, const std::string &aIp,
+               const std::string &aSsid)
         : isConnected(aConnected), IP(aIp), ssid(aSsid){};
 
     bool isConnected = false;
