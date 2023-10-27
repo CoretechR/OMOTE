@@ -22,6 +22,7 @@ private:
   Handler<IRInterface::RawIR> mIRReceiver;
   IRInterface::RawIR mLastCaptured;
   bool mHasData = false;
+  int mNumCaptured = 0;
 
   Widget::Label *mReceivedLabel;
 };

@@ -248,7 +248,9 @@ void IRTransceiver::send(charArrSendType protocol, const unsigned char data[]) {
 };
 
 void IRTransceiver::send(IRInterface::RawIR aRawIR) {
+  disableRx();
   sendRaw(aRawIR.data.data(), aRawIR.data.size(), 38);
+  enableRx();
 }
 
 void IRTransceiver::enableRx() { enableIRIn(); }

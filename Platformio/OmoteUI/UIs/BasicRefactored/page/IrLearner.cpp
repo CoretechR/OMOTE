@@ -14,7 +14,8 @@ IrLearner::IrLearner(std::shared_ptr<IRInterface> aIr)
 
   mIRReceiver = [this](auto rawIrData) {
     mLastCaptured = rawIrData;
-    mReceivedLabel->SetText("Got Rx!!");
+    mNumCaptured++;
+    mReceivedLabel->SetText("Got Rx!! #: " + std::to_string(mNumCaptured));
     mHasData = true;
   };
   mIr->enableRx();
