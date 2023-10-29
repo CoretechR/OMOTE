@@ -285,7 +285,6 @@ void IRTransceiver::send(IRInterface::RawIR aRawIR) {
   //   Serial.print(":");
   // }
   // Serial.println("");
-  std::reverse(aRawIR.data.begin(), aRawIR.data.end());
   maxOutTaskPriority();
   sendRaw(aRawIR.data.data(), aRawIR.data.size(), 38);
   restoreTaskPriority();
@@ -311,10 +310,19 @@ void IRTransceiver::loopHandleRx() {
     // Its not a big deal because when Rxing we dont really care much about
     // what the protocol is (I don't think...)
     Serial.print(resultToHumanReadableBasic(&mCurrentResults));
+
+    // Store protocol
     received.mprotocol =
         static_cast<IRInterface::protocol>(mCurrentResults.decode_type);
-    received.data.assign(mCurrentResults.rawbuf,
-                         mCurrentResults.rawbuf + mCurrentResults.rawlen);
+
+    // Reserve room in Vector
+    uint16_t rawLength = getCorrectedRawLength(&mCurrentResults);
+    received.data.reserve(rawLength);
+
+    // Get Data and copy into vector then free
+    uint16_t *rawData = resultToRawArray(&mCurrentResults);
+    received.data.assign(rawData, rawData + rawLength);
+    delete[](rawData);
     mIRReceived->notify(received);
   }
 }
