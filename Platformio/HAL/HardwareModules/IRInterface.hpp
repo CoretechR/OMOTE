@@ -270,6 +270,8 @@ public:
   virtual void send(charArrSendType protocol, const unsigned char data[]) = 0;
   virtual void send(RawIR aRawIr) = 0;
 
+  virtual int8_t calibrateTx() = 0;
+
   virtual void enableRx() = 0;
   virtual void disableRx() = 0;
   virtual void loopHandleRx() = 0;

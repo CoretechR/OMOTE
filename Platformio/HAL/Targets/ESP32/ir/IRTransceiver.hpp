@@ -3,6 +3,7 @@
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
+#include <freertos/task.h>
 
 class IRTransceiver : public IRInterface, protected IRsend, protected IRrecv {
 public:
@@ -14,10 +15,23 @@ public:
   void send(charArrSendType protocol, const unsigned char data[]) override;
   void send(IRInterface::RawIR aRawIr) override;
 
+  int8_t calibrateTx() override {
+    maxOutTaskPriority();
+    auto calibrationOffset = IRsend::calibrate();
+    restoreTaskPriority();
+    Serial.printf("Calibration Offset: %i", calibrationOffset);
+    return calibrationOffset;
+  };
+
   void enableRx() override;
   void disableRx() override;
   void loopHandleRx() override;
 
 private:
+  void maxOutTaskPriority();
+  void restoreTaskPriority();
+  BaseType_t mPreSendPriority = 0;
+
+  bool mIsRxEnabled = false;
   decode_results mCurrentResults;
 };

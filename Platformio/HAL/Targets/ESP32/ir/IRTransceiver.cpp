@@ -5,6 +5,7 @@
 IRTransceiver::IRTransceiver()
     : IRsend(IR_LED, true), IRrecv(IR_RX, 1024, 50, true) {
   digitalWrite(IR_VCC, HIGH); // Turn on IR receiver
+  IRsend::begin();
 }
 
 IRTransceiver::~IRTransceiver() {
@@ -12,6 +13,10 @@ IRTransceiver::~IRTransceiver() {
 }
 
 void IRTransceiver::send(int64SendTypes protocol, uint64_t data) {
+  if (mIsRxEnabled) {
+    IRrecv::pause();
+  }
+  maxOutTaskPriority();
   switch (protocol) {
   case int64SendTypes::NEC:
     return sendNEC(data);
@@ -62,8 +67,16 @@ void IRTransceiver::send(int64SendTypes protocol, uint64_t data) {
   case int64SendTypes::TechnibelAc:
     return sendTechnibelAc(data);
   }
+  restoreTaskPriority();
+  if (mIsRxEnabled) {
+    IRrecv::resume();
+  }
 };
 void IRTransceiver::send(constInt64SendTypes protocol, const uint64_t data) {
+  if (mIsRxEnabled) {
+    IRrecv::pause();
+  }
+  maxOutTaskPriority();
   switch (protocol) {
   case constInt64SendTypes::Sony:
     return sendSony(data);
@@ -148,8 +161,16 @@ void IRTransceiver::send(constInt64SendTypes protocol, const uint64_t data) {
   case constInt64SendTypes::Wowwee:
     return sendWowwee(data);
   }
+  restoreTaskPriority();
+  if (mIsRxEnabled) {
+    IRrecv::resume();
+  }
 };
 void IRTransceiver::send(charArrSendType protocol, const unsigned char data[]) {
+  if (mIsRxEnabled) {
+    IRrecv::pause();
+  }
+  maxOutTaskPriority();
   switch (protocol) {
   case charArrSendType::SamsungAC:
     return sendSamsungAC(data);
@@ -247,17 +268,41 @@ void IRTransceiver::send(charArrSendType protocol, const unsigned char data[]) {
   case charArrSendType::York:
     return sendYork(data);
   }
+  restoreTaskPriority();
+  if (mIsRxEnabled) {
+    IRrecv::resume();
+  }
 };
 
 void IRTransceiver::send(IRInterface::RawIR aRawIR) {
-  disableRx();
+  if (mIsRxEnabled) {
+    IRrecv::pause();
+  }
+  // Serial.print(aRawIR.data.size());
+  // Serial.print("Sending:");
+  // for (auto x : aRawIR.data) {
+  //   Serial.print(x);
+  //   Serial.print(":");
+  // }
+  // Serial.println("");
+  std::reverse(aRawIR.data.begin(), aRawIR.data.end());
+  maxOutTaskPriority();
   sendRaw(aRawIR.data.data(), aRawIR.data.size(), 38);
-  enableRx();
+  restoreTaskPriority();
+  if (mIsRxEnabled) {
+    IRrecv::resume();
+  }
 }
 
-void IRTransceiver::enableRx() { enableIRIn(); }
+void IRTransceiver::enableRx() {
+  enableIRIn();
+  mIsRxEnabled = true;
+}
 
-void IRTransceiver::disableRx() { disableIRIn(); }
+void IRTransceiver::disableRx() {
+  disableIRIn();
+  mIsRxEnabled = false;
+}
 
 void IRTransceiver::loopHandleRx() {
   if (decode(&mCurrentResults)) {
@@ -272,4 +317,12 @@ void IRTransceiver::loopHandleRx() {
                          mCurrentResults.rawbuf + mCurrentResults.rawlen);
     mIRReceived->notify(received);
   }
+}
+
+void IRTransceiver::maxOutTaskPriority() {
+  mPreSendPriority = uxTaskPriorityGet(nullptr);
+  vTaskPrioritySet(nullptr, configMAX_PRIORITIES - 1);
+}
+void IRTransceiver::restoreTaskPriority() {
+  vTaskPrioritySet(nullptr, mPreSendPriority);
 }
