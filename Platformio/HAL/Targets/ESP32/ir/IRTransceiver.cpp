@@ -1,7 +1,9 @@
 #include "IRTransceiver.hpp"
 #include "omoteconfig.h"
+#include <IRutils.h>
 
-IRTransceiver::IRTransceiver() : IRsend(IR_LED, true), IRrecv(IR_RX) {
+IRTransceiver::IRTransceiver()
+    : IRsend(IR_LED, true), IRrecv(IR_RX, 1024, 50, true) {
   digitalWrite(IR_VCC, HIGH); // Turn on IR receiver
 }
 
@@ -263,6 +265,7 @@ void IRTransceiver::loopHandleRx() {
     // This cast only works with the library if the enums are a carbon copy
     // Its not a big deal because when Rxing we dont really care much about
     // what the protocol is (I don't think...)
+    Serial.print(resultToHumanReadableBasic(&mCurrentResults));
     received.mprotocol =
         static_cast<IRInterface::protocol>(mCurrentResults.decode_type);
     received.data.assign(mCurrentResults.rawbuf,
