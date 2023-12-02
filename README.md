@@ -4,6 +4,7 @@
 
 ![ESP32 Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio.yml/badge.svg)
 ![Simulator Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator.yml/badge.svg)
+![Discord Shield](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=shield)
 
 ## Overview
 
@@ -65,9 +66,13 @@ You can try the user interface on your PC using the LVGL simulator. Just follow 
 
 ### Hardware
 
-The central component of OMOTE is its PCB. If you want to build the PCB yourself, you will need SMT-reflow tools like a hot plate or a hot-air station. The 2-layered board and a solder paste stencil can be ordered from any PCB manufacturer using the [KiCad files](https://github.com/CoretechR/OMOTE/tree/main/PCB). Manufacturers like OSHPARK or Aisler will accept these files directly. For JLCPCB or PCBWay, you can use their plugin to export the optimized Gerber files.
+The central component of OMOTE is its PCB. If you want to build the PCB yourself, you will need SMT-reflow tools like a hot plate or a hot-air station. The 2-layered board and a solder paste stencil can be ordered from any PCB manufacturer using the [KiCad files](https://github.com/CoretechR/OMOTE/tree/main/PCB). Manufacturers like OSHPARK or Aisler will accept these files directly. For JLCPCB or PCBWay, you can use their plugin to export the optimized Gerber files. A [zip archive](https://github.com/CoretechR/OMOTE/blob/main/PCB/production/gerber.zip) with theses Gerber files is also included in this repository.
 
 I sourced the electrical parts from LCSC, but most of them should be available from the usual suppliers like Digikey or Mouser as well. You can check out the [BOM](https://github.com/CoretechR/OMOTE/blob/main/PCB/BOM.csv) for all the necessary components.
+
+The project uses a 2000mAh Li-Ion battery with a JST-PHR-2 connector. Any 3.7V Li-Ion battery that fits into the 50x34x10mm dimensions should work alright. Please ***make sure to choose a battery with integrated undervoltage protection*** (usually visible as a small PCB under Kapton tape between the battery cables).
+
+The 2.8" capacitive touchscreen can be sourced from Adafruit ([2770](https://www.adafruit.com/product/2770)). If you look for the part number CH280QV10-CT, you can also buy this display directly from the manufacturer via [Alibaba](https://www.alibaba.com/product-detail/High-Quality-240-3-rgb-320_1600408828330.html). Shipping from China is expensive, so this only makes sense if you order multiple displays. In general, the cost for a single OMOTE is quite high. Check out the buy-sell page on the [Discord](https://discord.com/channels/1138116475559882852/1153343867681243279) to see if you can share the cost of the PCBs and components with others.
 
 <div align="center">
   <img src="parts.jpg" width="80%">
@@ -89,8 +94,10 @@ Distributed under the GPL v3 License. See [LICENSE](https://github.com/CoretechR
 
 ## Contact
 
-Maximilian Kern - [kernm.de](https://kernm.de)
+![Discord Shield](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=banner2)
 
-Omote Discord: [https://discord.gg/5PnYFAsKsG](https://discord.gg/5PnYFAsKsG)
+Join the OMOTE Discord: [https://discord.gg/5PnYFAsKsG](https://discord.gg/5PnYFAsKsG)
+
+Maximilian Kern - [kernm.de](https://kernm.de)
 
 Project Page on Hackaday.io: [https://hackaday.io/project/191752-omote-diy-universal-remote](https://hackaday.io/project/191752-omote-diy-universal-remote)
