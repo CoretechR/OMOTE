@@ -4,7 +4,7 @@
 
 ![ESP32 Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio.yml/badge.svg)
 ![Simulator Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator.yml/badge.svg)
-![Discord Shield](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=shield)
+[![OMOTE Discord](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=shield)][link1]
 
 ## Overview
 
@@ -94,10 +94,13 @@ Distributed under the GPL v3 License. See [LICENSE](https://github.com/CoretechR
 
 ## Contact
 
-![Discord Shield](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=banner2)
+[![OMOTE Discord](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=banner2 "OMOTE Discord")][link1]
 
 Join the OMOTE Discord: [https://discord.gg/5PnYFAsKsG](https://discord.gg/5PnYFAsKsG)
 
 Maximilian Kern - [kernm.de](https://kernm.de)
 
 Project Page on Hackaday.io: [https://hackaday.io/project/191752-omote-diy-universal-remote](https://hackaday.io/project/191752-omote-diy-universal-remote)
+
+
+[link1]: https://discord.gg/5PnYFAsKsG
