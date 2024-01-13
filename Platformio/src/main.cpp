@@ -97,7 +97,7 @@ const byte ROWS = 5; //four rows
 const byte COLS = 5; //four columns
 //define the symbols on the buttons of the keypads
 char hexaKeys[ROWS][COLS] = {
-  {'s','^','-','m','r'}, //  source, channel+, Volume-,   mute, record
+  {'s','^','-','m','e'}, //  source, channel+, Volume-,   mute, record
   {'i','r','+','k','d'}, //    info,    right, Volume+,     OK,   down
   {'4','v','1','3','2'}, //    blue, channel-,     red, yellow,  green
   {'>','o','b','u','l'}, // forward,      off,    back,     up,   left
@@ -1016,15 +1016,16 @@ void loop() {
   }
 
   // Keypad Handling
-  customKeypad.getKey(); // Populate key list
-  for(int i=0; i<LIST_MAX; i++){ // Handle multiple keys (Not really necessary in this case)
-    if(customKeypad.key[i].kstate == PRESSED || customKeypad.key[i].kstate == HOLD){
-      standbyTimer = SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
-      int keyCode = customKeypad.key[i].kcode;
-      Serial.println(customKeypad.key[i].kchar);
-      // Send IR codes depending on the current device (tabview page)
-      if(currentDevice == 1) IrSender.sendRC5(IrSender.encodeRC5X(0x00, keyMapTechnisat[keyCode/ROWS][keyCode%ROWS]));
-      else if(currentDevice == 2) IrSender.sendSony((keyCode/ROWS)*(keyCode%ROWS), 15);
+  if (customKeypad.getKeys()) { // Populate key list
+    for(int i=0; i<LIST_MAX; i++){ // Handle multiple keys (Not really necessary in this case)
+      if(customKeypad.key[i].kstate == PRESSED || customKeypad.key[i].kstate == HOLD){
+        standbyTimer = SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
+        int keyCode = customKeypad.key[i].kcode;
+        Serial.println(customKeypad.key[i].kchar);
+        // Send IR codes depending on the current device (tabview page)
+        if(currentDevice == 1) IrSender.sendRC5(IrSender.encodeRC5X(0x00, keyMapTechnisat[keyCode/ROWS][keyCode%ROWS]));
+        else if(currentDevice == 2) IrSender.sendSony((keyCode/ROWS)*(keyCode%ROWS), 15);
+      }
     }
   }
 
