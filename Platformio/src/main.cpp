@@ -77,8 +77,8 @@ int backlight_brightness = 255;
 
 // LVGL declarations
 static lv_disp_draw_buf_t draw_buf;
-static lv_color_t bufA[ screenWidth * screenHeight / 10 ];
-static lv_color_t bufB[ screenWidth * screenHeight / 10 ];
+lv_color_t * bufA = (lv_color_t *) malloc(sizeof(lv_color_t) * screenWidth * screenHeight / 10);
+lv_color_t * bufB = (lv_color_t *) malloc(sizeof(lv_color_t) * screenWidth * screenHeight / 10);
 lv_obj_t* objBattPercentage;
 lv_obj_t* objBattIcon;
 LV_IMG_DECLARE(gradientLeft);
