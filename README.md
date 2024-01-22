@@ -1,3 +1,6 @@
+# Changes in this fork
+For changes in this fork, please see https://github.com/CoretechR/OMOTE/discussions/58
+
 # OMOTE - Open Universal Remote
 
 ![](P1030424_small.jpg)
