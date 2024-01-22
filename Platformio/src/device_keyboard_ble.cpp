@@ -111,11 +111,15 @@ void keyboard_ble_executeCommand(std::string command, std::string additionalPayl
 
   } else if (command == KEYBOARD_BLE_BACK) {
     if (doLog) {Serial.printf("BACK received\r\n");}
-    keyboard_ble_write(KEY_ESC);
+    // test which one works best for your device
+    // keyboard_ble_write(KEY_ESC);
+    consumerControl_ble_write(KEY_MEDIA_WWW_BACK);
 
   } else if (command == KEYBOARD_BLE_HOME) {
     if (doLog) {Serial.printf("HOME received\r\n");}
-    keyboard_ble_home();
+    // test which one works best for your device
+    // keyboard_ble_home();
+    consumerControl_ble_write(KEY_MEDIA_WWW_HOME);
 
   } else if (command == KEYBOARD_BLE_MENU) {
     if (doLog) {Serial.printf("MENU received\r\n");}
