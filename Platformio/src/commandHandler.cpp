@@ -156,6 +156,7 @@ void executeCommandWithData(std::string command, commandData commandData, std::s
         executeCommand(KEYBOARD_HOME);
         delay(500);
         executeCommand(KEYBOARD_HOME);
+        
         currentScene = SCENE_FIRETV;
         allDevsPowered = 1;
 
