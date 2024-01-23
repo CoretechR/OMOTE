@@ -34,18 +34,18 @@ static void smartHomeSlider_event_cb(lv_event_t * e){
 
 void init_gui_smarthome(lv_obj_t* tabview) {
 
-  lv_obj_t* tab4 = lv_tabview_add_tab(tabview, "Smart Home");
+  lv_obj_t* tab = lv_tabview_add_tab(tabview, "Smart Home");
 
   // Add content to the smart home tab (4)
-  lv_obj_set_layout(tab4, LV_LAYOUT_FLEX);
-  lv_obj_set_flex_flow(tab4, LV_FLEX_FLOW_COLUMN);
-  lv_obj_set_scrollbar_mode(tab4, LV_SCROLLBAR_MODE_ACTIVE);
+  lv_obj_set_layout(tab, LV_LAYOUT_FLEX);
+  lv_obj_set_flex_flow(tab, LV_FLEX_FLOW_COLUMN);
+  lv_obj_set_scrollbar_mode(tab, LV_SCROLLBAR_MODE_ACTIVE);
 
   // Add a label, then a box for the light controls
-  lv_obj_t* menuLabel = lv_label_create(tab4);
+  lv_obj_t* menuLabel = lv_label_create(tab);
   lv_label_set_text(menuLabel, "Living Room");
 
-  lv_obj_t* menuBox = lv_obj_create(tab4);
+  lv_obj_t* menuBox = lv_obj_create(tab);
   lv_obj_set_size(menuBox, lv_pct(100), 79);
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
@@ -80,7 +80,7 @@ void init_gui_smarthome(lv_obj_t* tabview) {
   lv_obj_add_event_cb(slider, smartHomeSlider_event_cb, LV_EVENT_VALUE_CHANGED, (void*)1);
 
   // Add another menu box for a second appliance
-  menuBox = lv_obj_create(tab4);
+  menuBox = lv_obj_create(tab);
   lv_obj_set_size(menuBox, lv_pct(100), 79);
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
@@ -116,10 +116,10 @@ void init_gui_smarthome(lv_obj_t* tabview) {
 
 
   // Add another room (empty for now)
-  menuLabel = lv_label_create(tab4);
+  menuLabel = lv_label_create(tab);
   lv_label_set_text(menuLabel, "Kitchen");
 
-  menuBox = lv_obj_create(tab4);
+  menuBox = lv_obj_create(tab);
   lv_obj_set_size(menuBox, lv_pct(100), 79);
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);

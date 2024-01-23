@@ -20,15 +20,15 @@ static void virtualKeypad_event_cb(lv_event_t* e) {
 
 void init_gui_numpad(lv_obj_t* tabview) {
 
-  lv_obj_t* tab2 = lv_tabview_add_tab(tabview, "Numpad");
+  lv_obj_t* tab = lv_tabview_add_tab(tabview, "Numpad");
 
   // Configure number button grid 
   static lv_coord_t col_dsc[] = { LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST }; // equal x distribution
   static lv_coord_t row_dsc[] = { 52, 52, 52, 52, LV_GRID_TEMPLATE_LAST }; // manual y distribution to compress the grid a bit
 
-  // Create a container with grid for tab2
-  lv_obj_set_style_pad_all(tab2, 0, LV_PART_MAIN);
-  lv_obj_t* cont = lv_obj_create(tab2);
+  // Create a container with grid for tab
+  lv_obj_set_style_pad_all(tab, 0, LV_PART_MAIN);
+  lv_obj_t* cont = lv_obj_create(tab);
   lv_obj_set_style_shadow_width(cont, 0, LV_PART_MAIN);
   lv_obj_set_style_bg_color(cont, lv_color_black(), LV_PART_MAIN);
   lv_obj_set_style_border_width(cont, 0, LV_PART_MAIN);

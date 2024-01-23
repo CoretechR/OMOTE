@@ -21,20 +21,20 @@ static void WakeEnableSetting_event_cb(lv_event_t * e){
 
 void init_gui_settings(lv_obj_t* tabview) {
 
-  lv_obj_t* tab1 = lv_tabview_add_tab(tabview, "Settings");
+  lv_obj_t* tab = lv_tabview_add_tab(tabview, "Settings");
 
 
   // Add content to the settings tab
   // With a flex layout, setting groups/boxes will position themselves automatically
-  lv_obj_set_layout(tab1, LV_LAYOUT_FLEX);
-  lv_obj_set_flex_flow(tab1, LV_FLEX_FLOW_COLUMN);
-  lv_obj_set_scrollbar_mode(tab1, LV_SCROLLBAR_MODE_ACTIVE);
+  lv_obj_set_layout(tab, LV_LAYOUT_FLEX);
+  lv_obj_set_flex_flow(tab, LV_FLEX_FLOW_COLUMN);
+  lv_obj_set_scrollbar_mode(tab, LV_SCROLLBAR_MODE_ACTIVE);
 
   // Add a label, then a box for the display settings
-  lv_obj_t* menuLabel = lv_label_create(tab1);
+  lv_obj_t* menuLabel = lv_label_create(tab);
   lv_label_set_text(menuLabel, "Display");
 
-  lv_obj_t* menuBox = lv_obj_create(tab1);
+  lv_obj_t* menuBox = lv_obj_create(tab);
   lv_obj_set_size(menuBox, lv_pct(100), 77); // 109, 32 weniger wegen fehlendem Timeout
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
@@ -88,9 +88,9 @@ void init_gui_settings(lv_obj_t* tabview) {
   // lv_obj_set_style_border_color(lv_dropdown_get_list(drop), lv_color_hex(0x505050), LV_PART_MAIN);
 
   // // Add another label, then a settings box for WiFi
-  // menuLabel = lv_label_create(tab1);
+  // menuLabel = lv_label_create(tab);
   // lv_label_set_text(menuLabel, "Wi-Fi");
-  // menuBox = lv_obj_create(tab1);
+  // menuBox = lv_obj_create(tab);
   // lv_obj_set_size(menuBox, lv_pct(100), 80);
   // lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   // lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
@@ -107,9 +107,9 @@ void init_gui_settings(lv_obj_t* tabview) {
   // lv_obj_align(menuLabel, LV_ALIGN_TOP_RIGHT, 0, 32);
 
   // Another setting for the battery
-  menuLabel = lv_label_create(tab1);
+  menuLabel = lv_label_create(tab);
   lv_label_set_text(menuLabel, "Battery");
-  menuBox = lv_obj_create(tab1);
+  menuBox = lv_obj_create(tab);
   lv_obj_set_size(menuBox, lv_pct(100), 77); // 125
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
