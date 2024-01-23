@@ -5,6 +5,7 @@
 // https://github.com/KlausMu/esp32-mqtt-keyboard
 
 #define ENABLE_KEYBOARD_MQTT // Comment out to disable WiFi and MQTT
+// if you activate the MQTT keyboard, consider changing the mapping of the keyboard commands to the MQTT keyboard in file "commandHandler.h"
 #ifdef ENABLE_KEYBOARD_MQTT
 
 #define KEYBOARD_MQTT_UP                   "Keyboard_mqtt_up"
