@@ -1,6 +1,9 @@
 #ifndef __DEVICE_KEYBOARD_MQTT_H__
 #define __DEVICE_KEYBOARD_MQTT_H__
 
+// The "MQTT keyboard" simply sends MQTT commands to a remote keyboard, which is connected via USB to a device
+// https://github.com/KlausMu/esp32-mqtt-keyboard
+
 #define ENABLE_KEYBOARD_MQTT // Comment out to disable WiFi and MQTT
 #ifdef ENABLE_KEYBOARD_MQTT
 
