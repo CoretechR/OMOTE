@@ -1,7 +1,7 @@
 #ifndef __DEVICE_KEYBOARD_BLE_H__
 #define __DEVICE_KEYBOARD_BLE_H__
 
-#define ENABLE_KEYBOARD_BLE // Comment out to diable BLE
+#define ENABLE_KEYBOARD_BLE // Comment out to disable BLE
 #ifdef ENABLE_KEYBOARD_BLE
 
 #include <BleKeyboard.h>

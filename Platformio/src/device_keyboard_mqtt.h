@@ -1,7 +1,7 @@
 #ifndef __DEVICE_KEYBOARD_MQTT_H__
 #define __DEVICE_KEYBOARD_MQTT_H__
 
-#define ENABLE_KEYBOARD_MQTT // Comment out to diable WiFi and MQTT
+#define ENABLE_KEYBOARD_MQTT // Comment out to disable WiFi and MQTT
 #ifdef ENABLE_KEYBOARD_MQTT
 
 #define KEYBOARD_MQTT_UP                   "Keyboard_mqtt_up"

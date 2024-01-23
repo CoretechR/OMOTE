@@ -115,7 +115,7 @@ bool keyIsHold[ROWS][COLS] = {
   {false,false,false,false,false},
   {false,false,false,false,false}
 };
-int repeatRate = 125; // in millisecons
+int repeatRate = 125; // in milliseconds
 
 void doShortPress(char keyChar, int keyCode){
   unsigned long currentMillis = millis();
