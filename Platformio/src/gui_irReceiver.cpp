@@ -44,7 +44,7 @@ void printReceivedMessages(bool clearMessages = false) {
 }
 
 void showNewIRmessage(String message) {
-  standbyTimer = SLEEP_TIMEOUT; // Reset the sleep timer when a IR message is received
+  resetStandbyTimer(); // Reset the sleep timer when a IR message is received
 
   // Serial.printf("  new IR message received: %s\r\n", message.c_str());
   // const char *a = message.c_str();

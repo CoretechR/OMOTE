@@ -14,10 +14,15 @@
 #include "device_keyboard_ble.h"
 
 int motion = 0;
-int standbyTimer = SLEEP_TIMEOUT;
+uint32_t actualSleepTimeout;
+uint32_t standbyTimer;
 bool wakeupByIMUEnabled = true;
 LIS3DH IMU(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
 byte wakeup_reason;
+
+void resetStandbyTimer() {
+  standbyTimer = actualSleepTimeout;
+}
 
 void activityDetection(){
   static int accXold;
@@ -33,7 +38,7 @@ void activityDetection(){
   standbyTimer -= 100;
   if(standbyTimer < 0) standbyTimer = 0;
   // If the motion exceeds the threshold, the standbyTimer is reset
-  if(motion > MOTION_THRESHOLD) standbyTimer = SLEEP_TIMEOUT;
+  if(motion > MOTION_THRESHOLD) resetStandbyTimer();
 
   // Store the current acceleration and time 
   accXold = accX;
@@ -97,6 +102,7 @@ void configIMUInterrupts()
 void enterSleep(){
   // Save settings to internal flash memory
   preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
+  preferences.putUInt("slpTimeout", actualSleepTimeout);
   preferences.putUChar("blBrightness", backlight_brightness);
   preferences.putUChar("currentScreen", currentScreen);
   preferences.putUChar("allDevsPowered", allDevsPowered);
@@ -162,6 +168,10 @@ void enterSleep(){
 }
 
 void init_sleep() {
+  if (actualSleepTimeout == 0){
+    actualSleepTimeout = DEFAULT_SLEEP_TIMEOUT;
+  }
+
   // Find out wakeup cause
   if(esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1){
     if(log(esp_sleep_get_ext1_wakeup_status())/log(2) == 13) wakeup_reason = WAKEUP_BY_IMU;

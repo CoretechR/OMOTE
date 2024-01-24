@@ -7,10 +7,11 @@
 #define ACC_INT 20
 
 // IMU declarations
-#define SLEEP_TIMEOUT 20000 // time until device enters sleep mode in milliseconds
-#define MOTION_THRESHOLD 50 // motion above threshold keeps device awake
-extern int standbyTimer;
+#define DEFAULT_SLEEP_TIMEOUT 20000 // time until device enters sleep mode in milliseconds
+extern uint32_t actualSleepTimeout;
+extern uint32_t standbyTimer;
 extern bool wakeupByIMUEnabled;
+#define MOTION_THRESHOLD 50 // motion above threshold keeps device awake
 
 // Other declarations
 extern byte wakeup_reason;
@@ -22,5 +23,6 @@ void enterSleep();
 void init_sleep();
 void setup_IMU();
 void check_activity();
+void resetStandbyTimer();
 
 #endif /*__SLEEP_H__*/

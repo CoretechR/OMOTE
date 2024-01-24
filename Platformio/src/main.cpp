@@ -25,6 +25,9 @@ void setup() {
   // --- Startup ---
   Serial.begin(115200);
 
+  // Restore settings from internal flash memory
+  init_preferences();
+
   // Button Pin Definition
   init_keys();
 
@@ -37,9 +40,6 @@ void setup() {
 
   // init TFT
   init_tft();
-
-  // Restore settings from internal flash memory
-  init_preferences();
 
   // init GUI
   init_gui();

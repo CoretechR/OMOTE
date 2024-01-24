@@ -11,6 +11,7 @@ void init_preferences(void) {
   preferences.begin("settings", false);
   if(preferences.getBool("alreadySetUp")){
     wakeupByIMUEnabled = preferences.getBool("wkpByIMU");
+    actualSleepTimeout = preferences.getUInt("slpTimeout");
     backlight_brightness = preferences.getUChar("blBrightness");
     currentScreen = preferences.getUChar("currentScreen");
     allDevsPowered = preferences.getUChar("allDevsPowered");

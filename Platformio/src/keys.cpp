@@ -154,7 +154,7 @@ void keypad_loop(void) {
       // we are not allowed to do this, because of the same reason as above
       // continue;
     } else {
-      standbyTimer = SLEEP_TIMEOUT; // Reset the sleep timer when a button is pressed
+      resetStandbyTimer(); // Reset the sleep timer when a button is pressed
     }
     char keyChar = customKeypad.key[i].kchar;
     int keyCode = customKeypad.key[i].kcode;

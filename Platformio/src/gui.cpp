@@ -57,7 +57,7 @@ void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data){
   bool touched = false;
   if ((touchX > 0) || (touchY > 0)) {
     touched = true;
-    standbyTimer = SLEEP_TIMEOUT; 
+    resetStandbyTimer();
   }
 
   if( !touched ){
