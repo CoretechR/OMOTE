@@ -1,8 +1,18 @@
 #ifndef __DEVICE_KEYBOARD_BLE_H__
 #define __DEVICE_KEYBOARD_BLE_H__
 
+// Advertising is started automatically.
+// As soon as a device is connected, a small indicator in the top left corner of the screen will appear
+
 #define ENABLE_KEYBOARD_BLE // Comment out to disable BLE
+
 #ifdef ENABLE_KEYBOARD_BLE
+
+#include "commandHandler.h"
+
+#if defined(ENABLE_KEYBOARD_BLE) && !defined(ENABLE_BLUETOOTH)
+static_assert(false, "You have to use \"#define ENABLE_BLUETOOTH\" in \"commandHandler.h\" when having \"#define ENABLE_KEYBOARD_BLE\"");
+#endif
 
 #include <BleKeyboard.h>
 
@@ -30,6 +40,7 @@ extern BleKeyboard bleKeyboard;
 
 void init_keyboard_ble_commands();
 void keyboard_ble_executeCommand(std::string command, std::string additionalPayload = "");
+void update_keyboard_ble_status();
 
 #endif
 

@@ -2,7 +2,6 @@
 // #include "assets.c"
 #include "tft.h"
 #include "gui.h"
-#include "device_keyboard_mqtt.h"
 #include "commandHandler.h"
 
 // Virtual Keypad Event handler

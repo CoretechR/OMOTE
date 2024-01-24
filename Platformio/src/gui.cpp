@@ -12,6 +12,7 @@
 lv_obj_t* panel;
 lv_color_t color_primary = lv_color_hex(0x303030); // gray
 lv_obj_t* WifiLabel;
+lv_obj_t* BluetoothLabel;
 lv_obj_t* objBattPercentage;
 lv_obj_t* objBattIcon;
 byte currentScreen = 1; // Current Device to control (allows switching mappings between devices)
@@ -197,6 +198,12 @@ void init_gui(void) {
   lv_label_set_text(WifiLabel, "");
   lv_obj_align(WifiLabel, LV_ALIGN_LEFT_MID, -8, 0);
   lv_obj_set_style_text_font(WifiLabel, &lv_font_montserrat_12, LV_PART_MAIN);
+
+  // Bluetooth --------------------------------------------------------------------
+  BluetoothLabel = lv_label_create(statusbar);
+  lv_label_set_text(BluetoothLabel, "");
+  lv_obj_align(BluetoothLabel, LV_ALIGN_LEFT_MID, 12, 0);
+  lv_obj_set_style_text_font(BluetoothLabel, &lv_font_montserrat_12, LV_PART_MAIN);
 
   // Battery ----------------------------------------------------------------------
   objBattPercentage = lv_label_create(statusbar);

@@ -10,8 +10,6 @@
 #include "infrared_receiver.h"
 #include "battery.h"
 #include "commandHandler.h"
-#include "device_keyboard_mqtt.h"
-#include "device_keyboard_ble.h"
 
 int motion = 0;
 uint32_t actualSleepTimeout;
@@ -116,7 +114,7 @@ void enterSleep(){
   configIMUInterrupts();
   IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC);//really clear interrupt
 
-  #ifdef ENABLE_KEYBOARD_MQTT
+  #ifdef ENABLE_WIFI_AND_MQTT
   // Power down modem
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);

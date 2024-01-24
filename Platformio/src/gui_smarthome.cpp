@@ -3,7 +3,7 @@
 #include "tft.h"
 #include "gui.h"
 #include "mqtt.h"
-#include "device_keyboard_mqtt.h"
+#include "commandHandler.h"
 
 // LVGL declarations
 LV_IMG_DECLARE(lightbulb);
@@ -14,7 +14,7 @@ static void smartHomeToggle_event_cb(lv_event_t * e){
   if(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED)) strcpy(payload,"true");
   else strcpy(payload,"false");
   // Publish an MQTT message based on the event user data  
-  #ifdef ENABLE_KEYBOARD_MQTT
+  #ifdef ENABLE_WIFI_AND_MQTT
   if((int)e->user_data == 1) publishMQTTMessage("bulb1_set", payload);
   if((int)e->user_data == 2) publishMQTTMessage("bulb2_set", payload);
   #endif
@@ -26,7 +26,7 @@ static void smartHomeSlider_event_cb(lv_event_t * e){
   char payload[8];
   dtostrf(lv_slider_get_value(slider), 1, 2, payload);
   // Publish an MQTT message based on the event user data
-  #ifdef ENABLE_KEYBOARD_MQTT
+  #ifdef ENABLE_WIFI_AND_MQTT
   if((int)e->user_data == 1) publishMQTTMessage("bulb1_setbrightness", payload);
   if((int)e->user_data == 2) publishMQTTMessage("bulb2_setbrightness", payload);
   #endif

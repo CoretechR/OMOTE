@@ -2,10 +2,10 @@
 #include <lvgl.h>
 #include "secrets.h"
 #include "mqtt.h"
-#include "device_keyboard_mqtt.h"
+#include "commandHandler.h"
 #include "gui.h"
 
-#ifdef ENABLE_KEYBOARD_MQTT
+#ifdef ENABLE_WIFI_AND_MQTT
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 

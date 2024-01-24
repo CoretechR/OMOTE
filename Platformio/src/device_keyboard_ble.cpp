@@ -1,6 +1,7 @@
 #include <BleKeyboard.h>
 #include "commandHandler.h"
 #include "device_keyboard_ble.h"
+#include "gui.h"
 
 #ifdef ENABLE_KEYBOARD_BLE
 
@@ -28,6 +29,26 @@ void init_keyboard_ble_commands() {
   commands[KEYBOARD_BLE_VOLUME_DECREMENT]    = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_VOLUME_DECREMENT});
 
   bleKeyboard.begin();
+}
+
+// if bluetooth is in pairing mode (pairing mode is always on, if not connected), but not connected, then blink
+unsigned long blinkBluetoothLabelLastChange = millis();
+bool blinkBluetoothLabelIsOn = false;
+
+void update_keyboard_ble_status() {
+  if (bleKeyboard.isConnected()) {
+    lv_label_set_text(BluetoothLabel, LV_SYMBOL_BLUETOOTH);
+  } else {
+    if(millis() - blinkBluetoothLabelLastChange >= 1000){
+      blinkBluetoothLabelIsOn = !blinkBluetoothLabelIsOn;
+      if (blinkBluetoothLabelIsOn) {
+        lv_label_set_text(BluetoothLabel, LV_SYMBOL_BLUETOOTH);
+      } else {
+        lv_label_set_text(BluetoothLabel, "");
+      }
+      blinkBluetoothLabelLastChange = millis();
+    }
+  }
 }
 
 void keyboard_ble_write(uint8_t c) {

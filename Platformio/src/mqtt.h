@@ -1,9 +1,9 @@
 #ifndef __MQTT_H__
 #define __MQTT_H__
 
-#include "device_keyboard_mqtt.h"
+#include "commandHandler.h"
 
-#ifdef ENABLE_KEYBOARD_MQTT
+#ifdef ENABLE_WIFI_AND_MQTT
 
 #include "WiFi.h"
 #include <PubSubClient.h>

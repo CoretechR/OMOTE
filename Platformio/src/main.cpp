@@ -45,7 +45,7 @@ void setup() {
   init_gui();
 
   // init WiFi
-  #ifdef ENABLE_KEYBOARD_MQTT
+  #ifdef ENABLE_WIFI_AND_MQTT
   init_mqtt();
   #endif
 
@@ -93,11 +93,18 @@ void loop() {
     IMUTaskTimer = millis();
   }
 
-  // Update battery stats at 1Hz
-  static unsigned long batteryTaskTimer = millis() + 1000; // add 1s to start immediately
-  if(millis() - batteryTaskTimer >= 1000){
+  // Update battery and BLE stats at 1Hz
+  static unsigned long updateStatusTimer = millis();
+  if(millis() - updateStatusTimer >= 1000){
     update_battery_stats();
-    batteryTaskTimer = millis();
+    updateStatusTimer = millis();
+
+    #ifdef ENABLE_BLUETOOTH
+    // adjust this if you implement other bluetooth devices than the BLE keyboard
+    #ifdef ENABLE_KEYBOARD_BLE
+    update_keyboard_ble_status();
+    #endif
+    #endif
 
     // Serial.printf("heapSize: %lu, heapFree: %lu, heapMin: %lu, heapMax: %lu\r\n", ESP.getHeapSize(), ESP.getFreeHeap(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
 

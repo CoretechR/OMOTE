@@ -13,6 +13,7 @@ extern lv_obj_t* panel;
 extern lv_color_t color_primary;
 
 extern lv_obj_t* WifiLabel;
+extern lv_obj_t* BluetoothLabel;
 
 extern byte currentScreen; // Current screen that is shown
 

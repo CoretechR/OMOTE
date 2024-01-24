@@ -6,7 +6,6 @@
 #include "mqtt.h"
 #include "device_samsung.h"
 #include "device_yamaha.h"
-#include "device_keyboard_mqtt.h"
 #include "commandHandler.h"
 
 const byte ROWS = 5; //five rows
