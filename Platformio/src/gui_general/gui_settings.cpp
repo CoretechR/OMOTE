@@ -1,8 +1,8 @@
 #include <lvgl.h>
 // #include "assets.c"
-#include "tft.h"
-#include "gui.h"
-#include "sleep.h"
+#include "hardware/tft.h"
+#include "hardware/sleep.h"
+#include "gui_general/gui.h"
 
 lv_obj_t* objBattSettingsVoltage;
 lv_obj_t* objBattSettingsPercentage;

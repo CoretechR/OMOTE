@@ -9,8 +9,8 @@
 #include <list>
 #include <map>
 
-#include "device_keyboard_mqtt.h"
-#include "device_keyboard_ble.h"
+#include "device_keyboard_mqtt/device_keyboard_mqtt.h"
+#include "device_keyboard_ble/device_keyboard_ble.h"
 
 /*
   Depending on which keyboard is enabled (BLE or MQTT), we define KEYBOARD_UP, KEYBOARD_DOWN and so on.

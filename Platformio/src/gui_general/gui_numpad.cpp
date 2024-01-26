@@ -1,7 +1,7 @@
 #include <lvgl.h>
 // #include "assets.c"
-#include "tft.h"
-#include "gui.h"
+#include "hardware/tft.h"
+#include "gui_general/gui.h"
 #include "commandHandler.h"
 
 // Virtual Keypad Event handler

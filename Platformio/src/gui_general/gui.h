@@ -2,7 +2,7 @@
 #define __GUI_H__
 
 #include <lvgl.h>
-#include "tft.h"
+#include "../hardware/tft.h"
 
 // LVGL declarations
 LV_IMG_DECLARE(high_brightness);

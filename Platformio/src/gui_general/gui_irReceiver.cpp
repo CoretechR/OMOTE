@@ -2,10 +2,10 @@
 #include <string>
 #include <iostream>
 // #include "assets.c"
-#include "tft.h"
-#include "sleep.h"
-#include "gui.h"
-#include "infrared_receiver.h"
+#include "hardware/tft.h"
+#include "hardware/sleep.h"
+#include "hardware/infrared_receiver.h"
+#include "gui_general/gui.h"
 
 lv_obj_t* menuBoxToggle;
 lv_obj_t* menuBoxMessages;

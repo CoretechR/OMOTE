@@ -1,8 +1,8 @@
 #include <lvgl.h>
 // #include "assets.c"
-#include "tft.h"
-#include "gui.h"
-#include "mqtt.h"
+#include "gui_general/gui.h"
+#include "hardware/tft.h"
+#include "hardware/mqtt.h"
 #include "commandHandler.h"
 
 // LVGL declarations

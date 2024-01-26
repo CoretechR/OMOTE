@@ -1,9 +1,9 @@
 #include <PubSubClient.h>
 #include <lvgl.h>
+#include "hardware/mqtt.h"
+#include "gui_general/gui.h"
 #include "secrets.h"
-#include "mqtt.h"
 #include "commandHandler.h"
-#include "gui.h"
 
 #ifdef ENABLE_WIFI_AND_MQTT
 WiFiClient espClient;

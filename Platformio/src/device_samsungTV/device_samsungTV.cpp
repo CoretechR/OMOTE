@@ -1,5 +1,5 @@
 #include "commandHandler.h"
-#include "device_samsung.h"
+#include "device_samsungTV/device_samsungTV.h"
 
 void init_samsung_commands() {
   // both GC and SAMSUNG work well

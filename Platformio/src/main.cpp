@@ -3,20 +3,20 @@
 // OMOTE firmware for ESP32
 // 2023 Maximilian Kern
 
-#include "tft.h"
-#include "gui.h"
-#include "infrared.h"
-#include "infrared_receiver.h"
-#include "mqtt.h"
-#include "keys.h"
-#include "sleep.h"
+#include "hardware/tft.h"
+#include "hardware/infrared_sender.h"
+#include "hardware/infrared_receiver.h"
+#include "hardware/mqtt.h"
+#include "hardware/keys.h"
+#include "hardware/sleep.h"
+#include "hardware/battery.h"
+#include "hardware/user_led.h"
+#include "device_samsungTV/device_samsungTV.h"
+#include "device_yamahaAmp/device_yamahaAmp.h"
+#include "device_keyboard_mqtt/device_keyboard_mqtt.h"
+#include "device_keyboard_ble/device_keyboard_ble.h"
+#include "gui_general/gui.h"
 #include "preferences_storage.h"
-#include "battery.h"
-#include "user_led.h"
-#include "device_samsung.h"
-#include "device_yamaha.h"
-#include "device_keyboard_mqtt.h"
-#include "device_keyboard_ble.h"
 #include "commandHandler.h"
 
 void setup() {  

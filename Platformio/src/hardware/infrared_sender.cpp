@@ -2,7 +2,7 @@
 #include <IRsend.h>
 #include <IRrecv.h>
 #include <IRutils.h>
-#include "infrared.h"
+#include "hardware/infrared_sender.h"
 
 IRsend IrSender(IR_LED, true);
 

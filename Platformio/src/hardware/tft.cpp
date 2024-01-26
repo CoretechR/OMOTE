@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "driver/ledc.h"
-#include "tft.h"
-#include "sleep.h"
+#include "hardware/tft.h"
+#include "hardware/sleep.h"
 
 TFT_eSPI tft = TFT_eSPI();
 Adafruit_FT6206 touch = Adafruit_FT6206();

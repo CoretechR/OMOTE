@@ -1,13 +1,13 @@
 #include <lvgl.h>
 // #include "assets.c"
-#include "tft.h"
-#include "gui.h"
-#include "sleep.h"
-#include "gui_irReceiver.h"
-#include "gui_settings.h"
-#include "gui_numpad.h"
-#include "gui_appleTV.h"
-#include "gui_smarthome.h"
+#include "hardware/tft.h"
+#include "hardware/sleep.h"
+#include "gui_general/gui.h"
+#include "gui_general/gui_irReceiver.h"
+#include "gui_general/gui_numpad.h"
+#include "gui_general/gui_settings.h"
+#include "device_appleTV/gui_appleTV.h"
+#include "device_smarthome/gui_smarthome.h"
 
 lv_obj_t* panel;
 lv_color_t color_primary = lv_color_hex(0x303030); // gray

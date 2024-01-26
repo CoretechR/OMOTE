@@ -1,5 +1,5 @@
 #include "commandHandler.h"
-#include "device_keyboard_mqtt.h"
+#include "device_keyboard_mqtt/device_keyboard_mqtt.h"
 
 #ifdef ENABLE_KEYBOARD_MQTT
 

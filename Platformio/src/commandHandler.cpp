@@ -1,12 +1,12 @@
 #include <string>
 #include <sstream>
-#include "infrared.h"
-#include "mqtt.h"
+#include "hardware/infrared_sender.h"
+#include "hardware/mqtt.h"
+#include "device_samsungTV/device_samsungTV.h"
+#include "device_yamahaAmp/device_yamahaAmp.h"
+#include "device_keyboard_mqtt/device_keyboard_mqtt.h"
+#include "device_keyboard_ble/device_keyboard_ble.h"
 #include "commandHandler.h"
-#include "device_samsung.h"
-#include "device_yamaha.h"
-#include "device_keyboard_mqtt.h"
-#include "device_keyboard_ble.h"
 
 std::map<std::string, commandData> commands;
 byte allDevsPowered = 0;

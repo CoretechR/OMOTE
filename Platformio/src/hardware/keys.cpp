@@ -1,11 +1,11 @@
 #include <map>
 #include <string.h>
-#include "keys.h"
-#include "sleep.h"
-#include "infrared.h"
-#include "mqtt.h"
-#include "device_samsung.h"
-#include "device_yamaha.h"
+#include "hardware/keys.h"
+#include "hardware/sleep.h"
+#include "hardware/infrared_sender.h"
+#include "hardware/mqtt.h"
+#include "device_samsungTV/device_samsungTV.h"
+#include "device_yamahaAmp/device_yamahaAmp.h"
 #include "commandHandler.h"
 
 const byte ROWS = 5; //five rows

@@ -1,14 +1,14 @@
 #include <Arduino.h>
 #include "SparkFunLIS3DH.h"
-#include "sleep.h"
+#include "hardware/sleep.h"
+#include "hardware/tft.h"
+#include "hardware/mqtt.h"
+#include "hardware/keys.h"
+#include "hardware/infrared_sender.h"
+#include "hardware/infrared_receiver.h"
+#include "hardware/battery.h"
+#include "gui_general/gui.h"
 #include "preferences_storage.h"
-#include "tft.h"
-#include "mqtt.h"
-#include "gui.h"
-#include "keys.h"
-#include "infrared.h"
-#include "infrared_receiver.h"
-#include "battery.h"
 #include "commandHandler.h"
 
 int motion = 0;

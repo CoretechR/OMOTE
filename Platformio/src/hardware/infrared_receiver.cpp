@@ -39,8 +39,8 @@
 #include <IRtext.h>
 #include <IRutils.h>
 
-#include "infrared_receiver.h"
-#include "gui_irReceiver.h"
+#include "hardware/infrared_receiver.h"
+#include "gui_general/gui_irReceiver.h"
 
 bool irReceiverEnabled = false;
 
