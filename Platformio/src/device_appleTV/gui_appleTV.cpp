@@ -1,8 +1,9 @@
 #include <lvgl.h>
 // #include "assets.c"
+#include "device_appleTV/device_appleTV.h"
 #include "gui_general/gui.h"
 #include "hardware/tft.h"
-#include "hardware/infrared_sender.h"
+#include "commandHandler.h"
 
 // LVGL declarations
 LV_IMG_DECLARE(appleTvIcon);
@@ -12,7 +13,7 @@ LV_IMG_DECLARE(appleBackIcon);
 // Apple Key Event handler
 static void appleKey_event_cb(lv_event_t* e) {
   // Send IR command based on the event user data  
-  IrSender.sendSony(50 + (int)e->user_data, 15);
+  executeCommand(APPLETV_GUI_EVENT_USER_DATA, std::to_string(50 + (int)e->user_data));
   Serial.println(50 + (int)e->user_data);
 }
 

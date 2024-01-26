@@ -1,8 +1,9 @@
+#include <string>
 #include <lvgl.h>
 // #include "assets.c"
 #include "gui_general/gui.h"
 #include "hardware/tft.h"
-#include "hardware/mqtt.h"
+#include "device_smarthome/device_smarthome.h"
 #include "commandHandler.h"
 
 // LVGL declarations
@@ -10,25 +11,26 @@ LV_IMG_DECLARE(lightbulb);
 
 // Smart Home Toggle Event handler
 static void smartHomeToggle_event_cb(lv_event_t * e){
-  char payload[8];
-  if(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED)) strcpy(payload,"true");
-  else strcpy(payload,"false");
+  std::string payload;
+  if (lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED)) payload = "true";
+  else payload = "false";
   // Publish an MQTT message based on the event user data  
   #ifdef ENABLE_WIFI_AND_MQTT
-  if((int)e->user_data == 1) publishMQTTMessage("bulb1_set", payload);
-  if((int)e->user_data == 2) publishMQTTMessage("bulb2_set", payload);
+  if((int)e->user_data == 1) executeCommand(SMARTHOME_MQTT_BULB1_SET, payload);
+  if((int)e->user_data == 2) executeCommand(SMARTHOME_MQTT_BULB2_SET, payload);
   #endif
 }
 
-// Smart Home Toggle Event handler
+// Smart Home Slider Event handler
 static void smartHomeSlider_event_cb(lv_event_t * e){
   lv_obj_t * slider = lv_event_get_target(e);
   char payload[8];
   dtostrf(lv_slider_get_value(slider), 1, 2, payload);
+  std::string payload_str(payload);
   // Publish an MQTT message based on the event user data
   #ifdef ENABLE_WIFI_AND_MQTT
-  if((int)e->user_data == 1) publishMQTTMessage("bulb1_setbrightness", payload);
-  if((int)e->user_data == 2) publishMQTTMessage("bulb2_setbrightness", payload);
+  if((int)e->user_data == 1) executeCommand(SMARTHOME_MQTT_BULB1_BRIGHTNESS_SET, payload);
+  if((int)e->user_data == 2) executeCommand(SMARTHOME_MQTT_BULB2_BRIGHTNESS_SET, payload);
   #endif
 }
 

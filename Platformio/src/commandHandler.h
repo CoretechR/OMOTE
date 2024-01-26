@@ -106,6 +106,7 @@ enum commandHandlers {
   IR_GC,
   IR_NEC,
   IR_SAMSUNG,
+  IR_SONY,
   #ifdef ENABLE_WIFI_AND_MQTT
   MQTT,
   #endif

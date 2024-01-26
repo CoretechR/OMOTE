@@ -75,6 +75,22 @@ void executeCommandWithData(std::string command, commandData commandData, std::s
       break;
     }
 
+    case IR_SONY: {
+      if (additionalPayload != "") {
+        // https://cplusplus.com/reference/string/stoull/
+        std::string::size_type sz = 0;   // alias of size_t
+        const uint64_t data = std::stoull(additionalPayload, &sz, 0);
+        // // https://stackoverflow.com/questions/42356939/c-convert-string-to-uint64-t
+        // std::istringstream iss(additionalPayload);
+        // iss >> payload;
+        Serial.printf("execute: will send IR SONY, data %s (%" PRIu64 ")\r\n", additionalPayload.c_str(), data);
+        IrSender.sendSony(data, 15);
+      } else {
+        Serial.printf("execute: cannot send IR SONY, because payload is empty\r\n");
+      }
+      break;
+    }
+
     #ifdef ENABLE_WIFI_AND_MQTT
     case MQTT: {
       auto current = commandData.commandPayloads.begin();

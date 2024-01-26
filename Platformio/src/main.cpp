@@ -13,6 +13,8 @@
 #include "hardware/user_led.h"
 #include "device_samsungTV/device_samsungTV.h"
 #include "device_yamahaAmp/device_yamahaAmp.h"
+#include "device_appleTV/device_appleTV.h"
+#include "device_smarthome/device_smarthome.h"
 #include "device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "device_keyboard_ble/device_keyboard_ble.h"
 #include "gui_general/gui.h"
@@ -58,6 +60,8 @@ void setup() {
   // setup command list
   init_samsung_commands();
   init_yamaha_commands();
+  init_smarthome_mqtt_commands();
+  init_appleTV_commands();
   #ifdef ENABLE_KEYBOARD_MQTT
   init_keyboard_mqtt_commands();
   #endif
