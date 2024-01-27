@@ -14,7 +14,7 @@ void init_keyboard_ble_commands() {
   commands[KEYBOARD_BLE_RIGHT]               = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_RIGHT});
   commands[KEYBOARD_BLE_LEFT]                = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_LEFT});
   commands[KEYBOARD_BLE_SELECT]              = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_SELECT});
-  commands[KEYBOARD_BLE_SENDSTRING]          = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_SENDSTRING});
+  commands[KEYBOARD_BLE_SENDSTRING]          = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_SENDSTRING});           // payload must be set when calling commandHandler
   commands[KEYBOARD_BLE_BACK]                = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_BACK});
   commands[KEYBOARD_BLE_HOME]                = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_HOME});
   commands[KEYBOARD_BLE_MENU]                = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_MENU});
