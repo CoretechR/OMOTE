@@ -40,7 +40,7 @@
 #include <IRutils.h>
 
 #include "hardware/infrared_receiver.h"
-#include "gui_general/gui_irReceiver.h"
+#include "gui_general_and_keys/gui_irReceiver.h"
 
 bool irReceiverEnabled = false;
 

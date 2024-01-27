@@ -1,11 +1,10 @@
 #include <lvgl.h>
-// #include "assets.c"
 #include "hardware/tft.h"
 #include "hardware/sleep.h"
-#include "gui_general/gui.h"
-#include "gui_general/gui_irReceiver.h"
-#include "gui_general/gui_numpad.h"
-#include "gui_general/gui_settings.h"
+#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/gui_irReceiver.h"
+#include "gui_general_and_keys/gui_numpad.h"
+#include "gui_general_and_keys/gui_settings.h"
 #include "device_appleTV/gui_appleTV.h"
 #include "device_smarthome/gui_smarthome.h"
 

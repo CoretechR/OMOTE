@@ -1,7 +1,6 @@
 #include <string>
 #include <lvgl.h>
-// #include "assets.c"
-#include "gui_general/gui.h"
+#include "gui_general_and_keys/gui_base.h"
 #include "hardware/tft.h"
 #include "device_smarthome/device_smarthome.h"
 #include "commandHandler.h"

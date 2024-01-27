@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "hardware/battery.h"
-#include "gui_general/gui.h"
-#include "gui_general/gui_settings.h"
+#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/gui_settings.h"
 
 void init_battery(void) {
   // Currently the battery charge status cannot be recognized in a reliable way due to a design flaw in the PCB.

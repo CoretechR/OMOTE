@@ -3,11 +3,11 @@
 #include "hardware/sleep.h"
 #include "hardware/tft.h"
 #include "hardware/mqtt.h"
-#include "hardware/keys.h"
 #include "hardware/infrared_sender.h"
 #include "hardware/infrared_receiver.h"
 #include "hardware/battery.h"
-#include "gui_general/gui.h"
+#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/keys.h"
 #include "preferences_storage.h"
 #include "commandHandler.h"
 

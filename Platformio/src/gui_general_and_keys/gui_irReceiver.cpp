@@ -1,11 +1,10 @@
 #include <lvgl.h>
 #include <string>
 #include <iostream>
-// #include "assets.c"
 #include "hardware/tft.h"
 #include "hardware/sleep.h"
 #include "hardware/infrared_receiver.h"
-#include "gui_general/gui.h"
+#include "gui_general_and_keys/gui_base.h"
 
 lv_obj_t* menuBoxToggle;
 lv_obj_t* menuBoxMessages;

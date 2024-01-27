@@ -1,7 +1,6 @@
 #include <lvgl.h>
-// #include "assets.c"
 #include "device_appleTV/device_appleTV.h"
-#include "gui_general/gui.h"
+#include "gui_general_and_keys/gui_base.h"
 #include "hardware/tft.h"
 #include "commandHandler.h"
 

@@ -7,7 +7,6 @@
 #include "hardware/infrared_sender.h"
 #include "hardware/infrared_receiver.h"
 #include "hardware/mqtt.h"
-#include "hardware/keys.h"
 #include "hardware/sleep.h"
 #include "hardware/battery.h"
 #include "hardware/user_led.h"
@@ -17,7 +16,8 @@
 #include "device_smarthome/device_smarthome.h"
 #include "device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "device_keyboard_ble/device_keyboard_ble.h"
-#include "gui_general/gui.h"
+#include "gui_general_and_keys/keys.h"
+#include "gui_general_and_keys/gui_base.h"
 #include "preferences_storage.h"
 #include "commandHandler.h"
 
