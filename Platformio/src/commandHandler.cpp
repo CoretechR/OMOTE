@@ -76,17 +76,37 @@ void executeCommandWithData(std::string command, commandData commandData, std::s
     }
 
     case IR_SONY: {
-      if (additionalPayload != "") {
-        // https://cplusplus.com/reference/string/stoull/
-        std::string::size_type sz = 0;   // alias of size_t
-        const uint64_t data = std::stoull(additionalPayload, &sz, 0);
-        // // https://stackoverflow.com/questions/42356939/c-convert-string-to-uint64-t
-        // std::istringstream iss(additionalPayload);
-        // iss >> payload;
-        Serial.printf("execute: will send IR SONY, data %s (%" PRIu64 ")\r\n", additionalPayload.c_str(), data);
-        IrSender.sendSony(data, 15);
+      std::string::size_type sz = 0;   // alias of size_t
+      uint64_t data;
+      if (commandData.commandPayloads.empty() && (additionalPayload == "")) {
+        Serial.printf("execute: cannot send IR SONY, because both data and payload are empty\r\n");
       } else {
-        Serial.printf("execute: cannot send IR SONY, because payload is empty\r\n");
+        if (additionalPayload != "") {
+          data = std::stoull(additionalPayload, &sz, 0);
+        } else {
+          auto current = commandData.commandPayloads.begin();
+          data = std::stoull(*current, &sz, 0);
+        }
+        Serial.printf("execute: will send IR SONY, data (%" PRIu64 ")\r\n", data);
+        IrSender.sendSony(data, 15);
+      }
+      break;
+    }
+
+    case IR_RC5: {
+      std::string::size_type sz = 0;   // alias of size_t
+      uint64_t data;
+      if (commandData.commandPayloads.empty() && (additionalPayload == "")) {
+        Serial.printf("execute: cannot send IR RC5, because both data and payload are empty\r\n");
+      } else {
+        if (additionalPayload != "") {
+          data = std::stoull(additionalPayload, &sz, 0);
+        } else {
+          auto current = commandData.commandPayloads.begin();
+          data = std::stoull(*current, &sz, 0);
+        }
+        Serial.printf("execute: will send IR RC5, data (%" PRIu64 ")\r\n", data);
+        IrSender.sendRC5(IrSender.encodeRC5X(0x00, data));
       }
       break;
     }
