@@ -1,7 +1,7 @@
 #include "commandHandler.h"
 #include "device_samsungTV/device_samsungTV.h"
 
-void init_samsung_commands() {
+void register_device_samsung() {
   // both GC and SAMSUNG work well
 
   // https://github.com/natcl/studioimaginaire/blob/master/arduino_remote/ircodes.py

@@ -3,7 +3,7 @@
 
 #ifdef ENABLE_KEYBOARD_MQTT
 
-void init_keyboard_mqtt_commands() {
+void register_device_keyboard_mqtt() {
   commands[KEYBOARD_MQTT_UP]                   = makeCommandData(MQTT, {"esp32_keyboard_firetv/cmnd/UP",                  "PRESS"});
   commands[KEYBOARD_MQTT_DOWN]                 = makeCommandData(MQTT, {"esp32_keyboard_firetv/cmnd/DOWN",                "PRESS"});
   commands[KEYBOARD_MQTT_RIGHT]                = makeCommandData(MQTT, {"esp32_keyboard_firetv/cmnd/RIGHT",               "PRESS"});

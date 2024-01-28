@@ -38,7 +38,7 @@ static_assert(false, "You have to use \"#define ENABLE_BLUETOOTH\" in \"commandH
 
 extern BleKeyboard bleKeyboard;
 
-void init_keyboard_ble_commands();
+void register_device_keyboard_ble();
 void keyboard_ble_executeCommand(std::string command, std::string additionalPayload = "");
 void update_keyboard_ble_status();
 

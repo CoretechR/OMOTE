@@ -36,7 +36,7 @@ static_assert(false, "You have to use \"#define ENABLE_WIFI_AND_MQTT\" in \"comm
 #define KEYBOARD_MQTT_VOLUME_INCREMENT     "Keyboard_mqtt_volume_increment"
 #define KEYBOARD_MQTT_VOLUME_DECREMENT     "Keyboard_mqtt_volume_decrement"
 
-void init_keyboard_mqtt_commands();
+void register_device_keyboard_mqtt();
 
 #endif
 

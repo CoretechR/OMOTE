@@ -43,6 +43,6 @@
 #define YAMAHA_POWER_OFF           "Yamaha_power_off"
 #define YAMAHA_POWER_ON            "Yamaha_power_on"
 
-void init_yamaha_commands();
+void register_device_yamaha();
 
 #endif /*__DEVICE_YAMAHA_H__*/

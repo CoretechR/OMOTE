@@ -6,7 +6,7 @@
 
 IRsend IrSender(IR_LED, true);
 
-void init_infrared(void) {
+void init_infraredSender(void) {
   // IR Pin Definition
   pinMode(IR_LED, OUTPUT);
   digitalWrite(IR_LED, HIGH); // HIGH off - LOW on

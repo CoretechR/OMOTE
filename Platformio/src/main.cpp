@@ -3,26 +3,30 @@
 // OMOTE firmware for ESP32
 // 2023 Maximilian Kern
 
+// hardware
+#include "hardware/battery.h"
+#include "hardware/sleep.h"
+#include "hardware/user_led.h"
 #include "hardware/tft.h"
+#include "hardware/mqtt.h"
 #include "hardware/infrared_sender.h"
 #include "hardware/infrared_receiver.h"
-#include "hardware/mqtt.h"
-#include "hardware/sleep.h"
-#include "hardware/battery.h"
-#include "hardware/user_led.h"
+// devices
 #include "device_samsungTV/device_samsungTV.h"
 #include "device_yamahaAmp/device_yamahaAmp.h"
-#include "device_appleTV/device_appleTV.h"
 #include "device_smarthome/device_smarthome.h"
+#include "device_appleTV/device_appleTV.h"
 #include "device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "device_keyboard_ble/device_keyboard_ble.h"
-#include "gui_general_and_keys/keys.h"
+// gui and keys
 #include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/gui_irReceiver.h"
 #include "gui_general_and_keys/gui_settings.h"
 #include "gui_general_and_keys/gui_numpad.h"
 #include "device_appleTV/gui_appleTV.h"
 #include "device_smarthome/gui_smarthome.h"
+#include "gui_general_and_keys/keys.h"
+// misc
 #include "preferences_storage.h"
 #include "commandHandler.h"
 
@@ -34,21 +38,40 @@ void setup() {
 
   // Restore settings from internal flash memory
   init_preferences();
-
-  // Button Pin Definition
+  // Button Pin definition
   init_keys();
-
-  // Power Pin Definition
+  // Power Pin definition
   init_battery();
-
+  // get wakeup reason
   init_sleep();
-
+  // Pin definition
   init_userled();
-
   // init TFT
   init_tft();
+  // init WiFi
+  #ifdef ENABLE_WIFI_AND_MQTT
+  init_mqtt();
+  #endif
+  // setup the Inertial Measurement Unit (IMU) for motion detection
+  // needs to be after init_tft()) because of I2C
+  setup_IMU();
+  // setup IR sender
+  init_infraredSender();
 
-  // Here you can register the GUIs you want to display. Will be displayed in the order they are registered.
+  // register commands for the devices
+  register_device_samsung();
+  register_device_yamaha();
+  register_device_smarthome();
+  register_device_appleTV();
+  #ifdef ENABLE_KEYBOARD_MQTT
+  register_device_keyboard_mqtt();
+  #endif
+  #ifdef ENABLE_KEYBOARD_BLE
+  register_device_keyboard_ble();
+  #endif
+  init_deviceIndependantCommands();
+
+  // register the GUIs. They will be displayed in the order they are registered.
   register_gui_irReceiver();
   register_gui_settings();
   register_gui_numpad();
@@ -56,31 +79,6 @@ void setup() {
   register_gui_smarthome();
   // init GUI
   init_gui();
-
-  // init WiFi
-  #ifdef ENABLE_WIFI_AND_MQTT
-  init_mqtt();
-  #endif
-
-  // needs to be here (after init_tft) because of I2C
-  setup_IMU();
-
-  // Setup IR
-  init_infrared();
-
-  // setup command list
-  init_samsung_commands();
-  init_yamaha_commands();
-  init_smarthome_mqtt_commands();
-  init_appleTV_commands();
-  #ifdef ENABLE_KEYBOARD_MQTT
-  init_keyboard_mqtt_commands();
-  #endif
-  #ifdef ENABLE_KEYBOARD_BLE
-  init_keyboard_ble_commands();
-  #endif
-  init_deviceIndependantCommands();
-
   gui_loop(); // Run the LVGL UI once before the loop takes over
 
   Serial.print("Setup finished in ");
@@ -132,11 +130,4 @@ void loop() {
     infraredReceiver_loop();
   }
 
-  // IR Test
-  //tft.drawString("IR Command: ", 10, 90, 1);
-  //decode_results results;
-  //if (IrReceiver.decode(&results)) {
-  //  //tft.drawString(String(results.command) + "        ", 80, 90, 1);
-  //  IrReceiver.resume(); // Enable receiving of the next value
-  //}
 }

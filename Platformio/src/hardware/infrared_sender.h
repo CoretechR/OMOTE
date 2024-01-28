@@ -9,6 +9,6 @@
 // IR declarations
 extern IRsend IrSender;
 
-void init_infrared(void);
+void init_infraredSender(void);
 
 #endif /*__INFRARED_H__*/

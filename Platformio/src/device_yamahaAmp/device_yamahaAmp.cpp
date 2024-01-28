@@ -1,7 +1,7 @@
 #include "commandHandler.h"
 #include "device_yamahaAmp/device_yamahaAmp.h"
 
-void init_yamaha_commands() {
+void register_device_yamaha() {
   commands[YAMAHA_INPUT_DVD]           = makeCommandData(IR_NEC, {"0x5EA1837C"});
   commands[YAMAHA_INPUT_DTV]           = makeCommandData(IR_NEC, {"0x5EA12AD5"});
   commands[YAMAHA_INPUT_VCR]           = makeCommandData(IR_NEC, {"0x5EA1F00F"});

@@ -59,6 +59,6 @@
 #define SAMSUNG_INPUT_COMPONENT    "Samsung_input_component"
 #define SAMSUNG_INPUT_TV           "Samsung_input_tv"
 
-void init_samsung_commands();
+void register_device_samsung();
 
 #endif /*__DEVICE_SAMSUNG_H__*/

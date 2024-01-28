@@ -3,6 +3,6 @@
 
 #define APPLETV_GUI_EVENT_USER_DATA    "AppleTV_gui_event_user_data"
 
-void init_appleTV_commands();
+void register_device_appleTV();
 
 #endif /*__DEVICE_APPLETV_H__*/

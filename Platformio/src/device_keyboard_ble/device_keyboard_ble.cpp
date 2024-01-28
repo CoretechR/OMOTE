@@ -8,7 +8,7 @@
 
 BleKeyboard bleKeyboard("OMOTE Keyboard", "CoretechR");
 
-void init_keyboard_ble_commands() {
+void register_device_keyboard_ble() {
   commands[KEYBOARD_BLE_UP]                  = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_UP});
   commands[KEYBOARD_BLE_DOWN]                = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_DOWN});
   commands[KEYBOARD_BLE_RIGHT]               = makeCommandData(BLE_KEYBOARD, {KEYBOARD_BLE_RIGHT});
