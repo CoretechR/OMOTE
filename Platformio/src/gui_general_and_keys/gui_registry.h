@@ -1,3 +1,6 @@
+#ifndef __GUI_REGISTRY_H__
+#define __GUI_REGISTRY_H__
+
 /*
   If you want to create a new GUI for the touch screen, then
   - copy one of the existing GUIs, e.g. gui_numpad.cpp and gui_numpad.h
@@ -22,3 +25,5 @@ typedef void (*init_gui_pageIndicator)(lv_obj_t* tabview);
 void register_gui(init_gui_tab a_init_gui_tab, init_gui_pageIndicator a_gui_pageIndicator);
 void create_gui_tabs_from_gui_registry(lv_obj_t* tabview);
 void create_gui_pageIndicators_from_gui_registry(lv_obj_t* panel);
+
+#endif /*__GUI_REGISTRY_H__*/
