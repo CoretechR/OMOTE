@@ -21,10 +21,10 @@ void WiFiEvent(WiFiEvent_t event){
 
   // Set status bar icon based on WiFi status
   if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP || event == ARDUINO_EVENT_WIFI_STA_GOT_IP6) {
-    lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);
+    if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);}
 
   } else if (event == ARDUINO_EVENT_WIFI_STA_DISCONNECTED) {
-    lv_label_set_text(WifiLabel, "");
+    if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, "");}
     // automatically try to reconnect
     Serial.printf("WiFi got disconnected. Will try to reconnect.\r\n");
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -32,7 +32,7 @@ void WiFiEvent(WiFiEvent_t event){
   } else {
     // e.g. ARDUINO_EVENT_WIFI_STA_CONNECTED or many others
     // connected is not enough, will wait for IP
-    lv_label_set_text(WifiLabel, "");
+    if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, "");}
 
   }
 }

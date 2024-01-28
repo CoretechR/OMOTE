@@ -6,7 +6,7 @@
 
 lv_obj_t* panel;
 lv_color_t color_primary = lv_color_hex(0x303030); // gray
-lv_obj_t* WifiLabel;
+lv_obj_t* WifiLabel = NULL;
 lv_obj_t* BluetoothLabel;
 lv_obj_t* objBattPercentage;
 lv_obj_t* objBattIcon;
