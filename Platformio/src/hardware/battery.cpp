@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "hardware/battery.h"
-#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/gui_settings.h"
 
 void init_battery(void) {

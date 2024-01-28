@@ -1,7 +1,7 @@
 #include <PubSubClient.h>
 #include <lvgl.h>
 #include "hardware/mqtt.h"
-#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/guiBase.h"
 #include "secrets.h"
 #include "commandHandler.h"
 

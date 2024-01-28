@@ -4,8 +4,8 @@
 #include "hardware/tft.h"
 #include "hardware/sleep.h"
 #include "hardware/infrared_receiver.h"
-#include "gui_general_and_keys/gui_base.h"
-#include "gui_general_and_keys/gui_registry.h"
+#include "gui_general_and_keys/guiBase.h"
+#include "gui_general_and_keys/guiRegistry.h"
 
 lv_obj_t* menuBoxToggle;
 lv_obj_t* menuBoxMessages;

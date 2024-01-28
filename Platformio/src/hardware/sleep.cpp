@@ -6,7 +6,7 @@
 #include "hardware/infrared_sender.h"
 #include "hardware/infrared_receiver.h"
 #include "hardware/battery.h"
-#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/keys.h"
 #include "preferences_storage.h"
 #include "commandHandler.h"

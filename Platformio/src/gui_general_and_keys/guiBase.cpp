@@ -1,8 +1,8 @@
 #include <lvgl.h>
 #include "hardware/tft.h"
 #include "hardware/sleep.h"
-#include "gui_general_and_keys/gui_base.h"
-#include "gui_general_and_keys/gui_registry.h"
+#include "gui_general_and_keys/guiBase.h"
+#include "gui_general_and_keys/guiRegistry.h"
 
 lv_obj_t* panel;
 lv_color_t color_primary = lv_color_hex(0x303030); // gray

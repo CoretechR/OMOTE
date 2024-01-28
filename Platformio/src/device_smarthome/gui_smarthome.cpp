@@ -1,7 +1,7 @@
 #include <string>
 #include <lvgl.h>
-#include "gui_general_and_keys/gui_base.h"
-#include "gui_general_and_keys/gui_registry.h"
+#include "gui_general_and_keys/guiBase.h"
+#include "gui_general_and_keys/guiRegistry.h"
 #include "hardware/tft.h"
 #include "device_smarthome/device_smarthome.h"
 #include "commandHandler.h"

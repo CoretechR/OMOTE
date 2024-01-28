@@ -1,5 +1,5 @@
-#ifndef __GUI_REGISTRY_H__
-#define __GUI_REGISTRY_H__
+#ifndef __GUIREGISTRY_H__
+#define __GUIREGISTRY_H__
 
 /*
   If you want to create a new GUI for the touch screen, then
@@ -26,4 +26,4 @@ void register_gui(init_gui_tab a_init_gui_tab, init_gui_pageIndicator a_gui_page
 void create_gui_tabs_from_gui_registry(lv_obj_t* tabview);
 void create_gui_pageIndicators_from_gui_registry(lv_obj_t* panel);
 
-#endif /*__GUI_REGISTRY_H__*/
+#endif /*__GUIREGISTRY_H__*/

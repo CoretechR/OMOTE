@@ -17,7 +17,7 @@
 #include "device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "device_keyboard_ble/device_keyboard_ble.h"
 #include "gui_general_and_keys/keys.h"
-#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/gui_irReceiver.h"
 #include "gui_general_and_keys/gui_settings.h"
 #include "gui_general_and_keys/gui_numpad.h"

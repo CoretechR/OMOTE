@@ -1,7 +1,7 @@
 #include <BleKeyboard.h>
 #include "commandHandler.h"
 #include "device_keyboard_ble/device_keyboard_ble.h"
-#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/guiBase.h"
 #include "hardware/battery.h"
 
 #ifdef ENABLE_KEYBOARD_BLE

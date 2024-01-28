@@ -1,5 +1,5 @@
-#ifndef __GUI_BASE_H__
-#define __GUI_BASE_H__
+#ifndef __GUIBASE_H__
+#define __GUIBASE_H__
 
 #include <lvgl.h>
 #include "../hardware/tft.h"
@@ -19,4 +19,4 @@ extern byte currentScreen; // Current screen that is shown
 void init_gui(void);
 void gui_loop(void);
 
-#endif /*__GUI_BASE_H__*/
+#endif /*__GUIBASE_H__*/

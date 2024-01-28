@@ -1,7 +1,7 @@
 #include "preferences_storage.h"
 #include "hardware/sleep.h"
 #include "hardware/tft.h"
-#include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/guiBase.h"
 #include "commandHandler.h"
 
 Preferences preferences;
