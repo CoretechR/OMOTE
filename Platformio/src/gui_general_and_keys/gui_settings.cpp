@@ -2,6 +2,7 @@
 #include "hardware/tft.h"
 #include "hardware/sleep.h"
 #include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/gui_registry.h"
 
 lv_obj_t* objBattSettingsVoltage;
 lv_obj_t* objBattSettingsPercentage;
@@ -35,7 +36,7 @@ static void timout_event_cb(lv_event_t * e){
   resetStandbyTimer();
 }
 
-void init_gui_settings(lv_obj_t* tabview) {
+void init_gui_tab_settings(lv_obj_t* tabview) {
 
   lv_obj_t* tab = lv_tabview_add_tab(tabview, "Settings");
 
@@ -156,7 +157,7 @@ void init_gui_settings(lv_obj_t* tabview) {
   // lv_obj_align(objBattSettingsIscharging, LV_ALIGN_TOP_LEFT, 0, 64);
 }
 
-void init_gui_pageIndicator_settings() {
+void init_gui_pageIndicator_settings(lv_obj_t* panel) {
   // Create actual (non-clickable) buttons for every tab
   lv_obj_t* btn = lv_btn_create(panel);
   lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
@@ -167,4 +168,8 @@ void init_gui_pageIndicator_settings() {
   lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
   lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
 
+}
+
+void register_gui_settings(void){
+  register_gui(& init_gui_tab_settings, & init_gui_pageIndicator_settings);
 }

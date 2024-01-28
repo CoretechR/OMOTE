@@ -1,6 +1,7 @@
 #include <string>
 #include <lvgl.h>
 #include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/gui_registry.h"
 #include "hardware/tft.h"
 #include "device_smarthome/device_smarthome.h"
 #include "commandHandler.h"
@@ -33,7 +34,7 @@ static void smartHomeSlider_event_cb(lv_event_t * e){
   #endif
 }
 
-void init_gui_smarthome(lv_obj_t* tabview) {
+void init_gui_tab_smarthome(lv_obj_t* tabview) {
 
   lv_obj_t* tab = lv_tabview_add_tab(tabview, "Smart Home");
 
@@ -127,7 +128,7 @@ void init_gui_smarthome(lv_obj_t* tabview) {
 
 }
 
-void init_gui_pageIndicator_smarthome() {
+void init_gui_pageIndicator_smarthome(lv_obj_t* panel) {
   // Create actual (non-clickable) buttons for every tab
   lv_obj_t* btn = lv_btn_create(panel);
   lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
@@ -138,4 +139,8 @@ void init_gui_pageIndicator_smarthome() {
   lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
   lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
 
+}
+
+void register_gui_smarthome(void){
+  register_gui(& init_gui_tab_smarthome, & init_gui_pageIndicator_smarthome);
 }

@@ -3,7 +3,6 @@
 
 #include <lvgl.h>
 
-void init_gui_numpad(lv_obj_t* tabview);
-void init_gui_pageIndicator_numpad();
+void register_gui_numpad(void);
 
 #endif /*__GUI_NUMPAD_H__*/

@@ -1,6 +1,7 @@
 #include <lvgl.h>
 #include "hardware/tft.h"
 #include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/gui_registry.h"
 #include "commandHandler.h"
 
 // Virtual Keypad Event handler
@@ -16,7 +17,7 @@ static void virtualKeypad_event_cb(lv_event_t* e) {
   executeCommand(KEYBOARD_SENDSTRING, numberStr);
 }
 
-void init_gui_numpad(lv_obj_t* tabview) {
+void init_gui_tab_numpad(lv_obj_t* tabview) {
 
   lv_obj_t* tab = lv_tabview_add_tab(tabview, "Numpad");
 
@@ -71,7 +72,7 @@ void init_gui_numpad(lv_obj_t* tabview) {
 
 }
 
-void init_gui_pageIndicator_numpad() {
+void init_gui_pageIndicator_numpad(lv_obj_t* panel) {
   // Create actual (non-clickable) buttons for every tab
   lv_obj_t* btn = lv_btn_create(panel);
   lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
@@ -82,4 +83,8 @@ void init_gui_pageIndicator_numpad() {
   lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
   lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
 
+}
+
+void register_gui_numpad(void){
+  register_gui(& init_gui_tab_numpad, & init_gui_pageIndicator_numpad);
 }

@@ -18,6 +18,11 @@
 #include "device_keyboard_ble/device_keyboard_ble.h"
 #include "gui_general_and_keys/keys.h"
 #include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/gui_irReceiver.h"
+#include "gui_general_and_keys/gui_settings.h"
+#include "gui_general_and_keys/gui_numpad.h"
+#include "device_appleTV/gui_appleTV.h"
+#include "device_smarthome/gui_smarthome.h"
 #include "preferences_storage.h"
 #include "commandHandler.h"
 
@@ -43,6 +48,12 @@ void setup() {
   // init TFT
   init_tft();
 
+  // Here you can register the GUIs you want to display. Will be displayed in the order they are registered.
+  register_gui_irReceiver();
+  register_gui_settings();
+  register_gui_numpad();
+  register_gui_appleTV();
+  register_gui_smarthome();
   // init GUI
   init_gui();
 

@@ -7,7 +7,6 @@ extern lv_obj_t* objBattSettingsVoltage;
 extern lv_obj_t* objBattSettingsPercentage;
 //extern lv_obj_t* objBattSettingsIscharging;
 
-void init_gui_settings(lv_obj_t* tabview);
-void init_gui_pageIndicator_settings();
+void register_gui_settings(void);
 
 #endif /*__GUI_SETTINGS_H__*/

@@ -1,6 +1,7 @@
 #include <lvgl.h>
 #include "device_appleTV/device_appleTV.h"
 #include "gui_general_and_keys/gui_base.h"
+#include "gui_general_and_keys/gui_registry.h"
 #include "hardware/tft.h"
 #include "commandHandler.h"
 
@@ -16,7 +17,7 @@ static void appleKey_event_cb(lv_event_t* e) {
   Serial.println(50 + (int)e->user_data);
 }
 
-void init_gui_appleTV(lv_obj_t* tabview) {
+void init_gui_tab_appleTV(lv_obj_t* tabview) {
 
   lv_obj_t* tab = lv_tabview_add_tab(tabview, "Apple TV");
 
@@ -54,7 +55,7 @@ void init_gui_appleTV(lv_obj_t* tabview) {
   
 }
 
-void init_gui_pageIndicator_appleTV() {
+void init_gui_pageIndicator_appleTV(lv_obj_t* panel) {
   // Create actual (non-clickable) buttons for every tab
   lv_obj_t* btn = lv_btn_create(panel);
   lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
@@ -65,4 +66,8 @@ void init_gui_pageIndicator_appleTV() {
   lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
   lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
 
+}
+
+void register_gui_appleTV(void){
+  register_gui(& init_gui_tab_appleTV, & init_gui_pageIndicator_appleTV);
 }

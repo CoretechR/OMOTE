@@ -3,7 +3,6 @@
 
 #include <lvgl.h>
 
-void init_gui_appleTV(lv_obj_t* tabview);
-void init_gui_pageIndicator_appleTV();
+void register_gui_appleTV(void);
 
 #endif /*__GUI_APPLETV_H__*/

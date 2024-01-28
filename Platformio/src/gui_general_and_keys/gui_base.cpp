@@ -2,11 +2,7 @@
 #include "hardware/tft.h"
 #include "hardware/sleep.h"
 #include "gui_general_and_keys/gui_base.h"
-#include "gui_general_and_keys/gui_irReceiver.h"
-#include "gui_general_and_keys/gui_numpad.h"
-#include "gui_general_and_keys/gui_settings.h"
-#include "device_appleTV/gui_appleTV.h"
-#include "device_smarthome/gui_smarthome.h"
+#include "gui_general_and_keys/gui_registry.h"
 
 lv_obj_t* panel;
 lv_color_t color_primary = lv_color_hex(0x303030); // gray
@@ -123,11 +119,7 @@ void init_gui(void) {
   lv_obj_align(tabview, LV_ALIGN_TOP_MID, 0, 20);
 
   // Add all the tabs here
-  init_gui_irReceiver(tabview);
-  init_gui_settings(tabview);
-  init_gui_numpad(tabview);
-  init_gui_appleTV(tabview);
-  init_gui_smarthome(tabview);
+  create_gui_tabs_from_gui_registry(tabview);
 
   // Set current page according to the current screen
   lv_tabview_set_act(tabview, currentScreen, LV_ANIM_OFF); 
@@ -147,11 +139,7 @@ void init_gui(void) {
   lv_obj_set_style_opa(btn, LV_OPA_TRANSP, LV_PART_MAIN);
   
   // Create actual (non-clickable) buttons for every tab
-  init_gui_pageIndicator_irReceiver();
-  init_gui_pageIndicator_settings();
-  init_gui_pageIndicator_numpad();
-  init_gui_pageIndicator_appleTV();
-  init_gui_pageIndicator_smarthome();
+  create_gui_pageIndicators_from_gui_registry(panel);
   
   // This small hidden button enables the page indicator to scroll further
   btn = lv_btn_create(panel);

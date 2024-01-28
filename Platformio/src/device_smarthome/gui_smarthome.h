@@ -3,7 +3,6 @@
 
 #include <lvgl.h>
 
-void init_gui_smarthome(lv_obj_t* tabview);
-void init_gui_pageIndicator_smarthome();
+void register_gui_smarthome(void);
 
 #endif /*__GUI_SMARTHOME_H__*/
