@@ -17,9 +17,6 @@ extern bool wakeupByIMUEnabled;
 extern byte wakeup_reason;
 enum Wakeup_reasons{WAKEUP_BY_RESET, WAKEUP_BY_IMU, WAKEUP_BY_KEYPAD};
 
-void activityDetection();
-void enterSleep();
-
 void init_sleep();
 void setup_IMU();
 void check_activity();
