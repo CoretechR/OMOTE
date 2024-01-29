@@ -1,5 +1,5 @@
-#ifndef __SCENE_REGISTRY_H__
-#define __SCENE_REGISTRY_H__
+#ifndef __SCENEREGISTRY_H__
+#define __SCENEREGISTRY_H__
 
 #include <map>
 #include "gui_general_and_keys/keys.h"
@@ -27,4 +27,4 @@ repeatModes get_key_repeatMode(std::string sceneName, char keyChar);
 std::string get_command_short(std::string sceneName, char keyChar);
 std::string get_command_long(std::string sceneName, char keyChar);
 
-#endif /*__SCENE_REGISTRY_H__*/
+#endif /*__SCENEREGISTRY_H__*/

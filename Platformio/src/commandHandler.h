@@ -97,7 +97,7 @@
 
 enum commandHandlers {
   SPECIAL,
-  SCENE
+  SCENE,
   IR_GC,
   IR_NEC,
   IR_SAMSUNG,

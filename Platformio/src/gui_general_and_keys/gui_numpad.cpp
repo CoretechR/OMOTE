@@ -1,8 +1,12 @@
 #include <lvgl.h>
 #include "hardware/tft.h"
+#include "device_samsungTV/device_samsungTV.h"
 #include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/guiRegistry.h"
 #include "commandHandler.h"
+#include "scenes/sceneHandler.h"
+#include "scenes/scene_TV.h"
+#include "scenes/scene_fireTV.h"
 
 // Virtual Keypad Event handler
 static void virtualKeypad_event_cb(lv_event_t* e) {
@@ -11,10 +15,17 @@ static void virtualKeypad_event_cb(lv_event_t* e) {
   if (target == cont) return; // stop if container was clicked
   
   // send corrensponding number
-  byte virtualKeyMapFireTVNumbers[10] = {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0x0};
-  int number = virtualKeyMapFireTVNumbers[(int)target->user_data];
-  std::string numberStr = std::to_string(number);
-  executeCommand(KEYBOARD_SENDSTRING, numberStr);
+  if (currentScene == scene_name_TV) {
+    std::string virtualKeyMapTVNumbers[10] = {SAMSUNG_NUM_1, SAMSUNG_NUM_2, SAMSUNG_NUM_3, SAMSUNG_NUM_4, SAMSUNG_NUM_5, SAMSUNG_NUM_6, SAMSUNG_NUM_7, SAMSUNG_NUM_8, SAMSUNG_NUM_9, SAMSUNG_NUM_0};
+    std::string command = virtualKeyMapTVNumbers[(int)target->user_data];
+    executeCommand(command);
+
+  } else if (currentScene == scene_name_fireTV) {
+    byte virtualKeyMapFireTVNumbers[10] = {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0x0};
+    int number = virtualKeyMapFireTVNumbers[(int)target->user_data];
+    std::string numberStr = std::to_string(number);
+    executeCommand(KEYBOARD_SENDSTRING, numberStr);
+  }
 }
 
 void init_gui_tab_numpad(lv_obj_t* tabview) {

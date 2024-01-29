@@ -10,29 +10,29 @@
 #include "commandHandler.h"
 
 std::map<char, repeatModes> key_repeatModes_fireTV {
-                                                                             {'o', SHORT         },
-  {'=', SHORT         },   {'<', SHORTorLONG   },   {'p', SHORT         },   {'>', SHORTorLONG   },
-  {'c', SHORT         },                                                     {'i', SHORT         },
-                                         {'u', SHORT         },
-                {'l', SHORT         },   {'k', SHORT         },   {'r', SHORT         },
-                                         {'d', SHORT         },
-  {'b', SHORT         },                                                     {'s', SHORT         },
-  {'+', SHORT_REPEATED},                 {'m', SHORT         },              {'^', SHORT         },
-  {'-', SHORT_REPEATED},                 {'e', SHORT         },              {'v', SHORT         },
-  {'1', SHORT         },   {'2', SHORT         },   {'3', SHORT          },  {'4', SHORT         },
+
+                                  {'<', SHORTorLONG   },       {'p', SHORT         },         {'>', SHORTorLONG   },
+  {'c', SHORT         },                                                                      {'i', SHORT         },
+                                                {'u', SHORT         },
+                    {'l', SHORT         },      {'k', SHORT         },      {'r', SHORT         },
+                                                {'d', SHORT         },
+                                                                                              {'s', SHORT         },
+
+
+
 };
 
 std::map<char, std::string> key_commands_short_fireTV {
-                                                                                               {'o', SCENE_ALLOFF},
-/*{'=', KEYBOARD_PLAYPAUSE},*/    {'<', KEYBOARD_REWIND},      {'p', KEYBOARD_PLAYPAUSE},      {'>', KEYBOARD_FASTFORWARD},
+
+                                  {'<', KEYBOARD_REWIND},      {'p', KEYBOARD_PLAYPAUSE},      {'>', KEYBOARD_FASTFORWARD},
   {'c', KEYBOARD_HOME},                                                                        {'i', KEYBOARD_MENU},
                                                 {'u', KEYBOARD_UP},
                     {'l', KEYBOARD_LEFT},       {'k', KEYBOARD_SELECT},     {'r', KEYBOARD_RIGHT},
                                                 {'d', KEYBOARD_DOWN},
-  /* {'b', }, */                                                                               {'s', KEYBOARD_BACK},
-  {'+', YAMAHA_VOL_PLUS},                       {'m', YAMAHA_MUTE_TOGGLE},                     {'^', SAMSUNG_CHANNEL_UP},
-  {'-', YAMAHA_VOL_MINUS},                      /* {'e', }, */                                 {'v', SAMSUNG_CHANNEL_DOWN},
-  {'1', SCENE_TV},                {'2', SCENE_FIRETV},         {'3', SCENE_CHROMECAST},        {'4', YAMAHA_STANDARD},
+                                                                                               {'s', KEYBOARD_BACK},
+
+
+
 };
 
 std::map<char, std::string> key_commands_long_fireTV {
