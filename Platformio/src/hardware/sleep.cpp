@@ -8,7 +8,7 @@
 #include "hardware/battery.h"
 #include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/keys.h"
-#include "preferences_storage.h"
+#include "preferencesStorage.h"
 #include "commandHandler.h"
 #include "scenes/sceneHandler.h"
 

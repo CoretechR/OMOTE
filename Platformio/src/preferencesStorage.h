@@ -1,5 +1,5 @@
-#ifndef __PREFERENCES_STORAGE_H__
-#define __PREFERENCES_STORAGE_H__
+#ifndef __PREFERENCESSTORAGE_H__
+#define __PREFERENCESSTORAGE_H__
 
 #include <Preferences.h>
 
@@ -8,4 +8,4 @@ extern Preferences preferences;
 void init_preferences(void);
 void save_preferences(void);
 
-#endif /*__PREFERENCES_STORAGE_H__*/
+#endif /*__PREFERENCESSTORAGE_H__*/

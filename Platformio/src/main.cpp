@@ -33,7 +33,7 @@
 #include "scenes/scene_chromecast.h"
 #include "scenes/sceneHandler.h"
 // misc
-#include "preferences_storage.h"
+#include "preferencesStorage.h"
 #include "commandHandler.h"
 
 void setup() {  
