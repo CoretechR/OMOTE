@@ -1,4 +1,5 @@
 #include <lvgl.h>
+#include "preferences_storage.h"
 #include "hardware/tft.h"
 #include "hardware/sleep.h"
 #include "gui_general_and_keys/guiBase.h"
@@ -34,6 +35,8 @@ static void timout_event_cb(lv_event_t * e){
   }
   // Serial.printf("New timeout: %lu ms\r\n", actualSleepTimeout);
   resetStandbyTimer();
+  // save preferences now, otherwise if you set a very big timeout and upload your firmware again, it never got saved
+  save_preferences();
 }
 
 void init_gui_tab_settings(lv_obj_t* tabview) {

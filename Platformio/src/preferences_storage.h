@@ -6,5 +6,6 @@
 extern Preferences preferences;
 
 void init_preferences(void);
+void save_preferences(void);
 
 #endif /*__PREFERENCES_STORAGE_H__*/

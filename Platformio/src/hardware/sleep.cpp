@@ -10,6 +10,7 @@
 #include "gui_general_and_keys/keys.h"
 #include "preferences_storage.h"
 #include "commandHandler.h"
+#include "scenes/sceneHandler.h"
 
 int motion = 0;
 uint32_t actualSleepTimeout;
@@ -99,14 +100,7 @@ void configIMUInterrupts()
 // Enter Sleep Mode
 void enterSleep(){
   // Save settings to internal flash memory
-  preferences.putBool("wkpByIMU", wakeupByIMUEnabled);
-  preferences.putUInt("slpTimeout", actualSleepTimeout);
-  preferences.putUChar("blBrightness", backlight_brightness);
-  preferences.putUChar("currentScreen", currentScreen);
-  preferences.putUChar("allDevsPowered", allDevsPowered);
-  preferences.putString("currentScene", currentScene);
-  if(!preferences.getBool("alreadySetUp")) preferences.putBool("alreadySetUp", true);
-  preferences.end();
+  save_preferences();
 
   // Configure IMU
   uint8_t intDataRead;
