@@ -10,9 +10,9 @@
 #include "scenes/scene_TV.h"
 #include "scenes/scene_fireTV.h"
 #include "scenes/scene_chromecast.h"
-#include "commandHandler.h"
 #include "scenes/sceneRegistry.h"
 #include "scenes/sceneHandler.h"
+#include "commandHandler.h"
 
 const byte ROWS = 5; //five rows
 const byte COLS = 5; //five columns
