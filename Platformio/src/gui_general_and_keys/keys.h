@@ -17,6 +17,7 @@
 #define BUTTON_PIN_BITMASK 0b1110110000000000000000000010000000000000 //IO34+IO35+IO37+IO38+IO39(+IO13)
 
 enum repeatModes {
+  // only as fallback
   REPEAT_MODE_UNKNOWN,
   // if you short press or hold a key on the keypad, only one single command from keyCommands_short is sent
   // -> best used if you do not want a command to be sent more than once, even if you press the key (too) long, e.g. when toggling power
