@@ -9,6 +9,7 @@ LV_IMG_DECLARE(high_brightness);
 LV_IMG_DECLARE(low_brightness);
 extern lv_obj_t* objBattPercentage;
 extern lv_obj_t* objBattIcon;
+extern lv_obj_t* SceneLabel;
 extern lv_color_t color_primary;
 
 extern lv_obj_t* WifiLabel;

@@ -26,6 +26,12 @@
 #include "device_appleTV/gui_appleTV.h"
 #include "device_smarthome/gui_smarthome.h"
 #include "gui_general_and_keys/keys.h"
+// scenes
+#include "scenes/scene_allOff.h"
+#include "scenes/scene_TV.h"
+#include "scenes/scene_fireTV.h"
+#include "scenes/scene_chromecast.h"
+#include "scenes/sceneHandler.h"
 // misc
 #include "preferences_storage.h"
 #include "commandHandler.h"
@@ -48,10 +54,6 @@ void setup() {
   init_userled();
   // init TFT
   init_tft();
-  // init WiFi
-  #ifdef ENABLE_WIFI_AND_MQTT
-  init_mqtt();
-  #endif
   // setup the Inertial Measurement Unit (IMU) for motion detection
   // needs to be after init_tft()) because of I2C
   setup_IMU();
@@ -69,7 +71,7 @@ void setup() {
   #ifdef ENABLE_KEYBOARD_BLE
   register_device_keyboard_ble();
   #endif
-  init_deviceIndependantCommands();
+  register_specialCommands();
 
   // register the GUIs. They will be displayed in the order they are registered.
   register_gui_irReceiver();
@@ -80,6 +82,18 @@ void setup() {
   // init GUI
   init_gui();
   gui_loop(); // Run the LVGL UI once before the loop takes over
+
+  // register the scenes
+  register_scene_allOff();
+  register_scene_TV();
+  register_scene_fireTV();
+  register_scene_chromecast();
+  setLabelCurrentScene();
+
+  // init WiFi - needs to be after gui because WifiLabel must be available
+  #ifdef ENABLE_WIFI_AND_MQTT
+  init_mqtt();
+  #endif
 
   Serial.print("Setup finished in ");
   Serial.print(millis());

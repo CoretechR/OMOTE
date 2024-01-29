@@ -93,16 +93,11 @@
 // #pragma message "2 The value is: " XSTR(KEYBOARD_MQTT_UP)
 // #pragma message "3 The value is: " XSTR(KEYBOARD_UP)
 
-#define ALLDEVICES_POWER_TOGGLE      "AllDevices_power_toggle"
-#define SCENE_TV                     "Scene_tv"
-#define SCENE_FIRETV                 "Scene_firetv"
-#define SCENE_CHROMECAST             "Scene_chromecast"
-
-extern byte allDevsPowered;
-extern String currentScene; // Current scene that is active
+#define MY_SPECIAL_COMMAND           "My_special_command"
 
 enum commandHandlers {
   SPECIAL,
+  SCENE
   IR_GC,
   IR_NEC,
   IR_SAMSUNG,
@@ -125,7 +120,7 @@ commandData makeCommandData(commandHandlers a, std::list<std::string> b);
 
 extern std::map<std::string, commandData> commands;
 
-void init_deviceIndependantCommands();
+void register_specialCommands();
 void executeCommand(std::string command, std::string additionalPayload = "");
 
 #endif /*__COMMANDHANDLER_H__*/

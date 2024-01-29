@@ -10,6 +10,7 @@ lv_obj_t* WifiLabel = NULL;
 lv_obj_t* BluetoothLabel;
 lv_obj_t* objBattPercentage;
 lv_obj_t* objBattIcon;
+lv_obj_t* SceneLabel;
 byte currentScreen = 1; // Current Device to control (allows switching mappings between devices)
 
 // LVGL declarations
@@ -191,6 +192,12 @@ void init_gui(void) {
   lv_label_set_text(BluetoothLabel, "");
   lv_obj_align(BluetoothLabel, LV_ALIGN_LEFT_MID, 12, 0);
   lv_obj_set_style_text_font(BluetoothLabel, &lv_font_montserrat_12, LV_PART_MAIN);
+
+  // Scene ------------------------------------------------------------------------
+  SceneLabel = lv_label_create(statusbar);
+  lv_label_set_text(SceneLabel, "");
+  lv_obj_align(SceneLabel, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_text_font(SceneLabel, &lv_font_montserrat_12, LV_PART_MAIN);
 
   // Battery ----------------------------------------------------------------------
   objBattPercentage = lv_label_create(statusbar);

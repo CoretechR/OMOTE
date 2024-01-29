@@ -7,22 +7,19 @@
 #include "device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "device_keyboard_ble/device_keyboard_ble.h"
 #include "commandHandler.h"
+#include "scenes/sceneHandler.h"
 
 std::map<std::string, commandData> commands;
-byte allDevsPowered = 0;
-String currentScene = "";
 
 commandData makeCommandData(commandHandlers a, std::list<std::string> b) {
   commandData c = {a, b};
   return c;
 }
 
-void init_deviceIndependantCommands() {
-  // put commands here if you want
-  commands[ALLDEVICES_POWER_TOGGLE] = makeCommandData(SPECIAL, {""});
-  commands[SCENE_TV]                = makeCommandData(SPECIAL, {""});
-  commands[SCENE_FIRETV]            = makeCommandData(SPECIAL, {""});
-  commands[SCENE_CHROMECAST]        = makeCommandData(SPECIAL, {""});
+void register_specialCommands() {
+  // put SPECIAL commands here if you want
+  commands[MY_SPECIAL_COMMAND] = makeCommandData(SPECIAL, {""});
+
 }
 
 void executeCommandWithData(std::string command, commandData commandData, std::string additionalPayload = "") {
@@ -142,71 +139,17 @@ void executeCommandWithData(std::string command, commandData commandData, std::s
     }
     #endif
 
+    case SCENE: {
+      // let the sceneHandler do the scene stuff
+      Serial.printf("execute: will send scene command to the sceneHandler\r\n");
+      handleScene(command, commandData, additionalPayload);
+      break;
+    }
+    
     case SPECIAL: {
-
-      if (command == ALLDEVICES_POWER_TOGGLE) {
-        // this variant toggles power state, dependant on the value of allDevsPowered
-        // currently we do not toggle, but switch all devices off
-        // if (allDevsPowered == 0) {
-        //   executeCommand(SAMSUNG_POWER_ON);
-        //   delay(500);
-        //   executeCommand(YAMAHA_POWER_ON);
-        //   delay(4500);
-        //   currentScene = "";
-        //   allDevsPowered = 1;
-        // } else {
-          executeCommand(SAMSUNG_POWER_OFF);
-          delay(500);
-          executeCommand(YAMAHA_POWER_OFF);
-          delay(500);
-          // you cannot power off FireTV, but at least you can stop the currently running app
-          executeCommand(KEYBOARD_HOME);
-          delay(500);
-          executeCommand(KEYBOARD_HOME);
-          currentScene = "";
-          allDevsPowered = 0;
-        // }
-
-      } else if (command == SCENE_TV) {
-        executeCommand(SAMSUNG_POWER_ON);
-        delay(500);
-        executeCommand(YAMAHA_POWER_ON);
-        delay(1500);
-        executeCommand(YAMAHA_INPUT_DVD);
-        delay(3000);
-        executeCommand(SAMSUNG_INPUT_TV);
-        
-        currentScene = SCENE_TV;
-        allDevsPowered = 1;
-
-      } else if (command == SCENE_FIRETV) {
-        executeCommand(SAMSUNG_POWER_ON);
-        delay(500);
-        executeCommand(YAMAHA_POWER_ON);
-        delay(1500);
-        executeCommand(YAMAHA_INPUT_DTV);
-        delay(3000);
-        executeCommand(SAMSUNG_INPUT_HDMI_2);
-        delay(100);
-        
-        executeCommand(KEYBOARD_HOME);
-        delay(500);
-        executeCommand(KEYBOARD_HOME);
-        
-        currentScene = SCENE_FIRETV;
-        allDevsPowered = 1;
-
-      } else if (command == SCENE_CHROMECAST) {
-        executeCommand(SAMSUNG_POWER_ON);
-        delay(500);
-        executeCommand(YAMAHA_POWER_ON);
-        delay(1500);
-        executeCommand(YAMAHA_INPUT_DVD);
-        delay(3000);
-        executeCommand(SAMSUNG_INPUT_HDMI_1);
-        
-        currentScene = SCENE_CHROMECAST;
-        allDevsPowered = 1;
+      if (command == MY_SPECIAL_COMMAND) {
+        // do your special command here
+        Serial.printf("execute: could execute a special command here, if you define one\r\n");
 
       }
       break;
