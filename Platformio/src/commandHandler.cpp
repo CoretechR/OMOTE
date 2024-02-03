@@ -158,10 +158,15 @@ void executeCommandWithData(std::string command, commandData commandData, std::s
 }
 
 void executeCommand(std::string command, std::string additionalPayload) {
-  if (commands.count(command) > 0) {
-    Serial.printf("command: will execute command '%s'\r\n", command.c_str());
-    executeCommandWithData(command, commands[command], additionalPayload);
-  } else {
-    Serial.printf("command: command '%s' not found\r\n", command.c_str());
+  try {
+    if (commands.count(command) > 0) {
+      Serial.printf("command: will execute command '%s'\r\n", command.c_str());
+      executeCommandWithData(command, commands.at(command), additionalPayload);
+    } else {
+      Serial.printf("command: command '%s' not found\r\n", command.c_str());
+    }
+  }
+  catch (const std::out_of_range& oor) {
+    Serial.printf("executeCommand: internal error, command not registered\r\n");
   }
 }

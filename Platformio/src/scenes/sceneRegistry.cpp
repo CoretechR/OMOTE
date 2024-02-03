@@ -74,64 +74,92 @@ bool sceneExists(std::string sceneName) {
 }
 
 void scene_start_sequence_from_registry(std::string sceneName) {
-  registered_scenes[sceneName].this_scene_start_sequence();
+  try {
+    registered_scenes.at(sceneName).this_scene_start_sequence();
+  }
+  catch (const std::out_of_range& oor) {
+    Serial.printf("scene_start_sequence_from_registry: internal error, sceneName not registered\r\n");
+  }
 }
 
 void scene_end_sequence_from_registry(std::string sceneName) {
-  registered_scenes[sceneName].this_scene_end_sequence();
+  try {
+    registered_scenes.at(sceneName).this_scene_end_sequence();
+  }
+  catch (const std::out_of_range& oor) {
+    Serial.printf("scene_end_sequence_from_registry: internal error, sceneName not registered\r\n");
+  }
 }
 
 repeatModes get_key_repeatMode(std::string sceneName, char keyChar) {
-  // look if the map of the current scene has a definition for it
-  if (registered_scenes[sceneName].this_key_repeatModes->count(keyChar) > 0) {
-    // Serial.printf("get_key_repeatMode: will use key from scene %s\r\n", sceneName.c_str());
-    return registered_scenes[sceneName].this_key_repeatModes->at(keyChar);
-  
-  // look if there is a default definition
-  } else if (key_repeatModes_default.count(keyChar) > 0) {
-    // Serial.printf("get_key_repeatMode: will use default key\r\n");
-    return key_repeatModes_default[keyChar];
-  
-  // no key definition found
-  } else {
-    // Serial.printf("get_key_repeatMode: WARNING no key definition found\r\n");
+  try {
+    // look if the map of the current scene has a definition for it
+    if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_repeatModes->count(keyChar) > 0)) {
+      // Serial.printf("get_key_repeatMode: will use key from scene %s\r\n", sceneName.c_str());
+      return registered_scenes.at(sceneName).this_key_repeatModes->at(keyChar);
+
+    // look if there is a default definition
+    } else if (key_repeatModes_default.count(keyChar) > 0) {
+      // Serial.printf("get_key_repeatMode: will use default key\r\n");
+      return key_repeatModes_default.at(keyChar);
+
+    // no key definition found
+    } else {
+      // Serial.printf("get_key_repeatMode: WARNING no key definition found\r\n");
+      return REPEAT_MODE_UNKNOWN;
+    }
+  }
+  catch (const std::out_of_range& oor) {
+    Serial.printf("get_key_repeatMode: internal error, sceneName not registered\r\n");
     return REPEAT_MODE_UNKNOWN;
   }
 }
 
 std::string get_command_short(std::string sceneName, char keyChar) {
-  // look if the map of the current scene has a definition for it
-  if (registered_scenes[sceneName].this_key_commands_short->count(keyChar) > 0) {
-    Serial.printf("get_command_short: will use key from scene %s\r\n", sceneName.c_str());
-    return registered_scenes[sceneName].this_key_commands_short->at(keyChar);
-  
-  // look if there is a default definition
-  } else if (key_commands_short_default.count(keyChar) > 0) {
-    Serial.printf("get_command_short: will use default key\r\n");
-    return key_commands_short_default[keyChar];
-  
-  // no key definition found
-  } else {
-    Serial.printf("get_command_short: WARNING no key definition found\r\n");
+  try {
+    // look if the map of the current scene has a definition for it
+    if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_short->count(keyChar) > 0)) {
+      Serial.printf("get_command_short: will use key from scene %s\r\n", sceneName.c_str());
+      return registered_scenes.at(sceneName).this_key_commands_short->at(keyChar);
+    
+    // look if there is a default definition
+    } else if (key_commands_short_default.count(keyChar) > 0) {
+      Serial.printf("get_command_short: will use default key\r\n");
+      return key_commands_short_default.at(keyChar);
+    
+    // no key definition found
+    } else {
+      Serial.printf("get_command_short: WARNING no key definition found\r\n");
+      return COMMAND_UNKNOWN;
+    }
+  }
+  catch (const std::out_of_range& oor) {
+    Serial.printf("get_command_short: internal error, sceneName not registered\r\n");
     return COMMAND_UNKNOWN;
   }
 
 }
 
 std::string get_command_long(std::string sceneName, char keyChar) {
-  // look if the map of the current scene has a definition for it
-  if (registered_scenes[sceneName].this_key_commands_long->count(keyChar) > 0) {
-    Serial.printf("get_command_long: will use key from scene %s\r\n", sceneName.c_str());
-    return registered_scenes[sceneName].this_key_commands_long->at(keyChar);
-  
-  // look if there is a default definition
-  } else if (key_commands_long_default.count(keyChar) > 0) {
-    Serial.printf("get_command_long: will use default key\r\n");
-    return key_commands_long_default[keyChar];
-  
-  // no key definition found
-  } else {
-    Serial.printf("get_command_long: WARNING no key definition found\r\n");
+  try {
+    // look if the map of the current scene has a definition for it
+    if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_long->count(keyChar) > 0)) {
+      Serial.printf("get_command_long: will use key from scene %s\r\n", sceneName.c_str());
+      return registered_scenes.at(sceneName).this_key_commands_long->at(keyChar);
+    
+    // look if there is a default definition
+    } else if (key_commands_long_default.count(keyChar) > 0) {
+      Serial.printf("get_command_long: will use default key\r\n");
+      return key_commands_long_default.at(keyChar);
+    
+    // no key definition found
+    } else {
+      Serial.printf("get_command_long: WARNING no key definition found\r\n");
+      return COMMAND_UNKNOWN;
+    }
+  }
+  catch (const std::out_of_range& oor) {
+    Serial.printf("get_command_long: internal error, sceneName not registered\r\n");
     return COMMAND_UNKNOWN;
   }
 
