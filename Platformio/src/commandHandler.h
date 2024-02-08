@@ -103,6 +103,7 @@ enum commandHandlers {
   IR_SAMSUNG,
   IR_SONY,
   IR_RC5,
+  IR_DENON,
   #ifdef ENABLE_WIFI_AND_MQTT
   MQTT,
   #endif

@@ -84,7 +84,7 @@ void executeCommandWithData(std::string command, commandData commandData, std::s
           auto current = commandData.commandPayloads.begin();
           data = std::stoull(*current, &sz, 0);
         }
-        Serial.printf("execute: will send IR SONY, data (%" PRIu64 ")\r\n", data);
+        Serial.printf("execute: will send IR SONY 15 bit, data (%" PRIu64 ")\r\n", data);
         IrSender.sendSony(data, 15);
       }
       break;
@@ -104,6 +104,24 @@ void executeCommandWithData(std::string command, commandData commandData, std::s
         }
         Serial.printf("execute: will send IR RC5, data (%" PRIu64 ")\r\n", data);
         IrSender.sendRC5(IrSender.encodeRC5X(0x00, data));
+      }
+      break;
+    }
+
+    case IR_DENON: {
+      std::string::size_type sz = 0;   // alias of size_t
+      uint64_t data;
+      if (commandData.commandPayloads.empty() && (additionalPayload == "")) {
+        Serial.printf("execute: cannot send IR DENON 48 bit, because both data and payload are empty\r\n");
+      } else {
+        if (additionalPayload != "") {
+          data = std::stoull(additionalPayload, &sz, 0);
+        } else {
+          auto current = commandData.commandPayloads.begin();
+          data = std::stoull(*current, &sz, 0);
+        }
+        Serial.printf("execute: will send IR DENON 48 bit, data (%" PRIu64 ")\r\n", data);
+        IrSender.sendDenon(data, 48);
       }
       break;
     }
