@@ -1,7 +1,7 @@
 #include <string>
 #include <list>
 #include <lvgl.h>
-#include "guiregistry.h"
+#include "guiRegistry.h"
 
 // https://stackoverflow.com/questions/840501/how-do-function-pointers-in-c-work
 struct gui_definition {
