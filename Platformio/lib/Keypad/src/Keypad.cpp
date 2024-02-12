@@ -83,18 +83,31 @@ bool Keypad::getKeys() {
 void Keypad::scanKeys() {
 	// Re-intialize the row pins. Allows sharing these pins with other hardware.
 	for (byte r=0; r<sizeKpd.rows; r++) {
+		// Logic needs to be inverted. This way the ESP32’s EXT1 wakeup can be used to detect if the accelerometer pin or any button pin goes high
+		// original from Keypad
+		// pin_mode(rowPins[r],INPUT_PULLUP);
+		// changed for usage in OMOTE
 		pin_mode(rowPins[r],INPUT);
 	}
 
 	// bitMap stores ALL the keys that are being pressed.
 	for (byte c=0; c<sizeKpd.columns; c++) {
 		pin_mode(columnPins[c],OUTPUT);
+		// original from Keypad
+		// pin_write(columnPins[c], LOW);	// Begin column pulse output.
+		// changed for usage in OMOTE
 		pin_write(columnPins[c], HIGH);	// Begin column pulse output.
 		for (byte r=0; r<sizeKpd.rows; r++) {
+			// original from Keypad
+			// bitWrite(bitMap[r], c, !pin_read(rowPins[r]));  // keypress is active low so invert to high.
+			// changed for usage in OMOTE
 			bitWrite(bitMap[r], c, pin_read(rowPins[r]));  // keypress is active low so invert to high.
 		}
 		// Set pin to high impedance input. Effectively ends column pulse.
-		pin_write(columnPins[c],LOW);
+		// original from Keypad
+		// pin_write(columnPins[c],HIGH);
+		// changed for usage in OMOTE
+		pin_write(columnPins[c], LOW);
 		pin_mode(columnPins[c],INPUT);
 	}
 }

@@ -2,7 +2,8 @@
     "cmake.configureOnOpen": false,
     "files.associations": {
         "random": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "lvgl.h": "c"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO"
 }

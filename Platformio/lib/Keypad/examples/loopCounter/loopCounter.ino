@@ -15,7 +15,7 @@ byte colPins[COLS] = {8, 7, 6}; //connect to the column pinouts of the keypad
 Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 unsigned long loopCount = 0;
-unsigned long timer_t = 0;
+unsigned long timer_ms = 0;
 
 void setup(){
 	Serial.begin(9600);
@@ -33,12 +33,12 @@ void loop(){
 	// you a relative idea of just how much the debounceTime has changed the
 	// speed of your code. If you set a high debounceTime your loopCount will
 	// look good but your keypresses will start to feel sluggish.
-	if ((millis() - timer_t) > 1000) {
+	if ((millis() - timer_ms) > 1000) {
 		Serial.print("Your loop code ran ");
 		Serial.print(loopCount);
 		Serial.println(" times over the last second");
 		loopCount = 0;
-		timer_t = millis();
+		timer_ms = millis();
 	}
 	loopCount++;
 	if(key)
