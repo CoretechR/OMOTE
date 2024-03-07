@@ -27,6 +27,7 @@ void WiFiEvent(WiFiEvent_t event){
     if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, "");}
     // automatically try to reconnect
     Serial.printf("WiFi got disconnected. Will try to reconnect.\r\n");
+    WiFi.disconnect();
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   } else {
