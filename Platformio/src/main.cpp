@@ -18,6 +18,7 @@
 #include "device_appleTV/device_appleTV.h"
 #include "device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "device_keyboard_ble/device_keyboard_ble.h"
+#include "device_denonAvr/device_denonAvr.h"
 // gui and keys
 #include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/gui_irReceiver.h"
@@ -71,6 +72,7 @@ void setup() {
   #ifdef ENABLE_KEYBOARD_BLE
   register_device_keyboard_ble();
   #endif
+  register_device_denon();
   register_specialCommands();
 
   // register the GUIs. They will be displayed in the order they are registered.
