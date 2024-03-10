@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 // The "MQTT keyboard" simply sends MQTT commands to a remote keyboard, which is connected via USB to a device
 // https://github.com/KlausMu/esp32-mqtt-keyboard
 // if you activate the MQTT keyboard, consider changing the mapping of the keyboard commands to the MQTT keyboard in file "commandHandler.h"

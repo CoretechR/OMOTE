@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <stdint.h>
 #include <map>
 #include "applicationInternal/keys.h"
 
