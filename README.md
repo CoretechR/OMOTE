@@ -35,7 +35,7 @@ The software can be adjusted to your needs. You can add your own amplifier, TV a
 * some smart home devices controlled with MQTT
 * an IR receiver for decoding the IR codes from your remote
 
-Please see the [wiki on how to understand and modify the software.](https://github.com/CoretechR/OMOTE/wiki/How-to-understand-and-modify-the-software)
+Please see the [wiki on how to understand and modify the software.](https://github.com/CoretechR/OMOTE/wiki/02-How-to-understand-and-modify-the-software)
 
 You need to have PlatformIO running, and you need to know how to compile and flash your own firmware with PlatformIO. There is no prebuild firmware.
 
