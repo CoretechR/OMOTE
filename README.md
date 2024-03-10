@@ -22,47 +22,41 @@ OMOTE is an ESP32 based open source universal remote. Its capacitive 2.8” touc
 * Press any button or simply lift the remote to wake it up
 * Up to 6 months of battery life using a 2000 mAh Li-Po battery 
 
-### Dependencies
+### The state of this Project
 
-* [espressif32](https://github.com/platformio/platform-espressif32)@^6.1.0
-* [lvgl/lvgl](https://github.com/lvgl/lvgl)@^8.3.4
-* [bodmer/TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)@^2.5.23
-* [sparkfun/SparkFun LIS3DH Arduino Library](https://github.com/sparkfun/SparkFun_LIS3DH_Arduino_Library)@^1.0.3
-* [crankyoldgit/IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266)@^2.8.4
-* [adafruit/Adafruit FT6206 Library](https://github.com/adafruit/Adafruit_FT6206_Library)@^1.0.6
-* [knolleary/PubSubClient](https://github.com/knolleary/PubSubClient)@^2.8
-* [Chris--A/Keypad](https://github.com/Chris--A/Keypad) (modified for inverted logic)
-
-### The State of This Project
+#### Hardware
 
 The hardware for OMOTE is designed to be easily replicated, using 3D-printed parts, a 2-layer PCB and commonly available components. The mechanical and PCB design can be considered mostly complete. Still, there might be areas for improvement, for example the IR range could be further optimized.
 
-There is still a lot of work left to be done in terms of software. Right now, network settings, buttons and screen layouts are hard-coded. Controlling devices via MQTT is more of a tech demo at the moment and the network connection might not be perfectly reliable. Making the interface configurable, e.g. using a web interface, is a long-term goal. 
+#### Software
+The software can be adjusted to your needs. You can add your amplifier, TV and media player. The software is an example made up of an amplifier and TV controlled with infrared, a Fire TV controlled with BLE and some smart home devices controlled with MQTT.
+
+Please see the [wiki on how to understand and modify the software.](https://github.com/CoretechR/OMOTE/wiki/How-to-understand-and-modify-the-software)
+
+You need to have PlatformIO running, and you need to be able to compile and flash your own firmware. There is no prebuild firmware.
+
+As a long term goal, maybe a prebuild firmware will be published, where you can configure your OMOTE via a web interface.
 
 ### To Do
 
-Currently I have no idea if and when this will be done. But these would be the next steps:
+Short term goals
+- [ ] simulator for creating pages in Windows, WSL2 and Linux
+- [ ] scene selector page as start page
+- [ ] available gui pages based on the currently active scene. Hide pages not needed in a scene
+- [ ] make gui actions context sensitive for the currently active scene
 
+Long term goals (not yet scheduled)
 - [ ] Easier configuration
     - [ ] Document the current process of customization
     - [ ] Store the configuration in Flash (e.g. as a editable json file)
     - [ ] Add an interface for graphically editing the configuration
-- [ ] Complete the on-device settings page
-- [ ] Make the Wi-Fi connection more stable
 
 See the [open issues](https://github.com/CoretechR/OMOTE/issues) and [discussions](https://github.com/CoretechR/OMOTE/discussions) for a full list of proposed features (and known issues).
 
-## Getting Started
-
-OMOTE might look like a finished product, but especially the software is ***not "consumer-friendly"*** yet. If you want to build your own remote and customize it to your devices, you should be ***somewhat experienced with electronics and programming***. 
-
 ### Simulator
 
-You can try the user interface on your PC using the LVGL simulator. Just follow these steps:
-
-1. Install Visual Studio, including the "Desktop development with C++" workload. You can use the free Community edition.
-2. Start Visual Studio and open LVGL.Simulator.sln
-3. Make sure that the build target is set to x64 and then run the local Windows debugger.
+A simulator for running the UI on your local Windows or Linux machine will be released soon.
+You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed).
 
 ### Hardware
 
@@ -82,7 +76,9 @@ The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can 
 
 ### Software
 
-The remote can be charged and programmed via its USB-C port. Open the [PlatformIO project](https://github.com/CoretechR/OMOTE/tree/main/Platformio) to compile and upload the code to the ESP32. Within the code, you can edit the Wi-Fi settings and the button mapping. OMOTE features a IR-receiver which is not currently implemented in the code. You can still modify the [ESp8266-IRRemote RecvDump example](https://github.com/crankyoldgit/IRremoteESP8266/blob/master/examples/IRrecvDumpV2/IRrecvDumpV2.ino) to read the codes from your TV remote.
+The remote can be charged and programmed via its USB-C port. Open the [PlatformIO project](https://github.com/CoretechR/OMOTE/tree/main/Platformio) to compile and upload the code to the ESP32.
+
+Please see the [wiki on how to understand and modify the software.](https://github.com/CoretechR/OMOTE/wiki/How-to-understand-and-modify-the-software)
 
 ## Contributing
 
