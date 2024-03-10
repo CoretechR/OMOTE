@@ -22,7 +22,7 @@ OMOTE is an ESP32 based open source universal remote. Its capacitive 2.8” touc
 * Press any button or simply lift the remote to wake it up
 * Up to 6 months of battery life using a 2000 mAh Li-Po battery 
 
-### The state of this Project
+### The state of this project
 
 #### Hardware
 
@@ -39,30 +39,16 @@ Please see the [wiki on how to understand and modify the software.](https://gith
 
 You need to have PlatformIO running, and you need to know how to compile and flash your own firmware with PlatformIO. There is no prebuild firmware.
 
+The remote can be charged and programmed via its USB-C port. Open the [PlatformIO project](https://github.com/CoretechR/OMOTE/tree/main/Platformio) to compile and upload the code to the ESP32.
+
 As a long term goal, maybe a prebuild firmware will be published, where you can configure your OMOTE via a web interface.
 
-### To Do
-
-Short term goals
-- [ ] simulator for creating pages in Windows, WSL2 and Linux
-- [ ] scene selector page as start page
-- [ ] available gui pages based on the currently active scene. Hide pages not needed in a scene
-- [ ] make gui actions context sensitive for the currently active scene
-
-Long term goals (not yet scheduled)
-- [ ] Easier configuration
-    - [ ] Document the current process of customization
-    - [ ] Store the configuration in Flash (e.g. as a editable json file)
-    - [ ] Add an interface for graphically editing the configuration
-
-See the [open issues](https://github.com/CoretechR/OMOTE/issues) and [discussions](https://github.com/CoretechR/OMOTE/discussions) for a full list of proposed features (and known issues).
-
-### Simulator
+### LVGL GUI simulator for Windows and Linux
 
 A simulator for running the LVGL UI on your local Windows or Linux machine will be released soon.
-You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed).
+You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed as often done in other LVGL simulators).
 
-### Hardware
+### Building the hardware
 
 The central component of OMOTE is its PCB. If you want to build the PCB yourself, you will need SMT-reflow tools like a hot plate or a hot-air station. The 2-layered board and a solder paste stencil can be ordered from any PCB manufacturer using the [KiCad files](https://github.com/CoretechR/OMOTE/tree/main/PCB). Manufacturers like OSHPARK or Aisler will accept these files directly. For JLCPCB or PCBWay, you can use their plugin to export the optimized Gerber files. A [zip archive](https://github.com/CoretechR/OMOTE/blob/main/PCB/production/gerber.zip) with theses Gerber files is also included in this repository.
 
@@ -78,11 +64,21 @@ The 2.8" capacitive touchscreen can be sourced from Adafruit ([2770](https://www
 
 The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can be printed using PLA or PETG. I sliced the models with PrusaSlicer with a layer height of 0.25mm and printed them using ColorFabb PETG. It is important that the case part is printed with its flat side towards the print bed using lots of support structures. If your printer is well calibrated, the cover plate will snap onto the case.
 
-### Software
+### To Dos for software
 
-The remote can be charged and programmed via its USB-C port. Open the [PlatformIO project](https://github.com/CoretechR/OMOTE/tree/main/Platformio) to compile and upload the code to the ESP32.
+Short term goals
+- [ ] simulator for creating pages in Windows, WSL2 and Linux
+- [ ] scene selector page as start page
+- [ ] available gui pages based on the currently active scene. Hide pages not needed in a scene
+- [ ] make gui actions context sensitive for the currently active scene
 
-Please see the [wiki on how to understand and modify the software.](https://github.com/CoretechR/OMOTE/wiki/How-to-understand-and-modify-the-software)
+Long term goals (not yet scheduled)
+- [ ] Easier configuration
+    - [ ] Document the current process of customization
+    - [ ] Store the configuration in Flash (e.g. as a editable json file)
+    - [ ] Add an interface for graphically editing the configuration
+
+See the [open issues](https://github.com/CoretechR/OMOTE/issues) and [discussions](https://github.com/CoretechR/OMOTE/discussions) for a full list of proposed features (and known issues).
 
 ## Contributing
 
