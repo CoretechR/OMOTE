@@ -1,6 +1,6 @@
 # OMOTE - Open Universal Remote
 
-![](P1030424_small.jpg)
+![](images/P1030424_small.jpg)
 
 ![ESP32 Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio.yml/badge.svg)
 ![Simulator Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator.yml/badge.svg)
@@ -11,7 +11,7 @@
 OMOTE is an ESP32 based open source universal remote. Its capacitive 2.8” touchscreen provides an intuitive and snappy user interface for switching devices and settings. No hub or docking station is required as the remote features infrared, Wi-Fi and Bluetooth connectivity. With its well optimized power consumption, OMOTE can run for months on a charge. And since the design files are open source, you can fully customize them to your devices and needs.
 
 <div align="center">
-  <img src="Menu.gif" width="50%">
+  <img src="images/Menu.gif" width="50%">
 </div>
 
 ### Features
@@ -75,7 +75,7 @@ The project uses a 2000mAh Li-Ion battery with a JST-PHR-2 connector. Any 3.7V L
 The 2.8" capacitive touchscreen can be sourced from Adafruit ([2770](https://www.adafruit.com/product/2770)). If you look for the part number CH280QV10-CT, you can also buy this display directly from the manufacturer via [Alibaba](https://www.alibaba.com/product-detail/High-Quality-240-3-rgb-320_1600408828330.html). Shipping from China is expensive, so this only makes sense if you order multiple displays. In general, the cost for a single OMOTE is quite high. Check out the buy-sell page on the [Discord](https://discord.com/channels/1138116475559882852/1153343867681243279) to see if you can share the cost of the PCBs and components with others.
 
 <div align="center">
-  <img src="parts.jpg" width="80%">
+  <img src="images/parts.jpg" width="80%">
 </div>
 
 The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can be printed using PLA or PETG. I sliced the models with PrusaSlicer with a layer height of 0.25mm and printed them using ColorFabb PETG. It is important that the case part is printed with its flat side towards the print bed using lots of support structures. If your printer is well calibrated, the cover plate will snap onto the case.
