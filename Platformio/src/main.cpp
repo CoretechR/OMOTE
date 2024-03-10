@@ -11,16 +11,18 @@
 #include "hardware/mqtt.h"
 #include "hardware/infrared_sender.h"
 #include "hardware/infrared_receiver.h"
+#include "hardware/memoryUsage.h"
 // devices
 #include "device_samsungTV/device_samsungTV.h"
 #include "device_yamahaAmp/device_yamahaAmp.h"
+#include "device_denonAvr/device_denonAvr.h"
 #include "device_smarthome/device_smarthome.h"
 #include "device_appleTV/device_appleTV.h"
 #include "device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "device_keyboard_ble/device_keyboard_ble.h"
-#include "device_denonAvr/device_denonAvr.h"
 // gui and keys
 #include "gui_general_and_keys/guiBase.h"
+#include "gui_general_and_keys/guiRegistry.h"
 #include "gui_general_and_keys/gui_irReceiver.h"
 #include "gui_general_and_keys/gui_settings.h"
 #include "gui_general_and_keys/gui_numpad.h"
@@ -64,6 +66,7 @@ void setup() {
   // register commands for the devices
   register_device_samsung();
   register_device_yamaha();
+  register_device_denon();
   register_device_smarthome();
   register_device_appleTV();
   #ifdef ENABLE_KEYBOARD_MQTT
@@ -72,10 +75,9 @@ void setup() {
   #ifdef ENABLE_KEYBOARD_BLE
   register_device_keyboard_ble();
   #endif
-  register_device_denon();
   register_specialCommands();
 
-  // register the GUIs. They will be displayed in the order they are registered.
+  // register the GUIs. They will be displayed in the order they have been registered.
   register_gui_irReceiver();
   register_gui_settings();
   register_gui_numpad();
@@ -93,27 +95,29 @@ void setup() {
   setLabelCurrentScene();
 
   // init WiFi - needs to be after gui because WifiLabel must be available
-  #ifdef ENABLE_WIFI_AND_MQTT
+  #if ENABLE_WIFI_AND_MQTT == 1
   init_mqtt();
   #endif
 
-  Serial.print("Setup finished in ");
-  Serial.print(millis());
-  Serial.println("ms.");
+  Serial.printf("Setup finished in %lu ms.\r\n", millis());
 }
 
 // Loop ------------------------------------------------------------------------------------------------------------------------------------
 
-void loop() { 
+void loop() {
 
   // Update Backlight brightness
   update_backligthBrighness();
-
   // Update LVGL UI
   gui_loop();
-
   // Blink debug LED at 1 Hz
   update_userled();
+  // Keypad Handling
+  keypad_loop();
+  // IR receiver
+  if (irReceiverEnabled) {
+    infraredReceiver_loop();
+  }
 
   // Refresh IMU data at 10Hz
   static unsigned long IMUTaskTimer = millis();
@@ -124,26 +128,18 @@ void loop() {
 
   // Update battery and BLE stats at 1Hz
   static unsigned long updateStatusTimer = millis();
-  if(millis() - updateStatusTimer >= 1000){
-    update_battery_stats();
+  if(millis() - updateStatusTimer >= 1000) {
     updateStatusTimer = millis();
+    update_battery_stats();
 
-    #ifdef ENABLE_BLUETOOTH
+    #if ENABLE_BLUETOOTH == 1
     // adjust this if you implement other bluetooth devices than the BLE keyboard
     #ifdef ENABLE_KEYBOARD_BLE
     update_keyboard_ble_status();
     #endif
     #endif
 
-    // Serial.printf("heapSize: %lu, heapFree: %lu, heapMin: %lu, heapMax: %lu\r\n", ESP.getHeapSize(), ESP.getFreeHeap(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
-
-  }
-
-  // Keypad Handling
-  keypad_loop();
-
-  if (irReceiverEnabled) {
-    infraredReceiver_loop();
+    doLogMemoryUsage();
   }
 
 }

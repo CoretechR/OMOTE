@@ -37,8 +37,8 @@ void update_battery_stats(void) {
   sprintf(buffer1, "Voltage: %.2f V", (float)battery_voltage / 1000);
 
   // GUI settings
-  lv_label_set_text_fmt(objBattSettingsVoltage,    buffer1);
-  lv_label_set_text_fmt(objBattSettingsPercentage, "Percentage: %d%%", battery_percentage);
+  if (objBattSettingsVoltage    != NULL) {lv_label_set_text_fmt(objBattSettingsVoltage,    buffer1);}
+  if (objBattSettingsPercentage != NULL) {lv_label_set_text_fmt(objBattSettingsPercentage, "Percentage: %d%%", battery_percentage);}
   //lv_label_set_text_fmt(objBattSettingsIscharging, "Is charging: %s",  battery_ischarging ? "yes" : "no");
   
   // GUI status bar at the top
@@ -55,21 +55,23 @@ void update_battery_stats(void) {
   }
 
   // if (battery_ischarging /*|| (!battery_ischarging && battery_voltage > 4350)*/){
-  //   // lv_label_set_text(objBattPercentage, "");
-  //   // lv_label_set_text_fmt(objBattPercentage, "%d%%", battery_percentage);
-  //   // lv_label_set_text_fmt(objBattPercentage, "%.1f, %d%%", (float)battery_voltage / 1000, battery_percentage);
-  //   lv_label_set_text(objBattPercentage, buffer2);
-  //   lv_label_set_text(objBattIcon, LV_SYMBOL_USB);
+  //   // if (BattPercentageLabel != NULL) {lv_label_set_text(BattPercentageLabel, "");}
+  //   // lv_label_set_text_fmt(BattPercentageLabel, "%d%%", battery_percentage);
+  //   // lv_label_set_text_fmt(BattPercentageLabel, "%.1f, %d%%", (float)battery_voltage / 1000, battery_percentage);
+  //   if (BattPercentageLabel != NULL) {lv_label_set_text(BattPercentageLabel, buffer2);}
+  //   if (BattIconLabel != NULL) {lv_label_set_text(BattIconLabel, LV_SYMBOL_USB);}
   // } else
   {
     // Update status bar battery indicator
-    // lv_label_set_text_fmt(objBattPercentage, "%.1f, %d%%", (float)battery_voltage / 1000, battery_percentage);
-    lv_label_set_text(objBattPercentage, buffer2);
-         if(battery_percentage > 95) lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_FULL);
-    else if(battery_percentage > 75) lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_3);
-    else if(battery_percentage > 50) lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_2);
-    else if(battery_percentage > 25) lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_1);
-    else                             lv_label_set_text(objBattIcon, LV_SYMBOL_BATTERY_EMPTY);
+    // lv_label_set_text_fmt(BattPercentageLabel, "%.1f, %d%%", (float)battery_voltage / 1000, battery_percentage);
+    if (BattPercentageLabel != NULL) {lv_label_set_text(BattPercentageLabel, buffer2);}
+    if (BattIconLabel != NULL) {
+           if(battery_percentage > 95) lv_label_set_text(BattIconLabel, LV_SYMBOL_BATTERY_FULL);
+      else if(battery_percentage > 75) lv_label_set_text(BattIconLabel, LV_SYMBOL_BATTERY_3);
+      else if(battery_percentage > 50) lv_label_set_text(BattIconLabel, LV_SYMBOL_BATTERY_2);
+      else if(battery_percentage > 25) lv_label_set_text(BattIconLabel, LV_SYMBOL_BATTERY_1);
+      else                             lv_label_set_text(BattIconLabel, LV_SYMBOL_BATTERY_EMPTY);
+    }
   }
 }
 

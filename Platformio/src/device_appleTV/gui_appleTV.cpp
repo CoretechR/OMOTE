@@ -1,5 +1,6 @@
 #include <lvgl.h>
 #include "device_appleTV/device_appleTV.h"
+#include "device_appleTV/gui_appleTV.h"
 #include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/guiRegistry.h"
 #include "hardware/tft.h"
@@ -17,11 +18,9 @@ static void appleKey_event_cb(lv_event_t* e) {
   Serial.println(50 + (int)e->user_data);
 }
 
-void init_gui_tab_appleTV(lv_obj_t* tabview) {
+void create_tab_content_appleTV(lv_obj_t* tab) {
 
-  lv_obj_t* tab = lv_tabview_add_tab(tabview, "Apple TV");
-
-  // Add content to the Apple TV tab (3)
+  // Add content to the Apple TV tab
   // Add a nice apple tv logo
   lv_obj_t* appleImg = lv_img_create(tab);
   lv_img_set_src(appleImg, &appleTvIcon);
@@ -52,22 +51,15 @@ void init_gui_tab_appleTV(lv_obj_t* tabview) {
   lv_obj_set_style_img_recolor(appleImg, lv_color_white(), LV_PART_MAIN);
   lv_obj_set_style_img_recolor_opa(appleImg, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(appleImg, LV_ALIGN_CENTER, 0, 0);
-  
+
 }
 
-void init_gui_pageIndicator_appleTV(lv_obj_t* panel) {
-  // Create actual (non-clickable) buttons for every tab
-  lv_obj_t* btn = lv_btn_create(panel);
-  lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-  lv_obj_set_size(btn, 150, lv_pct(100));
-  lv_obj_t* label = lv_label_create(btn);
-  lv_label_set_text_fmt(label, "Apple TV");
-  lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
-  lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
+void notify_tab_before_delete_appleTV(void) {
+  // remember to set all pointers to lvgl objects to NULL if they might be accessed from outside.
+  // They must check if object is NULL and must not use it if so
 
 }
 
 void register_gui_appleTV(void){
-  register_gui(& init_gui_tab_appleTV, & init_gui_pageIndicator_appleTV);
+  register_gui(std::string(tabName_appleTV), & create_tab_content_appleTV, & notify_tab_before_delete_appleTV);
 }

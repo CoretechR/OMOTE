@@ -6,6 +6,7 @@
 #include "hardware/infrared_receiver.h"
 #include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/guiRegistry.h"
+#include "gui_general_and_keys/gui_irReceiver.h"
 
 lv_obj_t* menuBoxToggle;
 lv_obj_t* menuBoxMessages;
@@ -65,7 +66,7 @@ void showNewIRmessage(String message) {
 }
 
 // IR receiver on Switch Event handler
-static void IRReceiverOnSetting_event_cb(lv_event_t * e){
+static void IRReceiverOnSetting_event_cb(lv_event_t* e){
   irReceiverEnabled = lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED);
   if (irReceiverEnabled) {
     Serial.println("will turn on IR receiver");
@@ -83,11 +84,9 @@ static void IRReceiverOnSetting_event_cb(lv_event_t * e){
   }
 }
 
-void init_gui_tab_irReceiver(lv_obj_t* tabview) {
+void create_tab_content_irReceiver(lv_obj_t* tab) {
 
-  lv_obj_t* tab = lv_tabview_add_tab(tabview, "IR Receiver");
-
-  // Add content to the settings tab
+  // Add content to the irReceiver tab
   // With a flex layout, setting groups/boxes will position themselves automatically
   lv_obj_set_layout(tab, LV_LAYOUT_FLEX);
   lv_obj_set_flex_flow(tab, LV_FLEX_FLOW_COLUMN);
@@ -120,20 +119,15 @@ void init_gui_tab_irReceiver(lv_obj_t* tabview) {
     lv_obj_align(irReceivedMessage[i], LV_ALIGN_TOP_LEFT, 0, 0 + i*11);
   }
   printReceivedMessages(true);
+
 }
 
-void init_gui_pageIndicator_irReceiver(lv_obj_t* panel) {
-  // Create actual (non-clickable) buttons for every tab
-  lv_obj_t* btn = lv_btn_create(panel);
-  lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-  lv_obj_set_size(btn, 150, lv_pct(100));
-  lv_obj_t* label = lv_label_create(btn);
-  lv_label_set_text_fmt(label, "IR Receiver");
-  lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
-  lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
+void notify_tab_before_delete_irReceiver(void) {
+  // remember to set all pointers to lvgl objects to NULL if they might be accessed from outside.
+  // They must check if object is NULL and must not use it if so
+
 }
 
 void register_gui_irReceiver(void){
-  register_gui(& init_gui_tab_irReceiver, & init_gui_pageIndicator_irReceiver);
+  register_gui(std::string(tabName_irReceiver), & create_tab_content_irReceiver, & notify_tab_before_delete_irReceiver);
 }

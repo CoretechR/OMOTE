@@ -3,7 +3,7 @@
 
 #include "commandHandler.h"
 
-#ifdef ENABLE_WIFI_AND_MQTT
+#if ENABLE_WIFI_AND_MQTT == 1
 
 #include "WiFi.h"
 #include <PubSubClient.h>

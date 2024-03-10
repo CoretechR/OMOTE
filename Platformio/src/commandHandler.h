@@ -1,9 +1,6 @@
 #ifndef __COMMANDHANDLER_H__
 #define __COMMANDHANDLER_H__
 
-#define ENABLE_WIFI_AND_MQTT // Comment out to disable WiFi
-#define ENABLE_BLUETOOTH     // Comment out to disable Bluetooth
-
 #include <Arduino.h>
 #include <string>
 #include <list>
@@ -104,7 +101,7 @@ enum commandHandlers {
   IR_SONY,
   IR_RC5,
   IR_DENON,
-  #ifdef ENABLE_WIFI_AND_MQTT
+  #if ENABLE_WIFI_AND_MQTT == 1
   MQTT,
   #endif
   #ifdef ENABLE_KEYBOARD_BLE

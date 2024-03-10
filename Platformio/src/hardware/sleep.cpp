@@ -108,7 +108,7 @@ void enterSleep(){
   configIMUInterrupts();
   IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC);//really clear interrupt
 
-  #ifdef ENABLE_WIFI_AND_MQTT
+  #if ENABLE_WIFI_AND_MQTT == 1
   // Power down modem
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);

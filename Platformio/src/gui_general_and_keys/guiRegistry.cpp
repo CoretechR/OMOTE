@@ -1,31 +1,37 @@
+#include <Arduino.h>
+#include <map>
 #include <string>
 #include <list>
+#include <map>
 #include <lvgl.h>
 #include "guiRegistry.h"
+#include "gui_general_and_keys/guiBase.h"
 
-// https://stackoverflow.com/questions/840501/how-do-function-pointers-in-c-work
-struct gui_definition {
-  init_gui_tab this_init_gui_tab;
-  init_gui_pageIndicator this_init_gui_pageIndicator;
-};
+// ------------------------------------------------------------------------------------
+// this is a map of the registered_guis that can be accessed by name
+std::map<std::string, gui_definition> registered_guis_byName_map;
+// This is the list of the guis that we want to be available when swiping. Need not to be all the guis that have been registered, can be only a subset.
+// You can swipe through these guis. Will be in the order you place them here in the vector.
+std::vector<std::string> list_of_guis_to_be_shown;
+std::string currentGUIname = "";
 
-std::list<gui_definition> registered_guis;
+// ------------------------------------------------------------------------------------
 
-void register_gui(init_gui_tab a_init_gui_tab, init_gui_pageIndicator a_gui_pageIndicator) {
-  registered_guis.push_back(gui_definition{a_init_gui_tab, a_gui_pageIndicator});
 
-}
-
-void create_gui_tabs_from_gui_registry(lv_obj_t* tabview) {
-  std::list<gui_definition>::iterator it;
-  for (it = registered_guis.begin(); it != registered_guis.end(); ++it) {
-    it->this_init_gui_tab(tabview);
+void register_gui(std::string a_name, create_tab_content a_create_tab_content, notify_tab_before_delete a_notify_tab_before_delete) {
+  
+  if (registered_guis_byName_map.count(a_name) > 0) {
+    Serial.printf("ERROR!!!: you cannot register two guis having the same name '%s'\r\n", a_name.c_str());
+    return;
   }
-}
 
-void create_gui_pageIndicators_from_gui_registry(lv_obj_t* panel) {
-  std::list<gui_definition>::iterator it;
-  for (it = registered_guis.begin(); it != registered_guis.end(); ++it) {
-    it->this_init_gui_pageIndicator(panel);
-  }
+  gui_definition new_gui_definition = gui_definition{a_name, a_create_tab_content, a_notify_tab_before_delete};
+  
+  // put the gui_definition in a map that can be accessed by name
+  registered_guis_byName_map[a_name] = new_gui_definition;
+
+  // By default, put all registered guis in the sequence of guis to be shown
+  // Later we will have scene specific sequences of guis
+  list_of_guis_to_be_shown.insert(list_of_guis_to_be_shown.end(), {std::string(a_name)});
+
 }

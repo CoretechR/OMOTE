@@ -126,7 +126,7 @@ void executeCommandWithData(std::string command, commandData commandData, std::s
       break;
     }
 
-    #ifdef ENABLE_WIFI_AND_MQTT
+    #if ENABLE_WIFI_AND_MQTT == 1
     case MQTT: {
       auto current = commandData.commandPayloads.begin();
       std::string topic = *current;

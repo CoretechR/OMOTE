@@ -10,10 +10,8 @@
 
 // if you activate the MQTT keyboard, consider changing the mapping of the keyboard commands to the MQTT keyboard in file "commandHandler.h"
 
-#include "commandHandler.h"
-
-#if defined(ENABLE_KEYBOARD_MQTT) && !defined(ENABLE_WIFI_AND_MQTT)
-static_assert(false, "You have to use \"#define ENABLE_WIFI_AND_MQTT\" in \"commandHandler.h\" when having \"#define ENABLE_KEYBOARD_MQTT\"");
+#if defined(ENABLE_KEYBOARD_MQTT) && !(ENABLE_WIFI_AND_MQTT == 1)
+static_assert(false, "You have to use \"-D ENABLE_WIFI_AND_MQTT=1\" in \"platformio.ini\" when having \"#define ENABLE_KEYBOARD_MQTT\"");
 #endif
 
 #define KEYBOARD_MQTT_UP                   "Keyboard_mqtt_up"

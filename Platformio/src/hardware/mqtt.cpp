@@ -5,7 +5,7 @@
 #include "secrets.h"
 #include "commandHandler.h"
 
-#ifdef ENABLE_WIFI_AND_MQTT
+#if ENABLE_WIFI_AND_MQTT == 1
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
@@ -22,6 +22,7 @@ void WiFiEvent(WiFiEvent_t event){
   // Set status bar icon based on WiFi status
   if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP || event == ARDUINO_EVENT_WIFI_STA_GOT_IP6) {
     if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);}
+    Serial.printf("WiFi connected, IP address: %s\r\n", WiFi.localIP().toString().c_str());
 
   } else if (event == ARDUINO_EVENT_WIFI_STA_DISCONNECTED) {
     if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, "");}

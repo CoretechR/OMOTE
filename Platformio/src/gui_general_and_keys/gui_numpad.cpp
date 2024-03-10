@@ -3,6 +3,7 @@
 #include "device_samsungTV/device_samsungTV.h"
 #include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/guiRegistry.h"
+#include "gui_general_and_keys/gui_numpad.h"
 #include "commandHandler.h"
 #include "scenes/sceneHandler.h"
 #include "scenes/scene_TV.h"
@@ -28,9 +29,7 @@ static void virtualKeypad_event_cb(lv_event_t* e) {
   }
 }
 
-void init_gui_tab_numpad(lv_obj_t* tabview) {
-
-  lv_obj_t* tab = lv_tabview_add_tab(tabview, "Numpad");
+void create_tab_content_numpad(lv_obj_t* tab) {
 
   // Configure number button grid 
   static lv_coord_t col_dsc[] = { LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST }; // equal x distribution
@@ -79,23 +78,15 @@ void init_gui_tab_numpad(lv_obj_t* tabview) {
   }
   // Create a shared event for all button inside container
   lv_obj_add_event_cb(cont, virtualKeypad_event_cb, LV_EVENT_CLICKED, NULL);
-  
 
 }
 
-void init_gui_pageIndicator_numpad(lv_obj_t* panel) {
-  // Create actual (non-clickable) buttons for every tab
-  lv_obj_t* btn = lv_btn_create(panel);
-  lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-  lv_obj_set_size(btn, 150, lv_pct(100));
-  lv_obj_t* label = lv_label_create(btn);
-  lv_label_set_text_fmt(label, "Numpad");
-  lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
-  lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
+void notify_tab_before_delete_numpad(void) {
+  // remember to set all pointers to lvgl objects to NULL if they might be accessed from outside.
+  // They must check if object is NULL and must not use it if so
 
 }
 
 void register_gui_numpad(void){
-  register_gui(& init_gui_tab_numpad, & init_gui_pageIndicator_numpad);
+  register_gui(std::string(tabName_numpad), & create_tab_content_numpad, & notify_tab_before_delete_numpad);
 }

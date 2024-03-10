@@ -2,26 +2,28 @@
 #include "preferencesStorage.h"
 #include "hardware/tft.h"
 #include "hardware/sleep.h"
+#include "hardware/memoryUsage.h"
 #include "gui_general_and_keys/guiBase.h"
 #include "gui_general_and_keys/guiRegistry.h"
+#include "gui_general_and_keys/gui_settings.h"
 
 lv_obj_t* objBattSettingsVoltage;
 lv_obj_t* objBattSettingsPercentage;
 //lv_obj_t* objBattSettingsIscharging;
 
 // Slider Event handler
-static void bl_slider_event_cb(lv_event_t * e){
+static void bl_slider_event_cb(lv_event_t* e){
   lv_obj_t * slider = lv_event_get_target(e);
   backlight_brightness = constrain(lv_slider_get_value(slider), 60, 255);
 }
 
 // Wakeup by IMU Switch Event handler
-static void WakeEnableSetting_event_cb(lv_event_t * e){
+static void WakeEnableSetting_event_cb(lv_event_t* e){
   wakeupByIMUEnabled = lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED);
 }
 
 // timout event handler
-static void timout_event_cb(lv_event_t * e){
+static void timout_event_cb(lv_event_t* e){
   lv_obj_t * drop = lv_event_get_target(e);
   uint16_t selected = lv_dropdown_get_selected(drop);
   switch (selected) {
@@ -39,10 +41,12 @@ static void timout_event_cb(lv_event_t * e){
   save_preferences();
 }
 
-void init_gui_tab_settings(lv_obj_t* tabview) {
+// show memory usage event handler
+static void showMemoryUsage_event_cb(lv_event_t* e) {
+  setShowMemoryUsage(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED));
+}
 
-  lv_obj_t* tab = lv_tabview_add_tab(tabview, "Settings");
-
+void create_tab_content_settings(lv_obj_t* tab) {
 
   // Add content to the settings tab
   // With a flex layout, setting groups/boxes will position themselves automatically
@@ -50,7 +54,7 @@ void init_gui_tab_settings(lv_obj_t* tabview) {
   lv_obj_set_flex_flow(tab, LV_FLEX_FLOW_COLUMN);
   lv_obj_set_scrollbar_mode(tab, LV_SCROLLBAR_MODE_ACTIVE);
 
-  // Add a label, then a box for the display settings
+  // Add a label, then a box for the display settings -----------------------------------------
   lv_obj_t* menuLabel = lv_label_create(tab);
   lv_label_set_text(menuLabel, "Display");
 
@@ -87,7 +91,11 @@ void init_gui_tab_settings(lv_obj_t* tabview) {
   lv_obj_align(wakeToggle, LV_ALIGN_TOP_RIGHT, 0, 29);
   lv_obj_set_style_bg_color(wakeToggle, lv_color_hex(0x505050), LV_PART_MAIN);
   lv_obj_add_event_cb(wakeToggle, WakeEnableSetting_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
-  if(wakeupByIMUEnabled) lv_obj_add_state(wakeToggle, LV_STATE_CHECKED); // set default state
+  if (wakeupByIMUEnabled) {
+    lv_obj_add_state(wakeToggle, LV_STATE_CHECKED);
+  } else {
+    // lv_obj_clear_state(wakeToggle, LV_STATE_CHECKED);
+  }
 
   menuLabel = lv_label_create(menuBox);
   lv_label_set_text(menuLabel, "Timeout");
@@ -141,7 +149,7 @@ void init_gui_tab_settings(lv_obj_t* tabview) {
   // lv_label_set_text(menuLabel, LV_SYMBOL_RIGHT);
   // lv_obj_align(menuLabel, LV_ALIGN_TOP_RIGHT, 0, 32);
 
-  // Another setting for the battery
+  // Another setting for the battery ----------------------------------------------------------
   menuLabel = lv_label_create(tab);
   lv_label_set_text(menuLabel, "Battery");
   menuBox = lv_obj_create(tab);
@@ -158,21 +166,38 @@ void init_gui_tab_settings(lv_obj_t* tabview) {
   // objBattSettingsIscharging = lv_label_create(menuBox);
   // lv_label_set_text(objBattSettingsIscharging, "Is charging:");
   // lv_obj_align(objBattSettingsIscharging, LV_ALIGN_TOP_LEFT, 0, 64);
+
+
+  // Memory statistics ------------------------------------------------------------------------
+  menuLabel = lv_label_create(tab);
+  lv_label_set_text(menuLabel, "Memory usage");
+  menuBox = lv_obj_create(tab);
+  lv_obj_set_size(menuBox, lv_pct(100), 48);
+  lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
+  lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
+  
+  menuLabel = lv_label_create(menuBox);
+  lv_label_set_text(menuLabel, "Show mem usage");
+  lv_obj_align(menuLabel, LV_ALIGN_TOP_LEFT, 0, 3);
+  lv_obj_t* memoryUsageToggle = lv_switch_create(menuBox);
+  lv_obj_set_size(memoryUsageToggle, 40, 22);
+  lv_obj_align(memoryUsageToggle, LV_ALIGN_TOP_RIGHT, 0, 0);
+  lv_obj_set_style_bg_color(memoryUsageToggle, lv_color_hex(0x505050), LV_PART_MAIN);
+  lv_obj_add_event_cb(memoryUsageToggle, showMemoryUsage_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+  if (getShowMemoryUsage()) {
+    lv_obj_add_state(memoryUsageToggle, LV_STATE_CHECKED);
+  } else {
+    // lv_obj_clear_state(memoryUsageToggle, LV_STATE_CHECKED);
+  }
 }
 
-void init_gui_pageIndicator_settings(lv_obj_t* panel) {
-  // Create actual (non-clickable) buttons for every tab
-  lv_obj_t* btn = lv_btn_create(panel);
-  lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-  lv_obj_set_size(btn, 150, lv_pct(100));
-  lv_obj_t* label = lv_label_create(btn);
-  lv_label_set_text_fmt(label, "Settings");
-  lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
-  lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
-
+void notify_tab_before_delete_settings(void) {
+  // remember to set all pointers to lvgl objects to NULL if they might be accessed from outside.
+  // They must check if object is NULL and must not use it if so
+  objBattSettingsVoltage = NULL;
+  objBattSettingsPercentage = NULL;
 }
 
 void register_gui_settings(void){
-  register_gui(& init_gui_tab_settings, & init_gui_pageIndicator_settings);
+  register_gui(std::string(tabName_settings), & create_tab_content_settings, & notify_tab_before_delete_settings);
 }

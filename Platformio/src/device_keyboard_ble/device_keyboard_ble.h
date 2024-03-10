@@ -8,10 +8,8 @@
 
 #ifdef ENABLE_KEYBOARD_BLE
 
-#include "commandHandler.h"
-
-#if defined(ENABLE_KEYBOARD_BLE) && !defined(ENABLE_BLUETOOTH)
-static_assert(false, "You have to use \"#define ENABLE_BLUETOOTH\" in \"commandHandler.h\" when having \"#define ENABLE_KEYBOARD_BLE\"");
+#if defined(ENABLE_KEYBOARD_BLE) && !(ENABLE_BLUETOOTH == 1)
+static_assert(false, "You have to use \"-D ENABLE_BLUETOOTH=1\" in \"platformio.ini\" when having \"#define ENABLE_KEYBOARD_BLE\"");
 #endif
 
 #include <BleKeyboard.h>

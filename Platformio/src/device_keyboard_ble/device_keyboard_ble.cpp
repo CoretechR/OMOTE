@@ -38,16 +38,16 @@ bool blinkBluetoothLabelIsOn = false;
 
 void update_keyboard_ble_status() {
   if (bleKeyboard.isConnected()) {
-    lv_label_set_text(BluetoothLabel, LV_SYMBOL_BLUETOOTH);
+    if (BluetoothLabel != NULL) {lv_label_set_text(BluetoothLabel, LV_SYMBOL_BLUETOOTH);}
     bleKeyboard.setBatteryLevel(battery_percentage);
 
   } else {
     if(millis() - blinkBluetoothLabelLastChange >= 1000){
       blinkBluetoothLabelIsOn = !blinkBluetoothLabelIsOn;
       if (blinkBluetoothLabelIsOn) {
-        lv_label_set_text(BluetoothLabel, LV_SYMBOL_BLUETOOTH);
+        if (BluetoothLabel != NULL) {lv_label_set_text(BluetoothLabel, LV_SYMBOL_BLUETOOTH);}
       } else {
-        lv_label_set_text(BluetoothLabel, "");
+        if (BluetoothLabel != NULL) {lv_label_set_text(BluetoothLabel, "");}
       }
       blinkBluetoothLabelLastChange = millis();
     }
