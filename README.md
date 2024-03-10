@@ -29,11 +29,15 @@ OMOTE is an ESP32 based open source universal remote. Its capacitive 2.8” touc
 The hardware for OMOTE is designed to be easily replicated, using 3D-printed parts, a 2-layer PCB and commonly available components. The mechanical and PCB design can be considered mostly complete. Still, there might be areas for improvement, for example the IR range could be further optimized.
 
 #### Software
-The software can be adjusted to your needs. You can add your amplifier, TV and media player. The software is an example made up of an amplifier and TV controlled with infrared, a Fire TV controlled with BLE and some smart home devices controlled with MQTT.
+The software can be adjusted to your needs. You can add your own amplifier, TV and media player. Smart home devices can be controlled with MQTT. The software is an example made up of:
+* a TV and an amplifier controlled with infrared
+* a Fire TV media player controlled with BLE (bluetooth keyboard)
+* some smart home devices controlled with MQTT
+* an IR receiver for decoding the IR codes from your remote
 
 Please see the [wiki on how to understand and modify the software.](https://github.com/CoretechR/OMOTE/wiki/How-to-understand-and-modify-the-software)
 
-You need to have PlatformIO running, and you need to be able to compile and flash your own firmware. There is no prebuild firmware.
+You need to have PlatformIO running, and you need to know how to compile and flash your own firmware with PlatformIO. There is no prebuild firmware.
 
 As a long term goal, maybe a prebuild firmware will be published, where you can configure your OMOTE via a web interface.
 
@@ -55,7 +59,7 @@ See the [open issues](https://github.com/CoretechR/OMOTE/issues) and [discussion
 
 ### Simulator
 
-A simulator for running the UI on your local Windows or Linux machine will be released soon.
+A simulator for running the LVGL UI on your local Windows or Linux machine will be released soon.
 You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed).
 
 ### Hardware
