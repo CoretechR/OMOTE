@@ -22,17 +22,6 @@ OMOTE is an ESP32 based open source universal remote. Its capacitive 2.8” touc
 * Press any button or simply lift the remote to wake it up
 * Up to 6 months of battery life using a 2000 mAh Li-Po battery 
 
-### Dependencies
-
-* [espressif32](https://github.com/platformio/platform-espressif32)@^6.1.0
-* [lvgl/lvgl](https://github.com/lvgl/lvgl)@^8.3.4
-* [bodmer/TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)@^2.5.23
-* [sparkfun/SparkFun LIS3DH Arduino Library](https://github.com/sparkfun/SparkFun_LIS3DH_Arduino_Library)@^1.0.3
-* [crankyoldgit/IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266)@^2.8.4
-* [adafruit/Adafruit FT6206 Library](https://github.com/adafruit/Adafruit_FT6206_Library)@^1.0.6
-* [knolleary/PubSubClient](https://github.com/knolleary/PubSubClient)@^2.8
-* [Chris--A/Keypad](https://github.com/Chris--A/Keypad) (modified for inverted logic)
-
 ### The state of this Project
 
 #### Hardware
