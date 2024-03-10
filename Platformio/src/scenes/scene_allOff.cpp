@@ -1,44 +1,18 @@
 #include <map>
-#include "gui_general_and_keys/keys.h"
-#include "device_samsungTV/device_samsungTV.h"
-#include "device_yamahaAmp/device_yamahaAmp.h"
-#include "scenes/sceneRegistry.h"
 #include "scenes/scene_allOff.h"
-#include "scenes/scene_TV.h"
-#include "scenes/scene_fireTV.h"
-#include "scenes/scene_chromecast.h"
-#include "commandHandler.h"
+#include "applicationInternal/keys.h"
+#include "applicationInternal/scenes/sceneRegistry.h"
+#include "applicationInternal/hardware/hardwarePresenter.h"
+// devices
+#include "devices/TV/device_samsungTV/device_samsungTV.h"
+#include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
+#include "applicationInternal/commandHandler.h"
 
-std::map<char, repeatModes> key_repeatModes_allOff {
+uint16_t SCENE_ALLOFF      ; //"Scene_allOff"
 
-
-
-
-
-
-
-
-
-
-};
-
-std::map<char, std::string> key_commands_short_allOff {
-
-
-
-
-
-
-
-
-
-
-};
-
-std::map<char, std::string> key_commands_long_allOff {
-
-
-};
+std::map<char, repeatModes> key_repeatModes_allOff;
+std::map<char, uint16_t> key_commands_short_allOff;
+std::map<char, uint16_t> key_commands_long_allOff;
 
 void scene_start_sequence_allOff(void) {
   executeCommand(SAMSUNG_POWER_OFF);
@@ -68,7 +42,42 @@ void scene_end_sequence_allOff(void) {
 
 std::string scene_name_allOff = "Off";
 
-void register_scene_allOff(void){
+void register_scene_allOff_commands(void) {
+  register_command(&SCENE_ALLOFF     , makeCommandData(SCENE, {scene_name_allOff}));
+}
+
+void register_scene_allOff(void) {
+  key_repeatModes_allOff = {
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  };
+  
+  key_commands_short_allOff = {
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  };
+  
+  key_commands_long_allOff = {
+  
+  
+  };
+
   register_scene(
     scene_name_allOff,
     & scene_start_sequence_allOff,
@@ -76,6 +85,4 @@ void register_scene_allOff(void){
     & key_repeatModes_allOff,
     & key_commands_short_allOff,
     & key_commands_long_allOff);
-
-  commands[SCENE_ALLOFF]     = makeCommandData(SCENE, {scene_name_allOff});
 }

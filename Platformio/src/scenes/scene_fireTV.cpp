@@ -1,44 +1,18 @@
 #include <map>
-#include "gui_general_and_keys/keys.h"
-#include "device_samsungTV/device_samsungTV.h"
-#include "device_yamahaAmp/device_yamahaAmp.h"
-#include "scenes/sceneRegistry.h"
-#include "scenes/scene_allOff.h"
-#include "scenes/scene_TV.h"
 #include "scenes/scene_fireTV.h"
-#include "scenes/scene_chromecast.h"
-#include "commandHandler.h"
+#include "applicationInternal/keys.h"
+#include "applicationInternal/scenes/sceneRegistry.h"
+#include "applicationInternal/hardware/hardwarePresenter.h"
+// devices
+#include "devices/TV/device_samsungTV/device_samsungTV.h"
+#include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
+#include "applicationInternal/commandHandler.h"
 
-std::map<char, repeatModes> key_repeatModes_fireTV {
+uint16_t SCENE_FIRETV      ; //"Scene_firetv"
 
-                                  {'<', SHORTorLONG   },       {'p', SHORT         },         {'>', SHORTorLONG   },
-  {'c', SHORT         },                                                                      {'i', SHORT         },
-                                                {'u', SHORT         },
-                    {'l', SHORT         },      {'k', SHORT         },      {'r', SHORT         },
-                                                {'d', SHORT         },
-                                                                                              {'s', SHORT         },
-
-
-
-};
-
-std::map<char, std::string> key_commands_short_fireTV {
-
-                                  {'<', KEYBOARD_REWIND},      {'p', KEYBOARD_PLAYPAUSE},      {'>', KEYBOARD_FASTFORWARD},
-  {'c', KEYBOARD_HOME},                                                                        {'i', KEYBOARD_MENU},
-                                                {'u', KEYBOARD_UP},
-                    {'l', KEYBOARD_LEFT},       {'k', KEYBOARD_SELECT},     {'r', KEYBOARD_RIGHT},
-                                                {'d', KEYBOARD_DOWN},
-                                                                                               {'s', KEYBOARD_BACK},
-
-
-
-};
-
-std::map<char, std::string> key_commands_long_fireTV {
-  {'<', KEYBOARD_REWIND_LONG},
-  {'>', KEYBOARD_FASTFORWARD_LONG},
-};
+std::map<char, repeatModes> key_repeatModes_fireTV;
+std::map<char, uint16_t> key_commands_short_fireTV;
+std::map<char, uint16_t> key_commands_long_fireTV;
 
 void scene_start_sequence_fireTV(void) {
   executeCommand(SAMSUNG_POWER_ON);
@@ -66,7 +40,42 @@ void scene_end_sequence_fireTV(void) {
 
 std::string scene_name_fireTV = "Fire TV";
 
-void register_scene_fireTV(void){
+void register_scene_fireTV_commands(void) {
+  register_command(&SCENE_FIRETV     , makeCommandData(SCENE, {scene_name_fireTV}));
+}
+
+void register_scene_fireTV(void) {
+  key_repeatModes_fireTV = {
+  
+                                       {KEY_REWI,  SHORTorLONG      },    {KEY_PLAY,  SHORT            },    {KEY_FORW,  SHORTorLONG      },
+    {KEY_CONF,  SHORT            },                                                                          {KEY_INFO,  SHORT            },
+                                                         {KEY_UP,    SHORT            },
+                      {KEY_LEFT,  SHORT            },    {KEY_OK,    SHORT            },    {KEY_RIGHT, SHORT           },
+                                                         {KEY_DOWN,  SHORT            },
+                                                                                                             {KEY_SRC,   SHORT            },
+  
+  
+  
+  };
+  
+  key_commands_short_fireTV = {
+  
+                                       {KEY_REWI,  KEYBOARD_REWIND  },    {KEY_PLAY, KEYBOARD_PLAYPAUSE},    {KEY_FORW,  KEYBOARD_FASTFORWARD},
+    {KEY_CONF,  KEYBOARD_HOME    },                                                                          {KEY_INFO,  KEYBOARD_MENU    },
+                                                         {KEY_UP,    KEYBOARD_UP      },
+                      {KEY_LEFT,  KEYBOARD_LEFT   },     {KEY_OK,    KEYBOARD_SELECT  },    {KEY_RIGHT, KEYBOARD_RIGHT   },
+                                                         {KEY_DOWN,  KEYBOARD_DOWN    },
+                                                                                                             {KEY_SRC,   KEYBOARD_BACK    },
+  
+  
+  
+  };
+  
+  key_commands_long_fireTV = {
+    {KEY_REWI,  KEYBOARD_REWIND_LONG},
+    {KEY_FORW,  KEYBOARD_FASTFORWARD_LONG},
+  };
+
   register_scene(
     scene_name_fireTV,
     & scene_start_sequence_fireTV,
@@ -74,6 +83,4 @@ void register_scene_fireTV(void){
     & key_repeatModes_fireTV,
     & key_commands_short_fireTV,
     & key_commands_long_fireTV);
-
-  commands[SCENE_FIRETV]     = makeCommandData(SCENE, {scene_name_fireTV});
 }
