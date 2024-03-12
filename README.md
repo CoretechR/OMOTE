@@ -2,8 +2,7 @@
 
 ![](images/OMOTE_assembled.jpg)
 
-![ESP32 Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio.yml/badge.svg)
-![Simulator Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator.yml/badge.svg)
+![Ubuntu Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio.yml/badge.svg)
 [![OMOTE Discord](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=shield)][link1]
 
 ## Overview
@@ -45,8 +44,11 @@ As a long term goal, maybe a prebuild firmware will be published, where you can 
 
 ### LVGL GUI simulator for Windows and Linux
 
-A simulator for running the LVGL UI on your local Windows or Linux machine will be released soon.
-You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed as often done in other LVGL simulators).
+A simulator for running the LVGL UI on your local Windows or Linux machine is available. You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed as often done in other LVGL simulators).
+<div align="center">
+  <img src="images/GUI_sliding_demo.gif" width="50%">
+</div>
+For details, please see the [wiki for the software simulator for fast creating and testing of LVGL GUIs.](https://github.com/CoretechR/OMOTE/wiki/03-Software-simulator-for-fast-creating-and-testing-of-LVGL-GUIs)
 
 ### Building the hardware
 
@@ -67,7 +69,7 @@ The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can 
 ### To Dos for software
 
 Short term goals
-- [ ] simulator for creating pages in Windows, WSL2 and Linux
+- [x] simulator for creating pages in Windows, WSL2 and Linux
 - [ ] scene selector page as start page
 - [ ] available gui pages based on the currently active scene. Hide pages not needed in a scene
 - [ ] make gui actions context sensitive for the currently active scene
