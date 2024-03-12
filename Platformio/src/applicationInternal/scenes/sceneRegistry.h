@@ -5,6 +5,7 @@
 #include <map>
 #include "applicationInternal/keys.h"
 
+typedef void (*scene_setKeys)(void);
 typedef void (*scene_start_sequence)(void);
 typedef void (*scene_end_sequence)(void);
 typedef std::map<char, repeatModes> *key_repeatModes;
@@ -13,6 +14,7 @@ typedef std::map<char, uint16_t> *key_commands_long;
 
 void register_scene(
   std::string a_scene_name,
+  scene_setKeys a_scene_setKeys,
   scene_start_sequence a_scene_start_sequence,
   scene_end_sequence a_scene_end_sequence,
   key_repeatModes a_key_repeatModes,

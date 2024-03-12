@@ -14,28 +14,7 @@ std::map<char, repeatModes> key_repeatModes_chromecast;
 std::map<char, uint16_t> key_commands_short_chromecast;
 std::map<char, uint16_t> key_commands_long_chromecast;
 
-void scene_start_sequence_chromecast(void) {
-  executeCommand(SAMSUNG_POWER_ON);
-  delay(500);
-  executeCommand(YAMAHA_POWER_ON);
-  delay(1500);
-  executeCommand(YAMAHA_INPUT_DVD);
-  delay(3000);
-  executeCommand(SAMSUNG_INPUT_HDMI_1);
-
-}
-
-void scene_end_sequence_chromecast(void) {
-
-}
-
-std::string scene_name_chromecast = "Chromecast";
-
-void register_scene_chromecast_commands(void) {
-  register_command(&SCENE_CHROMECAST , makeCommandData(SCENE, {scene_name_chromecast}));
-}
-
-void register_scene_chromecast(void) {
+void scene_setKeys_chromecast() {
   key_repeatModes_chromecast = {
   
   
@@ -67,8 +46,31 @@ void register_scene_chromecast(void) {
   
   };
 
+}
+
+void scene_start_sequence_chromecast(void) {
+  executeCommand(SAMSUNG_POWER_ON);
+  delay(500);
+  executeCommand(YAMAHA_POWER_ON);
+  delay(1500);
+  executeCommand(YAMAHA_INPUT_DVD);
+  delay(3000);
+  executeCommand(SAMSUNG_INPUT_HDMI_1);
+
+}
+
+void scene_end_sequence_chromecast(void) {
+
+}
+
+std::string scene_name_chromecast = "Chromecast";
+
+void register_scene_chromecast(void) {
+  register_command(&SCENE_CHROMECAST , makeCommandData(SCENE, {scene_name_chromecast}));
+
   register_scene(
     scene_name_chromecast,
+    & scene_setKeys_chromecast,
     & scene_start_sequence_chromecast,
     & scene_end_sequence_chromecast,
     & key_repeatModes_chromecast,
