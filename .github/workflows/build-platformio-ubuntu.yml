@@ -1,0 +1,31 @@
+name: ESP32 / sim build (64bit) on Ubuntu
+
+on: [push,workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+      - name: Install SDL2
+        run: sudo apt install -y libsdl2-dev
+
+      - name: Build PlatformIO env:ESP32
+        working-directory: ./Platformio
+        run: pio run -e esp32
+
+      - name: Build PlatformIO env:windows_linux_64bit
+        working-directory: ./Platformio
+        run: pio run -e windows_linux_64bit
