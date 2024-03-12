@@ -1,10 +1,11 @@
-name: ESP32 / sim build (64bit) on Ubuntu
+name: ESP32 and Sim build (64bit) on Ubuntu
 
 on: [push,workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
 
 
 
@@ -26,6 +27,7 @@ jobs:
 
       - name: Install SDL2
         run: sudo apt install -y libsdl2-dev
+
 
 
 
