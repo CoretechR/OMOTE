@@ -47,7 +47,7 @@ jobs:
         working-directory: ./Platformio
         run: pio run -e windows_linux_64bit
 
-      - name: Build PlatformIO env:windows_linux_64bit
+      - name: Build PlatformIO env:windows_linux_32bit
         if: ${{matrix.sys == 'mingw32'}}
         working-directory: ./Platformio
         run: pio run -e windows_linux_32bit
