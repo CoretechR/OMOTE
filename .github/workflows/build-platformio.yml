@@ -1,6 +1,6 @@
-name: ESP32 Build
+name: ESP32 and simulator build (64bit) on Ubuntu
 
-on: [push]
+on: [push,workflow_dispatch]
 
 jobs:
   build:
@@ -19,6 +19,8 @@ jobs:
           python-version: "3.9"
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
+      - name: Install SDL2
+        run: sudo apt install -y libsdl2-dev
 
       - name: Build PlatformIO env:ESP32
         working-directory: ./Platformio
@@ -27,7 +29,3 @@ jobs:
       - name: Build PlatformIO env:windows_linux_64bit
         working-directory: ./Platformio
         run: pio run -e windows_linux_64bit
-
-      - name: Build PlatformIO env:windows_linux_32bit
-        working-directory: ./Platformio
-        run: pio run -e windows_linux_32bit
