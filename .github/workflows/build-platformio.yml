@@ -20,6 +20,14 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
-      - name: Build PlatformIO Project
+      - name: Build PlatformIO env:ESP32
         working-directory: ./Platformio
-        run: pio run
+        run: pio run -e esp32
+
+      - name: Build PlatformIO env:windows_linux_64bit
+        working-directory: ./Platformio
+        run: pio run -e windows_linux_64bit
+
+        - name: Build PlatformIO env:windows_linux_32bit
+        working-directory: ./Platformio
+        run: pio run -e windows_linux_32bit
