@@ -3,7 +3,7 @@
 ![](images/OMOTE_assembled.jpg)
 
 ![Ubuntu Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-ubuntu.yml/badge.svg)
-![Ubuntu Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-windows.yml/badge.svg)
+![Windows Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-windows.yml/badge.svg)
 [![OMOTE Discord](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=shield)][link1]
 
 ## Overview
