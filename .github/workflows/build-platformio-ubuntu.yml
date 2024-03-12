@@ -1,4 +1,4 @@
-name: ESP32 and Sim build (64bit) on Ubuntu
+name: Ubuntu build
 
 on: [push,workflow_dispatch]
 
