@@ -44,10 +44,13 @@ As a long term goal, maybe a prebuild firmware will be published, where you can 
 
 ### LVGL GUI simulator for Windows and Linux
 
-A simulator for running the LVGL UI on your local Windows or Linux machine is available. You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed as often done in other LVGL simulators).
+A simulator for running the LVGL UI on your local Windows or Linux machine is available.
+
+You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed as often done in other LVGL simulators).
 <div align="center">
-  <img src="images/GUI_sliding_demo.gif" width="50%">
+  <img src="images/WindowsSimulator.gif" width="60%">
 </div>
+
 For details, please see the [wiki for the software simulator for fast creating and testing of LVGL GUIs.](https://github.com/CoretechR/OMOTE/wiki/03-Software-simulator-for-fast-creating-and-testing-of-LVGL-GUIs)
 
 ### Building the hardware
