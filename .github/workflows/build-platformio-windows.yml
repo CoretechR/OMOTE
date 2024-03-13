@@ -33,20 +33,18 @@ jobs:
           msystem: ${{matrix.sys}}
           install: >-
             mingw-w64-${{matrix.env}}-gcc
-            mingw-w64-${{matrix.env}}-gdb
+            # mingw-w64-${{matrix.env}}-gdb
             mingw-w64-${{matrix.env}}-SDL2
-
       - name: Add paths mingw64
         if: ${{matrix.sys == 'mingw64'}}
         run: |
-          echo "${{ runner.temp }}\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "${{ runner.temp }}\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
+          echo "${{runner.temp}}\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "${{runner.temp}}\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: Add paths mingw32
         if: ${{matrix.sys == 'mingw32'}}
         run: |
-          echo "${{ runner.temp }}\msys64\mingw32\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "${{ runner.temp }}\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "${{runner.temp}}\msys64\mingw32\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "${{runner.temp}}\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
