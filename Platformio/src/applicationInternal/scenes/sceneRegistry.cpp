@@ -8,6 +8,7 @@
 
 // https://stackoverflow.com/questions/840501/how-do-function-pointers-in-c-work
 struct scene_definition {
+  scene_setKeys this_scene_setKeys;
   scene_start_sequence this_scene_start_sequence;
   scene_end_sequence this_scene_end_sequence;
   key_repeatModes this_key_repeatModes;
@@ -19,6 +20,7 @@ std::map<std::string, scene_definition> registered_scenes;
 
 void register_scene(
   std::string a_scene_name,
+  scene_setKeys a_scene_setKeys,
   scene_start_sequence a_scene_start_sequence,
   scene_end_sequence a_scene_end_sequence,
   key_repeatModes a_key_repeatModes,
@@ -26,12 +28,23 @@ void register_scene(
   key_commands_long a_key_commands_long) {
 
   registered_scenes[a_scene_name] = scene_definition{
+    a_scene_setKeys,
     a_scene_start_sequence,
     a_scene_end_sequence,
     a_key_repeatModes,
     a_key_commands_short,
     a_key_commands_long
   };
+
+  // Whenever a new scene is registered, normally a new scene command has been defined immediately before (e.g. see register_scene_TV()).
+  // But this new scene command could have been already been used before in the key definition of another scene. The command at this time was 0, which is undefined.
+  // So we have to set the keys again for all scenes that have been registered before.
+  // 1. set again the defaultKeys
+  register_scene_defaultKeys();
+  // 2. loop over all registered scenes and call setKeys()
+  for (std::map<std::string, scene_definition>::iterator it = registered_scenes.begin(); it != registered_scenes.end(); ++it) {
+    it->second.this_scene_setKeys();
+  }
 
 }
 

@@ -1,0 +1,47 @@
+name: Ubuntu build
+
+on: [push,workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+
+
+
+
+
+
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install SDL2
+        run: sudo apt install -y libsdl2-dev
+
+
+
+
+
+
+
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Build PlatformIO env:ESP32
+        working-directory: ./Platformio
+        run: pio run -e esp32
+
+      - name: Build PlatformIO env:windows_linux_64bit
+        working-directory: ./Platformio
+        run: pio run -e windows_linux_64bit

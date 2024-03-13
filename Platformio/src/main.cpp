@@ -91,14 +91,7 @@ int main(int argc, char *argv[]) {
   init_gui();
   gui_loop(); // Run the LVGL UI once before the loop takes over
 
-  // register the scenes
-  // First the commands of all scenes have to be registered, so that they get their unique ids.
-  // Later they will be used in register_scenes_*, where the commands will be used when defining the key_commands_*
-  register_scene_allOff_commands();
-  register_scene_TV_commands();
-  register_scene_fireTV_commands();
-  register_scene_chromecast_commands();
-  // now the scenes and their key_commands_* can be defined
+  // register the scenes and their key_commands_*
   register_scene_defaultKeys();
   register_scene_allOff();
   register_scene_TV();

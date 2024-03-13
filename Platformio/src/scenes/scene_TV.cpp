@@ -14,29 +14,7 @@ std::map<char, repeatModes> key_repeatModes_TV;
 std::map<char, uint16_t> key_commands_short_TV;
 std::map<char, uint16_t> key_commands_long_TV;
 
-void scene_start_sequence_TV(void) {
-  executeCommand(SAMSUNG_POWER_ON);
-  delay(500);
-  executeCommand(YAMAHA_POWER_ON);
-  delay(1500);
-  executeCommand(YAMAHA_INPUT_DVD);
-  delay(3000);
-  executeCommand(SAMSUNG_INPUT_TV);
-
-}
-
-void scene_end_sequence_TV(void) {
-
-}
-
-std::string scene_name_TV = "TV";
-
-void register_scene_TV_commands(void) {
-  register_command(&SCENE_TV         , makeCommandData(SCENE, {scene_name_TV}));
-}
-
-void register_scene_TV(void) {
-
+void scene_setKeys_TV() {
   key_repeatModes_TV = {
   
     {KEY_STOP,  SHORT_REPEATED   },    {KEY_REWI,  SHORT            },    {KEY_PLAY,  SHORT            },    {KEY_FORW,  SHORT_REPEATED   },
@@ -68,8 +46,31 @@ void register_scene_TV(void) {
   
   };
 
+}
+
+void scene_start_sequence_TV(void) {
+  executeCommand(SAMSUNG_POWER_ON);
+  delay(500);
+  executeCommand(YAMAHA_POWER_ON);
+  delay(1500);
+  executeCommand(YAMAHA_INPUT_DVD);
+  delay(3000);
+  executeCommand(SAMSUNG_INPUT_TV);
+
+}
+
+void scene_end_sequence_TV(void) {
+
+}
+
+std::string scene_name_TV = "TV";
+
+void register_scene_TV(void) {
+  register_command(&SCENE_TV         , makeCommandData(SCENE, {scene_name_TV}));
+
   register_scene(
     scene_name_TV,
+    & scene_setKeys_TV,
     & scene_start_sequence_TV,
     & scene_end_sequence_TV,
     & key_repeatModes_TV,

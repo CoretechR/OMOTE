@@ -1,9 +1,9 @@
 # OMOTE - Open Universal Remote
 
-![](images/P1030424_small.jpg)
+![](images/OMOTE_assembled.jpg)
 
-![ESP32 Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio.yml/badge.svg)
-![Simulator Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator.yml/badge.svg)
+![Ubuntu build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-ubuntu.yml/badge.svg)
+![Windows Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-windows.yml/badge.svg)
 [![OMOTE Discord](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=shield)][link1]
 
 ## Overview
@@ -11,7 +11,7 @@
 OMOTE is an ESP32 based open source universal remote. Its capacitive 2.8” touchscreen provides an intuitive and snappy user interface for switching devices and settings. No hub or docking station is required as the remote features infrared, Wi-Fi and Bluetooth connectivity. With its well optimized power consumption, OMOTE can run for months on a charge. And since the design files are open source, you can fully customize them to your devices and needs.
 
 <div align="center">
-  <img src="images/Menu.gif" width="50%">
+  <img src="images/GUI_sliding_demo.gif" width="50%">
 </div>
 
 ### Features
@@ -45,8 +45,14 @@ As a long term goal, maybe a prebuild firmware will be published, where you can 
 
 ### LVGL GUI simulator for Windows and Linux
 
-A simulator for running the LVGL UI on your local Windows or Linux machine will be released soon.
+A simulator for running the LVGL UI on your local Windows or Linux machine is available.
+
 You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed as often done in other LVGL simulators).
+<div align="center">
+  <img src="images/WindowsSimulator.gif" width="60%">
+</div>
+
+For details, please see the [wiki for the software simulator for fast creating and testing of LVGL GUIs.](https://github.com/CoretechR/OMOTE/wiki/03-Software-simulator-for-fast-creating-and-testing-of-LVGL-GUIs)
 
 ### Building the hardware
 
@@ -59,7 +65,7 @@ The project uses a 2000mAh Li-Ion battery with a JST-PHR-2 connector. Any 3.7V L
 The 2.8" capacitive touchscreen can be sourced from Adafruit ([2770](https://www.adafruit.com/product/2770)). If you look for the part number CH280QV10-CT, you can also buy this display directly from the manufacturer via [Alibaba](https://www.alibaba.com/product-detail/High-Quality-240-3-rgb-320_1600408828330.html). Shipping from China is expensive, so this only makes sense if you order multiple displays. In general, the cost for a single OMOTE is quite high. Check out the buy-sell page on the [Discord](https://discord.com/channels/1138116475559882852/1153343867681243279) to see if you can share the cost of the PCBs and components with others.
 
 <div align="center">
-  <img src="images/parts.jpg" width="80%">
+  <img src="images/OMOTE_parts.jpg" width="80%">
 </div>
 
 The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can be printed using PLA or PETG. I sliced the models with PrusaSlicer with a layer height of 0.25mm and printed them using ColorFabb PETG. It is important that the case part is printed with its flat side towards the print bed using lots of support structures. If your printer is well calibrated, the cover plate will snap onto the case.
@@ -67,7 +73,7 @@ The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can 
 ### To Dos for software
 
 Short term goals
-- [ ] simulator for creating pages in Windows, WSL2 and Linux
+- [x] simulator for creating pages in Windows, WSL2 and Linux
 - [ ] scene selector page as start page
 - [ ] available gui pages based on the currently active scene. Hide pages not needed in a scene
 - [ ] make gui actions context sensitive for the currently active scene

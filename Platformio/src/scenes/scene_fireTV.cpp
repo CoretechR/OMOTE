@@ -14,37 +14,7 @@ std::map<char, repeatModes> key_repeatModes_fireTV;
 std::map<char, uint16_t> key_commands_short_fireTV;
 std::map<char, uint16_t> key_commands_long_fireTV;
 
-void scene_start_sequence_fireTV(void) {
-  executeCommand(SAMSUNG_POWER_ON);
-  delay(500);
-  executeCommand(YAMAHA_POWER_ON);
-  delay(1500);
-  executeCommand(YAMAHA_INPUT_DTV);
-  delay(3000);
-  executeCommand(SAMSUNG_INPUT_HDMI_2);
-  delay(100);
-  
-  executeCommand(KEYBOARD_HOME);
-  delay(500);
-  executeCommand(KEYBOARD_HOME);
-
-}
-
-void scene_end_sequence_fireTV(void) {
-  // you cannot power off FireTV, but at least you can stop the currently running app
-  executeCommand(KEYBOARD_HOME);
-  delay(500);
-  executeCommand(KEYBOARD_HOME);
-
-}
-
-std::string scene_name_fireTV = "Fire TV";
-
-void register_scene_fireTV_commands(void) {
-  register_command(&SCENE_FIRETV     , makeCommandData(SCENE, {scene_name_fireTV}));
-}
-
-void register_scene_fireTV(void) {
+void scene_setKeys_fireTV() {
   key_repeatModes_fireTV = {
   
                                        {KEY_REWI,  SHORTorLONG      },    {KEY_PLAY,  SHORT            },    {KEY_FORW,  SHORTorLONG      },
@@ -76,8 +46,40 @@ void register_scene_fireTV(void) {
     {KEY_FORW,  KEYBOARD_FASTFORWARD_LONG},
   };
 
+}
+
+void scene_start_sequence_fireTV(void) {
+  executeCommand(SAMSUNG_POWER_ON);
+  delay(500);
+  executeCommand(YAMAHA_POWER_ON);
+  delay(1500);
+  executeCommand(YAMAHA_INPUT_DTV);
+  delay(3000);
+  executeCommand(SAMSUNG_INPUT_HDMI_2);
+  delay(100);
+  
+  executeCommand(KEYBOARD_HOME);
+  delay(500);
+  executeCommand(KEYBOARD_HOME);
+
+}
+
+void scene_end_sequence_fireTV(void) {
+  // you cannot power off FireTV, but at least you can stop the currently running app
+  executeCommand(KEYBOARD_HOME);
+  delay(500);
+  executeCommand(KEYBOARD_HOME);
+
+}
+
+std::string scene_name_fireTV = "Fire TV";
+
+void register_scene_fireTV(void) {
+  register_command(&SCENE_FIRETV     , makeCommandData(SCENE, {scene_name_fireTV}));
+
   register_scene(
     scene_name_fireTV,
+    & scene_setKeys_fireTV,
     & scene_start_sequence_fireTV,
     & scene_end_sequence_fireTV,
     & key_repeatModes_fireTV,
