@@ -3,6 +3,9 @@
 #include "tft_hal_esp32.h"
 #include "sleep_hal_esp32.h"
 
+uint8_t SDA_GPIO = 19;
+uint8_t SCL_GPIO = 22;
+
 uint8_t LCD_BL_GPIO = 4;
 uint8_t LCD_EN_GPIO = 10;
 
@@ -12,13 +15,6 @@ TS_Point touchPoint;
 byte backlightBrightness = 255;
 
 void init_tft(void) {
-  // this is power for the TFT IC
-  pinMode(LCD_EN_GPIO, OUTPUT);
-  digitalWrite(LCD_EN_GPIO, HIGH);
-  // this is power for backlight LEDs
-  pinMode(LCD_BL_GPIO, OUTPUT);
-  digitalWrite(LCD_BL_GPIO, HIGH);
-
   // Configure the backlight PWM
   // Manual setup because ledcSetup() briefly turns on the backlight
   ledc_channel_config_t ledc_channel_left;
@@ -72,6 +68,9 @@ void init_tft(void) {
   tft.fillScreen(TFT_BLACK);
   tft.setSwapBytes(true);
   
+  // SDA and SCL need to be set explicitly, because for IMU you cannot set it explicitly in the constructor.
+  // Configure i2c pins and set frequency to 400kHz
+  Wire.begin(SDA_GPIO, SCL_GPIO, 400000);
   // Setup touchscreen
   touch.begin(128); // Initialize touchscreen and set sensitivity threshold
 }

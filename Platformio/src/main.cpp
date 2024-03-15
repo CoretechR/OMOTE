@@ -47,16 +47,14 @@ int main(int argc, char *argv[]) {
   Serial.begin(115200);
   // do some general hardware setup, like powering the TFT, I2C, ...
   init_hardware_general();
+  // get wakeup reason
+  init_sleep();
   // Restore settings from internal flash memory
   init_preferences();
   // blinking led
   init_userled();
   // Power Pin definition
   init_battery();
-  // get wakeup reason
-  init_sleep();
-  // setup the Inertial Measurement Unit (IMU) for motion detection
-  init_IMU();
 
   // button Pin definition for hardware keys
   init_keys();
@@ -90,6 +88,8 @@ int main(int argc, char *argv[]) {
   // init GUI - will initialize tft, touch and lvgl
   init_gui();
   gui_loop(); // Run the LVGL UI once before the loop takes over
+  // setup the Inertial Measurement Unit (IMU) for motion detection. Has to be after init_gui(), otherwise I2C will not work
+  init_IMU();
 
   // register the scenes and their key_commands_*
   register_scene_defaultKeys();
