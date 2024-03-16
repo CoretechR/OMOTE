@@ -15,9 +15,7 @@
 // prepare keypad keys to wakeup
 #include "keypad_keys_hal_esp32.h"
 
-// 20 (doesn't exist?) and 13 both work.
-// It even works when "pinMode(ACC_INT_GPIO, INPUT);" is not set
-uint8_t ACC_INT_GPIO = 20;
+uint8_t ACC_INT_GPIO = 13;
 
 int MOTION_THRESHOLD = 50;         // motion above threshold keeps device awake
 int DEFAULT_SLEEP_TIMEOUT = 20000; // default time until device enters sleep mode in milliseconds. Can be overridden.
@@ -148,6 +146,7 @@ void enterSleep(){
   digitalWrite(LCD_EN_GPIO, HIGH); // LCD logic off
   digitalWrite(LCD_BL_GPIO, HIGH); // LCD backlight off
   // pinMode(CRG_STAT, INPUT); // Disable Pull-Up
+  pinMode(IR_RX_GPIO, INPUT); // force IR receiver pin to INPUT to prevent high current during sleep (additional 60 uA)
   digitalWrite(IR_VCC_GPIO, LOW); // IR Receiver off
 
   // Configure button matrix for ext1 interrupt  
