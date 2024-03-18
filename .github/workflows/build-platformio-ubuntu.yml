@@ -52,6 +52,6 @@ jobs:
         working-directory: ./Platformio
         run: pio run -e esp32
 
-      - name: Build PlatformIO env:windows_linux_64bit
+      - name: Build PlatformIO env:linux_64bit
         working-directory: ./Platformio
-        run: pio run -e windows_linux_64bit
+        run: pio run -e linux_64bit

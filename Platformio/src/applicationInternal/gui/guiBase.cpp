@@ -291,7 +291,7 @@ void setActiveTab(uint32_t index, lv_anim_enable_t anim_en) {
   }
 }
 
-void showWiFiConnected_cb(bool connected) {
+void showWiFiConnected(bool connected) {
   if (connected) {
     if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);}
   } else {

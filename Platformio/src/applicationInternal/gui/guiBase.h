@@ -33,5 +33,5 @@ void tabview_tab_changed_event_cb(lv_event_t* e);
 void setActiveTab(uint32_t index, lv_anim_enable_t anim_en);
 // used by memoryUsage.cpp
 void showMemoryUsageBar(bool showBar);
-// used as callback from hardware
-void showWiFiConnected_cb(bool connected);
+// used by commandHandler to show WiFi status
+void showWiFiConnected(bool connected);

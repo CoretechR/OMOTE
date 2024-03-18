@@ -19,4 +19,4 @@ void set_irReceiverEnabled_HAL(bool aIrReceiverEnabled) {
   irReceiverEnabled = aIrReceiverEnabled;
 }
 
-void set_showNewIRmessage_cb_HAL(tShowNewIRmessage_cb pShowNewIRmessage_cb) {}
+void set_announceNewIRmessage_cb_HAL(tAnnounceNewIRmessage_cb pAnnounceNewIRmessage_cb) {}

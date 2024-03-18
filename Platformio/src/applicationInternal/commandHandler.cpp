@@ -7,6 +7,10 @@
 #include "applicationInternal/scenes/sceneHandler.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "devices/misc/device_specialCommands.h"
+// show WiFi status
+#include "applicationInternal/gui/guiBase.h"
+// show received IR and MQTT messages
+#include "guis/gui_irReceiver.h"
 
 uint16_t KEYBOARD_DUMMY_UP                  ; //"Keyboard_dummy_up"
 uint16_t KEYBOARD_DUMMY_DOWN                ; //"Keyboard_dummy_down"
@@ -250,3 +254,29 @@ void executeCommand(uint16_t command, std::string additionalPayload) {
     Serial.printf("executeCommand: internal error, command not registered\r\n");
   }
 }
+
+void receiveNewIRmessage_cb(std::string message) {
+  showNewIRmessage(message);
+}
+#if (ENABLE_WIFI_AND_MQTT == 1)
+void receiveWiFiConnected_cb(bool connected) {
+  // show status in header
+  showWiFiConnected(connected);
+
+  if (connected) {
+    // Here you could add sending a MQTT message. This message could be recognized by your home automation software.
+    // When receiving this message, your home automation software could send the states of the smart home devices known to OMOTE.
+    // With that, OMOTE could show on startup the correct status of the smart home devices.
+    //
+    // Remark: in your home automation software, maybe add a short delay (e.g. 100-200 ms) between receiving this message and sending out the status of the smart home devices.
+    // WiFi connection could be already available, but MQTT connection could be not completely ready. Just try what works for you.
+
+    // executeCommand(TRIGGER_UPDATE_OF_OMOTE_SMART_HOME_DEVICES);
+
+  }
+}
+void receiveMQTTmessage_cb(std::string topic, std::string payload) {
+  showMQTTmessage(topic, payload);
+}
+
+#endif

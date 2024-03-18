@@ -138,6 +138,10 @@ void loop(unsigned long *pIMUTaskTimer, unsigned long *pUpdateStatusTimer) {
   }
   // update LVGL UI
   gui_loop();
+  // call mqtt loop to receive mqtt messages, if you are subscribed to some topics
+  #if (ENABLE_WIFI_AND_MQTT == 1)
+  mqtt_loop();
+  #endif
 
   // --- every 100 ms -------------------------------------------------------------------
   // Refresh IMU data (motion detection) every 100 ms
@@ -146,6 +150,7 @@ void loop(unsigned long *pIMUTaskTimer, unsigned long *pUpdateStatusTimer) {
     *pIMUTaskTimer = millis();
 
     check_activity();
+
   }
 
   // --- every 1000 ms ------------------------------------------------------------------

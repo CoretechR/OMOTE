@@ -3,6 +3,8 @@
 #include "applicationInternal/hardware/hardwarePresenter.h"
 // for registering the callback to show received IR messages
 #include "guis/gui_irReceiver.h"
+// for registering the callback to receive MQTT messages
+#include "../commandHandler.h"
 // for registering the callback to show WiFi status
 #include "applicationInternal/gui/guiBase.h"
 
@@ -111,9 +113,9 @@ bool get_irReceiverEnabled() {
 }
 void set_irReceiverEnabled(bool aIrReceiverEnabled) {
   if (aIrReceiverEnabled) {
-    set_showNewIRmessage_cb_HAL(&showNewIRmessage_cb);
+    set_announceNewIRmessage_cb_HAL(&receiveNewIRmessage_cb);
   } else {
-    set_showNewIRmessage_cb_HAL(NULL);
+    set_announceNewIRmessage_cb_HAL(NULL);
   }
   set_irReceiverEnabled_HAL(aIrReceiverEnabled);
 }
@@ -169,12 +171,16 @@ void init_lvgl_hardware() {
 // --- WiFi / MQTT ------------------------------------------------------------
 #if (ENABLE_WIFI_AND_MQTT == 1)
 void init_mqtt(void) {
-  set_showWiFiconnected_cb_HAL(&showWiFiConnected_cb);
+  set_announceWiFiconnected_cb_HAL(&receiveWiFiConnected_cb);
+  set_announceSubscribedTopics_cb_HAL(receiveMQTTmessage_cb);
   init_mqtt_HAL();
 }
 // used by "commandHandler.cpp", "sleep.cpp"
 bool getIsWifiConnected() {
   return getIsWifiConnected_HAL();
+}
+void mqtt_loop() {
+  mqtt_loop_HAL();
 }
 bool publishMQTTMessage(const char *topic, const char *payload) {
   return publishMQTTMessage_HAL(topic, payload);

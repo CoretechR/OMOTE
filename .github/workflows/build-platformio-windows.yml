@@ -52,12 +52,12 @@ jobs:
         working-directory: ./Platformio
         run: pio run -e esp32
 
-      - name: Build PlatformIO env:windows_linux_64bit
+      - name: Build PlatformIO env:windows_64bit
         if: ${{matrix.sys == 'mingw64'}}
         working-directory: ./Platformio
-        run: pio run -e windows_linux_64bit
+        run: pio run -e windows_64bit
 
-      - name: Build PlatformIO env:windows_linux_32bit
+      - name: Build PlatformIO env:windows_32bit
         if: ${{matrix.sys == 'mingw32'}}
         working-directory: ./Platformio
-        run: pio run -e windows_linux_32bit
+        run: pio run -e windows_32bit

@@ -16,6 +16,20 @@ int messagePos = 0;
 int messageCount = 0;
 bool tabIsInMemory = false;
 
+lv_obj_t* objMQTTmessageReceivedTopic;
+lv_obj_t* objMQTTmessageReceivedPayload;
+
+void showMQTTmessage(std::string topic, std::string payload) {
+  if (!tabIsInMemory) {return;}
+
+  if (objMQTTmessageReceivedTopic != NULL) {
+    lv_label_set_text(objMQTTmessageReceivedTopic, topic.c_str());
+  }
+  if (objMQTTmessageReceivedPayload != NULL) {
+    lv_label_set_text(objMQTTmessageReceivedPayload, payload.c_str());
+  }
+}
+
 void printReceivedMessages(bool clearMessages = false) {
   if (!tabIsInMemory) {return;}
 
@@ -44,7 +58,7 @@ void printReceivedMessages(bool clearMessages = false) {
   }
 }
 
-void showNewIRmessage_cb(std::string message) {
+void showNewIRmessage(std::string message) {
   setLastActivityTimestamp(); // Reset the sleep timer when a IR message is received
 
   // Serial.printf("  new IR message received: %s\r\n", message.c_str());
@@ -129,6 +143,23 @@ void create_tab_content_irReceiver(lv_obj_t* tab) {
   } else {
     printReceivedMessages(true);
   }
+
+  // Show MQTT messages we subscribed to ------------------------------------------------------
+  menuLabel = lv_label_create(tab);
+  lv_label_set_text(menuLabel, "MQTT messages arrived");
+  lv_obj_t* menuBox = lv_obj_create(tab);
+  lv_obj_set_size(menuBox, lv_pct(100), 46);
+  lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
+  lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
+  
+  objMQTTmessageReceivedTopic = lv_label_create(menuBox);
+  lv_label_set_text(objMQTTmessageReceivedTopic, "");
+  lv_obj_set_style_text_font(objMQTTmessageReceivedTopic, &lv_font_montserrat_10, LV_PART_MAIN);
+  lv_obj_align(objMQTTmessageReceivedTopic, LV_ALIGN_TOP_LEFT, 0, -4);
+  objMQTTmessageReceivedPayload = lv_label_create(menuBox);
+  lv_label_set_text(objMQTTmessageReceivedPayload, "");
+  lv_obj_set_style_text_font(objMQTTmessageReceivedPayload, &lv_font_montserrat_10, LV_PART_MAIN);
+  lv_obj_align(objMQTTmessageReceivedPayload, LV_ALIGN_TOP_LEFT, 0, 8);
 
 }
 

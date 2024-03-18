@@ -46,9 +46,9 @@ uint8_t IR_VCC_GPIO = 25; // IR receiver power
 
 bool irReceiverEnabled = false;
 
-tShowNewIRmessage_cb thisShowNewIRmessage_cb = NULL;
-void set_showNewIRmessage_cb_HAL(tShowNewIRmessage_cb pShowNewIRmessage_cb) {
-  thisShowNewIRmessage_cb = pShowNewIRmessage_cb;  
+tAnnounceNewIRmessage_cb thisAnnounceNewIRmessage_cb = NULL;
+void set_announceNewIRmessage_cb_HAL(tAnnounceNewIRmessage_cb pAnnounceNewIRmessage_cb) {
+  thisAnnounceNewIRmessage_cb = pAnnounceNewIRmessage_cb;  
 }
 
 // The Serial connection baud rate.
@@ -190,8 +190,8 @@ void infraredReceiver_loop_HAL() {
     message += typeToString((&results)->decode_type, (&results)->repeat);
     message += " ";
     message += resultToHexidecimal(&results);
-    if (thisShowNewIRmessage_cb != NULL) {
-      thisShowNewIRmessage_cb(std::string(message.c_str()));
+    if (thisAnnounceNewIRmessage_cb != NULL) {
+      thisAnnounceNewIRmessage_cb(std::string(message.c_str()));
     }
 
     yield();             // Feed the WDT (again)

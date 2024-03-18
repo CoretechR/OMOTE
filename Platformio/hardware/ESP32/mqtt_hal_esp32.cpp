@@ -8,9 +8,14 @@ WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 bool isWifiConnected = false;
 
-showWiFiconnected_cb thisShowWiFiconnected_cb = NULL;
-void set_showWiFiconnected_cb_HAL(showWiFiconnected_cb pShowWiFiconnected_cb) {
-  thisShowWiFiconnected_cb = pShowWiFiconnected_cb;  
+tAnnounceWiFiconnected_cb thisAnnounceWiFiconnected_cb = NULL;
+void set_announceWiFiconnected_cb_HAL(tAnnounceWiFiconnected_cb pAnnounceWiFiconnected_cb) {
+  thisAnnounceWiFiconnected_cb = pAnnounceWiFiconnected_cb;  
+}
+
+tAnnounceSubscribedTopics_cb thisAnnounceSubscribedTopics_cb = NULL;
+void set_announceSubscribedTopics_cb_HAL(tAnnounceSubscribedTopics_cb pAnnounceSubscribedTopics_cb) {
+  thisAnnounceSubscribedTopics_cb = pAnnounceSubscribedTopics_cb;  
 }
 
 bool getIsWifiConnected_HAL() {
@@ -30,12 +35,12 @@ void WiFiEvent(WiFiEvent_t event){
   // Set status bar icon based on WiFi status
   if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP || event == ARDUINO_EVENT_WIFI_STA_GOT_IP6) {
     isWifiConnected = true;
-    thisShowWiFiconnected_cb(true);
+    thisAnnounceWiFiconnected_cb(true);
     Serial.printf("WiFi connected, IP address: %s\r\n", WiFi.localIP().toString().c_str());
 
   } else if (event == ARDUINO_EVENT_WIFI_STA_DISCONNECTED) {
     isWifiConnected = false;
-    thisShowWiFiconnected_cb(false);
+    thisAnnounceWiFiconnected_cb(false);
     // automatically try to reconnect
     Serial.printf("WiFi got disconnected. Will try to reconnect.\r\n");
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -44,7 +49,7 @@ void WiFiEvent(WiFiEvent_t event){
     // e.g. ARDUINO_EVENT_WIFI_STA_CONNECTED or many others
     // connected is not enough, will wait for IP
     isWifiConnected = false;
-    thisShowWiFiconnected_cb(false);
+    thisAnnounceWiFiconnected_cb(false);
 
   }
 }
@@ -57,6 +62,29 @@ void init_mqtt_HAL(void) {
   WiFi.setSleep(true);
 }
 
+std::string subscribeTopicOMOTEtest = "OMOTE/test";
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  // handle message arrived
+  std::string topicReceived(topic);
+  std::string strPayload(reinterpret_cast<const char *>(payload), length);
+
+  if (topicReceived == subscribeTopicOMOTEtest) {
+    Serial.printf("MQTT: received topic %s with payload %s\r\n", subscribeTopicOMOTEtest.c_str(), strPayload.c_str());
+
+  }
+
+  thisAnnounceSubscribedTopics_cb(topicReceived, strPayload);
+}
+
+void mqtt_subscribeTopics() {
+  mqttClient.setCallback(&callback);
+
+  mqttClient.subscribe(subscribeTopicOMOTEtest.c_str());
+  Serial.printf("  Successfully subscribed to MQTT topic %s\r\n", subscribeTopicOMOTEtest.c_str());
+
+}
+
 bool checkMQTTconnection() {
 
   if (WiFi.isConnected()) {
@@ -64,10 +92,17 @@ bool checkMQTTconnection() {
       return true;
     } else {
       // try to connect to mqtt server
+      mqttClient.setBufferSize(512);   // default is 256
+      //mqttClient.setKeepAlive(15);     // default is 15   Client will send MQTTPINGREQ to keep connection alive
+      //mqttClient.setSocketTimeout(15); // default is 15   This determines how long the client will wait for incoming data when it expects data to arrive - for example, whilst it is in the middle of reading an MQTT packet.
       mqttClient.setServer(MQTT_SERVER, MQTT_SERVER_PORT); // MQTT initialization
-      if (mqttClient.connect(MQTT_CLIENTNAME, MQTT_USER, MQTT_PASS)) {
+      
+      std::string mqttClientName = std::string(MQTT_CLIENTNAME) + "_esp32_" + std::string(WiFi.macAddress().c_str());
+      if (mqttClient.connect(mqttClientName.c_str(), MQTT_USER, MQTT_PASS)) {
         Serial.printf("  Successfully connected to MQTT broker\r\n");
     
+        mqtt_subscribeTopics();
+
       } else {
         Serial.printf("  MQTT connection failed (but WiFi is available). Will try later ...\r\n");
 
@@ -75,9 +110,27 @@ bool checkMQTTconnection() {
       return mqttClient.connected();
     }
   } else {
-    Serial.printf("  No connection to MQTT server, because WiFi ist not connected.\r\n");
+    // Serial.printf("  No connection to MQTT server, because WiFi ist not connected.\r\n");
     return false;
   }  
+}
+
+unsigned long reconnectInterval = 100;
+// in order to do reconnect immediately ...
+unsigned long lastReconnectAttempt = millis() - reconnectInterval - 1;
+void mqtt_loop_HAL() {
+  if (!mqttClient.connected()) {
+    unsigned long currentMillis = millis();
+    if ((currentMillis - lastReconnectAttempt) > reconnectInterval) {
+      lastReconnectAttempt = currentMillis;
+      // Attempt to reconnect
+      checkMQTTconnection();
+    }
+  }  
+
+  if (mqttClient.connected()) {
+    mqttClient.loop();
+  }
 }
 
 bool publishMQTTMessage_HAL(const char *topic, const char *payload){

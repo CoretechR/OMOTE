@@ -116,3 +116,10 @@ void get_uniqueCommandID(uint16_t *command);
 void register_keyboardCommands();
 commandData makeCommandData(commandHandlers a, std::list<std::string> b);
 void executeCommand(uint16_t command, std::string additionalPayload = "");
+
+void receiveNewIRmessage_cb(std::string message);
+#if (ENABLE_WIFI_AND_MQTT == 1)
+// used as callbacks from hardware
+void receiveWiFiConnected_cb(bool connected);
+void receiveMQTTmessage_cb(std::string topic, std::string payload);
+#endif

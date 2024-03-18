@@ -108,6 +108,7 @@ void init_lvgl_hardware();
 void init_mqtt(void);
 // used by "commandHandler.cpp", "sleep.cpp"
 bool getIsWifiConnected();
+void mqtt_loop();
 bool publishMQTTMessage(const char *topic, const char *payload);
 void wifiStop();
 #endif
