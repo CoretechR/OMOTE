@@ -1,3 +1,18 @@
+# Branch "OOmote-C++-for-Omote"
+This is an alternative branch containing code for the OMOTE. This branch
+* is consequently using C++ classes
+* provides a simulator for running the lvgl code on Linux and Windows, using Visual Studio Code
+* is using a HAL abstraction layer for having the simulator running
+
+In terms of features it is currently behind the main branch:
+* no memory optimization
+* no scenes
+* simplified key handling (e.g. no long press)
+* no IR receiver
+* is using different lvgl guis compared to main
+
+Feel free to try and use this branch if you like to work wth clean, object oriented code.
+
 # OMOTE - Open Universal Remote
 
 ![](P1030424_small.jpg)
