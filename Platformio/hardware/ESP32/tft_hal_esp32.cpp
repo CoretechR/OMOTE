@@ -61,7 +61,8 @@ void init_tft(void) {
   digitalWrite(LCD_EN_GPIO, LOW);
   #endif
 
-  delay(100); // Wait for the LCD driver to power on
+  // https://github.com/CoretechR/OMOTE/issues/70#issuecomment-2016763291
+  delay(5); // Wait for the LCD driver to power on
   tft.init();
   tft.initDMA();
   tft.setRotation(0);
