@@ -18,19 +18,26 @@ bool tabIsInMemory = false;
 
 lv_obj_t* objMQTTmessageReceivedTopic;
 lv_obj_t* objMQTTmessageReceivedPayload;
+std::string lastTopic, lastPayload;
 
-void showMQTTmessage(std::string topic, std::string payload) {
+void printMQTTmessage() {
   if (!tabIsInMemory) {return;}
 
   if (objMQTTmessageReceivedTopic != NULL) {
-    lv_label_set_text(objMQTTmessageReceivedTopic, topic.c_str());
+    lv_label_set_text(objMQTTmessageReceivedTopic, lastTopic.c_str());
   }
   if (objMQTTmessageReceivedPayload != NULL) {
-    lv_label_set_text(objMQTTmessageReceivedPayload, payload.c_str());
+    lv_label_set_text(objMQTTmessageReceivedPayload, lastPayload.c_str());
   }
 }
 
-void printReceivedMessages(bool clearMessages = false) {
+void showMQTTmessage(std::string topic, std::string payload) {
+  lastTopic = topic;
+  lastPayload = payload;
+  printMQTTmessage();
+}
+
+void printIRMessages(bool clearMessages = false) {
   if (!tabIsInMemory) {return;}
 
   //Serial.println("");
@@ -76,7 +83,7 @@ void showNewIRmessage(std::string message) {
   if (messagePos == maxCountMessages) {
     messagePos = 0;  
   }
-  printReceivedMessages();
+  printIRMessages();
 }
 
 // IR receiver on Switch Event handler
@@ -87,11 +94,11 @@ static void IRReceiverOnSetting_event_cb(lv_event_t* e){
     start_infraredReceiver();
     lv_obj_set_size(menuBoxMessages, lv_pct(100), boxHeightActivated);
     messageCount = 0;
-    printReceivedMessages();
+    printIRMessages();
   } else {
     Serial.println("will turn off IR receiver");
     shutdown_infraredReceiver();
-    printReceivedMessages(true);
+    printIRMessages(true);
     messagePos = 0;
     messageCount = 0;
     lv_obj_set_size(menuBoxMessages, lv_pct(100), boxHeightDeactivated);
@@ -139,9 +146,9 @@ void create_tab_content_irReceiver(lv_obj_t* tab) {
     lv_obj_add_state(irReceiverToggle, LV_STATE_CHECKED);
     // print already received messages
     lv_obj_set_size(menuBoxMessages, lv_pct(100), boxHeightActivated);
-    printReceivedMessages();
+    printIRMessages();
   } else {
-    printReceivedMessages(true);
+    printIRMessages(true);
   }
 
   // Show MQTT messages we subscribed to ------------------------------------------------------
@@ -161,6 +168,7 @@ void create_tab_content_irReceiver(lv_obj_t* tab) {
   lv_obj_set_style_text_font(objMQTTmessageReceivedPayload, &lv_font_montserrat_10, LV_PART_MAIN);
   lv_obj_align(objMQTTmessageReceivedPayload, LV_ALIGN_TOP_LEFT, 0, 8);
 
+  printMQTTmessage();
 }
 
 void notify_tab_before_delete_irReceiver(void) {
