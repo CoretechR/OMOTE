@@ -12,6 +12,8 @@
 // show received IR and MQTT messages
 #include "guis/gui_irReceiver.h"
 
+uint16_t COMMAND_UNKNOWN;
+
 uint16_t KEYBOARD_DUMMY_UP                  ; //"Keyboard_dummy_up"
 uint16_t KEYBOARD_DUMMY_DOWN                ; //"Keyboard_dummy_down"
 uint16_t KEYBOARD_DUMMY_RIGHT               ; //"Keyboard_dummy_right"

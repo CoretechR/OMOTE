@@ -9,6 +9,7 @@
 #include "applicationInternal/commandHandler.h"
 
 uint16_t SCENE_ALLOFF      ; //"Scene_allOff"
+uint16_t SCENE_ALLOFF_FORCE; //"Scene_allOff_force"
 
 std::map<char, repeatModes> key_repeatModes_allOff;
 std::map<char, uint16_t> key_commands_short_allOff;
@@ -77,7 +78,8 @@ void scene_end_sequence_allOff(void) {
 std::string scene_name_allOff = "Off";
 
 void register_scene_allOff(void) {
-  register_command(&SCENE_ALLOFF     , makeCommandData(SCENE, {scene_name_allOff}));
+  register_command(&SCENE_ALLOFF      , makeCommandData(SCENE, {scene_name_allOff}));
+  register_command(&SCENE_ALLOFF_FORCE, makeCommandData(SCENE, {scene_name_allOff, "FORCE"}));
 
   register_scene(
     scene_name_allOff,
@@ -86,5 +88,7 @@ void register_scene_allOff(void) {
     & scene_end_sequence_allOff,
     & key_repeatModes_allOff,
     & key_commands_short_allOff,
-    & key_commands_long_allOff);
+    & key_commands_long_allOff,
+    NULL,
+    SCENE_ALLOFF);
 }

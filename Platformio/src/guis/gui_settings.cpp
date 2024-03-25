@@ -15,7 +15,7 @@ lv_obj_t* objBattSettingsPercentage;
 
 // Slider Event handler
 static void bl_slider_event_cb(lv_event_t* e){
-  lv_obj_t * slider = lv_event_get_target(e);
+  lv_obj_t* slider = lv_event_get_target(e);
   int32_t slider_value = lv_slider_get_value(slider);
   if (slider_value < 60)  {slider_value = 60;}
   if (slider_value > 255) {slider_value = 255;}
@@ -29,7 +29,7 @@ static void WakeEnableSetting_event_cb(lv_event_t* e){
 
 // timout event handler
 static void timout_event_cb(lv_event_t* e){
-  lv_obj_t * drop = lv_event_get_target(e);
+  lv_obj_t* drop = lv_event_get_target(e);
   uint16_t selected = lv_dropdown_get_selected(drop);
   switch (selected) {
     case 0: {set_sleepTimeout(  10000); break;}

@@ -57,7 +57,7 @@ uint16_t SAMSUNG_POWER_OFF       ; //"Samsung_power_off";
 uint16_t SAMSUNG_POWER_ON        ; //"Samsung_power_on";
 uint16_t SAMSUNG_INPUT_HDMI_1    ; //"Samsung_input_hdmi_1";
 uint16_t SAMSUNG_INPUT_HDMI_2    ; //"Samsung_input_hdmi_2";
-// uint16_t SAMSUNG_INPUT_HDMI_3    ; //"Samsung_input_hdmi_3";
+uint16_t SAMSUNG_INPUT_HDMI_3    ; //"Samsung_input_hdmi_3";
 // uint16_t SAMSUNG_INPUT_HDMI_4    ; //"Samsung_input_hdmi_4";
 // uint16_t SAMSUNG_INPUT_COMPONENT ; //"Samsung_input_component";
 uint16_t SAMSUNG_INPUT_TV        ; //"Samsung_input_tv";
@@ -121,7 +121,7 @@ void register_device_samsungTV() {
   register_command(&SAMSUNG_POWER_ON          , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SAMSUNG), "0xE0E09966"}));
   register_command(&SAMSUNG_INPUT_HDMI_1      , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SAMSUNG), "0xE0E09768"}));
   register_command(&SAMSUNG_INPUT_HDMI_2      , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SAMSUNG), "0xE0E07D82"}));
-  // register_command(&SAMSUNG_INPUT_HDMI_3      , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SAMSUNG), "0xE0E043BC"}));
+  register_command(&SAMSUNG_INPUT_HDMI_3      , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SAMSUNG), "0xE0E043BC"}));
   // register_command(&SAMSUNG_INPUT_HDMI_4      , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SAMSUNG), "0xE0E0A35C"}));
   // register_command(&SAMSUNG_INPUT_COMPONENT   , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SAMSUNG), "0xE0E0619E"}));
   register_command(&SAMSUNG_INPUT_TV          , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SAMSUNG), "0xE0E0D827"}));

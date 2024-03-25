@@ -54,7 +54,7 @@ extern uint16_t SAMSUNG_POWER_OFF;
 extern uint16_t SAMSUNG_POWER_ON;
 extern uint16_t SAMSUNG_INPUT_HDMI_1;
 extern uint16_t SAMSUNG_INPUT_HDMI_2;
-// extern uint16_t SAMSUNG_INPUT_HDMI_3;
+extern uint16_t SAMSUNG_INPUT_HDMI_3;
 // extern uint16_t SAMSUNG_INPUT_HDMI_4;
 // extern uint16_t SAMSUNG_INPUT_COMPONENT;
 extern uint16_t SAMSUNG_INPUT_TV;

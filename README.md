@@ -74,9 +74,8 @@ The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can 
 
 Short term goals
 - [x] simulator for creating pages in Windows, WSL2 and Linux
-- [ ] scene selector page as start page
-- [ ] available gui pages based on the currently active scene. Hide pages not needed in a scene
-- [ ] make gui actions context sensitive for the currently active scene
+- [x] scene selector page as start page
+- [x] available gui pages based on the currently active scene. Hide pages not needed in a scene
 
 Long term goals (not yet scheduled)
 - [ ] Easier configuration
