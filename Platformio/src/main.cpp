@@ -25,7 +25,7 @@
 #include "applicationInternal/keys.h"
 #include "applicationInternal/gui/guiStatusUpdate.h"
 // register scenes
-#include "scenes/scene__defaultKeys.h"
+#include "scenes/scene__default.h"
 #include "scenes/scene_allOff.h"
 #include "scenes/scene_TV.h"
 #include "scenes/scene_fireTV.h"

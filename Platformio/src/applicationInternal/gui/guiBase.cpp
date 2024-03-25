@@ -4,7 +4,7 @@
 #include "applicationInternal/gui/guiMemoryOptimizer.h"
 // for changing to scene Selection gui
 #include "applicationInternal/commandHandler.h"
-#include "scenes/scene__defaultKeys.h"
+#include "scenes/scene__default.h"
 
 lv_color_t color_primary = lv_color_hex(0x303030); // gray
 lv_obj_t* MemoryUsageLabel = NULL;

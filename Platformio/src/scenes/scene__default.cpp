@@ -5,7 +5,7 @@
 // devices
 #include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
 // scenes
-#include "scene__defaultKeys.h"
+#include "scene__default.h"
 #include "scenes/scene_allOff.h"
 #include "scenes/scene_TV.h"
 #include "scenes/scene_fireTV.h"
