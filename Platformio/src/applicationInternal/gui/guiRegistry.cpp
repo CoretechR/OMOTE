@@ -6,13 +6,11 @@
 #include "guiRegistry.h"
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
+#include "scenes/scene__defaultKeys.h"
 
 // ------------------------------------------------------------------------------------
 // this is a map of the registered_guis that can be accessed by name
 std::map<std::string, gui_definition> registered_guis_byName_map;
-// This is the list of the guis that we want to be available when swiping. Need not to be all the guis that have been registered, can be only a subset.
-// You can swipe through these guis. Will be in the order you place them here in the vector.
-std::vector<std::string> list_of_guis_to_be_shown;
 
 // ------------------------------------------------------------------------------------
 
@@ -29,8 +27,8 @@ void register_gui(std::string a_name, create_tab_content a_create_tab_content, n
   // put the gui_definition in a map that can be accessed by name
   registered_guis_byName_map[a_name] = new_gui_definition;
 
-  // By default, put all registered guis in the sequence of guis to be shown
-  // Later we will have scene specific sequences of guis
-  list_of_guis_to_be_shown.insert(list_of_guis_to_be_shown.end(), {std::string(a_name)});
+  // By default, put all registered guis in the sequence of guis to be shown of the default scene
+  // Can be overwritten by scenes to have their own gui_list.
+  main_gui_list.insert(main_gui_list.end(), {std::string(a_name)});
 
 }

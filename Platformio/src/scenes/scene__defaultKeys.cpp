@@ -1,18 +1,29 @@
 #include <map>
 #include "applicationInternal/keys.h"
 #include "applicationInternal/scenes/sceneRegistry.h"
+#include "applicationInternal/commandHandler.h"
 // devices
-#include "devices/misc/device_specialCommands.h"
 #include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
 // scenes
+#include "scene__defaultKeys.h"
 #include "scenes/scene_allOff.h"
 #include "scenes/scene_TV.h"
 #include "scenes/scene_fireTV.h"
 #include "scenes/scene_chromecast.h"
+#include "scenes/scene_appleTV.h"
+
+uint16_t SCENE_SELECTION;
+std::string scene_name_selection = "sceneSelection";
 
 std::map<char, repeatModes> key_repeatModes_default;
 std::map<char, uint16_t> key_commands_short_default;
 std::map<char, uint16_t> key_commands_long_default;
+
+// This is the main list of guis we want to be shown when swiping. Need not to be all the guis that have been registered, can be only a subset.
+// You can swipe through these guis. Will be in the order you place them here in the vector.
+// By default, it is a list of the guis that have been registered in main.cpp
+// If a scene defines a scene specific gui list, this will be used instead as long as the scene is active and we don't explicitely navigate back to main_gui_list
+t_gui_list main_gui_list;
 
 void register_scene_defaultKeys(void) {
   key_repeatModes_default = {
@@ -29,21 +40,23 @@ void register_scene_defaultKeys(void) {
   };
   
   key_commands_short_default = {
-                                                                                                             {KEY_OFF,   SCENE_ALLOFF     },
+                                                                                                             {KEY_OFF,   SCENE_ALLOFF_FORCE},
   /*{KEY_STOP,  COMMAND_UNKNOWN  },    {KEY_REWI,  COMMAND_UNKNOWN  },    {KEY_PLAY,  COMMAND_UNKNOWN  },    {KEY_FORW,  COMMAND_UNKNOWN  },*/
   /*{KEY_CONF,  COMMAND_UNKNOWN  },                                                                          {KEY_INFO,  COMMAND_UNKNOWN  },*/
                                                      /*  {KEY_UP,    COMMAND_UNKNOWN  },*/
                    /* {KEY_LEFT,  COMMAND_UNKNOWN  },    {KEY_OK,    COMMAND_UNKNOWN  },    {KEY_RIGHT, COMMAND_UNKNOWN  },*/
                                                      /*  {KEY_DOWN,  COMMAND_UNKNOWN  },*/
-  /*{KEY_BACK,  COMMAND_UNKNOWN  },                                                                          {KEY_SRC,   COMMAND_UNKNOWN  },*/
+    {KEY_BACK,  SCENE_SELECTION  },                                                                        /*{KEY_SRC,   COMMAND_UNKNOWN  },*/
     {KEY_VOLUP, YAMAHA_VOL_PLUS  },                      {KEY_MUTE,  YAMAHA_MUTE_TOGGLE},                  /*{KEY_CHUP,  COMMAND_UNKNOWN  },*/
     {KEY_VOLDO, YAMAHA_VOL_MINUS },                   /* {KEY_REC,   COMMAND_UNKNOWN  },*/                 /*{KEY_CHDOW, COMMAND_UNKNOWN  },*/
-    {KEY_RED,   SCENE_TV         },    {KEY_GREEN, SCENE_FIRETV     },    {KEY_YELLO, SCENE_CHROMECAST },    {KEY_BLUE,  YAMAHA_STANDARD  },
+    {KEY_RED,   SCENE_TV_FORCE   },    {KEY_GREEN, SCENE_FIRETV_FORCE},  {KEY_YELLO, SCENE_CHROMECAST_FORCE},{KEY_BLUE,  SCENE_APPLETV_FORCE},
   };
   
   key_commands_long_default = {
   
   
   };
+
+  register_command(&SCENE_SELECTION     , makeCommandData(SCENE, {scene_name_selection}));
 
 }

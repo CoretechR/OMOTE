@@ -16,6 +16,7 @@
 // register gui and keys
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/gui/guiRegistry.h"
+#include "guis/gui_sceneSelection.h"
 #include "guis/gui_irReceiver.h"
 #include "guis/gui_settings.h"
 #include "guis/gui_numpad.h"
@@ -29,6 +30,7 @@
 #include "scenes/scene_TV.h"
 #include "scenes/scene_fireTV.h"
 #include "scenes/scene_chromecast.h"
+#include "scenes/scene_appleTV.h"
 #include "applicationInternal/scenes/sceneHandler.h"
 
 #if defined(ARDUINO)
@@ -79,25 +81,34 @@ int main(int argc, char *argv[]) {
   #endif
   register_keyboardCommands();
 
+  // register the scenes and their key_commands_*
+  register_scene_defaultKeys();
+  register_scene_TV();
+  register_scene_fireTV();
+  register_scene_chromecast();
+  register_scene_appleTV();
+  register_scene_allOff();
+  // Only show these scenes on the sceneSelection gui. If you don't set this explicitely, by default all registered scenes are shown.
+  set_scenes_on_sceneSelectionGUI({scene_name_TV, scene_name_fireTV, scene_name_chromecast, scene_name_appleTV});
+
   // register the GUIs. They will be displayed in the order they have been registered.
+  register_gui_sceneSelection();
   register_gui_irReceiver();
   register_gui_settings();
   register_gui_appleTV();
   register_gui_numpad();
   register_gui_smarthome();
+  // Only show these GUIs in the main gui list. If you don't set this explicitely, by default all registered guis are shown.
+  #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
+  main_gui_list = {tabName_sceneSelection, tabName_smarthome, tabName_settings, tabName_irReceiver};
+  #endif
   // init GUI - will initialize tft, touch and lvgl
   init_gui();
+  setLabelCurrentScene();
   gui_loop(); // Run the LVGL UI once before the loop takes over
+
   // setup the Inertial Measurement Unit (IMU) for motion detection. Has to be after init_gui(), otherwise I2C will not work
   init_IMU();
-
-  // register the scenes and their key_commands_*
-  register_scene_defaultKeys();
-  register_scene_allOff();
-  register_scene_TV();
-  register_scene_fireTV();
-  register_scene_chromecast();
-  setLabelCurrentScene();
 
   // init WiFi - needs to be after init_gui() because WifiLabel must be available
   #if (ENABLE_WIFI_AND_MQTT == 1)

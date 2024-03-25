@@ -1,7 +1,6 @@
 #include "applicationInternal/commandHandler.h"
 #include "device_specialCommands.h"
 
-uint16_t COMMAND_UNKNOWN   ;
 uint16_t MY_SPECIAL_COMMAND; //"My_special_command";
 // uint16_t TRIGGER_UPDATE_OF_OMOTE_SMART_HOME_DEVICES;
 
