@@ -35,7 +35,7 @@ static void smartHomeToggle_event_cb(lv_event_t* e){
 
 // Smart Home Slider Event handler
 static void smartHomeSlider_event_cb(lv_event_t* e){
-  lv_obj_t * slider = lv_event_get_target(e);
+  lv_obj_t* slider = lv_event_get_target(e);
   char payload[8];
   sprintf(payload, "%.2f", float(lv_slider_get_value(slider)));
   std::string payload_str(payload);

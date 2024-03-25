@@ -2,6 +2,9 @@
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/memoryUsage.h"
 #include "applicationInternal/gui/guiMemoryOptimizer.h"
+// for changing to scene Selection gui
+#include "applicationInternal/commandHandler.h"
+#include "scenes/scene__defaultKeys.h"
 
 lv_color_t color_primary = lv_color_hex(0x303030); // gray
 lv_obj_t* MemoryUsageLabel = NULL;
@@ -26,9 +29,25 @@ lv_style_t style_red_border;
 #endif
 
 void guis_doTabCreationAtStartup();
-void guis_doAfterSliding(int oldTabID, int newTabID);
+void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList);
 
 // Helper Functions -----------------------------------------------------------------------------------------------------------------------
+
+// callback when sceneLabel or pageIndicator was clicked
+void sceneLabel_or_pageIndicator_event_cb(lv_event_t* e) {
+  Serial.println("- Scene selection: sceneLabel or pageIndicator clicked received for navigating to scene selection page");
+  executeCommand(SCENE_SELECTION);
+}
+
+// callback for swipe down event to navigate to the scene selection page
+void screen_gesture_event_cb(lv_event_t* e) {
+  lv_obj_t* screen = lv_event_get_current_target(e);
+  lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
+  if (dir == LV_DIR_BOTTOM) {
+    Serial.println("- Scene selection: swipe down received for navigating to scene selection page");
+    executeCommand(SCENE_SELECTION);
+  }    
+}
 
 // Set the page indicator (panel) scroll position relative to the tabview content scroll position
 // this is a callback if the CONTENT of the tabview is scrolled (LV_EVENT_SCROLL)
@@ -62,7 +81,7 @@ static void tabview_animation_ready_cb(lv_anim_t* a) {
   // We have to wait some more milliseconds or at least one cycle of lv_timer_handler();
   // calling lv_timer_handler(); here does not help
   // lv_timer_handler();
-  // guis_doAfterSliding(oldTabID, currentTabID);
+  // guis_doAfterSliding(oldTabID, currentTabID, false);
 
   waitBeforeActionAfterSlidingAnimationEnded = true;
   waitBeforeActionAfterSlidingAnimationEnded_timerStart = millis();
@@ -77,7 +96,7 @@ void tabview_tab_changed_event_cb(lv_event_t* e) {
     oldTabID = currentTabID;
     currentTabID = lv_tabview_get_tab_act(lv_event_get_target(e));
 
-    // Wait until the animation ended, then call "guis_doAfterSliding(oldTabID, currentTabID);"
+    // Wait until the animation ended, then call "guis_doAfterSliding(oldTabID, currentTabID, false);"
     // https://forum.lvgl.io/t/delete-a-tab-after-the-tabview-scroll-animation-is-complete/3155/4
     lv_obj_t* myTabview = lv_event_get_target(e);
     lv_obj_t* tabContainer = lv_tabview_get_content(myTabview);
@@ -91,7 +110,7 @@ void tabview_tab_changed_event_cb(lv_event_t* e) {
     } else {
       // Swipe is complete, no additional animation is needed. Most likely only possible in simulator
       Serial.println("Change of tab detected, without animation at the end. Will directly do my job after sliding.");
-      guis_doAfterSliding(oldTabID, currentTabID);
+      guis_doAfterSliding(oldTabID, currentTabID, false);
     }
   }
 }
@@ -131,6 +150,10 @@ void init_gui(void) {
   init_gui_memoryUsage_bar();
   // status bar
   init_gui_status_bar();
+
+  // register callback for swipe down event to navigate to the scene selection page
+  lv_obj_add_event_cb(lv_scr_act(), screen_gesture_event_cb, LV_EVENT_GESTURE, NULL);
+
 }
 
 int panelHeight;
@@ -205,6 +228,7 @@ void init_gui_memoryUsage_bar() {
 void init_gui_status_bar() {
   // Create a status bar at the top -------------------------------------------------------------------------
   statusbar = lv_btn_create(lv_scr_act());
+  lv_obj_clear_flag(statusbar, LV_OBJ_FLAG_CLICKABLE);
   lv_obj_set_size(statusbar, SCR_WIDTH, statusbarHeight);
   lv_obj_set_style_shadow_width(statusbar, 0, LV_PART_MAIN);
   lv_obj_set_style_bg_color(statusbar, lv_color_black(), LV_PART_MAIN);
@@ -231,6 +255,9 @@ void init_gui_status_bar() {
   lv_label_set_text(SceneLabel, "");
   lv_obj_align(SceneLabel, LV_ALIGN_TOP_MID, 0, labelsPositionTopStatusbar);
   lv_obj_set_style_text_font(SceneLabel, &lv_font_montserrat_12, LV_PART_MAIN);
+  lv_obj_add_flag(SceneLabel, LV_OBJ_FLAG_CLICKABLE);
+  lv_obj_add_event_cb(SceneLabel, sceneLabel_or_pageIndicator_event_cb, LV_EVENT_CLICKED, NULL);
+
   // Battery ----------------------------------------------------------------------
   BattPercentageLabel = lv_label_create(statusbar);
   lv_label_set_text(BattPercentageLabel, "");
@@ -251,12 +278,12 @@ void gui_loop(void) {
     waitBeforeActionAfterSlidingAnimationEnded = false;
   } else if (waitOneLoop) {
     waitOneLoop = false;
-    guis_doAfterSliding(oldTabID, currentTabID);
+    guis_doAfterSliding(oldTabID, currentTabID, false);
   };
   // // as alternative, we could wait some milliseconds. But one cycle of gui_loop() works well.
   // if (waitBeforeActionAfterSlidingAnimationEnded) {
   //   if (millis() - waitBeforeActionAfterSlidingAnimationEnded_timerStart >= 5) {
-  //     guis_doAfterSliding(oldTabID, currentTabID);
+  //     guis_doAfterSliding(oldTabID, currentTabID, false);
   //     waitBeforeActionAfterSlidingAnimationEnded = false;
   //   }
   // }
@@ -267,11 +294,13 @@ void gui_loop(void) {
 void guis_doTabCreationAtStartup() {
   gui_memoryOptimizer_prepare_startup();
 
-  guis_doAfterSliding(-1, -1);
+  guis_doAfterSliding(-1, -1, false);
 }
 
-void guis_doAfterSliding(int oldTabID, int newTabID) {
-  gui_memoryOptimizer_doAfterSliding_deletionAndCreation(&tabview, oldTabID, newTabID, &panel, &img1, &img2);
+void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList) {
+  // With parameter newGuiList it is signaled that we are changing from a scene specific list to the main list or vice versa
+  // In that case, we have to do special treatment because we are not simply sliding to the left or to the right, but we start newly with a different gui list.
+  gui_memoryOptimizer_doAfterSliding_deletionAndCreation(&tabview, oldTabID, newTabID, newGuiList, &panel, &img1, &img2);
 
   doLogMemoryUsage();
 }

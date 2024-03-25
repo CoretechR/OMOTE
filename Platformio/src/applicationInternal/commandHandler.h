@@ -7,6 +7,8 @@
 #include "devices/keyboard/device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "devices/keyboard/device_keyboard_ble/device_keyboard_ble.h"
 
+extern uint16_t COMMAND_UNKNOWN;
+
 /*
   Depending on which keyboard is enabled (BLE or MQTT), we define KEYBOARD_UP, KEYBOARD_DOWN and so on.
   These defines are used in keys.cpp, gui*.cpp and commandHandler.cpp

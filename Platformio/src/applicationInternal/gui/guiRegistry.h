@@ -36,6 +36,5 @@ struct gui_definition {
 };
 
 extern std::map<std::string, gui_definition> registered_guis_byName_map;
-extern std::vector<std::string> list_of_guis_to_be_shown;
 
 void register_gui(std::string a_name, create_tab_content a_create_tab_content, notify_tab_before_delete a_notify_tab_before_delete);

@@ -1,7 +1,5 @@
 #include <string>
-#include "devices/misc/device_specialCommands.h"
 #include "applicationInternal/scenes/sceneRegistry.h"
-#include "applicationInternal/scenes/sceneHandler.h"
 #include "applicationInternal/commandHandler.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 

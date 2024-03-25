@@ -9,13 +9,22 @@ void save_preferences_HAL(void) {
 }
 
 std::string get_currentScene_HAL() {
-  return currentScene;
+  // if (currentScene == "") {
+  // // set here something if you need it for a test at startup
+  //   return "Apple TV";
+  // } else
+  {return currentScene;}
+
 }
 void set_currentScene_HAL(std::string aCurrentScene) {
   currentScene = aCurrentScene;
 }
 std::string get_currentGUIname_HAL(){
-  return currentGUIname;
+  // if (currentGUIname == "") {
+  // // set here something if you need it for a test at startup
+  //   return "IR Receiver"; // "Numpad"; // "Apple TV";
+  // } else
+  {return currentGUIname;}
 }
 void set_currentGUIname_HAL(std::string aCurrentGUIname) {
   currentGUIname = aCurrentGUIname;
