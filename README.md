@@ -17,6 +17,8 @@ Feel free to try and use this branch if you like to work wth clean, object orien
 
 ![](P1030424_small.jpg)
 
+[![ESP32 Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio.yml/badge.svg)](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio.yml)
+[![Ubuntu Simulator Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator.yml/badge.svg)](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator.yml)
 [![Windows Simulator Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator-windows.yml/badge.svg)](https://github.com/CoretechR/OMOTE/actions/workflows/build-simulator-windows.yml)
 
 ## Overview
