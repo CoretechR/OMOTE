@@ -6,7 +6,7 @@
 #include "guiRegistry.h"
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
-#include "scenes/scene__defaultKeys.h"
+#include "scenes/scene__default.h"
 
 // ------------------------------------------------------------------------------------
 // this is a map of the registered_guis that can be accessed by name

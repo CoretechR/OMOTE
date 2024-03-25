@@ -4,7 +4,7 @@
 #include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/commandHandler.h"
-#include "scenes/scene__defaultKeys.h"
+#include "scenes/scene__default.h"
 
 void handleScene(uint16_t command, commandData commandData, std::string additionalPayload = "") {
 

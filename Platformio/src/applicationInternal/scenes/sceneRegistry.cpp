@@ -4,7 +4,7 @@
 #include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 // scenes
-#include "scenes/scene__defaultKeys.h"
+#include "scenes/scene__default.h"
 
 // If useSceneGUIlist == true, then a scene is active and we are not in the main_gui_list (with the scene selector as first gui).
 //   In that case, we try to use the scene specific gui list, if the scene defined one.
