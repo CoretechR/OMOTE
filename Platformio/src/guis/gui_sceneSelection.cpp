@@ -82,7 +82,7 @@ static void sceneSelection_event_cb(lv_event_t* e) {
       scene_command_including_force = activate_scene_command;
       Serial.printf("Scene with index %d and name %s was selected\r\n", user_data, scene_name.c_str());
     }
-    lv_timer_t *my_timer = lv_timer_create(activate_scene_cb, 20, (void *)(uintptr_t) scene_command_including_force);
+    lv_timer_t *my_timer = lv_timer_create(activate_scene_cb, 50, (void *)(uintptr_t) scene_command_including_force);
     lv_timer_set_repeat_count(my_timer, 1);
 
   } else {
