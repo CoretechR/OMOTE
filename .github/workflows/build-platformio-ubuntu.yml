@@ -26,10 +26,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install SDL2
-        run: sudo apt install -y libsdl2-dev
-
-
-
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y libsdl2-dev
 
 
 
