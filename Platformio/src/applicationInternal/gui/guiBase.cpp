@@ -115,6 +115,27 @@ void tabview_tab_changed_event_cb(lv_event_t* e) {
   }
 }
 
+void tabview_tab_changed_manually(uint32_t current_tabID) {
+  oldTabID = currentTabID;
+  currentTabID = current_tabID;
+
+  // Wait until the animation ended, then call "guis_doAfterSliding(oldTabID, currentTabID, false);"
+  // https://forum.lvgl.io/t/delete-a-tab-after-the-tabview-scroll-animation-is-complete/3155/4
+  lv_obj_t* tabContainer = lv_tabview_get_content(tabview);
+  // https://docs.lvgl.io/8.3/overview/animation.html?highlight=lv_anim_get#_CPPv411lv_anim_getPv18lv_anim_exec_xcb_t
+  // (lv_anim_exec_xcb_t) lv_obj_set_x does not find an animation. NULL is good as well.
+  lv_anim_t* anim = lv_anim_get(tabContainer, NULL); // (lv_anim_exec_xcb_t) lv_obj_set_x);
+  if(anim) {
+    // Swipe is not yet complete. User released the touch screen, an animation will bring it to the end.
+    // That's the normal (and only?) case for the tft touchscreen
+    lv_anim_set_ready_cb(anim, tabview_animation_ready_cb);
+  } else {
+    // Swipe is complete, no additional animation is needed. Most likely only possible in simulator
+    Serial.println("Change of tab detected, without animation at the end. Will directly do my job after sliding.");
+    guis_doAfterSliding(oldTabID, currentTabID, false);
+  }
+}
+
 void setMainWidgetsHeightAndPosition();
 void init_gui_status_bar();
 void init_gui_memoryUsage_bar();
