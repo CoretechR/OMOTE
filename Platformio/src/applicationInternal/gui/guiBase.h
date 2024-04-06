@@ -30,6 +30,7 @@ void gui_loop(void);
 // used by guiMemoryOptimizer.cpp
 void tabview_content_is_scrolling_event_cb(lv_event_t* e);
 void tabview_tab_changed_event_cb(lv_event_t* e);
+void tabview_tab_changed_manually(uint32_t current_tabID);
 void sceneLabel_or_pageIndicator_event_cb(lv_event_t* e);
 void setActiveTab(uint32_t index, lv_anim_enable_t anim_en);
 // used by memoryUsage.cpp
