@@ -249,6 +249,17 @@ void getBreadcrumpPosition(uint8_t* breadcrumpPosition, std::string nameOfTab) {
   }
 }
 
+void sidepanel_click_event_cb(lv_event_t *e) {
+  lv_obj_t *target = lv_event_get_target(e);
+  int user_data = (intptr_t)(target->user_data);
+  if (tabs_in_memory[2].listIndex == -1) {
+    if (user_data == 2) user_data = 1;
+  }
+  Serial.printf("  Sides of bottom bar clicked, swiping left(0) or right(1|2): %d\r\n", user_data);
+  setActiveTab(user_data, LV_ANIM_ON);
+  tabview_tab_changed_manually((uint32_t) user_data);
+}
+
 void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv_obj_t* img2) {
   Serial.printf("  Will fill panel with page indicators\r\n");
 
@@ -309,6 +320,14 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
       if (nameOfTab == get_currentGUIname()) {
         lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(btn, sceneLabel_or_pageIndicator_event_cb, LV_EVENT_CLICKED, NULL);
+      } else {
+        lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+        if (tabs_in_memory[0].listIndex == -1) {
+          lv_obj_set_user_data(btn,(void *)(intptr_t)2);
+        } else {
+          lv_obj_set_user_data(btn,(void *)(intptr_t)i); 
+        }
+        lv_obj_add_event_cb(btn, sidepanel_click_event_cb, LV_EVENT_CLICKED, NULL);
       }
       lv_obj_set_size(btn, 150, lv_pct(100));
       lv_obj_remove_style(btn, NULL, LV_STATE_PRESSED);
