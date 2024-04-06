@@ -491,3 +491,18 @@ void gui_memoryOptimizer_doAfterSliding_deletionAndCreation(lv_obj_t** tabview, 
   Serial.printf("------------ End of tab deletion and creation\r\n");
 
 }
+
+bool checkTabActive(std::string tabName) {
+  bool tabnameIsActive = false;
+  if ((tabs_in_memory[1].guiName == tabName) && (tabs_in_memory[2].listIndex > 0)) tabnameIsActive = true;
+  if ((tabs_in_memory[0].guiName == tabName) && (tabs_in_memory[2].listIndex < 0)) tabnameIsActive = true;
+  return tabnameIsActive;
+}
+
+bool checkTabinMemory(std::string tabName) {
+  bool tabnameIsActive = false;
+  for (uint8_t i = 0; i < 3; i++) {
+    if (tabs_in_memory[i].guiName == tabName) tabnameIsActive = true;
+  }
+  return tabnameIsActive;
+}
