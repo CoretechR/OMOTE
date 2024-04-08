@@ -102,7 +102,7 @@ void create_tab_content_sceneSelection(lv_obj_t* tab) {
   scene_list scenes = get_scenes_on_sceneSelectionGUI();
   if ((scenes != NULL) && (scenes->size() > 0)) {
     for (int i=0; i<scenes->size(); i++) {
-      lv_obj_t* button = lv_btn_create(tab);
+      lv_obj_t* button = lv_button_create(tab);
       lv_obj_set_size(button, lv_pct(100), 42);
       lv_obj_set_style_radius(button, 30, LV_PART_MAIN);
       lv_obj_set_style_bg_color(button, color_primary, LV_PART_MAIN);

@@ -4,7 +4,7 @@
 
 bool showMemoryUsage = 0;
 
-#if LV_MEM_CUSTOM == 0
+#if (LV_USE_STDLIB_MALLOC == 0)
 lv_mem_monitor_t mon;
 #endif
 
@@ -42,7 +42,7 @@ void doLogMemoryUsage() {
   bool doESPHeapWarning = (freeSystemHeap < thresholdForESP32HeapFreeWarning);
 
   bool doLVGLMemoryWarning = false;
-  #if LV_MEM_CUSTOM == 0
+  #if (LV_USE_STDLIB_MALLOC == 0)
   int thresholdForLVGLmemoryFreeWarning = 20; // in percentage free
   lv_mem_monitor(&mon);
   doLVGLMemoryWarning = ((100 - mon.used_pct) < thresholdForLVGLmemoryFreeWarning);
@@ -64,7 +64,7 @@ void doLogMemoryUsage() {
       freeSystemHeap,                     float(freeSystemHeap)                     / systemHeapSize * 100,
       maxAllocSystemHeap, minfreeSystemHeap);
 
-    #if LV_MEM_CUSTOM == 0
+    #if (LV_USE_STDLIB_MALLOC == 0)
     if (doLVGLMemoryWarning) {
       Serial.println("WARNING: LVGL memory is getting low. You GUI might stop working. In that case, increase \"-D LV_MEM_SIZE\" in platformio.ini");
     }
@@ -81,46 +81,69 @@ void doLogMemoryUsage() {
   #endif
 
   if (showMemoryUsage) {
-    char buffer[80];
-    std::string ESP32HeapWarnBegin = "#00ff00 "; // green
-    std::string ESP32HeapWarnEnd   = "#";
-    std::string LVGLMemorWarnBegin = "#00ff00 "; // green
-    std::string LVGLMemorWarnEnd   = "#";
-    if (doESPHeapWarning) {
-      ESP32HeapWarnBegin = "#ff0000 "; // red
-      ESP32HeapWarnEnd   = "#";
-    }
-    if (doLVGLMemoryWarning) {
-      LVGLMemorWarnBegin = "#ff0000 "; // red
-      LVGLMemorWarnEnd   = "#";
-    }
-    #if LV_MEM_CUSTOM != 0
-      #ifdef SHOW_USED_MEMORY_INSTEAD_OF_FREE_IN_GUI
-
-      sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).c_str()                                                                                           , systemHeapSize-freeSystemHeap, systemHeapSize, float(systemHeapSize-freeSystemHeap) / systemHeapSize * 100);
-      #else
-      sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).c_str()                                                                                           , freeSystemHeap,                systemHeapSize, float(freeSystemHeap)                / systemHeapSize * 100);
+    char bufferHeap[40];
+    char bufferLVGLmemory[40];
+    #ifdef SHOW_USED_MEMORY_INSTEAD_OF_FREE_IN_GUI
+      //sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).append(" / ").append(LVGLMemorWarnBegin).append("%lu/%lu (%d%%)").append(LVGLMemorWarnEnd).c_str(), systemHeapSize-freeSystemHeap, systemHeapSize, float(systemHeapSize-freeSystemHeap) / systemHeapSize * 100, mon.total_size - mon.free_size, mon.total_size, mon.used_pct);
+      sprintf(bufferHeap,       std::string("").append("%lu/%lu (%.0f%%)\0").c_str(), systemHeapSize-freeSystemHeap,  systemHeapSize, float(systemHeapSize-freeSystemHeap) / systemHeapSize * 100);
+      #if (LV_USE_STDLIB_MALLOC == 0)
+      sprintf(bufferLVGLmemory, std::string("").append("%lu/%lu (%d%%)\0").c_str(),   mon.total_size - mon.free_size, mon.total_size, mon.used_pct);
       #endif
     #else
-      #ifdef SHOW_USED_MEMORY_INSTEAD_OF_FREE_IN_GUI
-      sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).append(" / ").append(LVGLMemorWarnBegin).append("%lu/%lu (%d%%)").append(LVGLMemorWarnEnd).c_str(), systemHeapSize-freeSystemHeap, systemHeapSize, float(systemHeapSize-freeSystemHeap) / systemHeapSize * 100, mon.total_size - mon.free_size, mon.total_size, mon.used_pct);
-      #else
-      sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).append(" / ").append(LVGLMemorWarnBegin).append("%lu/%lu (%d%%)").append(LVGLMemorWarnEnd).c_str(), freeSystemHeap,                systemHeapSize, float(freeSystemHeap)                / systemHeapSize * 100, mon.free_size,                  mon.total_size, 100-mon.used_pct);
+      //sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).append(" / ").append(LVGLMemorWarnBegin).append("%lu/%lu (%d%%)").append(LVGLMemorWarnEnd).c_str(), freeSystemHeap,                systemHeapSize, float(freeSystemHeap)                / systemHeapSize * 100, mon.free_size,                  mon.total_size, 100-mon.used_pct);
+      sprintf(bufferHeap,       std::string("").append("%lu/%lu (%.0f%%)\0").c_str(), freeSystemHeap,                 systemHeapSize, float(freeSystemHeap)                / systemHeapSize * 100);
+      #if (LV_USE_STDLIB_MALLOC == 0)
+      sprintf(bufferLVGLmemory, std::string("").append("%lu/%lu (%d%%)\0").c_str(),   mon.free_size,                  mon.total_size, 100-mon.used_pct);
       #endif
     #endif
 
-    for (int i=0; i<strlen(buffer); i++) {
-      if (buffer[i] == '.') {
-        buffer[i] = ',';
+    // convert "." to ","
+    for (int i=0; i<strlen(bufferHeap); i++) {
+      if (bufferHeap[i] == '.') {
+        bufferHeap[i] = ',';
       }
     }
-    if (MemoryUsageLabel != NULL) {
-      // Serial.printf("inside doLogMemoryUsage: will do GUI log %s\r\n", buffer);
-      lv_label_set_text(MemoryUsageLabel, buffer);
+    for (int i=0; i<strlen(bufferLVGLmemory); i++) {
+      if (bufferLVGLmemory[i] == '.') {
+        bufferLVGLmemory[i] = ',';
+      }
     }
+
+    // set text and color of heap used
+    if (MemoryUsageSpanHeap != NULL) {
+      lv_span_set_text(MemoryUsageSpanHeap, bufferHeap);
+      if (doESPHeapWarning) {
+        lv_style_set_text_color(&MemoryUsageSpanHeap->style, lv_palette_main(LV_PALETTE_RED));
+      } else {
+        lv_style_set_text_color(&MemoryUsageSpanHeap->style, lv_palette_main(LV_PALETTE_GREEN));
+      }
+    }  
+    
+    // only if LVGL's built in implementation of memory management is used 
+    #if (LV_USE_STDLIB_MALLOC == 0)
+    // first the separator
+    if (MemoryUsageSpanSeparator != NULL) {
+      lv_span_set_text(MemoryUsageSpanSeparator, " / ");
+    }
+
+    // set text and color of LVGL memory used
+    if (MemoryUsageSpanLVGLmemory != NULL) {
+      lv_span_set_text(MemoryUsageSpanLVGLmemory, bufferLVGLmemory);
+      if (doLVGLMemoryWarning) {
+        lv_style_set_text_color(&MemoryUsageSpanLVGLmemory->style, lv_palette_main(LV_PALETTE_RED));
+      } else {
+        lv_style_set_text_color(&MemoryUsageSpanLVGLmemory->style, lv_palette_main(LV_PALETTE_GREEN));
+      }
+    }
+    #endif
+
   } else {
-    if (MemoryUsageLabel != NULL) {
-      lv_label_set_text(MemoryUsageLabel, "");
+    // we don't show memory usage, so clear text
+    if (MemoryUsageSpanHeap != NULL) {
+      lv_span_set_text(MemoryUsageSpanHeap, "");
+    }
+    if (MemoryUsageSpanLVGLmemory != NULL) {
+      lv_span_set_text(MemoryUsageSpanLVGLmemory, "");
     }
   }
 }

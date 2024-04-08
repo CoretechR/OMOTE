@@ -42,7 +42,7 @@ void clear_tabview(lv_obj_t* tabview) {
     lv_obj_remove_event_cb(tabview, tabview_tab_changed_event_cb);
     lv_obj_remove_event_cb(tabview, tabview_content_is_scrolling_event_cb);
     // delete tabview
-    lv_obj_del(tabview);
+    lv_obj_delete(tabview);
     tabview = NULL;
   }
 
@@ -55,15 +55,15 @@ void clear_tabview(lv_obj_t* tabview) {
 
 void clear_panel(lv_obj_t* panel, lv_obj_t* img1, lv_obj_t* img2) {
   if (panel != NULL) {
-    lv_obj_del(panel);
+    lv_obj_delete(panel);
     panel = NULL;
   }
   if (img1 != NULL) {
-    lv_obj_del(img1);
+    lv_obj_delete(img1);
     img1 = NULL;
   } 
   if (img2 != NULL) {
-    lv_obj_del(img2);
+    lv_obj_delete(img2);
     img2 = NULL;
   } 
 
@@ -71,7 +71,9 @@ void clear_panel(lv_obj_t* panel, lv_obj_t* img1, lv_obj_t* img2) {
 
 lv_obj_t* create_tabview() {
   // Setup a scrollable tabview for devices and settings ----------------------------------------------------
-  lv_obj_t* tabview = lv_tabview_create(lv_scr_act(), LV_DIR_TOP, 0); // Hide tab labels by setting their height to 0
+  lv_obj_t* tabview = lv_tabview_create(lv_screen_active()); // Hide tab labels by setting their height to 0
+  lv_tabview_set_tab_bar_position(tabview, LV_DIR_TOP);
+  lv_tabview_set_tab_bar_size(tabview, 0);
   #ifdef drawRedBorderAroundMainWidgets
   lv_obj_add_style(tabview, &style_red_border, LV_PART_MAIN);
   #endif
@@ -83,9 +85,9 @@ lv_obj_t* create_tabview() {
 
 lv_obj_t* create_panel() {
   // Create a page indicator at the bottom ------------------------------------------------------------------
-  lv_obj_t* panel = lv_obj_create(lv_scr_act());
-  lv_obj_clear_flag(panel, LV_OBJ_FLAG_CLICKABLE);  // This indicator will not be clickable
-  lv_obj_clear_flag(panel, LV_OBJ_FLAG_SCROLLABLE); // This indicator will not be scrollable
+  lv_obj_t* panel = lv_obj_create(lv_screen_active());
+  lv_obj_remove_flag(panel, LV_OBJ_FLAG_CLICKABLE);  // This indicator will not be clickable
+  lv_obj_remove_flag(panel, LV_OBJ_FLAG_SCROLLABLE); // This indicator will not be scrollable
   lv_obj_set_size(panel, SCR_WIDTH, panelHeight);
   lv_obj_set_flex_flow(panel, LV_FLEX_FLOW_ROW);
   lv_obj_align(panel, LV_ALIGN_BOTTOM_MID, 0, 0);
@@ -232,8 +234,8 @@ void doTabCreation_strategyMax3(lv_obj_t* tabview, uint32_t oldTabID, uint32_t n
   }
 }
 
-LV_IMG_DECLARE(gradientLeft);
-LV_IMG_DECLARE(gradientRight);
+LV_IMAGE_DECLARE(gradientLeft);
+LV_IMAGE_DECLARE(gradientRight);
 
 void getBreadcrumpPosition(uint8_t* breadcrumpPosition, std::string nameOfTab) {
   *breadcrumpPosition = 0;
@@ -263,7 +265,7 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
   }
 
   // This small hidden button enables the page indicator to scroll further
-  lv_obj_t* btn = lv_btn_create(panel);
+  lv_obj_t* btn = lv_button_create(panel);
   lv_obj_set_size(btn, 50, lv_pct(100));
   lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
   lv_obj_set_style_opa(btn, LV_OPA_TRANSP, LV_PART_MAIN);
@@ -281,8 +283,8 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
   3 4 -1     p p p b       1 <- last state, special case
 */
   // first page indicator before the first tab
-  btn = lv_btn_create(panel);
-  lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+  btn = lv_button_create(panel);
+  lv_obj_remove_flag(btn, LV_OBJ_FLAG_CLICKABLE);
   lv_obj_set_size(btn, 150, lv_pct(100));
   if (tabs_in_memory[0].listIndex == 0) {
     lv_obj_set_style_bg_color(btn, lv_color_black(), LV_PART_MAIN);
@@ -304,7 +306,7 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
       getBreadcrumpPosition(&breadcrumpPosition, nameOfTab);
 
       // Create actual buttons for every tab
-      lv_obj_t* btn = lv_btn_create(panel);
+      lv_obj_t* btn = lv_button_create(panel);
       // only if this is the button for the currently active tab, make it clickable to get to scene selection gui
       if (nameOfTab == get_currentGUIname()) {
         lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
@@ -342,8 +344,8 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
   }
 
   // last page indicator after the last tab
-  btn = lv_btn_create(panel);
-  lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+  btn = lv_button_create(panel);
+  lv_obj_remove_flag(btn, LV_OBJ_FLAG_CLICKABLE);
   lv_obj_set_size(btn, 150, lv_pct(100));
   //   4 at last position                                                            4 at middle position                                                           only one tab available overall
   if ((tabs_in_memory[2].listIndex == get_gui_list(get_currentScene())->size()-1) || (tabs_in_memory[1].listIndex == get_gui_list(get_currentScene())->size()-1) || (tabs_in_memory[1].listIndex == -1)) {
@@ -353,14 +355,14 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
   }
 
   // This small hidden button enables the page indicator to scroll further
-  btn = lv_btn_create(panel);
+  btn = lv_button_create(panel);
   lv_obj_set_size(btn, 50, lv_pct(100));
   lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
   lv_obj_set_style_opa(btn, LV_OPA_TRANSP, LV_PART_MAIN);
 
   // creation of style was moved to init_gui(void)
   // otherwise repeated calls of lv_style_init will lead to a memory leak of about 46 bytes each time
-  // https://docs.lvgl.io/8.3/overview/style.html?highlight=lv_style_t#initialize-styles-and-set-get-properties
+  // https://docs.lvgl.io/master/overview/style.html?highlight=lv_style_t#initialize-styles-and-set-get-properties
   lv_obj_add_style(panel, &panel_style, 0);
   #ifdef drawRedBorderAroundMainWidgets
   lv_obj_add_style(panel, &style_red_border, LV_PART_MAIN);
@@ -369,18 +371,20 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
   // Make the indicator fade out at the sides using gradient bitmaps
   // Bitmaps are above the buttons and labels
   // don't create it here
-  // img1 = lv_img_create(lv_scr_act());
-  lv_img_set_src(img1, &gradientLeft);
-  lv_obj_align(img1, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+  // img1 = lv_image_create(lv_screen_active());
   lv_obj_set_size(img1, panelHeight, panelHeight); // stretch the 1-pixel high image to 30px
+  lv_obj_align(img1, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+  lv_image_set_src(img1, &gradientLeft);
+  lv_image_set_inner_align(img1, LV_IMAGE_ALIGN_STRETCH);
   #ifdef drawRedBorderAroundMainWidgets
   lv_obj_add_style(img1, &style_red_border, LV_PART_MAIN);
   #endif
   // don't create it here
-  // img2 = lv_img_create(lv_scr_act());
-  lv_img_set_src(img2, &gradientRight);
-  lv_obj_align(img2, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+  // img2 = lv_image_create(lv_screen_active());
   lv_obj_set_size(img2, panelHeight, panelHeight);
+  lv_obj_align(img2, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+  lv_image_set_src(img2, &gradientRight);
+  lv_image_set_inner_align(img2, LV_IMAGE_ALIGN_STRETCH);
   #ifdef drawRedBorderAroundMainWidgets
   lv_obj_add_style(img2, &style_red_border, LV_PART_MAIN);
   #endif
@@ -455,12 +459,12 @@ void gui_memoryOptimizer_doAfterSliding_deletionAndCreation(lv_obj_t** tabview, 
 
   // only optional: delete and create the whole screen. Not necessary.
   // Only used for a test. init_gui_status_bar() would need to be called again at a suitable place, because the status bar would also be deleted.
-  // lv_obj_t* oldscr = lv_scr_act();
+  // lv_obj_t* oldscr = lv_screen_active();
   // // create new screen
   // lv_obj_t* newscr = lv_obj_create(NULL);
   // // load this new screen
-  // lv_scr_load(newscr);
-  // lv_obj_del(oldscr);
+  // lv_screen_load(newscr);
+  // lv_obj_delete(oldscr);
 
   if (newGuiList) {
     // If we are switching to a new gui list, then we need to set tabs_in_memory_previous_listIndex[0] = -1;
@@ -478,15 +482,15 @@ void gui_memoryOptimizer_doAfterSliding_deletionAndCreation(lv_obj_t** tabview, 
   // Create the panel for the page indicator. Panel itself takes about 2136 bytes for three tabs.
   lv_obj_t* newPanel = create_panel();
   *panel = newPanel;
-  *img1 = lv_img_create(lv_scr_act());
-  *img2 = lv_img_create(lv_scr_act());
+  *img1 = lv_image_create(lv_screen_active());
+  *img2 = lv_image_create(lv_screen_active());
   fillPanelWithPageIndicator_strategyMax3(*panel, *img1, *img2);
 
   // now, as the correct tab is active, register again the events for the tabview
   lv_obj_add_event_cb(*tabview, tabview_tab_changed_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
   lv_obj_add_event_cb(lv_tabview_get_content(*tabview), tabview_content_is_scrolling_event_cb, LV_EVENT_SCROLL, NULL);
   // Initialize scroll position of the page indicator
-  lv_event_send(lv_tabview_get_content(*tabview), LV_EVENT_SCROLL, NULL);
+  lv_obj_send_event(lv_tabview_get_content(*tabview), LV_EVENT_SCROLL, NULL);
 
   Serial.printf("------------ End of tab deletion and creation\r\n");
 

@@ -3,7 +3,9 @@
 #include <lvgl.h>
 
 // used by memoryUsage.cpp
-extern lv_obj_t* MemoryUsageLabel;
+extern lv_span_t* MemoryUsageSpanHeap;
+extern lv_span_t* MemoryUsageSpanSeparator;
+extern lv_span_t* MemoryUsageSpanLVGLmemory;
 // used by guiStatusUpdate.cpp
 extern lv_obj_t* BluetoothLabel;
 extern lv_obj_t* BattPercentageLabel;

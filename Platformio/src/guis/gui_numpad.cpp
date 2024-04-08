@@ -12,8 +12,8 @@
 
 // Virtual Keypad Event handler
 static void virtualKeypad_event_cb(lv_event_t* e) {
-  lv_obj_t* target = lv_event_get_target(e);
-  lv_obj_t* cont = lv_event_get_current_target(e);
+  lv_obj_t* target = (lv_obj_t*)lv_event_get_target(e);
+  lv_obj_t* cont = (lv_obj_t*)lv_event_get_current_target(e);
   if (target == cont) return; // stop if container was clicked
   
   int user_data = (intptr_t)(target->user_data);
@@ -37,8 +37,8 @@ void create_tab_content_numpad(lv_obj_t* tab) {
 
   // Configure number button grid
   // A variable declared static inside a function is visible only inside that function, exists only once (not created/destroyed for each call) and is permanent. It is in a sense a private global variable.
-  static lv_coord_t col_dsc[] = { LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST }; // equal x distribution
-  static lv_coord_t row_dsc[] = { 52, 52, 52, 52, LV_GRID_TEMPLATE_LAST }; // manual y distribution to compress the grid a bit
+  static int32_t col_dsc[] = { LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST }; // equal x distribution
+  static int32_t row_dsc[] = { 52, 52, 52, 52, LV_GRID_TEMPLATE_LAST }; // manual y distribution to compress the grid a bit
 
   // Create a container with grid for tab
   lv_obj_set_style_pad_all(tab, 0, LV_PART_MAIN);
@@ -62,7 +62,7 @@ void create_tab_content_numpad(lv_obj_t* tab) {
     uint8_t row = i / 3;
     // Create the button object
     if ((row == 3) && ((col == 0) || (col == 2))) continue; // Do not create a complete fourth row, only a 0 button
-    obj = lv_btn_create(cont);
+    obj = lv_button_create(cont);
     lv_obj_set_grid_cell(obj, LV_GRID_ALIGN_STRETCH, col, 1, LV_GRID_ALIGN_STRETCH, row, 1);
     lv_obj_set_style_bg_color(obj, color_primary, LV_PART_MAIN);
     lv_obj_set_style_radius(obj, 14, LV_PART_MAIN);

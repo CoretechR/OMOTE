@@ -23,7 +23,7 @@ long HeapUsed()
 #elif defined(__linux__)
 long HeapUsed() {
   // don't know how to get used heap size in linux
-  return 800000;
+  return 80000;
 }
 #endif
 

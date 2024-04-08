@@ -8,7 +8,7 @@
 #include "devices/misc/device_smarthome/device_smarthome.h"
 
 // LVGL declarations
-LV_IMG_DECLARE(lightbulb);
+LV_IMAGE_DECLARE(lightbulb);
 
 static lv_obj_t* lightToggleA;
 static lv_obj_t* lightToggleB;
@@ -23,7 +23,7 @@ static int32_t sliderBvalue = 0;
 // Smart Home Toggle Event handler
 static void smartHomeToggle_event_cb(lv_event_t* e){
   std::string payload;
-  if (lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED)) payload = "true";
+  if (lv_obj_has_state((lv_obj_t*)lv_event_get_target(e), LV_STATE_CHECKED)) payload = "true";
   else payload = "false";
   // Publish an MQTT message based on the event user data  
   #if (ENABLE_WIFI_AND_MQTT == 1)
@@ -35,7 +35,7 @@ static void smartHomeToggle_event_cb(lv_event_t* e){
 
 // Smart Home Slider Event handler
 static void smartHomeSlider_event_cb(lv_event_t* e){
-  lv_obj_t* slider = lv_event_get_target(e);
+  lv_obj_t* slider = (lv_obj_t*)lv_event_get_target(e);
   char payload[8];
   sprintf(payload, "%.2f", float(lv_slider_get_value(slider)));
   std::string payload_str(payload);
@@ -63,10 +63,10 @@ void create_tab_content_smarthome(lv_obj_t* tab) {
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
 
-  lv_obj_t* bulbIcon = lv_img_create(menuBox);
-  lv_img_set_src(bulbIcon, &lightbulb);
-  lv_obj_set_style_img_recolor(bulbIcon, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(bulbIcon, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_t* bulbIcon = lv_image_create(menuBox);
+  lv_image_set_src(bulbIcon, &lightbulb);
+  lv_obj_set_style_image_recolor(bulbIcon, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_image_recolor_opa(bulbIcon, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(bulbIcon, LV_ALIGN_TOP_LEFT, 0, 0);
 
   menuLabel = lv_label_create(menuBox);
@@ -76,7 +76,7 @@ void create_tab_content_smarthome(lv_obj_t* tab) {
   if (lightToggleAstate) {
     lv_obj_add_state(lightToggleA, LV_STATE_CHECKED);
   } else {
-    // lv_obj_clear_state(lightToggleA, LV_STATE_CHECKED);
+    // lv_obj_remove_state(lightToggleA, LV_STATE_CHECKED);
   }
   lv_obj_set_size(lightToggleA, 40, 22);
   lv_obj_align(lightToggleA, LV_ALIGN_TOP_RIGHT, 0, 0);
@@ -103,10 +103,10 @@ void create_tab_content_smarthome(lv_obj_t* tab) {
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
 
-  bulbIcon = lv_img_create(menuBox);
-  lv_img_set_src(bulbIcon, &lightbulb);
-  lv_obj_set_style_img_recolor(bulbIcon, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(bulbIcon, LV_OPA_COVER, LV_PART_MAIN);
+  bulbIcon = lv_image_create(menuBox);
+  lv_image_set_src(bulbIcon, &lightbulb);
+  lv_obj_set_style_image_recolor(bulbIcon, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_image_recolor_opa(bulbIcon, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(bulbIcon, LV_ALIGN_TOP_LEFT, 0, 0);
 
   menuLabel = lv_label_create(menuBox);
@@ -116,7 +116,7 @@ void create_tab_content_smarthome(lv_obj_t* tab) {
   if (lightToggleBstate) {
     lv_obj_add_state(lightToggleB, LV_STATE_CHECKED);
   } else {
-    // lv_obj_clear_state(lightToggleB, LV_STATE_CHECKED);
+    // lv_obj_remove_state(lightToggleB, LV_STATE_CHECKED);
   }
   lv_obj_set_size(lightToggleB, 40, 22);
   lv_obj_align(lightToggleB, LV_ALIGN_TOP_RIGHT, 0, 0);

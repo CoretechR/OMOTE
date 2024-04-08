@@ -6,8 +6,8 @@
 #include "guis/gui_settings.h"
 
 // LVGL declarations
-LV_IMG_DECLARE(high_brightness);
-LV_IMG_DECLARE(low_brightness);
+LV_IMAGE_DECLARE(high_brightness);
+LV_IMAGE_DECLARE(low_brightness);
 
 lv_obj_t* objBattSettingsVoltage;
 lv_obj_t* objBattSettingsPercentage;
@@ -15,7 +15,7 @@ lv_obj_t* objBattSettingsPercentage;
 
 // Slider Event handler
 static void bl_slider_event_cb(lv_event_t* e){
-  lv_obj_t* slider = lv_event_get_target(e);
+  lv_obj_t* slider = (lv_obj_t*)lv_event_get_target(e);
   int32_t slider_value = lv_slider_get_value(slider);
   if (slider_value < 60)  {slider_value = 60;}
   if (slider_value > 255) {slider_value = 255;}
@@ -24,12 +24,12 @@ static void bl_slider_event_cb(lv_event_t* e){
 
 // Wakeup by IMU Switch Event handler
 static void WakeEnableSetting_event_cb(lv_event_t* e){
-  set_wakeupByIMUEnabled(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED));
+  set_wakeupByIMUEnabled(lv_obj_has_state((lv_obj_t*)lv_event_get_target(e), LV_STATE_CHECKED));
 }
 
 // timout event handler
 static void timout_event_cb(lv_event_t* e){
-  lv_obj_t* drop = lv_event_get_target(e);
+  lv_obj_t* drop = (lv_obj_t*)lv_event_get_target(e);
   uint16_t selected = lv_dropdown_get_selected(drop);
   switch (selected) {
     case 0: {set_sleepTimeout(  10000); break;}
@@ -48,7 +48,7 @@ static void timout_event_cb(lv_event_t* e){
 
 // show memory usage event handler
 static void showMemoryUsage_event_cb(lv_event_t* e) {
-  setShowMemoryUsage(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED));
+  setShowMemoryUsage(lv_obj_has_state((lv_obj_t*)lv_event_get_target(e), LV_STATE_CHECKED));
 }
 
 void create_tab_content_settings(lv_obj_t* tab) {
@@ -68,10 +68,10 @@ void create_tab_content_settings(lv_obj_t* tab) {
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
 
-  lv_obj_t* brightnessIcon = lv_img_create(menuBox);
-  lv_img_set_src(brightnessIcon, &low_brightness);
-  lv_obj_set_style_img_recolor(brightnessIcon, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_t* brightnessIcon = lv_image_create(menuBox);
+  lv_image_set_src(brightnessIcon, &low_brightness);
+  lv_obj_set_style_image_recolor(brightnessIcon, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_image_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(brightnessIcon, LV_ALIGN_TOP_LEFT, 0, 0);
   lv_obj_t* slider = lv_slider_create(menuBox);
   lv_slider_set_range(slider, 60, 255);
@@ -81,10 +81,10 @@ void create_tab_content_settings(lv_obj_t* tab) {
   lv_slider_set_value(slider, get_backlightBrightness(), LV_ANIM_OFF);
   lv_obj_set_size(slider, lv_pct(66), 10);
   lv_obj_align(slider, LV_ALIGN_TOP_MID, 0, 3);
-  brightnessIcon = lv_img_create(menuBox);
-  lv_img_set_src(brightnessIcon, &high_brightness);
-  lv_obj_set_style_img_recolor(brightnessIcon, lv_color_white(), LV_PART_MAIN);
-  lv_obj_set_style_img_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
+  brightnessIcon = lv_image_create(menuBox);
+  lv_image_set_src(brightnessIcon, &high_brightness);
+  lv_obj_set_style_image_recolor(brightnessIcon, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_image_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(brightnessIcon, LV_ALIGN_TOP_RIGHT, 0, -1);
   lv_obj_add_event_cb(slider, bl_slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
   
@@ -99,7 +99,7 @@ void create_tab_content_settings(lv_obj_t* tab) {
   if (get_wakeupByIMUEnabled()) {
     lv_obj_add_state(wakeToggle, LV_STATE_CHECKED);
   } else {
-    // lv_obj_clear_state(wakeToggle, LV_STATE_CHECKED);
+    // lv_obj_remove_state(wakeToggle, LV_STATE_CHECKED);
   }
 
   menuLabel = lv_label_create(menuBox);
@@ -192,7 +192,7 @@ void create_tab_content_settings(lv_obj_t* tab) {
   if (getShowMemoryUsage()) {
     lv_obj_add_state(memoryUsageToggle, LV_STATE_CHECKED);
   } else {
-    // lv_obj_clear_state(memoryUsageToggle, LV_STATE_CHECKED);
+    // lv_obj_remove_state(memoryUsageToggle, LV_STATE_CHECKED);
   }
 }
 

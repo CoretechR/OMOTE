@@ -88,7 +88,7 @@ void showNewIRmessage(std::string message) {
 
 // IR receiver on Switch Event handler
 static void IRReceiverOnSetting_event_cb(lv_event_t* e){
-  set_irReceiverEnabled(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED));
+  set_irReceiverEnabled(lv_obj_has_state((lv_obj_t*)lv_event_get_target(e), LV_STATE_CHECKED));
   if (get_irReceiverEnabled()) {
     Serial.println("will turn on IR receiver");
     start_infraredReceiver();

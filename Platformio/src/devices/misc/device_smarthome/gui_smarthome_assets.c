@@ -31,10 +31,8 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_LIGHTBULB
   0x00, 0x00, 0x00, 0x01, 0x21, 0x22, 0x22, 0x21, 0x01, 0x00, 0x00, 0x00, 
 };
 
-const lv_img_dsc_t lightbulb = {
-  .header.cf = LV_IMG_CF_ALPHA_8BIT,
-  .header.always_zero = 0,
-  .header.reserved = 0,
+const lv_image_dsc_t lightbulb = {
+  .header.cf = LV_COLOR_FORMAT_A8,
   .header.w = 12,
   .header.h = 20,
   .data_size = 240,

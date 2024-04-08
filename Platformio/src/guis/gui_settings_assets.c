@@ -29,10 +29,8 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_HIGH_BRIG
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc1, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 };
 
-const lv_img_dsc_t high_brightness = {
-  .header.cf = LV_IMG_CF_ALPHA_8BIT,
-  .header.always_zero = 0,
-  .header.reserved = 0,
+const lv_image_dsc_t high_brightness = {
+  .header.cf = LV_COLOR_FORMAT_A8,
   .header.w = 18,
   .header.h = 18,
   .data_size = 324,
@@ -63,10 +61,8 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_LOW_BRIGH
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 };
 
-const lv_img_dsc_t low_brightness = {
-  .header.cf = LV_IMG_CF_ALPHA_8BIT,
-  .header.always_zero = 0,
-  .header.reserved = 0,
+const lv_image_dsc_t low_brightness = {
+  .header.cf = LV_COLOR_FORMAT_A8,
   .header.w = 16,
   .header.h = 16,
   .data_size = 256,
