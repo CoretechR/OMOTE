@@ -13,7 +13,7 @@ tab_in_memory tabs_in_memory[3] = {{NULL, -1, ""}, {NULL, -1, ""}, {NULL, -1, ""
 // holds the ids of the tabs we had in memory before, so that we can determine the next or previous id
 int tabs_in_memory_previous_listIndex[3]= {-1 , -1, -1};
 
-bool gui_memoryOptimizer_isTabIDInMemory(u_int8_t tabID) {
+bool gui_memoryOptimizer_isTabIDInMemory(int tabID) {
   // range check
   if ((tabID < 0) || (tabID >= 3)) {
     return false;
