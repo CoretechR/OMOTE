@@ -7,7 +7,11 @@
 #include "applicationInternal/scenes/sceneRegistry.h"
 
 extern uint16_t SCENE_SELECTION;          // command
-extern std::string scene_name_selection;  // name of this fake default scene
+extern std::string scene_name_selection;  // payload: name of this fake default scene
+extern uint16_t GUI_PREV;                 // command
+extern uint16_t GUI_NEXT;                 // command
+extern std::string scene_gui_prev;        // payload: name of this fake scene
+extern std::string scene_gui_next;        // payload: name of this fake scene
 
 extern std::map<char, repeatModes> key_repeatModes_default;
 extern std::map<char, uint16_t> key_commands_short_default;
