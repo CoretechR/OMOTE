@@ -33,6 +33,18 @@ void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList);
 
 // Helper Functions -----------------------------------------------------------------------------------------------------------------------
 
+// callback when pageIndicator prev or next was clicked
+void pageIndicator_navigate_event_cb(lv_event_t* e) {
+  lv_obj_t* target = lv_event_get_target(e);
+  
+  int user_data = (intptr_t)(target->user_data);
+  if (user_data == 0) {
+    executeCommand(GUI_PREV);
+  } else if (user_data == 1) {
+    executeCommand(GUI_NEXT);
+  }
+}
+
 // callback when sceneLabel or pageIndicator was clicked
 void sceneLabel_or_pageIndicator_event_cb(lv_event_t* e) {
   Serial.println("- Scene selection: sceneLabel or pageIndicator clicked received for navigating to scene selection page");
@@ -100,9 +112,7 @@ void tabview_tab_changed_event_cb(lv_event_t* e) {
     // https://forum.lvgl.io/t/delete-a-tab-after-the-tabview-scroll-animation-is-complete/3155/4
     lv_obj_t* myTabview = lv_event_get_target(e);
     lv_obj_t* tabContainer = lv_tabview_get_content(myTabview);
-    // https://docs.lvgl.io/8.3/overview/animation.html?highlight=lv_anim_get#_CPPv411lv_anim_getPv18lv_anim_exec_xcb_t
-    // (lv_anim_exec_xcb_t) lv_obj_set_x does not find an animation. NULL is good as well.
-    lv_anim_t* anim = lv_anim_get(tabContainer, NULL); // (lv_anim_exec_xcb_t) lv_obj_set_x);
+    lv_anim_t* anim = lv_anim_get(tabContainer, NULL);
     if(anim) {
       // Swipe is not yet complete. User released the touch screen, an animation will bring it to the end.
       // That's the normal (and only?) case for the tft touchscreen
@@ -305,7 +315,7 @@ void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList) {
   doLogMemoryUsage();
 }
 
-void setActiveTab(uint32_t index, lv_anim_enable_t anim_en) {
+void setActiveTab(uint32_t index, lv_anim_enable_t anim_en, bool send_tab_changed_event) {
   // unsigned long startTime = millis();
   if (anim_en == LV_ANIM_ON) {
     lv_tabview_set_act(tabview, index, LV_ANIM_ON);
@@ -317,6 +327,10 @@ void setActiveTab(uint32_t index, lv_anim_enable_t anim_en) {
     lv_tabview_set_act(tabview, index, LV_ANIM_OFF);
     // lv_timer_handler();
     // log_memory();
+  }
+
+  if (send_tab_changed_event) {
+    lv_event_send(tabview, LV_EVENT_VALUE_CHANGED, NULL);
   }
 }
 

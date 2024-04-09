@@ -1,6 +1,7 @@
 #include <string>
 #include <lvgl.h>
 #include "applicationInternal/gui/guiBase.h"
+#include "applicationInternal/gui/guiMemoryOptimizer.h"
 #include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/commandHandler.h"
@@ -26,6 +27,28 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
   if (scene_name == scene_name_selection) {
     useSceneGUIlist = false;
     guis_doAfterSliding(-1, -1, true);
+    return;
+  }
+
+  // do not switch scene, but navigate to the prev or next gui in the currently active list of guis
+  if ((scene_name == scene_gui_next) || (scene_name == scene_gui_prev)) {
+    if (scene_name == scene_gui_prev) {
+      if (currentTabID == 0) {
+        Serial.println("scene: cannot navigate to prev gui, because there is none");
+      } else {
+        Serial.println("scene: will navigate to prev gui");
+        setActiveTab(currentTabID -1, LV_ANIM_ON, true);
+      }
+
+    } else if (scene_name == scene_gui_next) {
+      if (!gui_memoryOptimizer_isTabIDInMemory(currentTabID +1)) {
+        Serial.println("scene: cannot navigate to next gui, because there is none");
+      } else {
+        Serial.println("scene: will navigate to next gui");
+        setActiveTab(currentTabID +1, LV_ANIM_ON, true);
+      }
+
+    }
     return;
   }
 
