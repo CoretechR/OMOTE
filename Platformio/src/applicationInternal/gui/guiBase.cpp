@@ -37,7 +37,7 @@ void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList);
 
 // callback when pageIndicator prev or next was clicked
 void pageIndicator_navigate_event_cb(lv_event_t* e) {
-  lv_obj_t* target = lv_event_get_target(e);
+  lv_obj_t* target = (lv_obj_t*)lv_event_get_target(e);
   
   int user_data = (intptr_t)(target->user_data);
   if (user_data == 0) {
@@ -336,7 +336,7 @@ void setActiveTab(uint32_t index, lv_anim_enable_t anim_en, bool send_tab_change
   }
 
   if (send_tab_changed_event) {
-    lv_event_send(tabview, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_send_event(tabview, LV_EVENT_VALUE_CHANGED, NULL);
   }
 }
 
