@@ -35,6 +35,18 @@ void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList);
 
 // Helper Functions -----------------------------------------------------------------------------------------------------------------------
 
+// callback when pageIndicator prev or next was clicked
+void pageIndicator_navigate_event_cb(lv_event_t* e) {
+  lv_obj_t* target = lv_event_get_target(e);
+  
+  int user_data = (intptr_t)(target->user_data);
+  if (user_data == 0) {
+    executeCommand(GUI_PREV);
+  } else if (user_data == 1) {
+    executeCommand(GUI_NEXT);
+  }
+}
+
 // callback when sceneLabel or pageIndicator was clicked
 void sceneLabel_or_pageIndicator_event_cb(lv_event_t* e) {
   Serial.println("- Scene selection: sceneLabel or pageIndicator clicked received for navigating to scene selection page");
@@ -309,7 +321,7 @@ void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList) {
   doLogMemoryUsage();
 }
 
-void setActiveTab(uint32_t index, lv_anim_enable_t anim_en) {
+void setActiveTab(uint32_t index, lv_anim_enable_t anim_en, bool send_tab_changed_event) {
   // unsigned long startTime = millis();
   if (anim_en == LV_ANIM_ON) {
     lv_tabview_set_active(tabview, index, LV_ANIM_ON);
@@ -321,6 +333,10 @@ void setActiveTab(uint32_t index, lv_anim_enable_t anim_en) {
     lv_tabview_set_active(tabview, index, LV_ANIM_OFF);
     // lv_timer_handler();
     // log_memory();
+  }
+
+  if (send_tab_changed_event) {
+    lv_event_send(tabview, LV_EVENT_VALUE_CHANGED, NULL);
   }
 }
 

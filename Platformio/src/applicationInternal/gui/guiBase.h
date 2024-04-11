@@ -33,7 +33,8 @@ void gui_loop(void);
 void tabview_content_is_scrolling_event_cb(lv_event_t* e);
 void tabview_tab_changed_event_cb(lv_event_t* e);
 void sceneLabel_or_pageIndicator_event_cb(lv_event_t* e);
-void setActiveTab(uint32_t index, lv_anim_enable_t anim_en);
+void pageIndicator_navigate_event_cb(lv_event_t* e);
+void setActiveTab(uint32_t index, lv_anim_enable_t anim_en, bool send_tab_changed_event = false);
 // used by memoryUsage.cpp
 void showMemoryUsageBar(bool showBar);
 // used by commandHandler to show WiFi status

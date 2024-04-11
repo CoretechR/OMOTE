@@ -13,6 +13,23 @@ tab_in_memory tabs_in_memory[3] = {{NULL, -1, ""}, {NULL, -1, ""}, {NULL, -1, ""
 // holds the ids of the tabs we had in memory before, so that we can determine the next or previous id
 int tabs_in_memory_previous_listIndex[3]= {-1 , -1, -1};
 
+bool gui_memoryOptimizer_isTabIDInMemory(int tabID) {
+  // range check
+  if ((tabID < 0) || (tabID >= 3)) {
+    return false;
+  }
+  return (tabs_in_memory[tabID].listIndex != -1);
+}
+
+bool gui_memoryOptimizer_isGUInameInMemory(std::string guiName) {
+  for (uint8_t index=0; index <= 2; index++) {
+    if (tabs_in_memory[index].guiName == guiName) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void notify_active_tabs_before_delete() {
   Serial.printf("  Will notify tabs about deletion\r\n");
   std::string nameOfTab;
@@ -311,6 +328,21 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
       if (nameOfTab == get_currentGUIname()) {
         lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(btn, sceneLabel_or_pageIndicator_event_cb, LV_EVENT_CLICKED, NULL);
+
+      } else if ((i==0 || i==1) && (tabs_in_memory[i+1].listIndex != -1)) {
+        // this is the button on the previous tab, which can be seen on the active tab
+        // activate click to prev tab
+        lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_set_user_data(btn,(void *)(intptr_t)0);
+        lv_obj_add_event_cb(btn, pageIndicator_navigate_event_cb, LV_EVENT_CLICKED, NULL);
+
+      } else if (i==1 || i==2) {
+        // this is the button on the next tab, which can be seen on the active tab
+        // activate click to next tab
+        lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_set_user_data(btn,(void *)(intptr_t)1);
+        lv_obj_add_event_cb(btn, pageIndicator_navigate_event_cb, LV_EVENT_CLICKED, NULL);
+
       }
       lv_obj_set_size(btn, 150, lv_pct(100));
       lv_obj_remove_style(btn, NULL, LV_STATE_PRESSED);
