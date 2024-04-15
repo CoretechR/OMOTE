@@ -78,6 +78,11 @@ int main(int argc, char *argv[]) {
   register_device_denonAvr();
   register_device_smarthome();
   register_device_appleTV();
+  register_device_lgTV();
+  register_device_lgsoundbar();
+  register_device_lgbluray();
+  register_device_samsungbluray();
+  register_device_shield();
   #if (ENABLE_KEYBOARD_MQTT == 1)
   register_device_keyboard_mqtt();
   #endif
