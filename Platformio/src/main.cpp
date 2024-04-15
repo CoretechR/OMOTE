@@ -6,6 +6,11 @@
 // register devices and their commands
 #include "devices/misc/device_specialCommands.h"
 #include "devices/TV/device_samsungTV/device_samsungTV.h"
+#include "devices/TV/device_lgTV/device_lgTV.h"
+#include "devices/mediaPlayer/device_shield/device_shield.h"
+#include "devices/AVreceiver/device_lgsoundbar/device_lgsoundbar.h"
+#include "devices/mediaPlayer/device_lgbluray/device_lgbluray.h"
+#include "devices/mediaPlayer/device_samsungbluray/device_samsungbluray.h"
 #include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
 #include "devices/AVreceiver/device_denonAvr/device_denonAvr.h"
 #include "devices/mediaPlayer/device_appleTV/device_appleTV.h"
