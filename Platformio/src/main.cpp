@@ -4,15 +4,26 @@
 // init hardware and hardware loop
 #include "applicationInternal/hardware/hardwarePresenter.h"
 // register devices and their commands
+//   special
 #include "devices/misc/device_specialCommands.h"
-#include "devices/TV/device_samsungTV/device_samsungTV.h"
-#include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
-#include "devices/AVreceiver/device_denonAvr/device_denonAvr.h"
-#include "devices/mediaPlayer/device_appleTV/device_appleTV.h"
+#include "applicationInternal/commandHandler.h"
+//   keyboards
 #include "devices/keyboard/device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "devices/keyboard/device_keyboard_ble/device_keyboard_ble.h"
+//   TV
+#include "devices/TV/device_samsungTV/device_samsungTV.h"
+//#include "devices/TV/device_lgTV/device_lgTV.h"
+//   AV receiver
+#include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
+//#include "devices/AVreceiver/device_denonAvr/device_denonAvr.h"
+//#include "devices/AVreceiver/device_lgsoundbar/device_lgsoundbar.h"
+//   media player
+#include "devices/mediaPlayer/device_appleTV/device_appleTV.h"
+//#include "devices/mediaPlayer/device_lgbluray/device_lgbluray.h"
+//#include "devices/mediaPlayer/device_samsungbluray/device_samsungbluray.h"
+//#include "devices/mediaPlayer/device_shield/device_shield.h"
+//   misc
 #include "devices/misc/device_smarthome/device_smarthome.h"
-#include "applicationInternal/commandHandler.h"
 // register gui and keys
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/gui/guiRegistry.h"
@@ -68,11 +79,21 @@ int main(int argc, char *argv[]) {
 
   // register commands for the devices
   register_specialCommands();
+  //   TV
   register_device_samsungTV();
+//  register_device_lgTV();
+  //   AV receiver
   register_device_yamahaAmp();
-  register_device_denonAvr();
-  register_device_smarthome();
+  //register_device_denonAvr();
+  //register_device_lgsoundbar();
+  //   media player
   register_device_appleTV();
+  //register_device_lgbluray();
+  //register_device_samsungbluray();
+  //register_device_shield();
+  //   misc
+  register_device_smarthome();
+
   #if (ENABLE_KEYBOARD_MQTT == 1)
   register_device_keyboard_mqtt();
   #endif

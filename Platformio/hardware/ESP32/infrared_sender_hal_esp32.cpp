@@ -24,7 +24,8 @@ enum IRprotocols {
   IR_PROTOCOL_SAMSUNG = 2,
   IR_PROTOCOL_SONY = 3,
   IR_PROTOCOL_RC5 = 4,
-  IR_PROTOCOL_DENON = 5
+  IR_PROTOCOL_DENON = 5,
+  IR_PROTOCOL_SAMSUNG36 = 6
 };
 void sendIRcode_HAL(int protocol, std::list<std::string> commandPayloads, std::string additionalPayload) {
   switch (protocol) {
@@ -127,6 +128,17 @@ void sendIRcode_HAL(int protocol, std::list<std::string> commandPayloads, std::s
         Serial.printf("execute: will send IR DENON 48 bit, data (%" PRIu64 ")\r\n", data);
         IrSender.sendDenon(data, 48);
       }
+      break;
+    }
+
+    case IR_PROTOCOL_SAMSUNG36: {
+      auto current = commandPayloads.begin();
+      std::string dataStr = *current;
+      // https://cplusplus.com/reference/string/stoull/
+      std::string::size_type sz = 0;   // alias of size_t
+      const uint64_t data = std::stoull(dataStr, &sz, 0);
+      Serial.printf("execute: will send IR SAMSUNG36, data %s (%" PRIu64 ")\r\n", dataStr.c_str(), data);
+      IrSender.sendSamsung36(data);
       break;
     }
   }
