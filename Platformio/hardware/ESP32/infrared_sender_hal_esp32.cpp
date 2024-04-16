@@ -131,12 +131,11 @@ void sendIRcode_HAL(int protocol, std::list<std::string> commandPayloads, std::s
       break;
     }
 
-    case IR_PROTOCOL_SAMSUNG36:
-    {
+    case IR_PROTOCOL_SAMSUNG36: {
       auto current = commandPayloads.begin();
       std::string dataStr = *current;
       // https://cplusplus.com/reference/string/stoull/
-      std::string::size_type sz = 0; // alias of size_t
+      std::string::size_type sz = 0;   // alias of size_t
       const uint64_t data = std::stoull(dataStr, &sz, 0);
       Serial.printf("execute: will send IR SAMSUNG36, data %s (%" PRIu64 ")\r\n", dataStr.c_str(), data);
       IrSender.sendSamsung36(data);

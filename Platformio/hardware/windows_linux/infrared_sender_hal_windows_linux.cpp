@@ -5,8 +5,7 @@ void init_infraredSender_HAL(void) {
 }
 
 // IR protocols
-enum IRprotocols
-{
+enum IRprotocols {
   IR_PROTOCOL_GC = 0,
   IR_PROTOCOL_NEC = 1,
   IR_PROTOCOL_SAMSUNG = 2,
