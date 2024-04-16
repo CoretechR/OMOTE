@@ -6,6 +6,11 @@
 // register devices and their commands
 #include "devices/misc/device_specialCommands.h"
 #include "devices/TV/device_samsungTV/device_samsungTV.h"
+#include "devices/TV/device_lgTV/device_lgTV.h"
+#include "devices/mediaPlayer/device_shield/device_shield.h"
+#include "devices/AVreceiver/device_lgsoundbar/device_lgsoundbar.h"
+#include "devices/mediaPlayer/device_lgbluray/device_lgbluray.h"
+#include "devices/mediaPlayer/device_samsungbluray/device_samsungbluray.h"
 #include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
 #include "devices/AVreceiver/device_denonAvr/device_denonAvr.h"
 #include "devices/mediaPlayer/device_appleTV/device_appleTV.h"
@@ -73,6 +78,11 @@ int main(int argc, char *argv[]) {
   register_device_denonAvr();
   register_device_smarthome();
   register_device_appleTV();
+  register_device_lgTV();
+  register_device_lgsoundbar();
+  register_device_lgbluray();
+  register_device_samsungbluray();
+  register_device_shield();
   #if (ENABLE_KEYBOARD_MQTT == 1)
   register_device_keyboard_mqtt();
   #endif
