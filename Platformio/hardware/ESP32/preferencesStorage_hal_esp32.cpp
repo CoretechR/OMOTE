@@ -19,7 +19,8 @@ void init_preferences_HAL(void) {
     // from here
     currentScene = std::string(preferences.getString("currentScene").c_str());
     currentGUIname = std::string(preferences.getString("currentGUIname").c_str());
-
+    set_wakeupByIMUthreshold_HAL(preferences.getUChar("threshold"));
+    
     // Serial.printf("Preferences restored: brightness %d, GUI %s, scene %s\r\n", get_backlightBrightness_HAL(), get_currentGUIname().c_str(), get_currentScene().c_str());
   } else {
     // Serial.printf("No preferences to restore\r\n");
@@ -37,6 +38,8 @@ void save_preferences_HAL(void) {
   // from here
   preferences.putString("currentScene", currentScene.c_str());
   preferences.putString("currentGUIname", currentGUIname.c_str());
+  preferences.putUChar("threshold", get_wakeupByIMUthreshold_HAL());
+
   if (!preferences.getBool("alreadySetUp")) {
     preferences.putBool("alreadySetUp", true);
   }

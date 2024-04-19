@@ -32,6 +32,8 @@ uint32_t get_sleepTimeout();
 void set_sleepTimeout(uint32_t aSleepTimeout);
 bool get_wakeupByIMUEnabled();
 void set_wakeupByIMUEnabled(bool aWakeupByIMUEnabled);
+char get_wakeupByIMUthreshold();
+void set_wakeupByIMUthreshold(char awakeupByIMUthreshold);
 
 // --- keypad -----------------------------------------------------------------
 void init_keys(void);

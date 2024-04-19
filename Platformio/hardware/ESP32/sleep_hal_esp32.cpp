@@ -26,9 +26,18 @@ bool wakeupByIMUEnabled = true;
 uint32_t sleepTimeout;
 // Timestamp of the last activity. Go to sleep if (millis() - lastActivityTimestamp > sleepTimeout)
 uint32_t lastActivityTimestamp;
+char wakeupByIMUthreshold;
 
 LIS3DH IMU(I2C_MODE, 0x19);
 Wakeup_reasons wakeup_reason;
+
+char get_wakeupByIMUthreshold_HAL() {
+  return wakeupByIMUthreshold;
+}
+void set_wakeupByIMUthreshold_HAL(char awakeupByIMUthreshold) {
+  if (awakeupByIMUthreshold > 0x7F) awakeupByIMUthreshold = 0x7F;
+  wakeupByIMUthreshold = awakeupByIMUthreshold;
+}
 
 void setLastActivityTimestamp_HAL() {
   // There was motion, touchpad or key hit.
@@ -85,9 +94,9 @@ void configIMUInterruptsBeforeGoingToSleep()
   //LIS3DH_INT1_THS   
   dataToWrite = 0;
   //Provide 7 bit value, 0x7F always equals max range by accelRange setting
-  dataToWrite |= 0x45;
+  dataToWrite |= (0x7F - get_wakeupByIMUthreshold_HAL());
   IMU.writeRegister(LIS3DH_INT1_THS, dataToWrite);
-  
+
   //LIS3DH_INT1_DURATION  
   dataToWrite = 0;
   //minimum duration of the interrupt

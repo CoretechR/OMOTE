@@ -22,6 +22,14 @@ static void bl_slider_event_cb(lv_event_t* e){
   set_backlightBrightness(slider_value);
 }
 
+static void th_slider_event_cb(lv_event_t* e){
+  lv_obj_t* slider = lv_event_get_target(e);
+  int32_t slider_value = lv_slider_get_value(slider);
+  if (slider_value < 0)  {slider_value = 0;}
+  if (slider_value > 127) {slider_value = 127;}
+  set_wakeupByIMUthreshold((char) slider_value);
+}
+
 // Wakeup by IMU Switch Event handler
 static void WakeEnableSetting_event_cb(lv_event_t* e){
   set_wakeupByIMUEnabled(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED));
@@ -64,7 +72,7 @@ void create_tab_content_settings(lv_obj_t* tab) {
   lv_label_set_text(menuLabel, "Display");
 
   lv_obj_t* menuBox = lv_obj_create(tab);
-  lv_obj_set_size(menuBox, lv_pct(100), 109);
+  lv_obj_set_size(menuBox, lv_pct(100), 160);
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
 
@@ -134,6 +142,20 @@ void create_tab_content_settings(lv_obj_t* tab) {
   lv_obj_set_style_border_width(lv_dropdown_get_list(drop), 1, LV_PART_MAIN);
   lv_obj_set_style_border_color(lv_dropdown_get_list(drop), lv_color_hex(0x505050), LV_PART_MAIN);
   lv_obj_add_event_cb(drop, timout_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+
+  // Add text & slider for sensitivity setting
+  menuLabel = lv_label_create(menuBox);
+  lv_label_set_text(menuLabel, "Wake up sensitivity");
+  lv_obj_align(menuLabel, LV_ALIGN_TOP_LEFT, 0, 94);
+  lv_obj_t *thslider = lv_slider_create(menuBox);
+  lv_slider_set_range(thslider, 0, 127);
+  lv_obj_set_style_bg_color(thslider, lv_color_white(), LV_PART_KNOB);
+  lv_obj_set_style_bg_opa(thslider, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_set_style_bg_color(thslider, lv_color_lighten(color_primary, 50), LV_PART_MAIN);
+  lv_slider_set_value(thslider, get_wakeupByIMUthreshold(), LV_ANIM_OFF);
+  lv_obj_set_size(thslider, lv_pct(90), 10);
+  lv_obj_align(thslider, LV_ALIGN_TOP_LEFT, 10, 124);
+  lv_obj_add_event_cb(thslider, th_slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
   // // Add another label, then a settings box for WiFi
   // menuLabel = lv_label_create(tab);

@@ -5,6 +5,7 @@
 bool wakeupByIMUEnabled = true;
 // timeout before going to sleep
 uint32_t sleepTimeout;
+char wakeupByIMUthreshold;
 
 void init_sleep_HAL() {}
 void init_IMU_HAL(void) {}
@@ -24,4 +25,11 @@ bool get_wakeupByIMUEnabled_HAL() {
 void set_wakeupByIMUEnabled_HAL(bool aWakeupByIMUEnabled) {
   wakeupByIMUEnabled = aWakeupByIMUEnabled;
   printf("lift to wake set to %d\r\n", aWakeupByIMUEnabled);
+}
+char get_wakeupByIMUthreshold_HAL() {
+  return wakeupByIMUthreshold;
+}
+void set_wakeupByIMUthreshold_HAL(char awakeupByIMUthreshold) {
+  if (awakeupByIMUthreshold > 0x7F) awakeupByIMUthreshold = 0x7F;
+  wakeupByIMUthreshold = awakeupByIMUthreshold;
 }
