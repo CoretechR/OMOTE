@@ -1,15 +1,11 @@
 #include <map>
 #include <stdexcept>
-#include "applicationInternal/commandHandler.h"
-#include "applicationInternal/scenes/sceneRegistry.h"
+#include "applicationInternal/gui/guiMemoryOptimizer.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
+#include "applicationInternal/scenes/sceneRegistry.h"
+#include "applicationInternal/commandHandler.h"
 // scenes
 #include "scenes/scene__default.h"
-
-// If useSceneGUIlist == true, then a scene is active and we are not in the main_gui_list (with the scene selector as first gui).
-//   In that case, we try to use the scene specific gui list, if the scene defined one.
-// If useSceneGUIlist == false, then we are in the main_gui_list, either if a scene is active or not.
-bool useSceneGUIlist = false;
 
 // https://stackoverflow.com/questions/840501/how-do-function-pointers-in-c-work
 struct scene_definition {
@@ -90,7 +86,7 @@ void scene_end_sequence_from_registry(std::string sceneName) {
 
 repeatModes get_key_repeatMode(std::string sceneName, char keyChar) {
   try {
-    // look if the map of the current scene has a definition for it
+    // look if the map of the active scene has a definition for it
     if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_repeatModes->count(keyChar) > 0)) {
       // Serial.printf("get_key_repeatMode: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_repeatModes->at(keyChar);
@@ -114,7 +110,7 @@ repeatModes get_key_repeatMode(std::string sceneName, char keyChar) {
 
 uint16_t get_command_short(std::string sceneName, char keyChar) {
   try {
-    // look if the map of the current scene has a definition for it
+    // look if the map of the active scene has a definition for it
     if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_short->count(keyChar) > 0)) {
       // Serial.printf("get_command_short: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_commands_short->at(keyChar);
@@ -139,7 +135,7 @@ uint16_t get_command_short(std::string sceneName, char keyChar) {
 
 uint16_t get_command_long(std::string sceneName, char keyChar) {
   try {
-    // look if the map of the current scene has a definition for it
+    // look if the map of the active scene has a definition for it
     if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_long->count(keyChar) > 0)) {
       // Serial.printf("get_command_long: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_commands_long->at(keyChar);
@@ -162,40 +158,44 @@ uint16_t get_command_long(std::string sceneName, char keyChar) {
 
 }
 
-gui_list get_gui_list(std::string sceneName) {
+gui_list get_gui_list(GUIlists gui_list) {
   try {
-    // If useSceneGUIlist == true, then a scene is active and we are not in the main_gui_list (with the scene selector as first gui).
+    // If gui_list == MAIN_GUI_LIST, then we are in the main_gui_list, either if a scene is active or not.
+    // If gui_list == SCENE_GUI_LIST, then a scene is active and we are not in the main_gui_list (with the scene selector as first gui).
     //   In that case, we try to use the scene specific gui list, if the scene defined one.
-    // If useSceneGUIlist == false, then we are in the main_gui_list, either if a scene is active or not.
 
-    #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
-    // look if the current scene has a definition for a gui list
-    if (useSceneGUIlist &&
-        (registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_gui_list != NULL)) {
-      // Serial.printf("get_gui_list: will use gui_list from scene %s\r\n", sceneName.c_str());
-      return registered_scenes.at(sceneName).this_gui_list;
-    
-    // if there is no scene specific gui list, simply return the main_gui_list
-    } else {
-      // Serial.printf("get_gui_list: will use main_gui_list\r\n");
+    if (gui_list == MAIN_GUI_LIST) {
       return &main_gui_list;
-    
-    }
-    #else
-    // never use scene specific gui list
-    return &main_gui_list;
-    #endif
+
+    } else {
+      #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
+        // look if the active scene has a definition for a gui list
+        if ((registered_scenes.count(gui_memoryOptimizer_getActiveSceneName()) > 0) && (registered_scenes.at(gui_memoryOptimizer_getActiveSceneName()).this_gui_list != NULL)) {
+          // Serial.printf("get_gui_list: will use gui_list from scene %s\r\n", sceneName.c_str());
+          return registered_scenes.at(gui_memoryOptimizer_getActiveSceneName()).this_gui_list;
+        } else {
+          // no scene specific gui list was defined
+          return &main_gui_list;
+        }
+      #else
+        // never use scene specific gui list
+        return &main_gui_list;
+      #endif
+    }  
   }
   catch (const std::out_of_range& oor) {
     Serial.printf("get_gui_list: internal error, sceneName not registered\r\n");
     return NULL;
   }
+}
 
+gui_list get_gui_list_active() {
+  return get_gui_list(gui_memoryOptimizer_getActiveGUIlist());
 }
 
 uint16_t get_activate_scene_command(std::string sceneName) {
   try {
-    // look if the current scene is known
+    // look if the active scene is known
     if ((registered_scenes.count(sceneName) > 0)) {
       // Serial.printf("get_activate_scene_command: will use activate_scene_command from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_activate_scene_command;

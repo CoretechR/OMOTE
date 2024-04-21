@@ -7,6 +7,12 @@
 #include "applicationInternal/commandHandler.h"
 #include "scenes/scene__default.h"
 
+void setLabelActiveScene() {
+  if ((SceneLabel != NULL) && sceneExists(gui_memoryOptimizer_getActiveSceneName())) {
+    lv_label_set_text(SceneLabel, gui_memoryOptimizer_getActiveSceneName().c_str());
+  }
+}
+
 void handleScene(uint16_t command, commandData commandData, std::string additionalPayload = "") {
 
   // FORCE can be either as second payload in commandData
@@ -25,27 +31,26 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
 
   // do not really switch scene, but show sceneSelection gui. From that on, we are in the main_gui_list.
   if (scene_name == scene_name_selection) {
-    useSceneGUIlist = false;
-    guis_doAfterSliding(-1, -1, true);
+    guis_doTabCreationAfterGUIlistChanged(MAIN_GUI_LIST);
     return;
   }
 
   // do not switch scene, but navigate to the prev or next gui in the currently active list of guis
   if ((scene_name == scene_gui_next) || (scene_name == scene_gui_prev)) {
     if (scene_name == scene_gui_prev) {
-      if (currentTabID == 0) {
+      if (gui_memoryOptimizer_getActiveTabID() == 0) {
         Serial.println("scene: cannot navigate to prev gui, because there is none");
       } else {
         Serial.println("scene: will navigate to prev gui");
-        setActiveTab(currentTabID -1, LV_ANIM_ON, true);
+        setActiveTab(gui_memoryOptimizer_getActiveTabID() -1, LV_ANIM_ON, true);
       }
 
     } else if (scene_name == scene_gui_next) {
-      if (!gui_memoryOptimizer_isTabIDInMemory(currentTabID +1)) {
+      if (!gui_memoryOptimizer_isTabIDInMemory(gui_memoryOptimizer_getActiveTabID() +1)) {
         Serial.println("scene: cannot navigate to next gui, because there is none");
       } else {
         Serial.println("scene: will navigate to next gui");
-        setActiveTab(currentTabID +1, LV_ANIM_ON, true);
+        setActiveTab(gui_memoryOptimizer_getActiveTabID() +1, LV_ANIM_ON, true);
       }
 
     }
@@ -57,15 +62,15 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
     Serial.printf("scene: cannot start scene %s, because it is unknown\r\n", scene_name.c_str());
     return;
   } else {
-    Serial.printf("scene: will switch from old scene %s to new scene %s\r\n", get_currentScene().c_str(), scene_name.c_str());
+    Serial.printf("scene: will switch from old scene %s to new scene %s\r\n", gui_memoryOptimizer_getActiveSceneName().c_str(), scene_name.c_str());
   }
 
   // do not activate the same scene again, only when forced to do so (e.g. by long press on the gui or when selected by hardware key)
   bool callEndAndStartSequences;
-  if ((scene_name == get_currentScene()) && ((isForcePayload != "FORCE") && (additionalPayload != "FORCE"))) {
+  if ((scene_name == gui_memoryOptimizer_getActiveSceneName()) && ((isForcePayload != "FORCE") && (additionalPayload != "FORCE"))) {
     Serial.printf("scene: will not start scene again, because it is already active\r\n");
     callEndAndStartSequences = false;
-  } else if ((scene_name == get_currentScene()) && ((isForcePayload == "FORCE") || (additionalPayload == "FORCE"))) {
+  } else if ((scene_name == gui_memoryOptimizer_getActiveSceneName()) && ((isForcePayload == "FORCE") || (additionalPayload == "FORCE"))) {
     Serial.printf("scene: scene is already active, but FORCE was set, so start scene again\r\n");
     callEndAndStartSequences = true;
   } else {
@@ -78,13 +83,13 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
 
   if (callEndAndStartSequences) {
     // end old scene
-    if (!sceneExists(get_currentScene()) && (get_currentScene() != "")) {
-      Serial.printf("scene: WARNING: cannot end scene %s, because it is unknown\r\n", get_currentScene().c_str());
+    if (!sceneExists(gui_memoryOptimizer_getActiveSceneName()) && (gui_memoryOptimizer_getActiveSceneName() != "")) {
+      Serial.printf("scene: WARNING: cannot end scene %s, because it is unknown\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
   
     } else {
-      if (get_currentScene() != "") {
-        Serial.printf("scene: will call end sequence for scene %s\r\n", get_currentScene().c_str());
-        scene_end_sequence_from_registry(get_currentScene());
+      if (gui_memoryOptimizer_getActiveSceneName() != "") {
+        Serial.printf("scene: will call end sequence for scene %s\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
+        scene_end_sequence_from_registry(gui_memoryOptimizer_getActiveSceneName());
       }
   
     }
@@ -94,19 +99,12 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
     scene_start_sequence_from_registry(scene_name);
   }
 
-  set_currentScene(scene_name);
+  gui_memoryOptimizer_setActiveSceneName(scene_name);
 
-  if (SceneLabel != NULL) {lv_label_set_text(SceneLabel, get_currentScene().c_str());}
+  if (SceneLabel != NULL) {lv_label_set_text(SceneLabel, gui_memoryOptimizer_getActiveSceneName().c_str());}
 
-  Serial.printf("scene: scene handling finished, new scene %s is active\r\n", get_currentScene().c_str());
+  Serial.printf("scene: scene handling finished, new scene %s is active\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
 
-  useSceneGUIlist = true;
-  // recreate the gui based on the current scene
-  guis_doAfterSliding(-1, -1, true);
+  guis_doTabCreationAfterGUIlistChanged(SCENE_GUI_LIST);
 }
 
-void setLabelCurrentScene() {
-  if ((SceneLabel != NULL) && sceneExists(get_currentScene())) {
-    lv_label_set_text(SceneLabel, get_currentScene().c_str());
-  }
-}

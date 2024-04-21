@@ -6,8 +6,6 @@
 #include <vector>
 #include "applicationInternal/keys.h"
 
-extern bool useSceneGUIlist;
-
 typedef std::vector<std::string> t_gui_list;
 typedef std::vector<std::string> t_scene_list;
 
@@ -37,7 +35,7 @@ void scene_end_sequence_from_registry(std::string sceneName);
 repeatModes get_key_repeatMode(std::string sceneName, char keyChar);
 uint16_t get_command_short(std::string sceneName, char keyChar);
 uint16_t get_command_long(std::string sceneName, char keyChar);
-gui_list get_gui_list(std::string sceneName);
+gui_list get_gui_list_active();
 uint16_t get_activate_scene_command(std::string sceneName);
 scene_list get_scenes_on_sceneSelectionGUI();
 void set_scenes_on_sceneSelectionGUI(t_scene_list a_scene_list);
