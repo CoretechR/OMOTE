@@ -26,17 +26,23 @@ void init_preferences(void) {
 void save_preferences(void) {
   save_preferences_HAL();
 };
-std::string get_currentScene() {
-  return get_currentScene_HAL();
+std::string get_activeScene() {
+  return get_activeScene_HAL();
 }
-void set_currentScene(std::string aCurrentScene) {
-  set_currentScene_HAL(aCurrentScene);
+void set_activeScene(std::string anActiveScene) {
+  set_activeScene_HAL(anActiveScene);
 }
-std::string get_currentGUIname() {
-  return get_currentGUIname_HAL();
+std::string get_activeGUIname() {
+  return get_activeGUIname_HAL();
 }
-void set_currentGUIname(std::string aCurrentGUIname) {
-  set_currentGUIname_HAL(aCurrentGUIname);
+void set_activeGUIname(std::string anActiveGUIname) {
+  set_activeGUIname_HAL(anActiveGUIname);
+}
+int get_activeGUIlist() {
+  return get_activeGUIlist_HAL();
+}
+void set_activeGUIlist(int anActiveGUIlist) {
+  set_activeGUIlist_HAL(anActiveGUIlist);
 }
 
 // --- user led ---------------------------------------------------------------

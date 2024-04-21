@@ -13,8 +13,6 @@ lv_obj_t* BluetoothLabel = NULL;
 lv_obj_t* BattPercentageLabel = NULL;
 lv_obj_t* BattIconLabel = NULL;
 lv_obj_t* SceneLabel = NULL;
-uint32_t currentTabID = -1; // id of the current tab
-uint32_t oldTabID = -1;
 
 lv_obj_t* tabview = NULL;
 // page indicator
@@ -28,8 +26,8 @@ lv_style_t panel_style;
 lv_style_t style_red_border;
 #endif
 
-void guis_doTabCreationAtStartup();
-void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList);
+void guis_doTabCreationOnStartup();
+void guis_doTabCreationAfterSliding(int newTabID);
 
 // Helper Functions -----------------------------------------------------------------------------------------------------------------------
 
@@ -87,28 +85,28 @@ void tabview_content_is_scrolling_event_cb(lv_event_t* e){
 // -----------------------
 static bool waitBeforeActionAfterSlidingAnimationEnded = false;
 static unsigned long waitBeforeActionAfterSlidingAnimationEnded_timerStart;
+static int newTabID_forLateTabCreation;
 // This is the callback when the animation of the tab sliding ended
 static void tabview_animation_ready_cb(lv_anim_t* a) {
   // Unfortunately, the animation has not completely ended here. We cannot do the recreation of the tabs here.
   // We have to wait some more milliseconds or at least one cycle of lv_timer_handler();
   // calling lv_timer_handler(); here does not help
   // lv_timer_handler();
-  // guis_doAfterSliding(oldTabID, currentTabID, false);
+  // guis_doTabCreationAfterSliding(newTabID_forLateTabCreation);
 
   waitBeforeActionAfterSlidingAnimationEnded = true;
   waitBeforeActionAfterSlidingAnimationEnded_timerStart = millis();
 }
 
-// Update currentTabID when a new tab is selected
+// Update gui when a new tab is selected
 // this is a callback if the tabview is changed (LV_EVENT_VALUE_CHANGED)
 // Sent when a new tab is selected by sliding or clicking the tab button. lv_tabview_get_tab_act(tabview) returns the zero based index of the current tab.
 void tabview_tab_changed_event_cb(lv_event_t* e) {
   if (lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) {
     
-    oldTabID = currentTabID;
-    currentTabID = lv_tabview_get_tab_act(lv_event_get_target(e));
+    int newTabID = lv_tabview_get_tab_active((lv_obj_t*)lv_event_get_target(e));
 
-    // Wait until the animation ended, then call "guis_doAfterSliding(oldTabID, currentTabID, false);"
+    // Wait until the animation ended, then call "guis_doTabCreationAfterSliding(newTabID);"
     // https://forum.lvgl.io/t/delete-a-tab-after-the-tabview-scroll-animation-is-complete/3155/4
     lv_obj_t* myTabview = lv_event_get_target(e);
     lv_obj_t* tabContainer = lv_tabview_get_content(myTabview);
@@ -116,11 +114,12 @@ void tabview_tab_changed_event_cb(lv_event_t* e) {
     if(anim) {
       // Swipe is not yet complete. User released the touch screen, an animation will bring it to the end.
       // That's the normal (and only?) case for the tft touchscreen
+      newTabID_forLateTabCreation = newTabID;
       lv_anim_set_ready_cb(anim, tabview_animation_ready_cb);
     } else {
       // Swipe is complete, no additional animation is needed. Most likely only possible in simulator
       Serial.println("Change of tab detected, without animation at the end. Will directly do my job after sliding.");
-      guis_doAfterSliding(oldTabID, currentTabID, false);
+      guis_doTabCreationAfterSliding(newTabID);
     }
   }
 }
@@ -154,8 +153,8 @@ void init_gui(void) {
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), LV_PART_MAIN);
   // set default height and position of main widgets
   setMainWidgetsHeightAndPosition();
-  // At startup, set current GUI according to get_currentGUIname(), and create the content of that tab (and the previous and the next) for the first time
-  guis_doTabCreationAtStartup();
+  // On startup, set current GUIname and GUIlist according to last state before going to sleep
+  guis_doTabCreationOnStartup();
   // memoryUsage bar
   init_gui_memoryUsage_bar();
   // status bar
@@ -288,12 +287,12 @@ void gui_loop(void) {
     waitBeforeActionAfterSlidingAnimationEnded = false;
   } else if (waitOneLoop) {
     waitOneLoop = false;
-    guis_doAfterSliding(oldTabID, currentTabID, false);
+    guis_doTabCreationAfterSliding(newTabID_forLateTabCreation);
   };
   // // as alternative, we could wait some milliseconds. But one cycle of gui_loop() works well.
   // if (waitBeforeActionAfterSlidingAnimationEnded) {
   //   if (millis() - waitBeforeActionAfterSlidingAnimationEnded_timerStart >= 5) {
-  //     guis_doAfterSliding(oldTabID, currentTabID, false);
+  //     guis_doTabCreationAfterSliding(newTabID_forLateTabCreation);
   //     waitBeforeActionAfterSlidingAnimationEnded = false;
   //   }
   // }
@@ -301,19 +300,25 @@ void gui_loop(void) {
   lv_timer_handler();
 }
 
-void guis_doTabCreationAtStartup() {
-  gui_memoryOptimizer_prepare_startup();
-
-  guis_doAfterSliding(-1, -1, false);
-}
-
-void guis_doAfterSliding(int oldTabID, int newTabID, bool newGuiList) {
-  // With parameter newGuiList it is signaled that we are changing from a scene specific list to the main list or vice versa
-  // In that case, we have to do special treatment because we are not simply sliding to the left or to the right, but we start newly with a different gui list.
-  gui_memoryOptimizer_doAfterSliding_deletionAndCreation(&tabview, oldTabID, newTabID, newGuiList, &panel, &img1, &img2);
-
+// ------------------------------------------------------------------------------------------------------------
+// There are several reasons why the tabs could get recreated. All are going through these functions in "guiBase.cpp", which are calling functions in "guiMemoryOptimizer.cpp"
+// 1. tab creation on startup (called by init_gui())
+void guis_doTabCreationOnStartup() {
+  Serial.printf("Startup: try to resume at scene \"%s\" with GUI \"%s\"\r\n", gui_memoryOptimizer_getActiveSceneName().c_str(), gui_memoryOptimizer_getActiveGUIname().c_str());
+  gui_memoryOptimizer_onStartup(&tabview, &panel, &img1, &img2);
   doLogMemoryUsage();
 }
+// 2. tab creation after sliding (called by tabview_tab_changed_event_cb())
+void guis_doTabCreationAfterSliding(int newTabID) {
+  gui_memoryOptimizer_afterSliding(&tabview, &panel, &img1, &img2, newTabID);
+  doLogMemoryUsage();
+}
+// 3. after gui list has changed (called by handleScene()), when switching between main_gui_list and scene specific list
+void guis_doTabCreationAfterGUIlistChanged(GUIlists newGUIlist) {
+  gui_memoryOptimizer_afterGUIlistChanged(&tabview, &panel, &img1, &img2, newGUIlist);
+  doLogMemoryUsage();
+}
+// ------------------------------------------------------------------------------------------------------------
 
 void setActiveTab(uint32_t index, lv_anim_enable_t anim_en, bool send_tab_changed_event) {
   // unsigned long startTime = millis();

@@ -4,8 +4,9 @@
 
 Preferences preferences;
 
-std::string currentScene;
-std::string currentGUIname;
+std::string activeScene;
+std::string activeGUIname;
+int activeGUIlist;
 
 void init_preferences_HAL(void) {
   // Restore settings from internal flash memory
@@ -17,10 +18,11 @@ void init_preferences_HAL(void) {
     // from tft.h
     set_backlightBrightness_HAL(preferences.getUChar("blBrightness"));
     // from here
-    currentScene = std::string(preferences.getString("currentScene").c_str());
-    currentGUIname = std::string(preferences.getString("currentGUIname").c_str());
+    activeScene = std::string(preferences.getString("currentScene").c_str());
+    activeGUIname = std::string(preferences.getString("currentGUIname").c_str());
+    activeGUIlist =(preferences.getInt("currentGUIlist"));
 
-    // Serial.printf("Preferences restored: brightness %d, GUI %s, scene %s\r\n", get_backlightBrightness_HAL(), get_currentGUIname().c_str(), get_currentScene().c_str());
+    // Serial.printf("Preferences restored: brightness %d, GUI %s, scene %s\r\n", get_backlightBrightness_HAL(), get_activeGUIname().c_str(), get_activeScene().c_str());
   } else {
     // Serial.printf("No preferences to restore\r\n");
   }
@@ -35,23 +37,30 @@ void save_preferences_HAL(void) {
   preferences.putUInt("slpTimeout", get_sleepTimeout_HAL());
   preferences.putUChar("blBrightness", get_backlightBrightness_HAL());
   // from here
-  preferences.putString("currentScene", currentScene.c_str());
-  preferences.putString("currentGUIname", currentGUIname.c_str());
+  preferences.putString("currentScene", activeScene.c_str());
+  preferences.putString("currentGUIname", activeGUIname.c_str());
+  preferences.putInt("currentGUIlist", activeGUIlist);
   if (!preferences.getBool("alreadySetUp")) {
     preferences.putBool("alreadySetUp", true);
   }
   preferences.end();
 }
 
-std::string get_currentScene_HAL() {
-  return currentScene;
+std::string get_activeScene_HAL() {
+  return activeScene;
 }
-void set_currentScene_HAL(std::string aCurrentScene) {
-  currentScene = aCurrentScene;
+void set_activeScene_HAL(std::string anActiveScene) {
+  activeScene = anActiveScene;
 }
-std::string get_currentGUIname_HAL(){
-  return currentGUIname;
+std::string get_activeGUIname_HAL(){
+  return activeGUIname;
 }
-void set_currentGUIname_HAL(std::string aCurrentGUIname) {
-  currentGUIname = aCurrentGUIname;
+void set_activeGUIname_HAL(std::string anActiveGUIname) {
+  activeGUIname = anActiveGUIname;
+}
+int get_activeGUIlist_HAL() {
+  return activeGUIlist;
+}
+void set_activeGUIlist_HAL(int anActiveGUIlist) {
+  activeGUIlist = anActiveGUIlist;
 }

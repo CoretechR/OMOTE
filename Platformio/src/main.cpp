@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
   #endif
   // init GUI - will initialize tft, touch and lvgl
   init_gui();
-  setLabelCurrentScene();
+  setLabelActiveScene();
   gui_loop(); // Run the LVGL UI once before the loop takes over
 
   // setup the Inertial Measurement Unit (IMU) for motion detection. Has to be after init_gui(), otherwise I2C will not work
