@@ -1,11 +1,13 @@
 #include <lvgl.h>
-#include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/gui/guiRegistry.h"
-#include "devices/misc/device_smarthome/gui_smarthome.h"
-
+#include "applicationInternal/hardware/hardwarePresenter.h"
+#include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/commandHandler.h"
+#include "applicationInternal/keys.h"
+#include "devices/misc/device_smarthome/gui_smarthome.h"
 #include "devices/misc/device_smarthome/device_smarthome.h"
+#include "scenes/scene__default.h"
 
 // LVGL declarations
 LV_IMG_DECLARE(lightbulb);
@@ -21,6 +23,10 @@ static int32_t sliderAvalue = 0;
 static int32_t sliderBvalue = 0;
 
 uint16_t GUI_SMARTHOME_ACTIVATE;
+
+std::map<char, repeatModes> key_repeatModes_smarthome = {};
+std::map<char, uint16_t> key_commands_short_smarthome = {};
+std::map<char, uint16_t> key_commands_long_smarthome = {};
 
 // Smart Home Toggle Event handler
 static void smartHomeToggle_event_cb(lv_event_t* e){
@@ -160,8 +166,23 @@ void notify_tab_before_delete_smarthome(void) {
   sliderBvalue = lv_slider_get_value(sliderB);
 }
 
+void gui_setKeys_smarthome() {
+  key_commands_short_smarthome = {
+    {KEY_STOP, SCENE_SELECTION},
+  };
+}
+
 void register_gui_smarthome(void){
-  register_gui(std::string(tabName_smarthome), & create_tab_content_smarthome, & notify_tab_before_delete_smarthome);
+
+  register_gui(
+    std::string(tabName_smarthome),
+    & create_tab_content_smarthome,
+    & notify_tab_before_delete_smarthome,
+    & gui_setKeys_smarthome,
+    & key_repeatModes_smarthome,
+    & key_commands_short_smarthome,
+    & key_commands_long_smarthome
+    );
 
   register_command(&GUI_SMARTHOME_ACTIVATE, makeCommandData(GUI, {std::string(tabName_smarthome)}));
 }

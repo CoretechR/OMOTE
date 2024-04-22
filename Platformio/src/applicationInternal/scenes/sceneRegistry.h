@@ -1,8 +1,6 @@
 #pragma once
 
 #include <string>
-#include <stdint.h>
-#include <map>
 #include <vector>
 #include "applicationInternal/keys.h"
 #include "applicationInternal/gui/guiMemoryOptimizer.h"
@@ -13,9 +11,6 @@ typedef std::vector<std::string> t_scene_list;
 typedef void (*scene_setKeys)(void);
 typedef void (*scene_start_sequence)(void);
 typedef void (*scene_end_sequence)(void);
-typedef std::map<char, repeatModes> *key_repeatModes;
-typedef std::map<char, uint16_t> *key_commands_short;
-typedef std::map<char, uint16_t> *key_commands_long;
 typedef t_gui_list *gui_list;
 typedef t_scene_list *scene_list;
 
