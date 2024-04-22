@@ -20,6 +20,8 @@ static bool lightToggleBstate = false;
 static int32_t sliderAvalue = 0;
 static int32_t sliderBvalue = 0;
 
+uint16_t GUI_SMARTHOME_ACTIVATE;
+
 // Smart Home Toggle Event handler
 static void smartHomeToggle_event_cb(lv_event_t* e){
   std::string payload;
@@ -160,4 +162,6 @@ void notify_tab_before_delete_smarthome(void) {
 
 void register_gui_smarthome(void){
   register_gui(std::string(tabName_smarthome), & create_tab_content_smarthome, & notify_tab_before_delete_smarthome);
+
+  register_command(&GUI_SMARTHOME_ACTIVATE, makeCommandData(GUI, {std::string(tabName_smarthome)}));
 }

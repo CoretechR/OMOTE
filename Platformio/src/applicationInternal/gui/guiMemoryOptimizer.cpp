@@ -12,7 +12,7 @@ struct t_gui_on_tab {
   int gui_list_index_previous;
 };
 struct t_gui_state {
-  // the next three are saved in the preferenceStorage every time they change
+  // the next three and the last are saved in the preferenceStorage every time they change
   std::string activeScene_internalDontUse;
   std::string activeGUIname_internalDontUse;
   GUIlists activeGUIlist_internalDontUse;
@@ -20,6 +20,9 @@ struct t_gui_state {
   int activeTabID = -1;      // id of the active tab (one of 0,1,2)
   int oldTabID = -1;         // id of the tab before swiping (one of 0,1,2)
   t_gui_on_tab gui_on_tab[3] = {{NULL, "", -1, -1}, {NULL, "", -1, -1}, {NULL, "", -1, -1}};
+  // the last active gui of scene. Will be stored to easily navigate back to it with guis_doTabCreationForNavigateToLastActiveGUIofPreviousGUIlist()
+  GUIlists last_active_gui_list = (GUIlists)-1;
+  int last_active_gui_list_index_internalDontUse = -1;
 };
 t_gui_state gui_state;
 
@@ -50,6 +53,14 @@ GUIlists gui_memoryOptimizer_getActiveGUIlist() {
 void gui_memoryOptimizer_setActiveGUIlist(GUIlists aGUIlist) {
   gui_state.activeGUIlist_internalDontUse = aGUIlist;
   set_activeGUIlist(aGUIlist);
+}
+int gui_memoryOptimizer_getLastActiveGUIlistIndex() {
+  gui_state.last_active_gui_list_index_internalDontUse = get_lastActiveGUIlistIndex();
+  return gui_state.last_active_gui_list_index_internalDontUse;
+}
+void gui_memoryOptimizer_setLastActiveGUIlistIndex(int aGUIlistIndex) {
+  gui_state.last_active_gui_list_index_internalDontUse = aGUIlistIndex;
+  set_lastActiveGUIlistIndex(aGUIlistIndex);
 }
 
 int gui_memoryOptimizer_getActiveTabID() {
@@ -349,10 +360,28 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
     lv_obj_set_style_bg_color(btn, color_primary,    LV_PART_MAIN);
   }
 
-  uint8_t breadcrumpLength = get_gui_list_active()->size();
-  uint8_t breadcrumpDotSize =  8; // should be an even number
+  uint8_t breadcrumpDotSize     = 8; // should be an even number
   uint8_t breadcrumpDotDistance = 2; // should be an even number
-  int8_t breadcrumpStartPositionX = (-1) * (breadcrumpLength -1) * (breadcrumpDotSize + breadcrumpDotDistance) / 2;
+  uint8_t breadcrumpMainGuiListLength = get_gui_list(MAIN_GUI_LIST)->size();
+  int8_t  breadcrumpMainGuiListStartPositionX = (-1) * (breadcrumpMainGuiListLength -1) * (breadcrumpDotSize + breadcrumpDotDistance) / 2;
+  uint8_t breadcrumpSceneGuiListLength = get_gui_list(SCENE_GUI_LIST)->size();
+  int8_t  breadcrumpSceneGuiListStartPositionX = (-1) * (breadcrumpSceneGuiListLength -1) * (breadcrumpDotSize + breadcrumpDotDistance) / 2;
+  #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
+  bool show_scene_gui_list = get_scene_has_gui_list(gui_memoryOptimizer_getActiveSceneName());
+  #else
+  bool show_scene_gui_list = false;
+  #endif
+  int8_t breadcrumpMainGuiList_yPos;
+  int8_t breadcrumpSceneGuiList_yPos;
+  int8_t nameOfGUI_yPos;
+  if (!show_scene_gui_list) {
+    breadcrumpMainGuiList_yPos = -6;
+    nameOfGUI_yPos = 6;
+  } else {
+    breadcrumpMainGuiList_yPos = -8;
+    breadcrumpSceneGuiList_yPos = -1;
+    nameOfGUI_yPos = 8;
+  }
 
   // create the panel content for the three guis (or less) which are currently in memory
   std::string nameOfGUI;
@@ -364,9 +393,10 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
 
       // Create actual buttons for every tab
       lv_obj_t* btn = lv_btn_create(panel);
-      // only if this is the button for the currently active tab, make it clickable to get to scene selection gui
       if (nameOfGUI == gui_memoryOptimizer_getActiveGUIname()) {
+        // only if this is the button for the currently active tab, make it clickable to get to scene selection gui
         lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_set_user_data(btn,(void *)(intptr_t)2);
         lv_obj_add_event_cb(btn, sceneLabel_or_pageIndicator_event_cb, LV_EVENT_CLICKED, NULL);
 
       } else if ((i==0 || i==1) && (gui_state->gui_on_tab[i+1].gui_list_index != -1)) {
@@ -389,28 +419,63 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
       lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
       lv_obj_set_style_bg_color(btn, color_primary, LV_PART_MAIN);
 
-      // create a breadcrump dot for each gui in the list
-      for (int j=0; j<breadcrumpLength; j++) {
+      // create a breadcrump dot for each gui in the main_gui_list
+      for (int j=0; j<breadcrumpMainGuiListLength; j++) {
         lv_obj_t* dot = lv_obj_create(btn);
         lv_obj_set_size(dot, breadcrumpDotSize, breadcrumpDotSize);
         lv_obj_set_style_radius(dot, LV_RADIUS_CIRCLE, LV_PART_MAIN);
         // hightlight dot if it is the one for the currently active tab
-        if (j == (breadcrumpPosition-1)) {
-          lv_obj_set_style_bg_color(dot, lv_color_lighten(color_primary, 200), LV_PART_MAIN);
+        #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
+        if ( ((gui_memoryOptimizer_getActiveGUIlist() == MAIN_GUI_LIST) || !get_scene_has_gui_list(gui_memoryOptimizer_getActiveSceneName()))
+        #else
+        if ( true
+        #endif
+             && (j == (breadcrumpPosition-1))) {
+          lv_obj_set_style_bg_color(dot, lv_color_lighten(color_primary, 255), LV_PART_MAIN);
+        } else if ((gui_memoryOptimizer_getActiveGUIlist() == SCENE_GUI_LIST) && get_scene_has_gui_list(gui_memoryOptimizer_getActiveSceneName()) && (j == gui_memoryOptimizer_getLastActiveGUIlistIndex())) {
+          // hightlight dot a little bit if it is at least the one which was last active in the other gui list
+          lv_obj_set_style_bg_color(dot, lv_color_lighten(color_primary, 140), LV_PART_MAIN);
         } else {
-          lv_obj_set_style_bg_color(dot, lv_color_lighten(color_primary, 100), LV_PART_MAIN);
+          lv_obj_set_style_bg_color(dot, lv_color_lighten(color_primary, 30), LV_PART_MAIN);
         }
         
-        lv_obj_align(dot, LV_ALIGN_TOP_MID, breadcrumpStartPositionX +j*(breadcrumpDotSize + breadcrumpDotDistance), -6);
+        lv_obj_align(dot, LV_ALIGN_TOP_MID, breadcrumpMainGuiListStartPositionX +j*(breadcrumpDotSize + breadcrumpDotDistance), breadcrumpMainGuiList_yPos);
         // this dot needs to get clickable again
+        lv_obj_set_user_data(dot,(void *)(intptr_t)1);
         lv_obj_add_flag(dot, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_flag(dot, LV_OBJ_FLAG_EVENT_BUBBLE);
-
       }
+
+      // create a breadcrump dot for each gui in the scene gui list, if there is one
+      if (show_scene_gui_list) {
+      for (int j=0; j<breadcrumpSceneGuiListLength; j++) {
+        lv_obj_t* dot = lv_obj_create(btn);
+        lv_obj_set_size(dot, breadcrumpDotSize, breadcrumpDotSize);
+        lv_obj_set_style_radius(dot, LV_RADIUS_CIRCLE, LV_PART_MAIN);
+        if ((gui_memoryOptimizer_getActiveGUIlist() == SCENE_GUI_LIST) && (j == (breadcrumpPosition-1))) {
+          // hightlight dot if it is the one for the currently active tab
+          lv_obj_set_style_bg_color(dot, lv_color_lighten(color_primary, 255), LV_PART_MAIN);
+        } else if ((gui_memoryOptimizer_getActiveGUIlist() == MAIN_GUI_LIST) && (j == gui_memoryOptimizer_getLastActiveGUIlistIndex())) {
+          // hightlight dot a little bit if it is at least the one which was last active in the other gui list
+          lv_obj_set_style_bg_color(dot, lv_color_lighten(color_primary, 140), LV_PART_MAIN);
+        } else {
+          lv_obj_set_style_bg_color(dot, lv_color_lighten(color_primary, 30), LV_PART_MAIN);
+        }
+        
+        lv_obj_align(dot, LV_ALIGN_TOP_MID, breadcrumpSceneGuiListStartPositionX +j*(breadcrumpDotSize + breadcrumpDotDistance), breadcrumpSceneGuiList_yPos);
+        // this dot needs to get clickable again
+        lv_obj_set_user_data(dot,(void *)(intptr_t)1);
+        lv_obj_add_flag(dot, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_add_flag(dot, LV_OBJ_FLAG_EVENT_BUBBLE);
+      }
+      }
+
+
+      // create a label for nameOfGUI
       lv_obj_t* label = lv_label_create(btn);
       lv_obj_set_style_text_font(label, &lv_font_montserrat_10, LV_PART_MAIN);
       lv_label_set_text_fmt(label, "%s", nameOfGUI.c_str());
-      lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 6);
+      lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, nameOfGUI_yPos);
 
     }
   }
@@ -474,15 +539,19 @@ void gui_memoryOptimizer_notifyAndClear(lv_obj_t** tabview, lv_obj_t** panel, lv
 
 void gui_memoryOptimizer_doContentCreation(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2, t_gui_state *gui_state);
 
+// 1. tab creation on startup (called by init_gui())
 // find the position of the current GUI in the gui list which was active last (both were automatically saved in the preferences) 
 void gui_memoryOptimizer_onStartup(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2) {
+
+  Serial.printf("Startup: try to resume at scene \"%s\" with GUI \"%s\"\r\n", gui_memoryOptimizer_getActiveSceneName().c_str(), gui_memoryOptimizer_getActiveGUIname().c_str());
 
   // Get last state from preferences and save it in gui_state
   // So it is ok to call them without using the return values.
   gui_memoryOptimizer_getActiveSceneName();
   gui_memoryOptimizer_getActiveGUIname();
   gui_memoryOptimizer_getActiveGUIlist();
-  
+  gui_memoryOptimizer_getLastActiveGUIlistIndex();
+
   // 1. find last used gui
   int gui_list_index = -1;
   // find index of gui_memoryOptimizer_getActiveGUIname() in gui_list_active
@@ -512,6 +581,7 @@ void gui_memoryOptimizer_onStartup(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_
 
 }
 
+// 2. tab creation after sliding (called by tabview_tab_changed_event_cb())
 void gui_memoryOptimizer_afterSliding(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2, int newTabID) {
 
   // Here the magic for dynamic creation and deletion of lvgl objects happens to keep memory usage low.
@@ -546,12 +616,19 @@ void gui_memoryOptimizer_afterSliding(lv_obj_t** tabview, lv_obj_t** panel, lv_o
 
   // 3. create content
   gui_memoryOptimizer_doContentCreation(tabview, panel, img1, img2, &gui_state);
+
 }
 
+// 3. after gui list has changed (called by handleScene()), when switching between main_gui_list and scene specific list
 void gui_memoryOptimizer_afterGUIlistChanged(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2, GUIlists newGUIlist) {
 
   Serial.printf("--- Will change to new gui_list\r\n");
 
+  if (gui_state.last_active_gui_list != newGUIlist) {
+    // we are changing the gui_list, so save the last_active_gui_list_index
+    gui_memoryOptimizer_setLastActiveGUIlistIndex(gui_state.gui_on_tab[gui_state.activeTabID].gui_list_index);
+  }
+  
   // 1. notify old guis and clear tabview and panel
   gui_memoryOptimizer_notifyAndClear(tabview, panel, img1, img2, &gui_state);
 
@@ -563,6 +640,58 @@ void gui_memoryOptimizer_afterGUIlistChanged(lv_obj_t** tabview, lv_obj_t** pane
   gui_memoryOptimizer_doContentCreation(tabview, panel, img1, img2, &gui_state);
 
 }
+
+// 4. navigate to a specific GUI in gui_list
+void gui_memoryOptimizer_navigateToGUI(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2, GUIlists GUIlist, int gui_list_index) {
+
+  Serial.printf("--- Will navigate to specific GUI\r\n");
+
+  if ( !((gui_list_index >= 0) && (gui_list_index < get_gui_list(GUIlist)->size()))) {
+    Serial.printf("  cannot navigate to GUI because gui_list_index \"%d\" is out of range\r\n", gui_list_index);
+    return;
+  }  
+
+  if (gui_state.last_active_gui_list != GUIlist) {
+    // we are changing the gui_list, so save the last_active_gui_list_index
+    gui_memoryOptimizer_setLastActiveGUIlistIndex(gui_state.gui_on_tab[gui_state.activeTabID].gui_list_index);
+  }
+
+  // 1. notify old guis and clear tabview and panel
+  gui_memoryOptimizer_notifyAndClear(tabview, panel, img1, img2, &gui_state);
+
+  // 2. set gui_list_indices and the tab to be activated
+  gui_memoryOptimizer_setActiveGUIlist(GUIlist);
+  setGUIlistIndicesToBeShown_forSpecificGUIlistIndex(gui_list_index, &gui_state);
+
+  // 3. create content
+  gui_memoryOptimizer_doContentCreation(tabview, panel, img1, img2, &gui_state);
+
+}
+
+// 5. navigate back to last gui in scene
+void gui_memoryOptimizer_navigateToLastActiveGUIofPreviousGUIlist(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2) {
+
+  #if (USE_SCENE_SPECIFIC_GUI_LIST == 0)
+    Serial.printf("--- Cannot navigate to last GUI from scene, because scene specific gui lists are not enabled\r\n");
+    return;
+  #endif
+
+  if (gui_memoryOptimizer_getLastActiveGUIlistIndex() == -1) {
+    Serial.printf("--- Cannot navigate to last GUI from scene, because it is not set\r\n");
+    return;
+  } else {
+    Serial.printf("--- Will navigate to last GUI from scene\r\n");
+  }
+
+  // navigate to the other gui_list
+  if (gui_memoryOptimizer_getActiveGUIlist() == MAIN_GUI_LIST) {
+    gui_memoryOptimizer_navigateToGUI(tabview, panel, img1, img2, SCENE_GUI_LIST, gui_memoryOptimizer_getLastActiveGUIlistIndex());
+  } else {
+    gui_memoryOptimizer_navigateToGUI(tabview, panel, img1, img2, MAIN_GUI_LIST, gui_memoryOptimizer_getLastActiveGUIlistIndex());
+  }
+
+}
+
 
 void gui_memoryOptimizer_doContentCreation(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2, t_gui_state *gui_state) {
   // recreate the tabview
@@ -585,6 +714,11 @@ void gui_memoryOptimizer_doContentCreation(lv_obj_t** tabview, lv_obj_t** panel,
   lv_obj_add_event_cb(lv_tabview_get_content(*tabview), tabview_content_is_scrolling_event_cb, LV_EVENT_SCROLL, NULL);
   // Initialize scroll position of the page indicator
   lv_event_send(lv_tabview_get_content(*tabview), LV_EVENT_SCROLL, NULL);
+
+  // gui_memoryOptimizer_doContentCreation() is called as last step every time the 3 tabs are recreated.
+  // Save here the last_active_gui_list. If the used list changes in a future navigation, save the last_active_gui_list_index
+  // so that we can use SCENE_BACK_TO_PREVIOUS_GUI_LIST
+  gui_state->last_active_gui_list = gui_memoryOptimizer_getActiveGUIlist();
 
   Serial.printf("------------ End of tab deletion and creation\r\n");
 

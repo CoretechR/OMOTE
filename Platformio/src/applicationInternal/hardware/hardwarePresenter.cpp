@@ -44,6 +44,12 @@ int get_activeGUIlist() {
 void set_activeGUIlist(int anActiveGUIlist) {
   set_activeGUIlist_HAL(anActiveGUIlist);
 }
+int get_lastActiveGUIlistIndex() {
+  return get_lastActiveGUIlistIndex_HAL();
+}
+void set_lastActiveGUIlistIndex(int aGUIlistIndex) {
+  set_lastActiveGUIlistIndex_HAL(aGUIlistIndex);
+}
 
 // --- user led ---------------------------------------------------------------
 void init_userled(void) {
