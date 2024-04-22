@@ -1,6 +1,7 @@
 #include <map>
 #include <stdexcept>
 #include "applicationInternal/gui/guiMemoryOptimizer.h"
+#include "applicationInternal/gui/guiRegistry.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/commandHandler.h"
@@ -51,13 +52,19 @@ void register_scene(
   scenes_on_sceneSelectionGUI.insert(scenes_on_sceneSelectionGUI.end(), {std::string(a_scene_name)});
 
   // Whenever a new scene is registered, normally a new scene command has been defined immediately before (e.g. see register_scene_TV()).
-  // But this new scene command could have been already been used before in the key definition of another scene. The command at this time was 0, which is undefined.
-  // So we have to set the keys again for all scenes that have been registered before.
+  // But this new scene command could have been already been used before in the key definition of another scene or a gui. The command at this time was 0, which is undefined.
+  // So we have to set the keys again for all scenes and guis that have been registered before.
   // 1. set again the defaultKeys
   register_scene_defaultKeys();
   // 2. loop over all registered scenes and call setKeys()
   for (std::map<std::string, scene_definition>::iterator it = registered_scenes.begin(); it != registered_scenes.end(); ++it) {
     it->second.this_scene_setKeys();
+  }
+  // 3. loop over all registered guis and call setKeys()
+  for (std::map<std::string, gui_definition>::iterator it = registered_guis_byName_map.begin(); it != registered_guis_byName_map.end(); ++it) {
+    if (it->second.this_gui_setKeys != NULL) {
+      it->second.this_gui_setKeys();
+    }
   }
 
 }
@@ -86,8 +93,14 @@ void scene_end_sequence_from_registry(std::string sceneName) {
 
 repeatModes get_key_repeatMode(std::string sceneName, char keyChar) {
   try {
+    // look if the map of the active gui has a definition for it
+    std::string GUIname = gui_memoryOptimizer_getActiveGUIname();
+    if ((registered_guis_byName_map.count(GUIname) > 0) && (registered_guis_byName_map.at(GUIname).this_key_repeatModes != NULL) && (registered_guis_byName_map.at(GUIname).this_key_repeatModes->count(keyChar) > 0)) {
+      // Serial.printf("get_key_repeatMode: will use key from gui %s\r\n", GUIname.c_str());
+      return registered_guis_byName_map.at(GUIname).this_key_repeatModes->at(keyChar);
+
     // look if the map of the active scene has a definition for it
-    if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_repeatModes->count(keyChar) > 0)) {
+    } else if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_repeatModes->count(keyChar) > 0)) {
       // Serial.printf("get_key_repeatMode: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_repeatModes->at(keyChar);
 
@@ -110,8 +123,14 @@ repeatModes get_key_repeatMode(std::string sceneName, char keyChar) {
 
 uint16_t get_command_short(std::string sceneName, char keyChar) {
   try {
+    // look if the map of the active gui has a definition for it
+    std::string GUIname = gui_memoryOptimizer_getActiveGUIname();
+    if ((registered_guis_byName_map.count(GUIname) > 0) && (registered_guis_byName_map.at(GUIname).this_key_commands_short != NULL) && (registered_guis_byName_map.at(GUIname).this_key_commands_short->count(keyChar) > 0)) {
+      // Serial.printf("get_command_short: will use key from gui %s\r\n", GUIname.c_str());
+      return registered_guis_byName_map.at(GUIname).this_key_commands_short->at(keyChar);
+
     // look if the map of the active scene has a definition for it
-    if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_short->count(keyChar) > 0)) {
+    } else if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_short->count(keyChar) > 0)) {
       // Serial.printf("get_command_short: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_commands_short->at(keyChar);
     
@@ -135,8 +154,14 @@ uint16_t get_command_short(std::string sceneName, char keyChar) {
 
 uint16_t get_command_long(std::string sceneName, char keyChar) {
   try {
+    // look if the map of the active gui has a definition for it
+    std::string GUIname = gui_memoryOptimizer_getActiveGUIname();
+    if ((registered_guis_byName_map.count(GUIname) > 0) && (registered_guis_byName_map.at(GUIname).this_key_commands_long != NULL) && (registered_guis_byName_map.at(GUIname).this_key_commands_long->count(keyChar) > 0)) {
+      // Serial.printf("get_command_long: will use key from gui %s\r\n", GUIname.c_str());
+      return registered_guis_byName_map.at(GUIname).this_key_commands_long->at(keyChar);
+
     // look if the map of the active scene has a definition for it
-    if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_long->count(keyChar) > 0)) {
+    } else if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_long->count(keyChar) > 0)) {
       // Serial.printf("get_command_long: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_commands_long->at(keyChar);
     
