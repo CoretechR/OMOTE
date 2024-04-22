@@ -265,6 +265,7 @@ void init_gui_status_bar() {
   lv_obj_align(SceneLabel, LV_ALIGN_TOP_MID, 0, labelsPositionTopStatusbar);
   lv_obj_set_style_text_font(SceneLabel, &lv_font_montserrat_12, LV_PART_MAIN);
   lv_obj_add_flag(SceneLabel, LV_OBJ_FLAG_CLICKABLE);
+  lv_obj_set_user_data(SceneLabel,(void *)(intptr_t)0);
   lv_obj_add_event_cb(SceneLabel, sceneLabel_or_pageIndicator_event_cb, LV_EVENT_CLICKED, NULL);
 
   // Battery ----------------------------------------------------------------------
@@ -304,7 +305,6 @@ void gui_loop(void) {
 // There are several reasons why the tabs could get recreated. All are going through these functions in "guiBase.cpp", which are calling functions in "guiMemoryOptimizer.cpp"
 // 1. tab creation on startup (called by init_gui())
 void guis_doTabCreationOnStartup() {
-  Serial.printf("Startup: try to resume at scene \"%s\" with GUI \"%s\"\r\n", gui_memoryOptimizer_getActiveSceneName().c_str(), gui_memoryOptimizer_getActiveGUIname().c_str());
   gui_memoryOptimizer_onStartup(&tabview, &panel, &img1, &img2);
   doLogMemoryUsage();
 }
@@ -318,6 +318,17 @@ void guis_doTabCreationAfterGUIlistChanged(GUIlists newGUIlist) {
   gui_memoryOptimizer_afterGUIlistChanged(&tabview, &panel, &img1, &img2, newGUIlist);
   doLogMemoryUsage();
 }
+// 4. navigate to a specific GUI in gui_list
+void guis_doTabCreationForSpecificGUI(GUIlists GUIlist, int gui_list_index) {
+  gui_memoryOptimizer_navigateToGUI(&tabview, &panel, &img1, &img2, GUIlist, gui_list_index);
+  doLogMemoryUsage();
+}
+// 5. navigate back to last active gui of previous gui_list
+void guis_doTabCreationForNavigateToLastActiveGUIofPreviousGUIlist() {
+  gui_memoryOptimizer_navigateToLastActiveGUIofPreviousGUIlist(&tabview, &panel, &img1, &img2);
+  doLogMemoryUsage();
+}
+
 // ------------------------------------------------------------------------------------------------------------
 
 void setActiveTab(uint32_t index, lv_anim_enable_t anim_en, bool send_tab_changed_event) {

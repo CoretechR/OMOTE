@@ -195,7 +195,7 @@ gui_list get_gui_list_active() {
 
 uint16_t get_activate_scene_command(std::string sceneName) {
   try {
-    // look if the active scene is known
+    // look if the scene is known
     if ((registered_scenes.count(sceneName) > 0)) {
       // Serial.printf("get_activate_scene_command: will use activate_scene_command from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_activate_scene_command;
@@ -212,6 +212,21 @@ uint16_t get_activate_scene_command(std::string sceneName) {
     return 0;
   }
 
+}
+
+bool get_scene_has_gui_list(std::string sceneName) {
+  try {
+    // look if the scene is known
+    if ((registered_scenes.count(sceneName) > 0)) {
+      return (registered_scenes.at(sceneName).this_gui_list != NULL);
+    } else {
+      return false;
+    }
+  }
+  catch (const std::out_of_range& oor) {
+    Serial.printf("get_scene_has_gui_list: internal error, sceneName not registered\r\n");
+    return false;
+  }
 }
 
 scene_list get_scenes_on_sceneSelectionGUI() {

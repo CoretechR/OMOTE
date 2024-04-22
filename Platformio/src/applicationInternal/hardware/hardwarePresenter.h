@@ -16,6 +16,8 @@ std::string get_activeGUIname();
 void set_activeGUIname(std::string anActiveGUIname);
 int get_activeGUIlist();
 void set_activeGUIlist(int anActiveGUIlist);
+int get_lastActiveGUIlistIndex();
+void set_lastActiveGUIlistIndex(int aGUIlistIndex);
 
 // --- user led ---------------------------------------------------------------
 void init_userled(void);

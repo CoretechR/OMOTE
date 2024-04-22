@@ -7,6 +7,7 @@ Preferences preferences;
 std::string activeScene;
 std::string activeGUIname;
 int activeGUIlist;
+int lastActiveGUIlistIndex;
 
 void init_preferences_HAL(void) {
   // Restore settings from internal flash memory
@@ -21,6 +22,7 @@ void init_preferences_HAL(void) {
     activeScene = std::string(preferences.getString("currentScene").c_str());
     activeGUIname = std::string(preferences.getString("currentGUIname").c_str());
     activeGUIlist =(preferences.getInt("currentGUIlist"));
+    lastActiveGUIlistIndex = (preferences.getInt("lastActiveIndex"));
 
     // Serial.printf("Preferences restored: brightness %d, GUI %s, scene %s\r\n", get_backlightBrightness_HAL(), get_activeGUIname().c_str(), get_activeScene().c_str());
   } else {
@@ -40,6 +42,7 @@ void save_preferences_HAL(void) {
   preferences.putString("currentScene", activeScene.c_str());
   preferences.putString("currentGUIname", activeGUIname.c_str());
   preferences.putInt("currentGUIlist", activeGUIlist);
+  preferences.putInt("lastActiveIndex", lastActiveGUIlistIndex);
   if (!preferences.getBool("alreadySetUp")) {
     preferences.putBool("alreadySetUp", true);
   }
@@ -63,4 +66,10 @@ int get_activeGUIlist_HAL() {
 }
 void set_activeGUIlist_HAL(int anActiveGUIlist) {
   activeGUIlist = anActiveGUIlist;
+}
+int get_lastActiveGUIlistIndex_HAL() {
+  return lastActiveGUIlistIndex;
+}
+void set_lastActiveGUIlistIndex_HAL(int aGUIlistIndex) {
+  lastActiveGUIlistIndex = aGUIlistIndex;
 }

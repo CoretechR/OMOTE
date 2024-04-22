@@ -20,12 +20,14 @@ main_gui_list : "Scene selection", "Smart Home", "Settings", "IR Receiver"};
 std::string activeScene;
 std::string activeGUIname;
 int activeGUIlist;
+int lastActiveGUIlistIndex;
 
 void init_preferences_HAL(void) {
   // set some values for tests
   activeScene = "";              // "Off", "TV", "Fire TV", "Chromecast", "Apple TV";
   activeGUIname = "";            // "Scene selection", "Smart Home", "Settings", "IR Receiver"    // "Numpad", "Apple TV"
-  activeGUIlist = MAIN_GUI_LIST; // // MAIN_GUI_LIST, SCENE_GUI_LIST;
+  activeGUIlist = MAIN_GUI_LIST; // MAIN_GUI_LIST, SCENE_GUI_LIST;
+  lastActiveGUIlistIndex = 0;
 }
 void save_preferences_HAL(void) {
 }
@@ -47,4 +49,10 @@ int get_activeGUIlist_HAL() {
 }
 void set_activeGUIlist_HAL(int anActiveGUIlist) {
   activeGUIlist = anActiveGUIlist;
+}
+int get_lastActiveGUIlistIndex_HAL() {
+  return lastActiveGUIlistIndex;
+}
+void set_lastActiveGUIlistIndex_HAL(int aGUIlistIndex) {
+  lastActiveGUIlistIndex = aGUIlistIndex;
 }

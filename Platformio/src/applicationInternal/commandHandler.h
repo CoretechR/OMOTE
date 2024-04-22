@@ -94,6 +94,7 @@ extern uint16_t KEYBOARD_VOLUME_DECREMENT;
 enum commandHandlers {
   SPECIAL,
   SCENE,
+  GUI,
   IR,
   #if (ENABLE_WIFI_AND_MQTT == 1)
   MQTT,
