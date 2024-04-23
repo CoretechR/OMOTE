@@ -184,5 +184,5 @@ void register_gui_smarthome(void){
     & key_commands_long_smarthome
     );
 
-  register_command(&GUI_SMARTHOME_ACTIVATE, makeCommandData(GUI, {std::string(tabName_smarthome)}));
+  register_command(&GUI_SMARTHOME_ACTIVATE, makeCommandData(GUI, {std::to_string(MAIN_GUI_LIST), std::string(tabName_smarthome)}));
 }

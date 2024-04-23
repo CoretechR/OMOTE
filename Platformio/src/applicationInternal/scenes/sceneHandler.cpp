@@ -5,6 +5,7 @@
 #include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/commandHandler.h"
+#include "guis/gui_sceneSelection.h"
 #include "scenes/scene__default.h"
 
 void setLabelActiveScene() {
@@ -13,7 +14,7 @@ void setLabelActiveScene() {
   }
 }
 
-void navigateBackToSceneGUIlist();
+void showSpecificGUI(GUIlists GUIlist, std::string GUIname);
 
 void handleScene(uint16_t command, commandData commandData, std::string additionalPayload = "") {
 
@@ -23,7 +24,7 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
   // --- do not switch scene, but show scene selection gui. From that on, we are in the main_gui_list. ----------------
   if (scene_name == scene_name_selection) {
     Serial.println("scene: will show scene selection gui");
-    guis_doTabCreationAfterGUIlistChanged(MAIN_GUI_LIST);
+    showSpecificGUI(MAIN_GUI_LIST, tabName_sceneSelection);
     return;
   }
 
@@ -127,30 +128,38 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
   guis_doTabCreationAfterGUIlistChanged(SCENE_GUI_LIST);
 }
 
-void handleGUI(uint16_t command, commandData commandData, std::string additionalPayload = "") {
+void showSpecificGUI(GUIlists GUIlist, std::string GUIname) {
+  gui_list gui_list_for_search = get_gui_list_withFallback(GUIlist);
 
-  auto current = commandData.commandPayloads.begin();
-  std::string GUIname = *current;
-
-  // 1. check if the gui is known in the main_gui_list
+  // 1. search for gui in the gui list
   int gui_list_index = -1;
-  // find index of gui_memoryOptimizer_getActiveGUIname() in gui_list_active
-  for (int i=0; i < main_gui_list.size(); i++) {
-    if (main_gui_list.at(i) == GUIname) {
-      Serial.printf("handleGUI: found GUI with name \"%s\" in \"main_gui_list\" at position %d\r\n", GUIname.c_str(), i);
+  for (int i=0; i < gui_list_for_search->size(); i++) {
+    if (gui_list_for_search->at(i) == GUIname) {
+      Serial.printf("showSpecificGUI: found GUI with name \"%s\" in %s at position %d\r\n", GUIname.c_str(), GUIlist == MAIN_GUI_LIST ? "\"main_gui_list\"" : "\"scene gui list\"", i);
       gui_list_index = i;
       break;
     }
   }
   
   // 2. call guiBase.cpp
-  if ((gui_list_index >= 0) && (gui_list_index < main_gui_list.size())) {
-    guis_doTabCreationForSpecificGUI(MAIN_GUI_LIST, gui_list_index);
+  if ((gui_list_index >= 0) && (gui_list_index < gui_list_for_search->size())) {
+    guis_doTabCreationForSpecificGUI(GUIlist, gui_list_index);
 
   } else {
     // gui was not found
-    Serial.printf("handleGUI: GUI with name \"%s\" was not found. Cannot navigate to that GUI\r\n", GUIname.c_str());
+    Serial.printf("showSpecificGUI: GUI with name \"%s\" was not found in gui list %s. Cannot navigate to that GUI\r\n", GUIname.c_str(), GUIlist == MAIN_GUI_LIST ? "\"main_gui_list\"" : "\"scene gui list\"");
     return;
   }  
+}
+
+void handleGUI(uint16_t command, commandData commandData, std::string additionalPayload = "") {
+
+  auto current = commandData.commandPayloads.begin();
+  GUIlists GUIlist = (GUIlists)std::stoi(*current);
+
+  current = std::next(current, 1);
+  std::string GUIname = *current;
+
+  showSpecificGUI(GUIlist, GUIname);
 
 }

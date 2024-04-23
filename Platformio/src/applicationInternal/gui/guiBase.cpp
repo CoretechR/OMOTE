@@ -104,7 +104,7 @@ static void tabview_animation_ready_cb(lv_anim_t* a) {
 void tabview_tab_changed_event_cb(lv_event_t* e) {
   if (lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) {
     
-    int newTabID = lv_tabview_get_tab_active((lv_obj_t*)lv_event_get_target(e));
+    int newTabID = lv_tabview_get_tab_act((lv_obj_t*)lv_event_get_target(e));
 
     // Wait until the animation ended, then call "guis_doTabCreationAfterSliding(newTabID);"
     // https://forum.lvgl.io/t/delete-a-tab-after-the-tabview-scroll-animation-is-complete/3155/4
@@ -313,7 +313,7 @@ void guis_doTabCreationAfterSliding(int newTabID) {
   gui_memoryOptimizer_afterSliding(&tabview, &panel, &img1, &img2, newTabID);
   doLogMemoryUsage();
 }
-// 3. after gui list has changed (called by handleScene()), when switching between main_gui_list and scene specific list
+// 3. after gui list has changed (called by handleScene()), when switching between main_gui_list and scene specific list. Will show first GUi in list
 void guis_doTabCreationAfterGUIlistChanged(GUIlists newGUIlist) {
   gui_memoryOptimizer_afterGUIlistChanged(&tabview, &panel, &img1, &img2, newGUIlist);
   doLogMemoryUsage();
