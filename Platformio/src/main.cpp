@@ -31,6 +31,7 @@
 #include "guis/gui_irReceiver.h"
 #include "guis/gui_settings.h"
 #include "guis/gui_numpad.h"
+#include "devices/AVreceiver/device_yamahaAmp/gui_yamahaAmp.h"
 #include "devices/mediaPlayer/device_appleTV/gui_appleTV.h"
 #include "devices/misc/device_smarthome/gui_smarthome.h"
 #include "applicationInternal/keys.h"
@@ -110,9 +111,10 @@ int main(int argc, char *argv[]) {
   register_gui_appleTV();
   register_gui_numpad();
   register_gui_smarthome();
+  register_gui_yamahaAmp();
   // Only show these GUIs in the main gui list. If you don't set this explicitely, by default all registered guis are shown.
   #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
-  main_gui_list = {tabName_sceneSelection, tabName_smarthome, tabName_settings, tabName_irReceiver};
+  main_gui_list = {tabName_yamahaAmp, tabName_sceneSelection, tabName_smarthome, tabName_settings, tabName_irReceiver};
   #endif
 
   // register the scenes and their key_commands_*
