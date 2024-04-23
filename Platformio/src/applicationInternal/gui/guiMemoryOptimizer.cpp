@@ -168,8 +168,8 @@ lv_obj_t* create_panel() {
 std::string get_name_of_gui_to_be_shown(int index) {
   if (index == -1) {
     return "";
-  } else if (index <= get_gui_list_active()->size() -1) {
-    return get_gui_list_active()->at(index);
+  } else if (index <= get_gui_list_active_withFallback()->size() -1) {
+    return get_gui_list_active_withFallback()->at(index);
   } else {
     return "";
   }
@@ -210,10 +210,10 @@ void setGUIlistIndicesToBeShown_forSpecificGUIlistIndex(int gui_list_index, t_gu
     Serial.printf("  GUIlistIndices: will resume at specific index with \"first state\"\r\n");
     gui_state->gui_on_tab[0] = {NULL, "", 0};
     // take care if there is only one gui in list
-    gui_state->gui_on_tab[1] = {NULL, "", get_gui_list_active()->size() >= 2 ? 1 : -1};
+    gui_state->gui_on_tab[1] = {NULL, "", get_gui_list_active_withFallback()->size() >= 2 ? 1 : -1};
     gui_state->gui_on_tab[2] = {NULL, "", -1};
     gui_state->activeTabID = 0;
-  } else if (gui_list_index == get_gui_list_active()->size() -1) {
+  } else if (gui_list_index == get_gui_list_active_withFallback()->size() -1) {
     // last state
     Serial.printf("  GUIlistIndices: will resume at specific index with \"last state\"\r\n");
     gui_state->gui_on_tab[0] = {NULL, "", gui_list_index -1};
@@ -233,9 +233,9 @@ void setGUIlistIndicesToBeShown_forSpecificGUIlistIndex(int gui_list_index, t_gu
 void setGUIlistIndicesToBeShown_forFirstGUIinGUIlist(t_gui_state *gui_state) {
   Serial.printf("  GUIlistIndices: will show the first gui from \"gui_list\" as initial state\r\n");
   // take care if there is no gui in list
-  gui_state->gui_on_tab[0] = {NULL, "", get_gui_list_active()->size() != 0 ? 0 : -1};
+  gui_state->gui_on_tab[0] = {NULL, "", get_gui_list_active_withFallback()->size() != 0 ? 0 : -1};
   // take care if there is only one gui in list
-  gui_state->gui_on_tab[1] = {NULL, "", get_gui_list_active()->size() >= 2 ? 1 : -1};
+  gui_state->gui_on_tab[1] = {NULL, "", get_gui_list_active_withFallback()->size() >= 2 ? 1 : -1};
   gui_state->gui_on_tab[2] = {NULL, "", -1};
   gui_state->activeTabID = 0;
 }
@@ -268,7 +268,7 @@ void setGUIlistIndicesToBeShown_afterSlide(t_gui_state *gui_state) {
     } else {
       oldListIndex = gui_state->gui_on_tab[1].gui_list_index_previous;
     }
-    if (oldListIndex == get_gui_list_active()->size() -2) {
+    if (oldListIndex == get_gui_list_active_withFallback()->size() -2) {
       // next state is the "last state"
       gui_state->gui_on_tab[0] = {NULL, "", oldListIndex};
       gui_state->gui_on_tab[1] = {NULL, "", oldListIndex +1};
@@ -292,8 +292,8 @@ void doTabCreation_strategyMax3(lv_obj_t* tabview, t_gui_state *gui_state) {
     create_new_tab(tabview, &gui_state->gui_on_tab[i]);
   }
 
-  if (get_gui_list_active()->size() > 0) {
-    std::string nameOfNewActiveTab = get_gui_list_active()->at(gui_state->gui_on_tab[gui_state->activeTabID].gui_list_index);
+  if (get_gui_list_active_withFallback()->size() > 0) {
+    std::string nameOfNewActiveTab = get_gui_list_active_withFallback()->at(gui_state->gui_on_tab[gui_state->activeTabID].gui_list_index);
     Serial.printf("  New visible tab is \"%s\"\r\n", nameOfNewActiveTab.c_str());
 
     // set active tab
@@ -305,24 +305,10 @@ void doTabCreation_strategyMax3(lv_obj_t* tabview, t_gui_state *gui_state) {
 LV_IMG_DECLARE(gradientLeft);
 LV_IMG_DECLARE(gradientRight);
 
-void getBreadcrumpPosition(uint8_t* breadcrumpPosition, std::string nameOfGUI) {
-  *breadcrumpPosition = 0;
-
-  gui_list gui_list_active = get_gui_list_active();
-  uint8_t counter = 0;
-  for (std::vector<std::string>::iterator it = gui_list_active->begin() ; it != gui_list_active->end(); ++it) {
-    counter++;
-    if (*it == nameOfGUI) {
-      *breadcrumpPosition = counter;
-      return;
-    }
-  }
-}
-
 void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv_obj_t* img2, t_gui_state *gui_state) {
   Serial.printf("  Will fill panel with page indicators\r\n");
 
-  if (get_gui_list_active()->size() == 0) {
+  if (get_gui_list_active_withFallback()->size() == 0) {
     Serial.printf("    no tab available, so no page indicators\r\n");
     // at least add the style
     lv_obj_add_style(panel, &panel_style, 0);
@@ -362,9 +348,9 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
 
   uint8_t breadcrumpDotSize     = 8; // should be an even number
   uint8_t breadcrumpDotDistance = 2; // should be an even number
-  uint8_t breadcrumpMainGuiListLength = get_gui_list(MAIN_GUI_LIST)->size();
+  uint8_t breadcrumpMainGuiListLength = get_gui_list_withFallback(MAIN_GUI_LIST)->size();
   int8_t  breadcrumpMainGuiListStartPositionX = (-1) * (breadcrumpMainGuiListLength -1) * (breadcrumpDotSize + breadcrumpDotDistance) / 2;
-  uint8_t breadcrumpSceneGuiListLength = get_gui_list(SCENE_GUI_LIST)->size();
+  uint8_t breadcrumpSceneGuiListLength = get_gui_list_withFallback(SCENE_GUI_LIST)->size();
   int8_t  breadcrumpSceneGuiListStartPositionX = (-1) * (breadcrumpSceneGuiListLength -1) * (breadcrumpDotSize + breadcrumpDotDistance) / 2;
   #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
   bool show_scene_gui_list = get_scene_has_gui_list(gui_memoryOptimizer_getActiveSceneName());
@@ -389,11 +375,11 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
   for (int i=0; i<3; i++) {
     if (gui_state->gui_on_tab[i].gui_list_index != -1) {
       nameOfGUI = gui_state->gui_on_tab[i].GUIname;
-      getBreadcrumpPosition(&breadcrumpPosition, nameOfGUI);
+      breadcrumpPosition = gui_state->gui_on_tab[i].gui_list_index +1;
 
       // Create actual buttons for every tab
       lv_obj_t* btn = lv_btn_create(panel);
-      if (nameOfGUI == gui_memoryOptimizer_getActiveGUIname()) {
+      if (i == gui_state->activeTabID) {
         // only if this is the button for the currently active tab, make it clickable to get to scene selection gui
         lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_user_data(btn,(void *)(intptr_t)2);
@@ -484,8 +470,8 @@ void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv
   btn = lv_btn_create(panel);
   lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
   lv_obj_set_size(btn, 150, lv_pct(100));
-  //   4 at last position                                                              4 at middle position                                                           only one tab available overall
-  if ((gui_state->gui_on_tab[2].gui_list_index == get_gui_list_active()->size()-1) || (gui_state->gui_on_tab[1].gui_list_index == get_gui_list_active()->size()-1) || (gui_state->gui_on_tab[1].gui_list_index == -1)) {
+  //   4 at last position                                                                         4 at middle position                                                                          only one tab available overall
+  if ((gui_state->gui_on_tab[2].gui_list_index == get_gui_list_active_withFallback()->size()-1) || (gui_state->gui_on_tab[1].gui_list_index == get_gui_list_active_withFallback()->size()-1) || (gui_state->gui_on_tab[1].gui_list_index == -1)) {
     lv_obj_set_style_bg_color(btn, lv_color_black(), LV_PART_MAIN);
   } else {
     lv_obj_set_style_bg_color(btn, color_primary,    LV_PART_MAIN);
@@ -555,8 +541,8 @@ void gui_memoryOptimizer_onStartup(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_
   // 1. find last used gui
   int gui_list_index = -1;
   // find index of gui_memoryOptimizer_getActiveGUIname() in gui_list_active
-  for (int i=0; i<get_gui_list_active()->size(); i++) {
-    if (get_gui_list_active()->at(i) == gui_memoryOptimizer_getActiveGUIname()) {
+  for (int i=0; i<get_gui_list_active_withFallback()->size(); i++) {
+    if (get_gui_list_active_withFallback()->at(i) == gui_memoryOptimizer_getActiveGUIname()) {
       Serial.printf("Startup: found GUI with name \"%s\" in \"gui_list_active\" at position %d\r\n", gui_memoryOptimizer_getActiveGUIname().c_str(), i);
       gui_list_index = i;
       break;
@@ -564,7 +550,7 @@ void gui_memoryOptimizer_onStartup(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_
   }
   
   // 2. set gui_list_indices and the tab to be activated
-  if ((gui_list_index >= 0) && (gui_list_index < get_gui_list_active()->size())) {
+  if ((gui_list_index >= 0) && (gui_list_index < get_gui_list_active_withFallback()->size())) {
     // gui was found
     setGUIlistIndicesToBeShown_forSpecificGUIlistIndex(gui_list_index, &gui_state);
 
@@ -619,7 +605,7 @@ void gui_memoryOptimizer_afterSliding(lv_obj_t** tabview, lv_obj_t** panel, lv_o
 
 }
 
-// 3. after gui list has changed (called by handleScene()), when switching between main_gui_list and scene specific list
+// 3. after gui list has changed (called by handleScene()), when switching between main_gui_list and scene specific list. Will show first GUi in list
 void gui_memoryOptimizer_afterGUIlistChanged(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2, GUIlists newGUIlist) {
 
   Serial.printf("--- Will change to new gui_list\r\n");
@@ -646,7 +632,7 @@ void gui_memoryOptimizer_navigateToGUI(lv_obj_t** tabview, lv_obj_t** panel, lv_
 
   Serial.printf("--- Will navigate to specific GUI\r\n");
 
-  if ( !((gui_list_index >= 0) && (gui_list_index < get_gui_list(GUIlist)->size()))) {
+  if ( !((gui_list_index >= 0) && (gui_list_index < get_gui_list_withFallback(GUIlist)->size()))) {
     Serial.printf("  cannot navigate to GUI because gui_list_index \"%d\" is out of range\r\n", gui_list_index);
     return;
   }  

@@ -183,11 +183,10 @@ uint16_t get_command_long(std::string sceneName, char keyChar) {
 
 }
 
-gui_list get_gui_list(GUIlists gui_list) {
+gui_list get_gui_list_withFallback(GUIlists gui_list) {
   try {
-    // If gui_list == MAIN_GUI_LIST, then we are in the main_gui_list, either if a scene is active or not.
-    // If gui_list == SCENE_GUI_LIST, then a scene is active and we are not in the main_gui_list (with the scene selector as first gui).
-    //   In that case, we try to use the scene specific gui list, if the scene defined one.
+    // If gui_list == MAIN_GUI_LIST, then we want the main_gui_list, either if a scene is active or not.
+    // If gui_list == SCENE_GUI_LIST, then we want the scene gui list. If none is defined, return main_gui_list as fallback.
 
     if (gui_list == MAIN_GUI_LIST) {
       return &main_gui_list;
@@ -214,8 +213,23 @@ gui_list get_gui_list(GUIlists gui_list) {
   }
 }
 
-gui_list get_gui_list_active() {
-  return get_gui_list(gui_memoryOptimizer_getActiveGUIlist());
+gui_list get_gui_list_active_withFallback() {
+  return get_gui_list_withFallback(gui_memoryOptimizer_getActiveGUIlist());
+}
+
+bool get_scene_has_gui_list(std::string sceneName) {
+  try {
+    // look if the scene is known
+    if ((registered_scenes.count(sceneName) > 0)) {
+      return (registered_scenes.at(sceneName).this_gui_list != NULL);
+    } else {
+      return false;
+    }
+  }
+  catch (const std::out_of_range& oor) {
+    Serial.printf("get_scene_has_gui_list: internal error, sceneName not registered\r\n");
+    return false;
+  }
 }
 
 uint16_t get_activate_scene_command(std::string sceneName) {
@@ -237,21 +251,6 @@ uint16_t get_activate_scene_command(std::string sceneName) {
     return 0;
   }
 
-}
-
-bool get_scene_has_gui_list(std::string sceneName) {
-  try {
-    // look if the scene is known
-    if ((registered_scenes.count(sceneName) > 0)) {
-      return (registered_scenes.at(sceneName).this_gui_list != NULL);
-    } else {
-      return false;
-    }
-  }
-  catch (const std::out_of_range& oor) {
-    Serial.printf("get_scene_has_gui_list: internal error, sceneName not registered\r\n");
-    return false;
-  }
 }
 
 scene_list get_scenes_on_sceneSelectionGUI() {
