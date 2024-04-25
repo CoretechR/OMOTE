@@ -8,7 +8,8 @@
 void updateBatteryStatusOnGUI() {
   int battery_voltage;
   int battery_percentage;
-  get_battery_status(&battery_voltage, &battery_percentage);
+  bool battery_ischarging;
+  get_battery_status(&battery_voltage, &battery_percentage, &battery_ischarging);
 
   char buffer1[20];
   sprintf(buffer1, "Voltage: %.2f V", (float)battery_voltage / 1000);
@@ -30,13 +31,15 @@ void updateBatteryStatusOnGUI() {
     }
   }
 
-  // if (battery_ischarging /*|| (!battery_ischarging && getBatteryVoltage() > 4350)*/){
-  //   // if (BattPercentageLabel != NULL) {lv_label_set_text(BattPercentageLabel, "");}
-  //   // lv_label_set_text_fmt(BattPercentageLabel, "%d%%", battery_percentage);
-  //   // lv_label_set_text_fmt(BattPercentageLabel, "%.1f, %d%%", (float)getBatteryVoltage() / 1000, battery_percentage);
-  //   if (BattPercentageLabel != NULL) {lv_label_set_text(BattPercentageLabel, buffer2);}
-  //   if (BattIconLabel != NULL) {lv_label_set_text(BattIconLabel, LV_SYMBOL_USB);}
-  // } else
+  #if (OMOTE_HARDWARE_REV >= 4)
+    if (battery_ischarging /*|| (!battery_ischarging && getBatteryVoltage() > 4350)*/){
+      // if (BattPercentageLabel != NULL) {lv_label_set_text(BattPercentageLabel, "");}
+      // lv_label_set_text_fmt(BattPercentageLabel, "%d%%", battery_percentage);
+      // lv_label_set_text_fmt(BattPercentageLabel, "%.1f, %d%%", (float)getBatteryVoltage() / 1000, battery_percentage);
+      if (BattPercentageLabel != NULL) {lv_label_set_text(BattPercentageLabel, buffer2);}
+      if (BattIconLabel != NULL) {lv_label_set_text(BattIconLabel, LV_SYMBOL_USB);}
+    } else
+  #endif
   {
     // Update status bar battery indicator
     // lv_label_set_text_fmt(BattPercentageLabel, "%.1f, %d%%", (float)getBatteryVoltage() / 1000, battery_percentage);
