@@ -8,7 +8,8 @@ BleKeyboard bleKeyboard("OMOTE Keyboard", "CoretechR");
 void init_keyboardBLE_HAL() {
   int battery_voltage;
   int battery_percentage;
-  get_battery_status_HAL(&battery_voltage, &battery_percentage);
+  boolean battery_ischarging;
+  get_battery_status_HAL(&battery_voltage, &battery_percentage, &battery_ischarging);
   bleKeyboard.setBatteryLevel(battery_percentage);
   bleKeyboard.begin();
 }

@@ -25,7 +25,7 @@ void update_userled();
 
 // --- battery ----------------------------------------------------------------
 void init_battery(void);
-void get_battery_status(int *battery_voltage, int *battery_percentage);
+void get_battery_status(int *battery_voltage, int *battery_percentage, bool *battery_ischarging);
 
 // --- sleep / IMU ------------------------------------------------------------
 void init_sleep();
@@ -58,8 +58,7 @@ enum IRprotocols {
   IR_PROTOCOL_SAMSUNG = 2,
   IR_PROTOCOL_SONY = 3,
   IR_PROTOCOL_RC5 = 4,
-  IR_PROTOCOL_DENON = 5,
-  IR_PROTOCOL_SAMSUNG36 = 6
+  IR_PROTOCOL_DENON = 5
 };
 void sendIRcode(IRprotocols protocol, std::list<std::string> commandPayloads, std::string additionalPayload);
 
