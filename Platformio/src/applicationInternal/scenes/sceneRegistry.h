@@ -14,6 +14,20 @@ typedef void (*scene_end_sequence)(void);
 typedef t_gui_list *gui_list;
 typedef t_scene_list *scene_list;
 
+// https://stackoverflow.com/questions/840501/how-do-function-pointers-in-c-work
+struct scene_definition {
+  scene_setKeys this_scene_setKeys;
+  scene_start_sequence this_scene_start_sequence;
+  scene_end_sequence this_scene_end_sequence;
+  key_repeatModes this_key_repeatModes;
+  key_commands_short this_key_commands_short;
+  key_commands_long this_key_commands_long;
+  gui_list this_gui_list;
+  uint16_t this_activate_scene_command;
+};
+
+extern std::map<std::string, scene_definition> registered_scenes;
+
 void register_scene(
   std::string a_scene_name,
   scene_setKeys a_scene_setKeys,
