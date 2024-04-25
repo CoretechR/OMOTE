@@ -48,10 +48,21 @@ void register_gui(
   // Can be overwritten by scenes to have their own gui_list.
   main_gui_list.insert(main_gui_list.end(), {std::string(a_name)});
 
-  // Whenever a new gui is registered, a new gui command could have been defined.
-  // But this new gui command could have been already been used before in the key definition of another gui. The command at this time was 0, which is undefined.
-  // So we have to set the keys again for all guis that have been registered before.
-  // Loop over all registered guis and call setKeys()
+  setKeysForAllRegisteredGUIsAndScenes();
+
+}
+
+void setKeysForAllRegisteredGUIsAndScenes() {
+  // Whenever a new gui or scene is registered, a new gui or scene command could have been defined in the gui or scene.
+  // But this new command could have already been used before in the key definition of another gui or scene. The command at this time was 0, which is undefined.
+  // So we have to set the keys again for all guis and scenes that have been registered before.
+  // 1. set again the defaultKeys
+  register_scene_defaultKeys();
+  // 2. loop over all registered scenes and call setKeys()
+  for (std::map<std::string, scene_definition>::iterator it = registered_scenes.begin(); it != registered_scenes.end(); ++it) {
+    it->second.this_scene_setKeys();
+  }
+  // 3. loop over all registered guis and call setKeys()
   for (std::map<std::string, gui_definition>::iterator it = registered_guis_byName_map.begin(); it != registered_guis_byName_map.end(); ++it) {
     if (it->second.this_gui_setKeys != NULL) {
       it->second.this_gui_setKeys();

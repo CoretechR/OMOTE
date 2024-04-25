@@ -8,18 +8,6 @@
 // scenes
 #include "scenes/scene__default.h"
 
-// https://stackoverflow.com/questions/840501/how-do-function-pointers-in-c-work
-struct scene_definition {
-  scene_setKeys this_scene_setKeys;
-  scene_start_sequence this_scene_start_sequence;
-  scene_end_sequence this_scene_end_sequence;
-  key_repeatModes this_key_repeatModes;
-  key_commands_short this_key_commands_short;
-  key_commands_long this_key_commands_long;
-  gui_list this_gui_list;
-  uint16_t this_activate_scene_command;
-};
-
 std::map<std::string, scene_definition> registered_scenes;
 t_scene_list scenes_on_sceneSelectionGUI;
 
@@ -51,21 +39,7 @@ void register_scene(
   // Can be overwritten in main.cpp
   scenes_on_sceneSelectionGUI.insert(scenes_on_sceneSelectionGUI.end(), {std::string(a_scene_name)});
 
-  // Whenever a new scene is registered, normally a new scene command has been defined immediately before (e.g. see register_scene_TV()).
-  // But this new scene command could have been already been used before in the key definition of another scene or a gui. The command at this time was 0, which is undefined.
-  // So we have to set the keys again for all scenes and guis that have been registered before.
-  // 1. set again the defaultKeys
-  register_scene_defaultKeys();
-  // 2. loop over all registered scenes and call setKeys()
-  for (std::map<std::string, scene_definition>::iterator it = registered_scenes.begin(); it != registered_scenes.end(); ++it) {
-    it->second.this_scene_setKeys();
-  }
-  // 3. loop over all registered guis and call setKeys()
-  for (std::map<std::string, gui_definition>::iterator it = registered_guis_byName_map.begin(); it != registered_guis_byName_map.end(); ++it) {
-    if (it->second.this_gui_setKeys != NULL) {
-      it->second.this_gui_setKeys();
-    }
-  }
+  setKeysForAllRegisteredGUIsAndScenes();
 
 }
 

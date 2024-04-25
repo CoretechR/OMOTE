@@ -50,3 +50,5 @@ void register_gui(
   key_commands_short a_key_commands_short = NULL,
   key_commands_long a_key_commands_long = NULL
   );
+
+void setKeysForAllRegisteredGUIsAndScenes();

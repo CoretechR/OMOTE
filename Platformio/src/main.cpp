@@ -104,7 +104,6 @@ int main(int argc, char *argv[]) {
   register_keyboardCommands();
 
   // Register the GUIs. They will be displayed in the order they have been registered.
-  // GUIs must be registered before the scenes, because only the scenes re-register key bindings to commands which have been defined after the key binding (see register_scene())
   register_gui_sceneSelection();
   register_gui_irReceiver();
   register_gui_settings();
