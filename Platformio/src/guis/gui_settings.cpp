@@ -25,8 +25,8 @@ static void bl_slider_event_cb(lv_event_t* e){
 static void th_slider_event_cb(lv_event_t* e){
   lv_obj_t* slider = lv_event_get_target(e);
   int32_t slider_value = lv_slider_get_value(slider);
-  if (slider_value < 0)  {slider_value = 0;}
-  if (slider_value > 127) {slider_value = 127;}
+  if (slider_value < 0x40)  {slider_value = 0x40;}
+  if (slider_value > 0x7F) {slider_value = 0x7F;}
   set_wakeupByIMUthreshold((char) slider_value);
 }
 
@@ -148,7 +148,7 @@ void create_tab_content_settings(lv_obj_t* tab) {
   lv_label_set_text(menuLabel, "Wake up sensitivity");
   lv_obj_align(menuLabel, LV_ALIGN_TOP_LEFT, 0, 94);
   lv_obj_t *thslider = lv_slider_create(menuBox);
-  lv_slider_set_range(thslider, 0, 127);
+  lv_slider_set_range(thslider, 0x40, 0x7F);
   lv_obj_set_style_bg_color(thslider, lv_color_white(), LV_PART_KNOB);
   lv_obj_set_style_bg_opa(thslider, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_set_style_bg_color(thslider, lv_color_lighten(color_primary, 50), LV_PART_MAIN);

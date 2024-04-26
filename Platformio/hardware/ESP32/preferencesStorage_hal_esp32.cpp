@@ -19,7 +19,7 @@ void init_preferences_HAL(void) {
     // from here
     currentScene = std::string(preferences.getString("currentScene").c_str());
     currentGUIname = std::string(preferences.getString("currentGUIname").c_str());
-    set_wakeupByIMUthreshold_HAL(preferences.getUChar("threshold"));
+    set_wakeupByIMUthreshold_HAL(preferences.getUChar("threshold", 0x45));
     
     // Serial.printf("Preferences restored: brightness %d, GUI %s, scene %s\r\n", get_backlightBrightness_HAL(), get_currentGUIname().c_str(), get_currentScene().c_str());
   } else {
