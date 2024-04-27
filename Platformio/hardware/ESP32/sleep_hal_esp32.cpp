@@ -35,8 +35,7 @@ char get_wakeupByIMUthreshold_HAL() {
   return wakeupByIMUthreshold;
 }
 void set_wakeupByIMUthreshold_HAL(char awakeupByIMUthreshold) {
-  if (awakeupByIMUthreshold > 0x7F) awakeupByIMUthreshold = 0x7F;
-  if (awakeupByIMUthreshold < 0x40) awakeupByIMUthreshold = 0x40;
+  if (awakeupByIMUthreshold > 0x3F) awakeupByIMUthreshold = 0x3F;
   wakeupByIMUthreshold = awakeupByIMUthreshold;
 }
 

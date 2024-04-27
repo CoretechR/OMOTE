@@ -148,7 +148,7 @@ void create_tab_content_settings(lv_obj_t* tab) {
   lv_label_set_text(menuLabel, "Wake up sensitivity");
   lv_obj_align(menuLabel, LV_ALIGN_TOP_LEFT, 0, 94);
   lv_obj_t *thslider = lv_slider_create(menuBox);
-  lv_slider_set_range(thslider, 0x40, 0x7F);
+  lv_slider_set_range(thslider, 0, 0x3F);
   lv_obj_set_style_bg_color(thslider, lv_color_white(), LV_PART_KNOB);
   lv_obj_set_style_bg_opa(thslider, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_set_style_bg_color(thslider, lv_color_lighten(color_primary, 50), LV_PART_MAIN);
