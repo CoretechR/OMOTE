@@ -232,6 +232,13 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       break;
     }
     
+    case GUI: {
+      // let the sceneHandler find and show the gui
+      Serial.printf("execute: will send gui command to the sceneHandler\r\n");
+      handleGUI(command, commandData, additionalPayload);
+      break;
+    }
+    
     case SPECIAL: {
       if (command == MY_SPECIAL_COMMAND) {
         // do your special command here

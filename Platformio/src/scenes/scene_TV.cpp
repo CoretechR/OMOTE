@@ -33,7 +33,7 @@ void scene_setKeys_TV() {
   
   key_commands_short_TV = {
   
-    {KEY_STOP,  SAMSUNG_REWIND   },    {KEY_REWI,  SAMSUNG_PAUSE    },    {KEY_PLAY,  SAMSUNG_PLAY     },    {KEY_FORW,  SAMSUNG_FASTFORWARD},
+    {KEY_STOP,  SAMSUNG_PAUSE    },    {KEY_REWI,  SAMSUNG_REWIND   },    {KEY_PLAY,  SAMSUNG_PLAY     },    {KEY_FORW,  SAMSUNG_FASTFORWARD},
     {KEY_CONF,  SAMSUNG_GUIDE    },                                                                          {KEY_INFO,  SAMSUNG_MENU     },
                                                          {KEY_UP,    SAMSUNG_UP       },
                       {KEY_LEFT,  SAMSUNG_LEFT    },     {KEY_OK,    SAMSUNG_SELECT   },    {KEY_RIGHT, SAMSUNG_RIGHT    },

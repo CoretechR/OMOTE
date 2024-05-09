@@ -31,6 +31,7 @@
 #include "guis/gui_irReceiver.h"
 #include "guis/gui_settings.h"
 #include "guis/gui_numpad.h"
+#include "devices/AVreceiver/device_yamahaAmp/gui_yamahaAmp.h"
 #include "devices/mediaPlayer/device_appleTV/gui_appleTV.h"
 #include "devices/misc/device_smarthome/gui_smarthome.h"
 #include "applicationInternal/keys.h"
@@ -102,6 +103,19 @@ int main(int argc, char *argv[]) {
   #endif
   register_keyboardCommands();
 
+  // Register the GUIs. They will be displayed in the order they have been registered.
+  register_gui_sceneSelection();
+  register_gui_irReceiver();
+  register_gui_settings();
+  register_gui_appleTV();
+  register_gui_numpad();
+  register_gui_smarthome();
+  register_gui_yamahaAmp();
+  // Only show these GUIs in the main gui list. If you don't set this explicitely, by default all registered guis are shown.
+  #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
+  main_gui_list = {tabName_yamahaAmp, tabName_sceneSelection, tabName_smarthome, tabName_settings, tabName_irReceiver};
+  #endif
+
   // register the scenes and their key_commands_*
   register_scene_defaultKeys();
   register_scene_TV();
@@ -112,20 +126,9 @@ int main(int argc, char *argv[]) {
   // Only show these scenes on the sceneSelection gui. If you don't set this explicitely, by default all registered scenes are shown.
   set_scenes_on_sceneSelectionGUI({scene_name_TV, scene_name_fireTV, scene_name_chromecast, scene_name_appleTV});
 
-  // register the GUIs. They will be displayed in the order they have been registered.
-  register_gui_sceneSelection();
-  register_gui_irReceiver();
-  register_gui_settings();
-  register_gui_appleTV();
-  register_gui_numpad();
-  register_gui_smarthome();
-  // Only show these GUIs in the main gui list. If you don't set this explicitely, by default all registered guis are shown.
-  #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
-  main_gui_list = {tabName_sceneSelection, tabName_smarthome, tabName_settings, tabName_irReceiver};
-  #endif
   // init GUI - will initialize tft, touch and lvgl
   init_gui();
-  setLabelCurrentScene();
+  setLabelActiveScene();
   gui_loop(); // Run the LVGL UI once before the loop takes over
 
   // setup the Inertial Measurement Unit (IMU) for motion detection. Has to be after init_gui(), otherwise I2C will not work

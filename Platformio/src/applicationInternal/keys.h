@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include <stdint.h>
+
 enum repeatModes {
   // only as fallback
   REPEAT_MODE_UNKNOWN,
@@ -14,5 +17,9 @@ enum repeatModes {
   // -> best used if a long key press should send a different command than a short press
   SHORTorLONG,
 };
+
+typedef std::map<char, repeatModes> *key_repeatModes;
+typedef std::map<char, uint16_t> *key_commands_short;
+typedef std::map<char, uint16_t> *key_commands_long;
 
 void keypad_loop(void);

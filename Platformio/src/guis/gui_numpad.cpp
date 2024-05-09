@@ -18,12 +18,12 @@ static void virtualKeypad_event_cb(lv_event_t* e) {
   
   int user_data = (intptr_t)(target->user_data);
   // send corrensponding number
-  if (get_currentScene() == scene_name_TV) {
+  if (gui_memoryOptimizer_getActiveSceneName() == scene_name_TV) {
     uint16_t virtualKeyMapTVNumbers[10] = {SAMSUNG_NUM_1, SAMSUNG_NUM_2, SAMSUNG_NUM_3, SAMSUNG_NUM_4, SAMSUNG_NUM_5, SAMSUNG_NUM_6, SAMSUNG_NUM_7, SAMSUNG_NUM_8, SAMSUNG_NUM_9, SAMSUNG_NUM_0};
     uint16_t command = virtualKeyMapTVNumbers[user_data];
     executeCommand(command);
 
-  } else if (get_currentScene() == scene_name_fireTV) {
+  } else if (gui_memoryOptimizer_getActiveSceneName() == scene_name_fireTV) {
     int virtualKeyMapFireTVNumbers[10] = {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0x0};
     int number = virtualKeyMapFireTVNumbers[user_data];
     std::string numberStr = std::to_string(number);

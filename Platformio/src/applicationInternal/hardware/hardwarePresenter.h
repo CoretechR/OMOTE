@@ -10,10 +10,14 @@ void init_hardware_general(void);
 // --- preferences ------------------------------------------------------------
 void init_preferences(void);
 void save_preferences(void);
-std::string get_currentScene();
-void set_currentScene(std::string aCurrentScene);
-std::string get_currentGUIname();
-void set_currentGUIname(std::string aCurrentGUIname);
+std::string get_activeScene();
+void set_activeScene(std::string anActiveScene);
+std::string get_activeGUIname();
+void set_activeGUIname(std::string anActiveGUIname);
+int get_activeGUIlist();
+void set_activeGUIlist(int anActiveGUIlist);
+int get_lastActiveGUIlistIndex();
+void set_lastActiveGUIlistIndex(int aGUIlistIndex);
 
 // --- user led ---------------------------------------------------------------
 void init_userled(void);
