@@ -1,6 +1,7 @@
 #include <lvgl.h>
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
+#include "applicationInternal/omote_log.h"
 
 bool showMemoryUsage = 0;
 
@@ -22,7 +23,7 @@ void setShowMemoryUsage(bool aShowMemoryUsage) {
 }
 
 void doLogMemoryUsage() {
-  // Serial.println("inside doLogMemoryUsage");
+  omote_log_v("inside doLogMemoryUsage\r\n");
   unsigned long systemHeapSize;
   unsigned long freeSystemHeap;
   unsigned long maxAllocSystemHeap;
@@ -51,13 +52,13 @@ void doLogMemoryUsage() {
   #if defined(SHOW_LOG_ON_SERIAL)
   // Serial log every 5 sec
   if(millis() - updateSerialLogTimer >= 5000) {
-    // Serial.println("inside doLogMemoryUsage: will do serial log");
+    omote_log_v("inside doLogMemoryUsage: will do serial log\r\n");
     updateSerialLogTimer = millis();
 
     if (doESPHeapWarning) {
-      Serial.println("WARNING: ESP heap is getting low. You might encounter weird behaviour of your OMOTE, especially when using WiFi and/or BLE.");
+      omote_log_w("WARNING: ESP heap is getting low. You might encounter weird behaviour of your OMOTE, especially when using WiFi and/or BLE.\r\n");
     }
-    Serial.printf(
+    omote_log_d(
       "ESP32 heap:  size: %6lu, used: %6lu (%2.0f%%), free: %6lu (%2.0f%%), heapMax:  %6lu, heapMin:      %6lu\r\n",
       systemHeapSize,
       systemHeapSize - freeSystemHeap, float(systemHeapSize - freeSystemHeap) / systemHeapSize * 100,
@@ -66,9 +67,9 @@ void doLogMemoryUsage() {
 
     #if (LV_USE_STDLIB_MALLOC == 0)
     if (doLVGLMemoryWarning) {
-      Serial.println("WARNING: LVGL memory is getting low. You GUI might stop working. In that case, increase \"-D LV_MEM_SIZE\" in platformio.ini");
+      omote_log_w("WARNING: LVGL memory is getting low. You GUI might stop working. In that case, increase \"-D LV_MEM_SIZE\" in platformio.ini\r\n");
     }
-    Serial.printf(
+    omote_log_d(
       "lvgl memory: size: %6lu, used: %6lu (%2d%%), free: %6lu (%2d%%), max_used: %6lu, free_biggest: %6lu, frag_pct: %2d%%\r\n",
       mon.total_size,
       mon.total_size - mon.free_size, mon.used_pct,
@@ -76,7 +77,7 @@ void doLogMemoryUsage() {
       mon.max_used, mon.free_biggest_size, mon.frag_pct);
     #endif
   } else {
-    // Serial.println("inside doLogMemoryUsage: serial log skipped");
+    omote_log_v("inside doLogMemoryUsage: serial log skipped\r\n");
   }
   #endif
 

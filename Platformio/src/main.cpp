@@ -1,6 +1,7 @@
 // OMOTE firmware for ESP32
 // 2023-2024 Maximilian Kern / Klaus Musch
 
+#include "applicationInternal/omote_log.h"
 // init hardware and hardware loop
 #include "applicationInternal/hardware/hardwarePresenter.h"
 // register devices and their commands
@@ -139,7 +140,7 @@ int main(int argc, char *argv[]) {
   init_mqtt();
   #endif
 
-  Serial.printf("Setup finished in %lu ms.\r\n", millis());
+  omote_log_i("Setup finished in %lu ms.\r\n", millis());
 
   #if defined(WIN32) || defined(__linux__)
   // In Windows/Linux there is no loop function that is automatically being called. So we have to do this on our own infinitely here in main()

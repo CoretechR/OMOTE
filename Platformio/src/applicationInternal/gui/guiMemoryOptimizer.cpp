@@ -4,6 +4,7 @@
 #include "applicationInternal/gui/guiRegistry.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/scenes/sceneRegistry.h"
+#include "applicationInternal/omote_log.h"
 
 struct t_gui_on_tab {
   lv_obj_t* tab;
@@ -85,11 +86,11 @@ bool gui_memoryOptimizer_isGUInameInMemory(std::string GUIname) {
 }
 
 void notify_active_tabs_before_delete(t_gui_state *gui_state) {
-  Serial.printf("  Will notify tabs about deletion\r\n");
+  omote_log_d("  Will notify tabs about deletion\r\n");
   std::string nameOfTab;
   for (int index=0; index <= 2; index++) {
     if (gui_state->gui_on_tab[index].gui_list_index == -1) {
-      Serial.printf("    Will not notify tab %d about deletion because it does not exist\r\n", index);
+      omote_log_d("    Will not notify tab %d about deletion because it does not exist\r\n", index);
       continue;
     }
 
@@ -97,11 +98,11 @@ void notify_active_tabs_before_delete(t_gui_state *gui_state) {
     // The gui_list might have changed (when switching from a scene specific list to the main list or vice versa), so index could have changed as well.
     nameOfTab = gui_state->gui_on_tab[index].GUIname;
     if (nameOfTab == "") {
-      Serial.printf("    Will not notify tab %d about deletion because it is not set\r\n", index);
+      omote_log_w("    Will not notify tab %d about deletion because it is not set\r\n", index);
     } else if (registered_guis_byName_map.count(nameOfTab) == 0) {
-      Serial.printf("    Can not notify tab %d about deletion because name \"%s\" was not found in registry\r\n", index, nameOfTab.c_str());
+      omote_log_w("    Can not notify tab %d about deletion because name \"%s\" was not found in registry\r\n", index, nameOfTab.c_str());
     } else {
-      Serial.printf("    Will notify tab %d with name \"%s\" about deletion\r\n", index, nameOfTab.c_str());
+      omote_log_d("    Will notify tab %d with name \"%s\" about deletion\r\n", index, nameOfTab.c_str());
       registered_guis_byName_map.at(nameOfTab).this_notify_tab_before_delete();
     }
   }
@@ -181,11 +182,11 @@ void create_new_tab(lv_obj_t* tabview, t_gui_on_tab *gui_on_tab) {
   std::string nameOfTab = get_name_of_gui_to_be_shown(gui_on_tab->gui_list_index);
 
   if (nameOfTab == "") {
-    Serial.printf("    Will not create new tab because no name was provided\r\n");
+    omote_log_d("    Will not create new tab because no name was provided\r\n");
   } else if (registered_guis_byName_map.count(nameOfTab) == 0) {
-    Serial.printf("    Will not create new tab because name %s was not found in registry\r\n", nameOfTab.c_str());
+    omote_log_w("    Will not create new tab because name %s was not found in registry\r\n", nameOfTab.c_str());
   } else {
-    Serial.printf("    Will create tab with name \"%s\" \r\n", nameOfTab.c_str());
+    omote_log_d("    Will create tab with name \"%s\" \r\n", nameOfTab.c_str());
     // save name of tab for deletion later
     gui_on_tab->GUIname = nameOfTab;
     // create tab and save pointer to tab in gui_on_tab
@@ -209,7 +210,7 @@ void setGUIlistIndicesToBeShown_forSpecificGUIlistIndex(int gui_list_index, t_gu
   // Set the gui_list_indeces to be shown for a specific gui_list_index
   if (gui_list_index == 0) {
     // first state
-    Serial.printf("  GUIlistIndices: will resume at specific index with \"first state\"\r\n");
+    omote_log_d("  GUIlistIndices: will resume at specific index with \"first state\"\r\n");
     gui_state->gui_on_tab[0] = {NULL, "", 0};
     // take care if there is only one gui in list
     gui_state->gui_on_tab[1] = {NULL, "", get_gui_list_active_withFallback()->size() >= 2 ? 1 : -1};
@@ -217,14 +218,14 @@ void setGUIlistIndicesToBeShown_forSpecificGUIlistIndex(int gui_list_index, t_gu
     gui_state->activeTabID = 0;
   } else if (gui_list_index == get_gui_list_active_withFallback()->size() -1) {
     // last state
-    Serial.printf("  GUIlistIndices: will resume at specific index with \"last state\"\r\n");
+    omote_log_d("  GUIlistIndices: will resume at specific index with \"last state\"\r\n");
     gui_state->gui_on_tab[0] = {NULL, "", gui_list_index -1};
     gui_state->gui_on_tab[1] = {NULL, "", gui_list_index};
     gui_state->gui_on_tab[2] = {NULL, "", -1};
     gui_state->activeTabID = 1;
   } else {
     // any other state
-    Serial.printf("  GUIlistIndices: will resume at specific index with \"state between\"\r\n");
+    omote_log_d("  GUIlistIndices: will resume at specific index with \"state between\"\r\n");
     gui_state->gui_on_tab[0] = {NULL, "", gui_list_index -1};
     gui_state->gui_on_tab[1] = {NULL, "", gui_list_index};
     gui_state->gui_on_tab[2] = {NULL, "", gui_list_index +1};
@@ -233,7 +234,7 @@ void setGUIlistIndicesToBeShown_forSpecificGUIlistIndex(int gui_list_index, t_gu
 }
 
 void setGUIlistIndicesToBeShown_forFirstGUIinGUIlist(t_gui_state *gui_state) {
-  Serial.printf("  GUIlistIndices: will show the first gui from \"gui_list\" as initial state\r\n");
+  omote_log_d("  GUIlistIndices: will show the first gui from \"gui_list\" as initial state\r\n");
   // take care if there is no gui in list
   gui_state->gui_on_tab[0] = {NULL, "", get_gui_list_active_withFallback()->size() != 0 ? 0 : -1};
   // take care if there is only one gui in list
@@ -247,7 +248,7 @@ void setGUIlistIndicesToBeShown_afterSlide(t_gui_state *gui_state) {
  
   if (gui_state->oldTabID > gui_state->activeTabID) {
     // swipe to previous item in list
-    Serial.printf("  Will swipe to previous item in list\r\n");
+    omote_log_d("  Will swipe to previous item in list\r\n");
     oldListIndex = gui_state->gui_on_tab[1].gui_list_index_previous;
     if ((oldListIndex == 1)) {
       // next state is the "first state"
@@ -263,7 +264,7 @@ void setGUIlistIndicesToBeShown_afterSlide(t_gui_state *gui_state) {
     }
   } else {
     // swipe to next item in list
-    Serial.printf("  Will swipe to next item in list\r\n");
+    omote_log_d("  Will swipe to next item in list\r\n");
     if (gui_state->gui_on_tab[2].gui_list_index_previous == -1) {
       // last state was the first state
       oldListIndex = gui_state->gui_on_tab[0].gui_list_index_previous; // is always 0
@@ -289,14 +290,14 @@ void setGUIlistIndicesToBeShown_afterSlide(t_gui_state *gui_state) {
 void doTabCreation_strategyMax3(lv_obj_t* tabview, t_gui_state *gui_state) {
   
   // create the tabs
-  Serial.printf("  Will create tabs. List indices of the three tabs are %d, %d, %d, tab nr %d will be activated\r\n", gui_state->gui_on_tab[0].gui_list_index, gui_state->gui_on_tab[1].gui_list_index, gui_state->gui_on_tab[2].gui_list_index, gui_state->activeTabID);
+  omote_log_d("  Will create tabs. List indices of the three tabs are %d, %d, %d, tab nr %d will be activated\r\n", gui_state->gui_on_tab[0].gui_list_index, gui_state->gui_on_tab[1].gui_list_index, gui_state->gui_on_tab[2].gui_list_index, gui_state->activeTabID);
   for (int i=0; i<3; i++) {
     create_new_tab(tabview, &gui_state->gui_on_tab[i]);
   }
 
   if (get_gui_list_active_withFallback()->size() > 0) {
     std::string nameOfNewActiveTab = get_gui_list_active_withFallback()->at(gui_state->gui_on_tab[gui_state->activeTabID].gui_list_index);
-    Serial.printf("  New visible tab is \"%s\"\r\n", nameOfNewActiveTab.c_str());
+    omote_log_d("  New visible tab is \"%s\"\r\n", nameOfNewActiveTab.c_str());
 
     // set active tab
     setActiveTab(gui_state->activeTabID, LV_ANIM_OFF);
@@ -308,10 +309,10 @@ LV_IMAGE_DECLARE(gradientLeft);
 LV_IMAGE_DECLARE(gradientRight);
 
 void fillPanelWithPageIndicator_strategyMax3(lv_obj_t* panel, lv_obj_t* img1, lv_obj_t* img2, t_gui_state *gui_state) {
-  Serial.printf("  Will fill panel with page indicators\r\n");
+  omote_log_d("  Will fill panel with page indicators\r\n");
 
   if (get_gui_list_active_withFallback()->size() == 0) {
-    Serial.printf("    no tab available, so no page indicators\r\n");
+    omote_log_d("    no tab available, so no page indicators\r\n");
     // at least add the style
     lv_obj_add_style(panel, &panel_style, 0);
     #ifdef drawRedBorderAroundMainWidgets
@@ -533,7 +534,7 @@ void gui_memoryOptimizer_doContentCreation(lv_obj_t** tabview, lv_obj_t** panel,
 // find the position of the current GUI in the gui list which was active last (both were automatically saved in the preferences) 
 void gui_memoryOptimizer_onStartup(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2) {
 
-  Serial.printf("Startup: try to resume at scene \"%s\" with GUI \"%s\"\r\n", gui_memoryOptimizer_getActiveSceneName().c_str(), gui_memoryOptimizer_getActiveGUIname().c_str());
+  omote_log_i("Startup: try to resume at scene \"%s\" with GUI \"%s\"\r\n", gui_memoryOptimizer_getActiveSceneName().c_str(), gui_memoryOptimizer_getActiveGUIname().c_str());
 
   // Get last state from preferences and save it in gui_state
   // So it is ok to call them without using the return values.
@@ -547,7 +548,7 @@ void gui_memoryOptimizer_onStartup(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_
   // find index of gui_memoryOptimizer_getActiveGUIname() in gui_list_active
   for (int i=0; i<get_gui_list_active_withFallback()->size(); i++) {
     if (get_gui_list_active_withFallback()->at(i) == gui_memoryOptimizer_getActiveGUIname()) {
-      Serial.printf("Startup: found GUI with name \"%s\" in \"gui_list_active\" at position %d\r\n", gui_memoryOptimizer_getActiveGUIname().c_str(), i);
+      omote_log_i("Startup: found GUI with name \"%s\" in \"gui_list_active\" at position %d\r\n", gui_memoryOptimizer_getActiveGUIname().c_str(), i);
       gui_list_index = i;
       break;
     }
@@ -560,7 +561,7 @@ void gui_memoryOptimizer_onStartup(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_
 
   } else {
     // gui was not found
-    Serial.printf("Startup: GUI with name \"%s\" was not found. Will start with first GUI of main_gui_list\r\n", gui_memoryOptimizer_getActiveGUIname().c_str());
+    omote_log_w("Startup: GUI with name \"%s\" was not found. Will start with first GUI of main_gui_list\r\n", gui_memoryOptimizer_getActiveGUIname().c_str());
     gui_memoryOptimizer_setActiveGUIlist(MAIN_GUI_LIST);
     setGUIlistIndicesToBeShown_forFirstGUIinGUIlist(&gui_state);
 
@@ -580,12 +581,12 @@ void gui_memoryOptimizer_afterSliding(lv_obj_t** tabview, lv_obj_t** panel, lv_o
   // So we always have 3 tabs.
   // After the animation, the tabview and hence all tabs are deleted and recreated.
 
-  Serial.printf("--- Start of tab deletion and creation\r\n");
+  omote_log_d("--- Start of tab deletion and creation\r\n");
 
   gui_state.oldTabID = gui_state.activeTabID;
   gui_state.activeTabID = newTabID;
 
-  Serial.printf("Changing from oldTabID %d \"%s\" to newTabID %d \"%s\"\r\n",
+  omote_log_d("Changing from oldTabID %d \"%s\" to newTabID %d \"%s\"\r\n",
     gui_state.oldTabID,    gui_state.gui_on_tab[gui_state.oldTabID].GUIname.c_str(),
     gui_state.activeTabID, gui_state.gui_on_tab[gui_state.activeTabID].GUIname.c_str());
 
@@ -612,7 +613,7 @@ void gui_memoryOptimizer_afterSliding(lv_obj_t** tabview, lv_obj_t** panel, lv_o
 // 3. after gui list has changed (called by handleScene()), when switching between main_gui_list and scene specific list. Will show first GUi in list
 void gui_memoryOptimizer_afterGUIlistChanged(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2, GUIlists newGUIlist) {
 
-  Serial.printf("--- Will change to new gui_list\r\n");
+  omote_log_d("--- Will change to new gui_list\r\n");
 
   if (gui_state.last_active_gui_list != newGUIlist) {
     // we are changing the gui_list, so save the last_active_gui_list_index
@@ -634,10 +635,10 @@ void gui_memoryOptimizer_afterGUIlistChanged(lv_obj_t** tabview, lv_obj_t** pane
 // 4. navigate to a specific GUI in gui_list
 void gui_memoryOptimizer_navigateToGUI(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2, GUIlists GUIlist, int gui_list_index) {
 
-  Serial.printf("--- Will navigate to specific GUI\r\n");
+  omote_log_d("--- Will navigate to specific GUI\r\n");
 
   if ( !((gui_list_index >= 0) && (gui_list_index < get_gui_list_withFallback(GUIlist)->size()))) {
-    Serial.printf("  cannot navigate to GUI because gui_list_index \"%d\" is out of range\r\n", gui_list_index);
+    omote_log_w("  cannot navigate to GUI because gui_list_index \"%d\" is out of range\r\n", gui_list_index);
     return;
   }  
 
@@ -662,15 +663,15 @@ void gui_memoryOptimizer_navigateToGUI(lv_obj_t** tabview, lv_obj_t** panel, lv_
 void gui_memoryOptimizer_navigateToLastActiveGUIofPreviousGUIlist(lv_obj_t** tabview, lv_obj_t** panel, lv_obj_t** img1, lv_obj_t** img2) {
 
   #if (USE_SCENE_SPECIFIC_GUI_LIST == 0)
-    Serial.printf("--- Cannot navigate to last GUI from scene, because scene specific gui lists are not enabled\r\n");
+    omote_log_w("--- Cannot navigate to last GUI from scene, because scene specific gui lists are not enabled\r\n");
     return;
   #endif
 
   if (gui_memoryOptimizer_getLastActiveGUIlistIndex() == -1) {
-    Serial.printf("--- Cannot navigate to last GUI from scene, because it is not set\r\n");
+    omote_log_w("--- Cannot navigate to last GUI from scene, because it is not set\r\n");
     return;
   } else {
-    Serial.printf("--- Will navigate to last GUI from scene\r\n");
+    omote_log_d("--- Will navigate to last GUI from scene\r\n");
   }
 
   // navigate to the other gui_list
@@ -710,6 +711,6 @@ void gui_memoryOptimizer_doContentCreation(lv_obj_t** tabview, lv_obj_t** panel,
   // so that we can use SCENE_BACK_TO_PREVIOUS_GUI_LIST
   gui_state->last_active_gui_list = gui_memoryOptimizer_getActiveGUIlist();
 
-  Serial.printf("------------ End of tab deletion and creation\r\n");
+  omote_log_d("------------ End of tab deletion and creation\r\n");
 
 }

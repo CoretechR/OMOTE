@@ -5,6 +5,7 @@
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/commandHandler.h"
+#include "applicationInternal/omote_log.h"
 // scenes
 #include "scenes/scene__default.h"
 
@@ -52,7 +53,7 @@ void scene_start_sequence_from_registry(std::string sceneName) {
     registered_scenes.at(sceneName).this_scene_start_sequence();
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("scene_start_sequence_from_registry: internal error, sceneName not registered\r\n");
+    omote_log_e("scene_start_sequence_from_registry: internal error, sceneName not registered\r\n");
   }
 }
 
@@ -61,7 +62,7 @@ void scene_end_sequence_from_registry(std::string sceneName) {
     registered_scenes.at(sceneName).this_scene_end_sequence();
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("scene_end_sequence_from_registry: internal error, sceneName not registered\r\n");
+    omote_log_e("scene_end_sequence_from_registry: internal error, sceneName not registered\r\n");
   }
 }
 
@@ -70,27 +71,27 @@ repeatModes get_key_repeatMode(std::string sceneName, char keyChar) {
     // look if the map of the active gui has a definition for it
     std::string GUIname = gui_memoryOptimizer_getActiveGUIname();
     if ((registered_guis_byName_map.count(GUIname) > 0) && (registered_guis_byName_map.at(GUIname).this_key_repeatModes != NULL) && (registered_guis_byName_map.at(GUIname).this_key_repeatModes->count(keyChar) > 0)) {
-      // Serial.printf("get_key_repeatMode: will use key from gui %s\r\n", GUIname.c_str());
+      omote_log_v("get_key_repeatMode: will use key from gui %s\r\n", GUIname.c_str());
       return registered_guis_byName_map.at(GUIname).this_key_repeatModes->at(keyChar);
 
     // look if the map of the active scene has a definition for it
     } else if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_repeatModes->count(keyChar) > 0)) {
-      // Serial.printf("get_key_repeatMode: will use key from scene %s\r\n", sceneName.c_str());
+      omote_log_v("get_key_repeatMode: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_repeatModes->at(keyChar);
 
     // look if there is a default definition
     } else if (key_repeatModes_default.count(keyChar) > 0) {
-      // Serial.printf("get_key_repeatMode: will use default key\r\n");
+      omote_log_v("get_key_repeatMode: will use default key\r\n");
       return key_repeatModes_default.at(keyChar);
 
     // no key definition found
     } else {
-      // Serial.printf("get_key_repeatMode: WARNING no key definition found\r\n");
+      omote_log_v("get_key_repeatMode: WARNING no key definition found\r\n");
       return REPEAT_MODE_UNKNOWN;
     }
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("get_key_repeatMode: internal error, sceneName not registered\r\n");
+    omote_log_e("get_key_repeatMode: internal error, sceneName not registered\r\n");
     return REPEAT_MODE_UNKNOWN;
   }
 }
@@ -100,27 +101,27 @@ uint16_t get_command_short(std::string sceneName, char keyChar) {
     // look if the map of the active gui has a definition for it
     std::string GUIname = gui_memoryOptimizer_getActiveGUIname();
     if ((registered_guis_byName_map.count(GUIname) > 0) && (registered_guis_byName_map.at(GUIname).this_key_commands_short != NULL) && (registered_guis_byName_map.at(GUIname).this_key_commands_short->count(keyChar) > 0)) {
-      // Serial.printf("get_command_short: will use key from gui %s\r\n", GUIname.c_str());
+      omote_log_v("get_command_short: will use key from gui %s\r\n", GUIname.c_str());
       return registered_guis_byName_map.at(GUIname).this_key_commands_short->at(keyChar);
 
     // look if the map of the active scene has a definition for it
     } else if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_short->count(keyChar) > 0)) {
-      // Serial.printf("get_command_short: will use key from scene %s\r\n", sceneName.c_str());
+      omote_log_v("get_command_short: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_commands_short->at(keyChar);
     
     // look if there is a default definition
     } else if (key_commands_short_default.count(keyChar) > 0) {
-      // Serial.printf("get_command_short: will use default key\r\n");
+      omote_log_v("get_command_short: will use default key\r\n");
       return key_commands_short_default.at(keyChar);
     
     // no key definition found
     } else {
-      // Serial.printf("get_command_short: WARNING no key definition found\r\n");
+      omote_log_v("get_command_short: WARNING no key definition found\r\n");
       return COMMAND_UNKNOWN;
     }
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("get_command_short: internal error, sceneName not registered\r\n");
+    omote_log_e("get_command_short: internal error, sceneName not registered\r\n");
     return COMMAND_UNKNOWN;
   }
 
@@ -131,27 +132,27 @@ uint16_t get_command_long(std::string sceneName, char keyChar) {
     // look if the map of the active gui has a definition for it
     std::string GUIname = gui_memoryOptimizer_getActiveGUIname();
     if ((registered_guis_byName_map.count(GUIname) > 0) && (registered_guis_byName_map.at(GUIname).this_key_commands_long != NULL) && (registered_guis_byName_map.at(GUIname).this_key_commands_long->count(keyChar) > 0)) {
-      // Serial.printf("get_command_long: will use key from gui %s\r\n", GUIname.c_str());
+      omote_log_v("get_command_long: will use key from gui %s\r\n", GUIname.c_str());
       return registered_guis_byName_map.at(GUIname).this_key_commands_long->at(keyChar);
 
     // look if the map of the active scene has a definition for it
     } else if ((registered_scenes.count(sceneName) > 0) && (registered_scenes.at(sceneName).this_key_commands_long->count(keyChar) > 0)) {
-      // Serial.printf("get_command_long: will use key from scene %s\r\n", sceneName.c_str());
+      omote_log_v("get_command_long: will use key from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_key_commands_long->at(keyChar);
     
     // look if there is a default definition
     } else if (key_commands_long_default.count(keyChar) > 0) {
-      // Serial.printf("get_command_long: will use default key\r\n");
+      omote_log_v("get_command_long: will use default key\r\n");
       return key_commands_long_default.at(keyChar);
     
     // no key definition found
     } else {
-      // Serial.printf("get_command_long: WARNING no key definition found\r\n");
+      omote_log_v("get_command_long: WARNING no key definition found\r\n");
       return COMMAND_UNKNOWN;
     }
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("get_command_long: internal error, sceneName not registered\r\n");
+    omote_log_e("get_command_long: internal error, sceneName not registered\r\n");
     return COMMAND_UNKNOWN;
   }
 
@@ -169,7 +170,7 @@ gui_list get_gui_list_withFallback(GUIlists gui_list) {
       #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
         // look if the active scene has a definition for a gui list
         if ((registered_scenes.count(gui_memoryOptimizer_getActiveSceneName()) > 0) && (registered_scenes.at(gui_memoryOptimizer_getActiveSceneName()).this_gui_list != NULL)) {
-          // Serial.printf("get_gui_list: will use gui_list from scene %s\r\n", sceneName.c_str());
+          omote_log_v("get_gui_list: will use gui_list from scene %s\r\n", sceneName.c_str());
           return registered_scenes.at(gui_memoryOptimizer_getActiveSceneName()).this_gui_list;
         } else {
           // no scene specific gui list was defined
@@ -182,7 +183,7 @@ gui_list get_gui_list_withFallback(GUIlists gui_list) {
     }  
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("get_gui_list: internal error, sceneName not registered\r\n");
+    omote_log_e("get_gui_list: internal error, sceneName not registered\r\n");
     return NULL;
   }
 }
@@ -201,7 +202,7 @@ bool get_scene_has_gui_list(std::string sceneName) {
     }
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("get_scene_has_gui_list: internal error, sceneName not registered\r\n");
+    omote_log_e("get_scene_has_gui_list: internal error, sceneName not registered\r\n");
     return false;
   }
 }
@@ -210,18 +211,18 @@ uint16_t get_activate_scene_command(std::string sceneName) {
   try {
     // look if the scene is known
     if ((registered_scenes.count(sceneName) > 0)) {
-      // Serial.printf("get_activate_scene_command: will use activate_scene_command from scene %s\r\n", sceneName.c_str());
+      omote_log_v("get_activate_scene_command: will use activate_scene_command from scene %s\r\n", sceneName.c_str());
       return registered_scenes.at(sceneName).this_activate_scene_command;
     
     // if the scene is not know, simply return 0
     } else {
-      // Serial.printf("get_activate_scene_command: will return 0\r\n");
+      omote_log_v("get_activate_scene_command: will return 0\r\n");
       return 0;
     
     }
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("get_activate_scene_command: internal error, sceneName not registered\r\n");
+    omote_log_e("get_activate_scene_command: internal error, sceneName not registered\r\n");
     return 0;
   }
 

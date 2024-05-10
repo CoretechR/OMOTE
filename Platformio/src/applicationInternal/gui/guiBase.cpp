@@ -4,6 +4,7 @@
 #include "applicationInternal/gui/guiMemoryOptimizer.h"
 // for changing to scene Selection gui
 #include "applicationInternal/commandHandler.h"
+#include "applicationInternal/omote_log.h"
 #include "scenes/scene__default.h"
 
 lv_color_t color_primary = lv_color_hex(0x303030); // gray
@@ -47,7 +48,7 @@ void pageIndicator_navigate_event_cb(lv_event_t* e) {
 
 // callback when sceneLabel or pageIndicator was clicked
 void sceneLabel_or_pageIndicator_event_cb(lv_event_t* e) {
-  Serial.println("- Scene selection: sceneLabel or pageIndicator clicked received for navigating to scene selection page");
+  omote_log_d("- Scene selection: sceneLabel or pageIndicator clicked received for navigating to scene selection page\r\n");
   executeCommand(SCENE_SELECTION);
 }
 
@@ -56,7 +57,7 @@ void screen_gesture_event_cb(lv_event_t* e) {
   lv_obj_t* screen = (lv_obj_t*)lv_event_get_current_target(e);
   lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_active());
   if (dir == LV_DIR_BOTTOM) {
-    Serial.println("- Scene selection: swipe down received for navigating to scene selection page");
+    omote_log_d("- Scene selection: swipe down received for navigating to scene selection page\r\n");
     executeCommand(SCENE_SELECTION);
   }    
 }
@@ -79,7 +80,7 @@ void tabview_content_is_scrolling_event_cb(lv_event_t* e){
   if ((tabviewX >= 475) && (tabviewX <= 480)) {tabviewX = 480;}
   // we need 158 more (the size of one page indicator), because we always have one more page indicator at the beginning and at the end (so normally 5 when having 3 tabs)
   int16_t panelX = tabviewX * bias - offset + 158;
-  // Serial.printf("scroll %d to %d\r\n", tabviewX, panelX);
+  omote_log_v("scroll %d to %d\r\n", tabviewX, panelX);
   lv_obj_scroll_to_x(panel, panelX, LV_ANIM_OFF);
   // lv_obj_scroll_to_x(panel, lv_obj_get_scroll_x(tabviewContent) * bias - offset, LV_ANIM_OFF);
 }
@@ -120,7 +121,7 @@ void tabview_tab_changed_event_cb(lv_event_t* e) {
       lv_anim_set_completed_cb(anim, tabview_animation_ready_cb);
     } else {
       // Swipe is complete, no additional animation is needed. Most likely only possible in simulator
-      Serial.println("Change of tab detected, without animation at the end. Will directly do my job after sliding.");
+      omote_log_d("Change of tab detected, without animation at the end. Will directly do my job after sliding.\r\n");
       guis_doTabCreationAfterSliding(newTabID);
     }
   }

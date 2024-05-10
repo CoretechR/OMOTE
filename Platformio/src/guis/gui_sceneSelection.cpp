@@ -4,6 +4,7 @@
 #include "applicationInternal/gui/guiRegistry.h"
 #include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/commandHandler.h"
+#include "applicationInternal/omote_log.h"
 #include "guis/gui_sceneSelection.h"
 
 static uint16_t activate_scene_command;
@@ -36,23 +37,23 @@ static void sceneSelection_event_cb(lv_event_t* e) {
   // only on short press: LV_EVENT_SHORT_CLICKED
   // both on short press and long press: LV_EVENT_CLICKED
   // if (lv_event_get_code(e) == LV_EVENT_PRESSED) {
-  //   Serial.println("pressed");
+  //   omote_log_v("pressed\r\n");
   // }
   // if (lv_event_get_code(e) == LV_EVENT_RELEASED) {
-  //   Serial.println("released");
+  //   omote_log_v("released\r\n");
   // }
   if (lv_event_get_code(e) == LV_EVENT_SHORT_CLICKED) {
     lastShortClickedReceived = user_data;
     lastShortClickedReceivedTime = millis(); 
-    // Serial.println("short clicked, will see what happens next");
+    omote_log_v("short clicked, will see what happens next\r\n");
     return;
 
   } else if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
     if ((lastShortClickedReceived == user_data) && (millis() - lastShortClickedReceivedTime < 10)) {
-      // Serial.println("clicked, will send short click");
+      omote_log_v("clicked, will send short click\r\n");
       doForceScene = false;
     } else {
-      // Serial.println("clicked, will send long click");
+      omote_log_v("clicked, will send long click\r\n");
       doForceScene = true;
     }
   } else {
@@ -77,16 +78,16 @@ static void sceneSelection_event_cb(lv_event_t* e) {
     if (doForceScene) {
       // put the force flag into the highest bit
       scene_command_including_force = activate_scene_command | 0x8000;
-      Serial.printf("Scene with index %d and name %s was FORCE selected\r\n", user_data, scene_name.c_str());
+      omote_log_d("Scene with index %d and name %s was FORCE selected\r\n", user_data, scene_name.c_str());
     } else {
       scene_command_including_force = activate_scene_command;
-      Serial.printf("Scene with index %d and name %s was selected\r\n", user_data, scene_name.c_str());
+      omote_log_d("Scene with index %d and name %s was selected\r\n", user_data, scene_name.c_str());
     }
     lv_timer_t *my_timer = lv_timer_create(activate_scene_cb, 50, (void *)(uintptr_t) scene_command_including_force);
     lv_timer_set_repeat_count(my_timer, 1);
 
   } else {
-    Serial.printf("Cannot activate scene %s, because command was not found\r\n", scene_name.c_str());
+    omote_log_w("Cannot activate scene %s, because command was not found\r\n", scene_name.c_str());
   }
 }
 

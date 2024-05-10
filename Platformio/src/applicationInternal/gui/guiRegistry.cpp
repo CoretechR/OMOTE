@@ -7,6 +7,7 @@
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/scenes/sceneRegistry.h"
+#include "applicationInternal/omote_log.h"
 #include "scenes/scene__default.h"
 
 // ------------------------------------------------------------------------------------
@@ -27,7 +28,7 @@ void register_gui(
   ) {
   
   if (registered_guis_byName_map.count(a_name) > 0) {
-    Serial.printf("ERROR!!!: you cannot register two guis having the same name '%s'\r\n", a_name.c_str());
+    omote_log_e("ERROR!!!: you cannot register two guis having the same name '%s'\r\n", a_name.c_str());
     return;
   }
 
