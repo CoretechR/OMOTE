@@ -2,6 +2,7 @@
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/gui/guiRegistry.h"
+#include "applicationInternal/omote_log.h"
 #include "devices/mediaPlayer/device_appleTV/gui_appleTV.h"
 
 #include "applicationInternal/commandHandler.h"
@@ -17,7 +18,7 @@ static void appleKey_event_cb(lv_event_t* e) {
   // Send IR command based on the event user data  
   int user_data = *((int*)(&(e->user_data)));
   executeCommand(APPLETV_GUI_EVENT_USER_DATA, std::to_string(50 + user_data));
-  // Serial.println(50 + user_data);
+  omote_log_v("%d\r\n", 50 + user_data);
 }
 
 void create_tab_content_appleTV(lv_obj_t* tab) {

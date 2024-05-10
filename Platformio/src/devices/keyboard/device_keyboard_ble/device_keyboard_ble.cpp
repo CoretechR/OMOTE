@@ -1,4 +1,5 @@
 #include "applicationInternal/commandHandler.h"
+#include "applicationInternal/omote_log.h"
 #include "device_keyboard_ble.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 
@@ -72,34 +73,34 @@ void keyboard_ble_executeCommand(uint16_t command, std::string additionalPayload
 
   if (doLog) {
     if (keyboardBLE_isConnected()) {
-      Serial.println("BLE keyboard connected, could send key");
+      omote_log_d("BLE keyboard connected, can send key\r\n");
     } else {
-      Serial.println("BLE keyboard NOT connected, cannot send key");
+      omote_log_d("BLE keyboard NOT connected, cannot send key\r\n");
     }
   }
 
   if (command == KEYBOARD_BLE_UP) {
-    if (doLog) {Serial.printf("UP received\r\n");}
+    if (doLog) {omote_log_d("UP received\r\n");}
     keyboardBLE_write(BLE_KEY_UP_ARROW);
 
   } else if (command == KEYBOARD_BLE_DOWN) {
-    if (doLog) {Serial.printf("DOWN received\r\n");}
+    if (doLog) {omote_log_d("DOWN received\r\n");}
     keyboardBLE_write(BLE_KEY_DOWN_ARROW);
 
   } else if (command == KEYBOARD_BLE_RIGHT) {
-    if (doLog) {Serial.printf("RIGHT received\r\n");}
+    if (doLog) {omote_log_d("RIGHT received\r\n");}
     keyboardBLE_write(BLE_KEY_RIGHT_ARROW);
 
   } else if (command == KEYBOARD_BLE_LEFT) {
-    if (doLog) {Serial.printf("LEFT received\r\n");}
+    if (doLog) {omote_log_d("LEFT received\r\n");}
     keyboardBLE_write(BLE_KEY_LEFT_ARROW);
 
   } else if (command == KEYBOARD_BLE_SELECT) {
-    if (doLog) {Serial.printf("SELECT received\r\n");}
+    if (doLog) {omote_log_d("SELECT received\r\n");}
     keyboardBLE_write(BLE_KEY_RETURN);
 
   } else if (command == KEYBOARD_BLE_SENDSTRING) {
-    if (doLog) {Serial.printf("SENDSTRING received\r\n");}
+    if (doLog) {omote_log_d("SENDSTRING received\r\n");}
     if (additionalPayload != "") {
       keyboardBLE_sendString(additionalPayload.c_str());
     }
@@ -107,19 +108,19 @@ void keyboard_ble_executeCommand(uint16_t command, std::string additionalPayload
 
 
   } else if (command == KEYBOARD_BLE_BACK) {
-    if (doLog) {Serial.printf("BACK received\r\n");}
+    if (doLog) {omote_log_d("BACK received\r\n");}
     // test which one works best for your device
     // keyboardBLE_write(KEY_ESC);
     consumerControlBLE_write(BLE_KEY_MEDIA_WWW_BACK);
 
   } else if (command == KEYBOARD_BLE_HOME) {
-    if (doLog) {Serial.printf("HOME received\r\n");}
+    if (doLog) {omote_log_d("HOME received\r\n");}
     // test which one works best for your device
     // keyboardBLE_home();
     consumerControlBLE_write(BLE_KEY_MEDIA_WWW_HOME);
 
   } else if (command == KEYBOARD_BLE_MENU) {
-    if (doLog) {Serial.printf("MENU received\r\n");}
+    if (doLog) {omote_log_d("MENU received\r\n");}
     keyboardBLE_write(0xED); // 0xDA + 13 = 0xED
 
 
@@ -128,49 +129,49 @@ void keyboard_ble_executeCommand(uint16_t command, std::string additionalPayload
   // https://github.com/espressif/arduino-esp32/blob/master/libraries/USB/src/USBHIDConsumerControl.h
   // https://github.com/adafruit/Adafruit_CircuitPython_HID/blob/main/adafruit_hid/consumer_control_code.py
   } else if (command == KEYBOARD_BLE_SCAN_PREVIOUS_TRACK) {
-    if (doLog) {Serial.printf("SCAN_PREVIOUS_TRACK received\r\n");}
+    if (doLog) {omote_log_d("SCAN_PREVIOUS_TRACK received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_PREVIOUS_TRACK);
 
   } else if (command == KEYBOARD_BLE_REWIND_LONG) {
-    if (doLog) {Serial.printf("REWIND_LONG received\r\n");}
+    if (doLog) {omote_log_d("REWIND_LONG received\r\n");}
     //keyboardBLE_longpress(KEY_LEFT_ARROW);
     consumerControlBLE_longpress(BLE_KEY_MEDIA_REWIND);
 
   } else if (command == KEYBOARD_BLE_REWIND) {
-    if (doLog) {Serial.printf("REWIND received\r\n");}
+    if (doLog) {omote_log_d("REWIND received\r\n");}
     //keyboardBLE_write(KEY_LEFT_ARROW);
     consumerControlBLE_write(BLE_KEY_MEDIA_REWIND);
 
   } else if (command == KEYBOARD_BLE_PLAYPAUSE) {
-    if (doLog) {Serial.printf("PLAYPAUSE received\r\n");}
+    if (doLog) {omote_log_d("PLAYPAUSE received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_PLAY_PAUSE);
 
   } else if (command == KEYBOARD_BLE_FASTFORWARD) {
-    if (doLog) {Serial.printf("FASTFORWARD received\r\n");}
+    if (doLog) {omote_log_d("FASTFORWARD received\r\n");}
     //keyboardBLE_write(KEY_RIGHT_ARROW);
     consumerControlBLE_write(BLE_KEY_MEDIA_FASTFORWARD);
 
   } else if (command == KEYBOARD_BLE_FASTFORWARD_LONG) {
-    if (doLog) {Serial.printf("FASTFORWARD_LONG received\r\n");}
+    if (doLog) {omote_log_d("FASTFORWARD_LONG received\r\n");}
     //keyboardBLE_longpress(KEY_RIGHT_ARROW);
     consumerControlBLE_longpress(BLE_KEY_MEDIA_FASTFORWARD);
 
   } else if (command == KEYBOARD_BLE_SCAN_NEXT_TRACK) {
-    if (doLog) {Serial.printf("SCAN_NEXT_TRACK received\r\n");}
+    if (doLog) {omote_log_d("SCAN_NEXT_TRACK received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_NEXT_TRACK);
 
 
 
   } else if (command == KEYBOARD_BLE_MUTE) {
-    if (doLog) {Serial.printf("MUTE received\r\n");}
+    if (doLog) {omote_log_d("MUTE received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_MUTE);
 
   } else if (command == KEYBOARD_BLE_VOLUME_INCREMENT) {
-    if (doLog) {Serial.printf("VOLUME_INCREMENT received\r\n");}
+    if (doLog) {omote_log_d("VOLUME_INCREMENT received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_VOLUME_UP);
 
   } else if (command == KEYBOARD_BLE_VOLUME_DECREMENT) {
-    if (doLog) {Serial.printf("VOLUME_DECREMENT received\r\n");}
+    if (doLog) {omote_log_d("VOLUME_DECREMENT received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_VOLUME_DOWN);
 
   }

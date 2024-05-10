@@ -5,6 +5,7 @@
 #include "applicationInternal/scenes/sceneRegistry.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/commandHandler.h"
+#include "applicationInternal/omote_log.h"
 #include "guis/gui_sceneSelection.h"
 #include "scenes/scene__default.h"
 
@@ -23,7 +24,7 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
 
   // --- do not switch scene, but show scene selection gui. From that on, we are in the main_gui_list. ----------------
   if (scene_name == scene_name_selection) {
-    Serial.println("scene: will show scene selection gui");
+    omote_log_d("scene: will show scene selection gui\r\n");
     showSpecificGUI(MAIN_GUI_LIST, tabName_sceneSelection);
     return;
   }
@@ -32,17 +33,17 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
   if ((scene_name == scene_gui_next) || (scene_name == scene_gui_prev)) {
     if (scene_name == scene_gui_prev) {
       if (gui_memoryOptimizer_getActiveTabID() == 0) {
-        Serial.println("scene: cannot navigate to prev gui, because there is none");
+        omote_log_d("scene: cannot navigate to prev gui, because there is none\r\n");
       } else {
-        Serial.println("scene: will navigate to prev gui");
+        omote_log_d("scene: will navigate to prev gui\r\n");
         setActiveTab(gui_memoryOptimizer_getActiveTabID() -1, LV_ANIM_ON, true);
       }
 
     } else if (scene_name == scene_gui_next) {
       if (!gui_memoryOptimizer_isTabIDInMemory(gui_memoryOptimizer_getActiveTabID() +1)) {
-        Serial.println("scene: cannot navigate to next gui, because there is none");
+        omote_log_d("scene: cannot navigate to next gui, because there is none\r\n");
       } else {
-        Serial.println("scene: will navigate to next gui");
+        omote_log_d("scene: will navigate to next gui\r\n");
         setActiveTab(gui_memoryOptimizer_getActiveTabID() +1, LV_ANIM_ON, true);
       }
 
@@ -54,10 +55,10 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
   if (scene_name == scene_back_to_previous_gui_list) {
     
     if (get_scene_has_gui_list(gui_memoryOptimizer_getActiveSceneName())) {
-      Serial.println("scene: will navigate back to last active gui from previous gui list");
+      omote_log_d("scene: will navigate back to last active gui from previous gui list\r\n");
       guis_doTabCreationForNavigateToLastActiveGUIofPreviousGUIlist();
     } else {
-      Serial.println("scene: cannot navigate back to last active gui from previous gui list, because no scene specific gui list was defined");
+      omote_log_d("scene: cannot navigate back to last active gui from previous gui list, because no scene specific gui list was defined\r\n");
     }
 
     return;
@@ -79,19 +80,19 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
 
   // check if we know the new scene
   if (!sceneExists(scene_name)) {
-    Serial.printf("scene: cannot start scene %s, because it is unknown\r\n", scene_name.c_str());
+    omote_log_w("scene: cannot start scene %s, because it is unknown\r\n", scene_name.c_str());
     return;
   } else {
-    Serial.printf("scene: will switch from old scene %s to new scene %s\r\n", gui_memoryOptimizer_getActiveSceneName().c_str(), scene_name.c_str());
+    omote_log_d("scene: will switch from old scene %s to new scene %s\r\n", gui_memoryOptimizer_getActiveSceneName().c_str(), scene_name.c_str());
   }
 
   // do not activate the same scene again, only when forced to do so (e.g. by long press on the gui or when selected by hardware key)
   bool callEndAndStartSequences;
   if ((scene_name == gui_memoryOptimizer_getActiveSceneName()) && ((isForcePayload != "FORCE") && (additionalPayload != "FORCE"))) {
-    Serial.printf("scene: will not start scene again, because it is already active\r\n");
+    omote_log_d("scene: will not start scene again, because it is already active\r\n");
     callEndAndStartSequences = false;
   } else if ((scene_name == gui_memoryOptimizer_getActiveSceneName()) && ((isForcePayload == "FORCE") || (additionalPayload == "FORCE"))) {
-    Serial.printf("scene: scene is already active, but FORCE was set, so start scene again\r\n");
+    omote_log_d("scene: scene is already active, but FORCE was set, so start scene again\r\n");
     callEndAndStartSequences = true;
   } else {
     // this is the default when switching to a different scene
@@ -104,18 +105,18 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
   if (callEndAndStartSequences) {
     // end old scene
     if (!sceneExists(gui_memoryOptimizer_getActiveSceneName()) && (gui_memoryOptimizer_getActiveSceneName() != "")) {
-      Serial.printf("scene: WARNING: cannot end scene %s, because it is unknown\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
+      omote_log_w("scene: WARNING: cannot end scene %s, because it is unknown\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
   
     } else {
       if (gui_memoryOptimizer_getActiveSceneName() != "") {
-        Serial.printf("scene: will call end sequence for scene %s\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
+        omote_log_d("scene: will call end sequence for scene %s\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
         scene_end_sequence_from_registry(gui_memoryOptimizer_getActiveSceneName());
       }
   
     }
 
     // start new scene
-    Serial.printf("scene: will call start sequence for scene %s\r\n", scene_name.c_str());
+    omote_log_d("scene: will call start sequence for scene %s\r\n", scene_name.c_str());
     scene_start_sequence_from_registry(scene_name);
   }
 
@@ -123,7 +124,7 @@ void handleScene(uint16_t command, commandData commandData, std::string addition
 
   if (SceneLabel != NULL) {lv_label_set_text(SceneLabel, gui_memoryOptimizer_getActiveSceneName().c_str());}
 
-  Serial.printf("scene: scene handling finished, new scene %s is active\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
+  omote_log_d("scene: scene handling finished, new scene %s is active\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
 
   guis_doTabCreationAfterGUIlistChanged(SCENE_GUI_LIST);
 }
@@ -135,7 +136,7 @@ void showSpecificGUI(GUIlists GUIlist, std::string GUIname) {
   int gui_list_index = -1;
   for (int i=0; i < gui_list_for_search->size(); i++) {
     if (gui_list_for_search->at(i) == GUIname) {
-      Serial.printf("showSpecificGUI: found GUI with name \"%s\" in %s at position %d\r\n", GUIname.c_str(), GUIlist == MAIN_GUI_LIST ? "\"main_gui_list\"" : "\"scene gui list\"", i);
+      omote_log_d("showSpecificGUI: found GUI with name \"%s\" in %s at position %d\r\n", GUIname.c_str(), GUIlist == MAIN_GUI_LIST ? "\"main_gui_list\"" : "\"scene gui list\"", i);
       gui_list_index = i;
       break;
     }
@@ -147,7 +148,7 @@ void showSpecificGUI(GUIlists GUIlist, std::string GUIname) {
 
   } else {
     // gui was not found
-    Serial.printf("showSpecificGUI: GUI with name \"%s\" was not found in gui list %s. Cannot navigate to that GUI\r\n", GUIname.c_str(), GUIlist == MAIN_GUI_LIST ? "\"main_gui_list\"" : "\"scene gui list\"");
+    omote_log_w("showSpecificGUI: GUI with name \"%s\" was not found in gui list %s. Cannot navigate to that GUI\r\n", GUIname.c_str(), GUIlist == MAIN_GUI_LIST ? "\"main_gui_list\"" : "\"scene gui list\"");
     return;
   }  
 }

@@ -3,6 +3,7 @@
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/gui/guiRegistry.h"
+#include "applicationInternal/omote_log.h"
 #include "guis/gui_irReceiver.h"
 
 lv_obj_t* menuBoxToggle;
@@ -40,7 +41,7 @@ void showMQTTmessage(std::string topic, std::string payload) {
 void printIRMessages(bool clearMessages = false) {
   if (!tabIsInMemory) {return;}
 
-  //Serial.println("");
+  omote_log_v("\r\n");
   int messagePosLoop;
   if (messageCount < maxCountMessages) {
     messagePosLoop = 0;
@@ -48,12 +49,12 @@ void printIRMessages(bool clearMessages = false) {
     messagePosLoop = messagePos;
   }
 
-  //Serial.printf("will start printing messages, beginning at position %d\r\n", messagePosLoop);
+  omote_log_v("will start printing messages, beginning at position %d\r\n", messagePosLoop);
   for (int i=0; i<maxCountMessages; i++) {
     if (clearMessages) {
       IRmessages[messagePosLoop] = "";
     }
-    //Serial.printf("will print at line %d the message at position %d: %s\r\n", i, messagePosLoop, IRmessages[messagePosLoop].c_str());
+    omote_log_v("will print at line %d the message at position %d: %s\r\n", i, messagePosLoop, IRmessages[messagePosLoop].c_str());
     lv_label_set_text(irReceivedMessage[i], IRmessages[messagePosLoop].c_str());
     messagePosLoop += 1;
     if (messagePosLoop == maxCountMessages) {
@@ -68,17 +69,17 @@ void printIRMessages(bool clearMessages = false) {
 void showNewIRmessage(std::string message) {
   setLastActivityTimestamp(); // Reset the sleep timer when a IR message is received
 
-  // Serial.printf("  new IR message received: %s\r\n", message.c_str());
+  omote_log_v("  new IR message received: %s\r\n", message.c_str());
   // const char *a = message.c_str();
   std::string messageStr;
   messageStr.append(message.c_str());
   // std::string aMessage = s(a);
   messageStr.erase(std::remove(messageStr.begin(), messageStr.end(), '\n'), messageStr.cend());
   
-  //Serial.printf(" will put message %s to list\r\n", messageStr.c_str());
+  omote_log_v(" will put message %s to list\r\n", messageStr.c_str());
   messageCount += 1;
   IRmessages[messagePos] = (std::to_string(messageCount) + ": " + messageStr).c_str();
-  //Serial.printf(" this is the message at position %d: %s\r\n", messagePos, IRmessages[messagePos].c_str());
+  omote_log_v(" this is the message at position %d: %s\r\n", messagePos, IRmessages[messagePos].c_str());
   messagePos += 1;
   if (messagePos == maxCountMessages) {
     messagePos = 0;  
@@ -90,13 +91,13 @@ void showNewIRmessage(std::string message) {
 static void IRReceiverOnSetting_event_cb(lv_event_t* e){
   set_irReceiverEnabled(lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED));
   if (get_irReceiverEnabled()) {
-    Serial.println("will turn on IR receiver");
+    omote_log_d("will turn on IR receiver\r\n");
     start_infraredReceiver();
     lv_obj_set_size(menuBoxMessages, lv_pct(100), boxHeightActivated);
     messageCount = 0;
     printIRMessages();
   } else {
-    Serial.println("will turn off IR receiver");
+    omote_log_d("will turn off IR receiver\r\n");
     shutdown_infraredReceiver();
     printIRMessages(true);
     messagePos = 0;

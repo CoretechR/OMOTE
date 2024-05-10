@@ -6,6 +6,7 @@
 #include "applicationInternal/commandHandler.h"
 #include "applicationInternal/scenes/sceneHandler.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
+#include "applicationInternal/omote_log.h"
 #include "devices/misc/device_specialCommands.h"
 // show WiFi status
 #include "applicationInternal/gui/guiBase.h"
@@ -179,7 +180,7 @@ std::string convertStringListToString(std::list<std::string> listOfStrings) {
 void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload = "") {
   switch (commandData.commandHandler) {
     case IR: {
-      // Serial.printf("  generic IR, payloads %s\r\n", convertStringListToString(commandData.commandPayloads).c_str());
+      omote_log_v("  generic IR, payloads %s\r\n", convertStringListToString(commandData.commandPayloads).c_str());
 
       // we received a comma separated list of strings
       // the first string is the IR protocol, the second is the payload to be sent
@@ -187,7 +188,7 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       // get protocol and erase first element in list
       std::string protocol = *it;
       it = commandData.commandPayloads.erase(it);
-      // Serial.printf("  protocol %s, payload %s\r\n", protocol.c_str(), convertStringListToString(commandData.commandPayloads).c_str());
+      omote_log_v("  protocol %s, payload %s\r\n", protocol.c_str(), convertStringListToString(commandData.commandPayloads).c_str());
       
       sendIRcode((IRprotocols)std::stoi(protocol), commandData.commandPayloads, additionalPayload);
       break;
@@ -204,7 +205,7 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       } else {
         payload = additionalPayload;
       }
-      Serial.printf("execute: will send MQTT, topic '%s', payload '%s'\r\n", topic.c_str(), payload.c_str());
+      omote_log_d("execute: will send MQTT, topic '%s', payload '%s'\r\n", topic.c_str(), payload.c_str());
       publishMQTTMessage(topic.c_str(), payload.c_str());
       break;
     }
@@ -219,7 +220,7 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       if (additionalPayload != "") {
         payload = additionalPayload;
       }
-      Serial.printf("execute: will send BLE keyboard command, command '%u', payload '%s'\r\n", command, payload.c_str());
+      omote_log_d("execute: will send BLE keyboard command, command '%u', payload '%s'\r\n", command, payload.c_str());
       keyboard_ble_executeCommand(command, payload);
       break;
     }
@@ -227,14 +228,14 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
 
     case SCENE: {
       // let the sceneHandler do the scene stuff
-      Serial.printf("execute: will send scene command to the sceneHandler\r\n");
+      omote_log_d("execute: will send scene command to the sceneHandler\r\n");
       handleScene(command, commandData, additionalPayload);
       break;
     }
     
     case GUI: {
       // let the sceneHandler find and show the gui
-      Serial.printf("execute: will send gui command to the sceneHandler\r\n");
+      omote_log_d("execute: will send gui command to the sceneHandler\r\n");
       handleGUI(command, commandData, additionalPayload);
       break;
     }
@@ -242,7 +243,7 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
     case SPECIAL: {
       if (command == MY_SPECIAL_COMMAND) {
         // do your special command here
-        Serial.printf("execute: could execute a special command here, if you define one\r\n");
+        omote_log_d("execute: could execute a special command here, if you define one\r\n");
 
       }
       break;
@@ -253,14 +254,14 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
 void executeCommand(uint16_t command, std::string additionalPayload) {
   try {
     if (commands.count(command) > 0) {
-      Serial.printf("command: will execute command '%u' with additionalPayload '%s'\r\n", command, additionalPayload.c_str());
+      omote_log_d("command: will execute command '%u' with additionalPayload '%s'\r\n", command, additionalPayload.c_str());
       executeCommandWithData(command, commands.at(command), additionalPayload);
     } else {
-      Serial.printf("command: command '%u' not found\r\n", command);
+      omote_log_w("command: command '%u' not found\r\n", command);
     }
   }
   catch (const std::out_of_range& oor) {
-    Serial.printf("executeCommand: internal error, command not registered\r\n");
+    omote_log_e("executeCommand: internal error, command not registered\r\n");
   }
 }
 

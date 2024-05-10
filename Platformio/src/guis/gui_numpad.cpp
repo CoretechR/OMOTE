@@ -2,6 +2,7 @@
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/gui/guiRegistry.h"
+#include "applicationInternal/omote_log.h"
 #include "guis/gui_numpad.h"
 
 #include "applicationInternal/commandHandler.h"
@@ -29,7 +30,7 @@ static void virtualKeypad_event_cb(lv_event_t* e) {
     std::string numberStr = std::to_string(number);
     executeCommand(KEYBOARD_SENDSTRING, numberStr);
   } else {
-    Serial.printf("gui_numpad: no known scene is active, don't know what to do with user_data %d\r\n", user_data);
+    omote_log_w("gui_numpad: no known scene is active, don't know what to do with user_data %d\r\n", user_data);
   }
 }
 
