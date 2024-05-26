@@ -25,7 +25,7 @@ void update_userled();
 
 // --- battery ----------------------------------------------------------------
 void init_battery(void);
-void get_battery_status(int *battery_voltage, int *battery_percentage);
+void get_battery_status(int *battery_voltage, int *battery_percentage, bool *battery_ischarging);
 
 // --- sleep / IMU ------------------------------------------------------------
 void init_sleep();

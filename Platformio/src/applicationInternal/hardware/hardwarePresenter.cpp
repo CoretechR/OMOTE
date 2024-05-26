@@ -63,8 +63,8 @@ void update_userled() {
 void init_battery(void) {
   init_battery_HAL();
 }
-void get_battery_status(int *battery_voltage, int *battery_percentage) {
-  get_battery_status_HAL(battery_voltage, battery_percentage);
+void get_battery_status(int *battery_voltage, int *battery_percentage, bool *battery_ischarging) {
+  get_battery_status_HAL(battery_voltage, battery_percentage, battery_ischarging);
 }
 
 // --- sleep / IMU ------------------------------------------------------------
