@@ -238,6 +238,10 @@ uint32_t get_sleepTimeout_HAL() {
 }
 void set_sleepTimeout_HAL(uint32_t aSleepTimeout) {
   sleepTimeout = aSleepTimeout;
+  // For reason unknown, some users reported sleepTimeout was set to 0. In this case device would immediately go to sleep. Prevent this.
+  if (sleepTimeout == 0) {
+    sleepTimeout = DEFAULT_SLEEP_TIMEOUT;
+  }
 }
 bool get_wakeupByIMUEnabled_HAL() {
   return wakeupByIMUEnabled;
