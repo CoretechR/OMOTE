@@ -77,10 +77,6 @@ TS_Point touchPoint;
 TS_Point oldPoint;
 int backlight_brightness = 255;
 
-// LVGL declarations
-static lv_disp_draw_buf_t draw_buf;
-static lv_color_t bufA[ screenWidth * screenHeight / 10 ];
-static lv_color_t bufB[ screenWidth * screenHeight / 10 ];
 lv_obj_t* objBattPercentage;
 lv_obj_t* objBattIcon;
 lv_obj_t* panel;
@@ -139,30 +135,30 @@ char keysWorking[ROWS][COLS] = {
 static void store_scroll_value_event_cb(lv_event_t* e){
   float bias = (150.0 + 8.0) / 240.0;
   int offset = 240 / 2 - 150 / 2 - 8 - 50 - 3;
-  lv_obj_t* screen = lv_event_get_target(e);
+  lv_obj_t* screen = (lv_obj_t*)lv_event_get_current_target(e);
   lv_obj_scroll_to_x(panel, lv_obj_get_scroll_x(screen) * bias - offset, LV_ANIM_OFF);
 }
 
 // Wakeup by IMU Switch Event handler
 static void WakeEnableSetting_event_cb(lv_event_t * e){
-  wakeupByIMUEnabled = lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED);
+  wakeupByIMUEnabled = lv_obj_has_state((lv_obj_t*)lv_event_get_target(e), LV_STATE_CHECKED);
 }
 
 // Display flushing
-void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p ){
-  uint32_t w = ( area->x2 - area->x1 + 1 );
-  uint32_t h = ( area->y2 - area->y1 + 1 );
+static void my_disp_flush( lv_display_t *disp, const lv_area_t *area, uint8_t *px_map ) {
+  uint32_t w = (area->x2 - area->x1 + 1);
+  uint32_t h = (area->y2 - area->y1 + 1);
 
   tft.startWrite();
-  tft.setAddrWindow( area->x1, area->y1, w, h );
-  tft.pushPixelsDMA( ( uint16_t * )&color_p->full, w * h);
+  tft.setAddrWindow(area->x1, area->y1, w, h);
+  tft.pushPixelsDMA((uint16_t*)px_map, w * h);
   tft.endWrite();
 
-  lv_disp_flush_ready( disp );
+  lv_display_flush_ready(disp);
 }
 
 // Read the touchpad
-void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data){
+static void my_touchpad_read(lv_indev_t *indev_driver, lv_indev_data_t *data) {
   // int16_t touchX, touchY;
   touchPoint = touch.getPoint();
   int16_t touchX = touchPoint.x;
@@ -174,10 +170,10 @@ void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data){
   }
 
   if( !touched ){
-    data->state = LV_INDEV_STATE_REL;
+    data->state = LV_INDEV_STATE_RELEASED;
   }
   else{
-    data->state = LV_INDEV_STATE_PR;
+    data->state = LV_INDEV_STATE_PRESSED;
 
     // Set the coordinates
     data->point.x = screenWidth - touchX;
@@ -347,6 +343,10 @@ void WiFiEvent(WiFiEvent_t event){
 }
 #endif
 
+static uint32_t my_tick_get_cb(void) {
+  return millis();
+}
+
 // Setup ----------------------------------------------------------------------------------------------------------------------------------
 
 int FuelGaugeInitSuccessful;
@@ -457,28 +457,34 @@ void setup() {
   
   // Setup LVGL
   lv_init();
-  lv_disp_draw_buf_init( &draw_buf, bufA, bufB, screenWidth * screenHeight / 10 );
 
-  // Initialize the display driver
-  static lv_disp_drv_t disp_drv;
-  lv_disp_drv_init( &disp_drv );
-  disp_drv.hor_res = screenWidth;
-  disp_drv.ver_res = screenHeight;
-  disp_drv.flush_cb = my_disp_flush;
-  disp_drv.draw_buf = &draw_buf;
-  lv_disp_drv_register( &disp_drv );
+  // new in lvgl 9
+  lv_tick_set_cb(my_tick_get_cb);
+  
+  /*LVGL draw into this buffer, 1/10 screen size usually works well. The size is in bytes*/
+  #define DRAW_BUF_SIZE (screenWidth * screenHeight / 10 * (LV_COLOR_DEPTH / 8))
+
+  // https://github.com/lvgl/lvgl/blob/release/v9.0/docs/CHANGELOG.rst#display-api
+  // https://docs.lvgl.io/master/get-started/quick-overview.html#add-lvgl-into-your-project
+  lv_display_t *disp = lv_display_create(screenWidth, screenHeight);
+  lv_display_set_flush_cb(disp, my_disp_flush);
+
+  // https://github.com/lvgl/lvgl/blob/release/v9.0/docs/CHANGELOG.rst#migration-guide
+  // lv_display_set_buffers(display, buf1, buf2, buf_size_byte, mode) is more or less the equivalent of lv_disp_draw_buf_init(&draw_buf_dsc, buf1, buf2, buf_size_px) from v8, however in v9 the buffer size is set in bytes.
+  uint8_t *bufA = (uint8_t *) malloc(DRAW_BUF_SIZE);
+  uint8_t *bufB = (uint8_t *) malloc(DRAW_BUF_SIZE);
+  lv_display_set_buffers(disp, bufA, bufB, DRAW_BUF_SIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
   // Initialize the touchscreen driver
-  static lv_indev_drv_t indev_drv;
-  lv_indev_drv_init( &indev_drv );
-  indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = my_touchpad_read;
-  lv_indev_drv_register( &indev_drv );
+  // https://github.com/lvgl/lvgl/blob/release/v9.0/docs/CHANGELOG.rst#indev-api
+  static lv_indev_t * indev = lv_indev_create();
+  lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+  lv_indev_set_read_cb(indev, my_touchpad_read);
 
   // --- LVGL UI Configuration ---  
   
   // Set the background color
-  lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), LV_PART_MAIN);
+  lv_obj_set_style_bg_color(lv_screen_active(), lv_color_black(), LV_PART_MAIN);
 
 
 
@@ -486,10 +492,10 @@ void setup() {
   // With a flex layout, setting groups/boxes will position themselves automatically
   
 
-  ChecksTable = lv_table_create(lv_scr_act());
-  lv_table_set_col_width(ChecksTable, 0, 140);
-  lv_table_set_col_width(ChecksTable, 1, 60);
-  lv_table_set_col_cnt(ChecksTable, 2);
+  ChecksTable = lv_table_create(lv_screen_active());
+  lv_table_set_column_width(ChecksTable, 0, 140);
+  lv_table_set_column_width(ChecksTable, 1, 60);
+  lv_table_set_column_count(ChecksTable, 2);
   lv_obj_remove_style(ChecksTable, NULL, LV_PART_ITEMS | LV_STATE_PRESSED);
 
   lv_table_set_cell_value_fmt(ChecksTable, 0, 0, "IR LED");
