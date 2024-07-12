@@ -56,11 +56,11 @@ For details, please see the [wiki for the software simulator for fast creating a
 
 ### Building the hardware
 
-The central component of OMOTE is its PCB. If you want to build the PCB yourself, you will need SMT-reflow tools like a hot plate or a hot-air station. The 2-layered board and a solder paste stencil can be ordered from any PCB manufacturer using the [KiCad files](https://github.com/CoretechR/OMOTE/tree/main/PCB). Manufacturers like OSHPARK or Aisler will accept these files directly. For JLCPCB or PCBWay, you can use their plugin to export the optimized Gerber files. A [zip archive](https://github.com/CoretechR/OMOTE/blob/main/PCB/production/gerber.zip) with theses Gerber files is also included in this repository.
+The central component of OMOTE is its PCB. If you want to build the PCB yourself, you will need SMT-reflow tools like a hot plate or a hot-air station. The 2-layered board and a solder paste stencil can be ordered from any PCB manufacturer using the [KiCad files](https://github.com/CoretechR/OMOTE/tree/main/PCB). Manufacturers like OSHPARK or Aisler will accept these files directly. For JLCPCB or PCBWay, you can use their plugin to export the optimized Gerber files. A [zip archive](https://github.com/CoretechR/OMOTE/blob/main/PCB/production/gerber.zip) with theses Gerber files is also included in this repository. You can also choose to order assembled PCBs from JLCPCB using the [instructions](https://github.com/CoretechR/OMOTE/wiki/How-to-order-assembled-PCBs) in the Wiki.
 
-I sourced the electrical parts from LCSC, but most of them should be available from the usual suppliers like Digikey or Mouser as well. You can check out the [BOM](https://github.com/CoretechR/OMOTE/blob/main/PCB/BOM.csv) for all the necessary components.
+The electrical components can be sourced from LCSC, but most of them should be available from the usual suppliers like Digikey or Mouser as well. You can check out the [BOM](https://github.com/CoretechR/OMOTE/blob/main/PCB/BOM.csv) for all the necessary components.
 
-The project uses a 2000mAh Li-Ion battery with a JST-PHR-2 connector. Any 3.7V Li-Ion battery that fits into the 50x34x10mm dimensions should work alright. Please ***make sure to choose a battery with integrated undervoltage protection*** (usually visible as a small PCB under Kapton tape between the battery cables).
+The project uses a 2000mAh Li-Ion battery with a JST-PHR-2 connector. Any 3.7V Li-Ion battery that fits into the 50x34x10mm dimensions should work alright. Board revision 4 includes battery protection features agains overcurrent and undervoltage. It cannot hurt to use a battery with integrated protection anyway (usually visible as a small PCB under Kapton tape between the battery cables).
 
 The 2.8" capacitive touchscreen can be sourced from Adafruit ([2770](https://www.adafruit.com/product/2770)). If you look for the part number CH280QV10-CT, you can also buy this display directly from the manufacturer via [Alibaba](https://www.alibaba.com/product-detail/High-Quality-240-3-rgb-320_1600408828330.html). Shipping from China is expensive, so this only makes sense if you order multiple displays. In general, the cost for a single OMOTE is quite high. Check out the buy-sell page on the [Discord](https://discord.com/channels/1138116475559882852/1153343867681243279) to see if you can share the cost of the PCBs and components with others.
 
@@ -68,7 +68,7 @@ The 2.8" capacitive touchscreen can be sourced from Adafruit ([2770](https://www
   <img src="images/OMOTE_parts.jpg" width="80%">
 </div>
 
-The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can be printed using PLA or PETG. I sliced the models with PrusaSlicer with a layer height of 0.25mm and printed them using ColorFabb PETG. It is important that the case part is printed with its flat side towards the print bed using lots of support structures. If your printer is well calibrated, the cover plate will snap onto the case.
+The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can be printed using PLA or PETG. The parts from the project photos were sliced with PrusaSlicer with a layer height of 0.25mm and printed using ColorFabb PETG. It is important that the case part is printed with its flat side towards the print bed using lots of support structures. If your printer is well calibrated, the cover plate will snap onto the case.
 
 ### To Dos for software
 
