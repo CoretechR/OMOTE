@@ -15,7 +15,7 @@
 #include <Adafruit_FT6206.h>
 #include "driver/ledc.h"
 #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
-#include <secrets.h>
+#include "secrets.h"
 
 #define ENABLE_WIFI // Comment out to diable connected features
 
