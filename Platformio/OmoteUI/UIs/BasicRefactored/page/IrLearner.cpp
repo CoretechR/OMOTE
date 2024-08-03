@@ -10,18 +10,42 @@ IrLearner::IrLearner() : IrLearner(HardwareFactory::getAbstract().ir()){};
 IrLearner::IrLearner(std::shared_ptr<IRInterface> aIr)
     : Base(ID::Pages::IrLearner), mIr(aIr),
       mIRReceiver(mIr->IRRecievedNotification()),
-      mReceivedLabel(AddNewElement<Widget::Label>("Waiting For Rx")),
- mRxEnable(AddNewElement<Widget::Button>([this] {}))
-{
+      mRxStatusLabel(AddNewElement<Widget::Label>("Rx Status")),
+      mRxEnable(AddNewElement<Widget::Button>([this] { EnableRx(); })),
+      mRxDisable(AddNewElement<Widget::Button>([this] { DisableRx(); })),
+      mClearLog(AddNewElement<Widget::Button>([this] { ClearRxLog(); })),
+      mRxLog(AddNewElement<Widget::Label>(WaitingForRxStr)) {
 
-  mIRReceiver = [this](auto rawIrData) {
+  mIRReceiver = [this](auto rawIrData, auto humanReadableInfo) {
     mLastCaptured = rawIrData;
     mNumCaptured++;
-    mReceivedLabel->SetText("Got Rx!! #: " + std::to_string(mNumCaptured));
+
+    auto log =
+        "#: " + std::to_string(mNumCaptured) + "\n" + humanReadableInfo + "\n";
+
+    AddRxToLog(log);
     mHasData = true;
   };
 
-  mReceivedLabel->AlignTo(this, LV_ALIGN_TOP_MID);
+  mRxStatusLabel->SetHeight(lv_pct(10));
+
+  for (auto button : {mRxDisable, mRxEnable, mClearLog}) {
+    button->SetHeight(lv_pct(10));
+    button->SetWidth(lv_pct(80));
+  }
+
+  mRxEnable->SetText("ENABLE RX");
+  mRxDisable->SetText("DISABLE RX");
+  mClearLog->SetText("Clear Log");
+
+  mRxEnable->AlignTo(mRxStatusLabel, LV_ALIGN_OUT_BOTTOM_MID, 0,
+                     distBetweenRxButtons);
+  mRxDisable->AlignTo(mRxEnable, LV_ALIGN_OUT_BOTTOM_MID, 0,
+                      distBetweenRxButtons);
+  mClearLog->AlignTo(mRxDisable, LV_ALIGN_OUT_BOTTOM_MID, 0,
+                     distBetweenRxButtons);
+  mRxLog->AlignTo(mClearLog, LV_ALIGN_OUT_BOTTOM_MID, 0, distBetweenRxButtons);
+  mRxLog->SetHeight(LV_SIZE_CONTENT);
 }
 
 IrLearner::~IrLearner() { mIr->disableRx(); }
@@ -42,12 +66,10 @@ bool IrLearner::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
       mIr->send(IRInterface::constInt64SendTypes::Samsung36, 0x400E00FF);
       break;
     case id::Aux2:
-      mIr->enableRx();
-      mReceivedLabel->SetText("Enabled RX");
+      EnableRx();
       break;
     case id::Aux3:
-      mIr->disableRx();
-      mReceivedLabel->SetText("Disabled Rx");
+      DisableRx();
       break;
     case id::Aux4:
       mIr->calibrateTx();
@@ -57,4 +79,24 @@ bool IrLearner::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
   }
   SetBgColor(Color::GREY);
   return true;
+}
+
+void IrLearner::EnableRx() {
+  mIr->enableRx();
+  mRxStatusLabel->SetText("Enabled RX");
+}
+
+void IrLearner::DisableRx() {
+  mIr->disableRx();
+  mRxStatusLabel->SetText("Disabled Rx");
+}
+
+void IrLearner::ClearRxLog() {
+  mRxLogStr.clear();
+  mRxLog->SetText(WaitingForRxStr);
+}
+
+void IrLearner::AddRxToLog(std::string aLogEntry) {
+  mRxLogStr += aLogEntry;
+  mRxLog->SetText(mRxLogStr);
 }
