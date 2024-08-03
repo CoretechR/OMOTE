@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <Preferences.h>
 
+#include "omoteconfig.h"
+
 std::shared_ptr<wifiHandler> wifiHandler::mInstance = nullptr;
 std::shared_ptr<wifiHandler> wifiHandler::getInstance() {
   if (mInstance) {
@@ -52,41 +54,27 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t aEventInfo) {
   Serial.println(WiFi.status());
 }
 
-bool wifiHandler::isAvailable() { return true; }
-std::shared_ptr<wifiHandler> wifiHandler::getInstance() {
-  if (mInstance) {
-    return mInstance;
-  }
-  mInstance = std::shared_ptr<wifiHandler>(new wifiHandler());
-  return mInstance;
-};
-
-wifiHandler::wifiHandler() {
-  this->password = "";
-  this->SSID = "";
-}
-
-void wifiHandler::update_status() {
+void wifiHandler::UpdateStatus() {
   Serial.println("update_status");
-  std::shared_ptr<wifiStatus> status =
-      std::make_shared<wifiStatus>(wifiStatus());
+
+  wifiStatus status;
   // wifiStatus *status = new wifiStatus();
-  status->isConnected = WiFi.isConnected();
+  status.isConnected = WiFi.isConnected();
   // status->IP = WiFi.localIP();
   IPAddress ip = WiFi.localIP();
   String ip_str = ip.toString();
-  status->IP = ip.toString().c_str();
+  status.IP = ip.toString().c_str();
 
   // ip.copy(status->IP, ip.length());
   String ssid = WiFi.SSID();
-  status->ssid = WiFi.SSID().c_str();
+  status.ssid = WiFi.SSID().c_str();
 
   // this->wifi_status.isConnected = WiFi.isConnected();
   // this->wifi_status.IP = WiFi.localIP();
   // this->wifi_status.isConnected = true;
 
   // Serial.println(WiFi.localIP());
-  this->status_update.notify(status);
+  mStatusUpdate->notify(status);
 }
 
 void wifiHandler::StoreCredentials() {

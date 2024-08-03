@@ -15,7 +15,6 @@ public:
   void connect(std::string ssid, std::string password) override;
   wifiStatus GetStatus() override { return mCurrentStatus; };
 
-  static constexpr auto MQTT_CLIENT_NAME = "OMOTE_SIM";
   void setupMqttBroker(std::string aBrokerIpAddress, int aPort = 1883) override;
   void mqttSend(std::string aTopic, std::string aMessage) override;
 

@@ -15,9 +15,14 @@ public:
   void scan() override;
   void connect(std::string ssid, std::string password) override;
   wifiStatus GetStatus() override { return mCurrentStatus; };
+
   //
 
 protected:
+  // MQTT Interface
+  void setupMqttBroker(std::string aBrokerIpAddress, int aPort) override;
+  void mqttSend(std::string aTopic, std::string aMessage) override;
+
   wifiHandler() = default;
   static std::shared_ptr<wifiHandler> mInstance;
 
@@ -39,6 +44,9 @@ private:
    */
   void UpdateStatus();
   wifiStatus mCurrentStatus;
+
+  WiFiClient mWifiClient;
+  PubSubClient mMqttClient;
 
   /**
    * @brief Variables used to track wifi connection attempts
