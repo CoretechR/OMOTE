@@ -1,4 +1,5 @@
 #include "IrLearner.hpp"
+#include "Button.hpp"
 #include "HardwareFactory.hpp"
 #include "Label.hpp"
 
@@ -9,8 +10,9 @@ IrLearner::IrLearner() : IrLearner(HardwareFactory::getAbstract().ir()){};
 IrLearner::IrLearner(std::shared_ptr<IRInterface> aIr)
     : Base(ID::Pages::IrLearner), mIr(aIr),
       mIRReceiver(mIr->IRRecievedNotification()),
-      mReceivedLabel(AddElement<Widget::Label>(
-          std::make_unique<Widget::Label>("Waiting For Rx"))) {
+      mReceivedLabel(AddNewElement<Widget::Label>("Waiting For Rx")),
+ mRxEnable(AddNewElement<Widget::Button>([this] {}))
+{
 
   mIRReceiver = [this](auto rawIrData) {
     mLastCaptured = rawIrData;
@@ -18,6 +20,8 @@ IrLearner::IrLearner(std::shared_ptr<IRInterface> aIr)
     mReceivedLabel->SetText("Got Rx!! #: " + std::to_string(mNumCaptured));
     mHasData = true;
   };
+
+  mReceivedLabel->AlignTo(this, LV_ALIGN_TOP_MID);
 }
 
 IrLearner::~IrLearner() { mIr->disableRx(); }

@@ -8,8 +8,7 @@ using namespace UI::Screen;
 
 HomeScreen::HomeScreen()
     : Base(UI::ID::Screens::Home),
-      mTabView(AddElement<Page::TabView>(
-          std::make_unique<Page::TabView>(ID(ID::Pages::INVALID_PAGE_ID)))) {
+      mTabView(AddNewElement<Page::TabView>(ID(ID::Pages::INVALID_PAGE_ID))) {
 
   SetBgColor(UI::Color::BLACK);
   SetPushAnimation(LV_SCR_LOAD_ANIM_FADE_IN);

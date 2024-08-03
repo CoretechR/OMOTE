@@ -11,10 +11,8 @@ WifiSettings::WifiSettings(std::shared_ptr<wifiHandlerInterface> aWifi)
     : Base(ID::Pages::WifiSettings), mWifi(aWifi),
       mScanCompleteHandler(mWifi->ScanCompleteNotification()),
       mScanStatusHandler(mWifi->WifiStatusNotification()),
-      mScanningText(AddElement<Widget::Label>(
-          std::make_unique<Widget::Label>("Scanning..."))),
-      mWifiNetworks(AddElement<Widget::List>(std::make_unique<Widget::List>())),
-      mPasswordGetter(nullptr) {
+      mScanningText(AddNewElement<Widget::Label>("Scanning...")),
+      mWifiNetworks(AddNewElement<Widget::List>()), mPasswordGetter(nullptr) {
 
   // Set Handler for when the wifi scan is done
   mScanCompleteHandler = [this](auto aWifiInfos) {
@@ -54,7 +52,7 @@ void WifiSettings::OpenPasswordKeyboard(WifiInfo aNetworkToConnectTo) {
     RemoveElement(mPasswordGetter);
     mPasswordGetter = nullptr;
   });
-  mPasswordGetter = AddElement<Widget::Keyboard>(std::move(keyboard));
+  mPasswordGetter = AddElement(std::move(keyboard));
 }
 
 void WifiSettings::StartHandlingStatusUpdates() {

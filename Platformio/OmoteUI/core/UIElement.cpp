@@ -1,5 +1,4 @@
 #include "UIElement.hpp"
-#include "LvglResourceManager.hpp"
 
 namespace UI {
 UIElement::UIElement(lv_obj_t *aLvglSelf, ID aId)
@@ -32,17 +31,6 @@ UIElement *UIElement::GetParent() {
     }
   }
   return nullptr;
-}
-
-UIElement *UIElement::AddElement(UIElement::Ptr anUIElement) {
-  auto lock = LvglResourceManager::GetInstance().scopeLock();
-  lv_obj_set_parent(anUIElement->mLvglSelf, mLvglSelf);
-  anUIElement->OnAdded(this);
-  if (IsVisible() && anUIElement->IsSetVisible()) {
-    anUIElement->OnShow();
-  }
-  mContainedElements.push_back(std::move(anUIElement));
-  return mContainedElements[mContainedElements.size() - 1].get();
 }
 
 UIElement::Ptr UIElement::RemoveElement(UIElement *anElementRef) {

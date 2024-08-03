@@ -6,12 +6,12 @@ using namespace UI::Widget;
 
 BrightnessSlider::BrightnessSlider(std::shared_ptr<DisplayAbstract> aDisplay)
     : Base(ID::Widgets::BrightnessSlider), mDisplay(aDisplay),
-      mSlider(AddElement<Widget::Slider>(std::make_unique<Slider>(
+      mSlider(AddNewElement<Widget::Slider>(
           [this](auto aNewBrightness) {
             mDisplay->setBrightness(aNewBrightness);
           },
-          0, 255))),
-      mLabel(AddElement<Widget::Label>(std::make_unique<Label>("Brightness"))) {
+          0, 255)),
+      mLabel(AddNewElement<Widget::Label>("Brightness")) {
   mLabel->AlignTo(this, LV_ALIGN_TOP_MID);
   mSlider->AlignTo(mLabel, LV_ALIGN_OUT_BOTTOM_MID);
   mSlider->SetWidth(GetContentWidth() - GetContentWidth() * 0.25f);

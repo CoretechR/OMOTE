@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BorderOutlinePadding.hpp"
+#include "LvglResourceManager.hpp"
 #include "TextStyle.hpp"
 #include "UIElementIds.hpp"
 #include <lvgl.h>
@@ -68,8 +69,11 @@ public:
                             lv_style_selector_t aStyle = LV_PART_MAIN);
   TextStyle GetTextStyle(lv_style_selector_t aStyle = LV_PART_MAIN);
 
-  UIElement *AddElement(UIElement::Ptr anElement);
-  template <class UIElemTy> UIElemTy *AddElement(UIElement::Ptr aWidget);
+  template <class UIElemTy>
+  UIElemTy *AddElement(std::unique_ptr<UIElemTy> aWidget);
+
+  template <class UIElemTy, class... ElemArgs>
+  UIElemTy *AddNewElement(ElemArgs &&...aElemArgs);
 
   UIElement::Ptr RemoveElement(UIElement *aUIElementRef);
 
@@ -169,8 +173,22 @@ UIElemTy UIElement::GetElement(lv_obj_t *aLvglObject) {
 }
 
 template <class UIElemTy>
-UIElemTy *UIElement::AddElement(UIElement::Ptr anElement) {
-  return static_cast<UIElemTy *>(AddElement(std::move(anElement)));
+UIElemTy *UIElement::AddElement(std::unique_ptr<UIElemTy> anElement) {
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
+  lv_obj_set_parent(anElement->mLvglSelf, mLvglSelf);
+  anElement->OnAdded(this);
+  if (IsVisible() && anElement->IsSetVisible()) {
+    static_cast<UIElement *>(anElement.get())->OnShow();
+  }
+  auto retval = anElement.get();
+  mContainedElements.push_back(std::move(anElement));
+  return retval;
+}
+
+template <class UIElemTy, class... ElemArgs>
+UIElemTy *UIElement::AddNewElement(ElemArgs &&...elemArgs) {
+  return static_cast<UIElemTy *>(AddElement(
+      std::make_unique<UIElemTy>(std::forward<ElemArgs>(elemArgs)...)));
 }
 
 } // namespace UI

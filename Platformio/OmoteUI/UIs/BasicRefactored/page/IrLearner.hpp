@@ -2,10 +2,10 @@
 #include "IRInterface.hpp"
 #include "Notification.hpp"
 #include "PageBase.hpp"
-
 namespace UI::Widget {
 class Label;
-}
+class Button;
+} // namespace UI::Widget
 
 namespace UI::Page {
 
@@ -25,6 +25,8 @@ private:
   int mNumCaptured = 0;
 
   Widget::Label *mReceivedLabel;
+  Widget::Button *mRxEnable;
+  Widget::Button *mRxDisable;
 };
 
 } // namespace UI::Page

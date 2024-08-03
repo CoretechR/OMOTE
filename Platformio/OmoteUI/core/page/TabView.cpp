@@ -6,7 +6,7 @@ using namespace UI::Page;
 
 Tab::Tab(lv_obj_t *aTab, Base::Ptr aContent) :
   Base(aTab, aContent->GetID()),
-  mContent(AddElement<Base>(std::move(aContent))) {}
+  mContent(AddElement(std::move(aContent))) {}
 
 /////////////////////TabView/////////////////////////////////////
 

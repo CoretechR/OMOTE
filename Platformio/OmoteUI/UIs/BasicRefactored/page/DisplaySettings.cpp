@@ -6,8 +6,7 @@ using namespace UI::Page;
 
 DisplaySettings::DisplaySettings(std::shared_ptr<DisplayAbstract> aDisplay)
     : Base(UI::ID::Pages::DisplaySettings), mDisplay(aDisplay),
-      mBrightnessSlider(AddElement<Widget::BrightnessSlider>(
-          std::make_unique<Widget::BrightnessSlider>(mDisplay))) {
+      mBrightnessSlider(AddNewElement<Widget::BrightnessSlider>(mDisplay)) {
   SetBgColor(Color::GREY);
 
   mBrightnessSlider->SetWidth(GetContentWidth());

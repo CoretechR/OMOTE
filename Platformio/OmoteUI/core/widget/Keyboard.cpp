@@ -8,10 +8,10 @@ using namespace UI::Widget;
 Keyboard::Keyboard(std::function<void(std::string)> aOnUserCompletedTextEntry,
                    std::string aPrompt)
     : Base(ID::Widgets::Keyboard),
-      mKeyboard(AddElement<Base>(std::make_unique<Base>(
-          lv_keyboard_create(LvglSelf()), ID::Widgets::INVALID_WIDGET_ID))),
-      mTextArea(AddElement<Base>(std::make_unique<Base>(
-          lv_textarea_create(LvglSelf()), ID::Widgets::INVALID_WIDGET_ID))),
+      mKeyboard(AddNewElement<Base>(lv_keyboard_create(LvglSelf()),
+                                    ID::Widgets::INVALID_WIDGET_ID)),
+      mTextArea(AddNewElement<Base>(lv_textarea_create(LvglSelf()),
+                                    ID::Widgets::INVALID_WIDGET_ID)),
       mOnUserCompleteTextEntry(aOnUserCompletedTextEntry) {
   lv_keyboard_set_textarea(mKeyboard->LvglSelf(), mTextArea->LvglSelf());
   if (!aPrompt.empty()) {

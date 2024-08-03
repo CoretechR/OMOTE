@@ -15,8 +15,7 @@ using namespace UI::Page;
 using namespace UI::Color;
 
 SettingsPage::SettingsPage()
-    : Base(ID::Pages::Settings), mSettingsList(AddElement<Widget::List>(
-                                     std::make_unique<Widget::List>())) {
+    : Base(ID::Pages::Settings), mSettingsList(AddNewElement<Widget::List>()) {
 
   mSettingsList->AddItem("Display", LV_SYMBOL_EYE_OPEN,
                          [this] { PushDisplaySettings(); });

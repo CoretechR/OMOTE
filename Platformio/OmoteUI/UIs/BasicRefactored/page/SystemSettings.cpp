@@ -6,12 +6,11 @@ using namespace UI::Page;
 
 SystemSettings::SystemSettings()
     : Base(ID::Pages::SystemSettings),
-      mTimeoutLabel(AddElement<Widget::Label>(
-          std::make_unique<Widget::Label>("TimeOut"))),
-      mScreenTimeOutDropDown(AddElement<Widget::DropDown<int>>(
-          std::make_unique<Widget::DropDown<int>>([this](int aTimeout) {
+      mTimeoutLabel(AddNewElement<Widget::Label>("TimeOut")),
+      mScreenTimeOutDropDown(
+          AddNewElement<Widget::DropDown<int>>([this](int aTimeout) {
             HardwareFactory::getAbstract().setSleepTimeout(aTimeout);
-          }))) {
+          })) {
 
   mTimeoutLabel->AlignTo(this, LV_ALIGN_TOP_MID);
   mTimeoutLabel->SetHeight(15);

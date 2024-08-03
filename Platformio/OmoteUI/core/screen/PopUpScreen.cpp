@@ -8,13 +8,12 @@ using namespace UI::Screen;
 PopUpScreen::PopUpScreen(Page::Base::Ptr aPage)
     : Screen::Base(UI::ID::Screens::PopUp) {
 
-  mContentPage = AddElement<Page::Base>(std::move(aPage));
+  mContentPage = AddElement(std::move(aPage));
 
-  mExitButton = AddElement<Widget::Button>(std::make_unique<Widget::Button>(
-      [this] { UI::Screen::Manager::getInstance().popScreen(this); }));
+  mExitButton = AddNewElement<Widget::Button>(
+      [this] { UI::Screen::Manager::getInstance().popScreen(this); });
 
-  mTitle = AddElement<Widget::Label>(
-      std::make_unique<Widget::Label>(mContentPage->GetTitle()));
+  mTitle = AddNewElement<Widget::Label>(mContentPage->GetTitle());
 
   mExitButton->SetWidth(lv_pct(10));
   mExitButton->SetHeight(mExitButton->GetWidth());
