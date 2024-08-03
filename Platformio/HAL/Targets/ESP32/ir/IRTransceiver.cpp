@@ -306,10 +306,8 @@ void IRTransceiver::disableRx() {
 void IRTransceiver::loopHandleRx() {
   if (decode(&mCurrentResults)) {
     IRInterface::RawIR received;
-    // This cast only works with the library if the enums are a carbon copy
-    // Its not a big deal because when Rxing we dont really care much about
-    // what the protocol is (I don't think...)
-    Serial.print(resultToHumanReadableBasic(&mCurrentResults));
+    std::string humanReadable(
+        resultToHumanReadableBasic(&mCurrentResults).c_str());
 
     // Store protocol
     received.mprotocol =
@@ -323,7 +321,7 @@ void IRTransceiver::loopHandleRx() {
     uint16_t *rawData = resultToRawArray(&mCurrentResults);
     received.data.assign(rawData, rawData + rawLength);
     delete[](rawData);
-    mIRReceived->notify(received);
+    mIRReceived->notify(received, humanReadable);
   }
 }
 

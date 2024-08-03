@@ -1,3 +1,4 @@
+#pragma once
 #include "IRInterface.hpp"
 
 class IRSim : public IRInterface {

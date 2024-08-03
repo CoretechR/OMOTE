@@ -276,11 +276,11 @@ public:
   virtual void disableRx() = 0;
   virtual void loopHandleRx() = 0;
 
-  std::shared_ptr<Notification<RawIR>> IRRecievedNotification() {
+  std::shared_ptr<Notification<RawIR, std::string>> IRRecievedNotification() {
     return mIRReceived;
   };
 
 protected:
-  std::shared_ptr<Notification<RawIR>> mIRReceived =
-      std::make_shared<Notification<RawIR>>();
+  std::shared_ptr<Notification<RawIR, std::string>> mIRReceived =
+      std::make_shared<Notification<RawIR, std::string>>();
 };
