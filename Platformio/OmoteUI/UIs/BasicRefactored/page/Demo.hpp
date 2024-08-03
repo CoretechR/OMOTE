@@ -6,6 +6,7 @@ namespace UI::Page {
 class Demo : public Base {
 public:
   Demo();
+  virtual ~Demo() = default;
 
   void AddSlider();
 
