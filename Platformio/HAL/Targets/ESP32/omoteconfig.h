@@ -4,9 +4,8 @@
 
 // Comment out to disable connected features
 #define ENABLE_WIFI
-#define WIFI_SSID "YOUR_WIFI_SSID"
-#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
 #define MQTT_SERVER "YOUR_MQTT_SERVER_IP"
+#define MQTT_CLIENT_NAME "MQTT Client Name"
 
 // time until device enters sleep mode in milliseconds
 #define SLEEP_TIMEOUT 20000
