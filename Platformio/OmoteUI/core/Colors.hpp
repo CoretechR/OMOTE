@@ -13,4 +13,8 @@ const auto LILAC = lv_color_make(231, 209, 255);
 
 const auto GREY = lv_color_make(105, 105, 105);
 
+const auto HULU_GREEN = lv_color_make(61, 187, 61);
+const auto NETFLIX_RED = lv_color_make(216, 31, 38);
+const auto DISNEY_BLUE = lv_color_make(1, 20, 124);
+
 } // namespace UI::Color

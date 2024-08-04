@@ -31,6 +31,7 @@ public:
     SystemSettings,
     IrLearner,
     Demo,
+    Tv,
     INVALID_PAGE_ID
   };
 

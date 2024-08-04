@@ -14,10 +14,17 @@ void Button::OnLvglEvent(lv_event_t *anEvent) {
   }
 };
 
+void Button::SetTextStyle(TextStyle aNewStyle, lv_style_selector_t aStyle) {
+  if (mText) {
+    mText->SetTextStyle(aNewStyle, aStyle);
+  }
+  UIElement::SetTextStyle(aNewStyle, aStyle);
+};
+
 void Button::SetText(std::string aText) {
   if (!mText) {
     mText = AddNewElement<Label>(aText);
-    mText->AlignTo(this, LV_ALIGN_CENTER);
+    mText->SetTextStyle(UI::TextStyle().Align(LV_TEXT_ALIGN_CENTER));
   }
   mText->SetText(aText);
 }
