@@ -4,9 +4,9 @@
 
 using namespace UI::Page;
 
-Tab::Tab(lv_obj_t *aTab, Base::Ptr aContent) :
-  Base(aTab, aContent->GetID()),
-  mContent(AddElement(std::move(aContent))) {}
+Tab::Tab(lv_obj_t *aTab, Base::Ptr aContent)
+    : Base(aTab, aContent->GetID()), mContent(AddElement(std::move(aContent))) {
+}
 
 /////////////////////TabView/////////////////////////////////////
 
@@ -17,7 +17,8 @@ TabView::TabView(ID aId)
 
 void TabView::AddTab(Page::Base::Ptr aPage) {
   auto tab = std::make_unique<Tab>(
-      lv_tabview_add_tab(LvglSelf(), aPage->GetTitle().c_str()), std::move(aPage));
+      lv_tabview_add_tab(LvglSelf(), aPage->GetTitle().c_str()),
+      std::move(aPage));
 
   mTabs.push_back(std::move(tab));
 }
@@ -55,6 +56,17 @@ void TabView::OnLvglEvent(lv_event_t *anEvent) {
   if (anEvent->code == LV_EVENT_VALUE_CHANGED) {
     HandleTabChange();
   }
+}
+
+bool TabView::GoToTab(ID anId) {
+  auto tab = std::find_if(mTabs.begin(), mTabs.end(),
+                          [anId](auto &tab) { return tab->GetID() == anId; });
+  if (tab != mTabs.end()) {
+    auto tabIdx = std::distance(mTabs.begin(), tab);
+    SetCurrentTabIdx(tabIdx);
+    return true;
+  }
+  return false;
 }
 
 void TabView::OnShow() { mTabs[GetCurrentTabIdx()]->OnShow(); }

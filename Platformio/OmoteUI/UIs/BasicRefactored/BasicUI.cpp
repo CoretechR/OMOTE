@@ -23,3 +23,5 @@ BasicUI::BasicUI() : UIBase() {
 void BasicUI::AddPageToHomeScreen(std::unique_ptr<Page::Base> aPageToAdd) {
   mHomeScreen->AddPage(std::move(aPageToAdd));
 }
+
+bool BasicUI::GoToPage(ID anId) { return mHomeScreen->GoToPage(anId); }

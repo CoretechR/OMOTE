@@ -12,6 +12,7 @@ public:
 
 protected:
   void AddPageToHomeScreen(Page::Base::Ptr aPageToAdd);
+  bool GoToPage(ID anId);
 
 private:
   Screen::HomeScreen *mHomeScreen;

@@ -40,6 +40,8 @@ public:
   ID(ID::Widgets aWidgetId) : mId(static_cast<int>(aWidgetId)){};
   ID(ID::Pages aPageId) : mId(static_cast<int>(aPageId)){};
 
+  bool operator==(const ID aOther) const { return aOther.mId == mId; }
+
 private:
   const int mId;
 };

@@ -79,7 +79,7 @@ public:
 
   size_t GetNumContainedElements() { return mContainedElements.size(); }
 
-  ID GetID() { return mId; };
+  virtual ID GetID() { return mId; };
 
   template <class UIElemTy> static UIElemTy GetElement(lv_obj_t *aLvglObject);
 

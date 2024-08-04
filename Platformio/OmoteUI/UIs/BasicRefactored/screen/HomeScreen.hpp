@@ -15,6 +15,8 @@ public:
 
   void AddPage(Page::Base::Ptr aPage);
 
+  bool GoToPage(ID anId) { return mTabView->GoToTab(anId); }
+
 protected:
   bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 

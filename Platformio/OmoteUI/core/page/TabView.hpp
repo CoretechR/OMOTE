@@ -12,11 +12,12 @@ public:
 
   Tab(lv_obj_t *aTab, Base::Ptr aContent);
 
-  void OnShow() override{mContent->OnShow();};
-  void OnHide() override{mContent->OnHide();};
+  void OnShow() override { mContent->OnShow(); };
+  void OnHide() override { mContent->OnHide(); };
+  ID GetID() override { return mContent->GetID(); }
 
 private:
- Base* mContent;
+  Base *mContent;
 };
 
 class TabView : public Base {
@@ -32,6 +33,10 @@ public:
 
   void OnShow() override;
   void OnHide() override;
+
+  // Attempts to go to tab with id
+  // returns true if it was successful
+  bool GoToTab(ID anId);
 
 protected:
   void OnLvglEvent(lv_event_t *anEvent) override;
