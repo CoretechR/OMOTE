@@ -1,6 +1,7 @@
 #pragma once
 #include "SparkFunLIS3DH.h"
 
+#include "EspStats.hpp"
 #include "HardwareAbstract.hpp"
 #include "battery.hpp"
 #include "lvgl.h"
@@ -35,6 +36,7 @@ public:
   virtual std::shared_ptr<wifiHandlerInterface> wifi() override;
   virtual std::shared_ptr<KeyPressAbstract> keys() override;
   virtual std::shared_ptr<IRInterface> ir() override;
+  virtual std::shared_ptr<SystemStatsInterface> stats() override;
 
   virtual char getCurrentDevice() override;
   virtual void setCurrentDevice(char currentDevice) override;
@@ -68,6 +70,7 @@ private:
   std::shared_ptr<wifiHandler> mWifiHandler;
   std::shared_ptr<Keys> mKeys;
   std::shared_ptr<IRTransceiver> mIr;
+  std::shared_ptr<EspStats> mStats = nullptr;
   // IMU Motion Detection
   LIS3DH IMU = LIS3DH(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
   int standbyTimer = SLEEP_TIMEOUT;
