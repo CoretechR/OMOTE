@@ -1,7 +1,7 @@
 #pragma once
 #include "HomeAssist/IHomeAssistApi.hpp"
 
-namespace HomeAssistant {
+namespace HomeAssist {
 
 class HomeAssistantAccess {
 public:
@@ -11,4 +11,4 @@ private:
   static std::weak_ptr<IHomeAssistApi> mCurrentApiAccess;
 };
 
-} // namespace HomeAssistant
+} // namespace HomeAssist

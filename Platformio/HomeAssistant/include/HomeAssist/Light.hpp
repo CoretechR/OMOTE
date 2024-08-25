@@ -1,41 +1,45 @@
 #pragma once
 #include "HomeAssist/Entity.hpp"
-namespace HomeAssistant {
+#include "rapidjson/allocators.h"
+
+namespace HomeAssist {
 
 class Light : public Entity {
 public:
   Light(std::shared_ptr<IHomeAssistApi> anApi, std::string aEntityId)
-      : Entity(anApi, aEntityId) {}
+      : Entity(anApi, aEntityId) {
+    auto &parseHandlers = mUpdateParser.GetHandlersRef();
+
+    parseHandlers["brightness"] = [this](auto &aValue) {
+      if (aValue.IsUint()) {
+        mLastBrightness = aValue.GetUint();
+        return true;
+      }
+      return false;
+    };
+  }
   virtual ~Light() = default;
 
-  bool isOn() { return GetState() == std::string("on"); }
+  bool isOn() { return false; }
 
-  int getBrightness() {
-    constexpr auto key = "brightness";
-    auto attrs = GetAttribues();
-    auto attrsStr = ToString(attrs);
-    if (attrs.HasMember(key)) {
-      auto &brightness = attrs[key];
-      if (brightness.IsInt()) {
-        return attrs[key].GetInt();
-      }
-    }
-    return -1;
-  }
+  int getBrightness() { return mLastBrightness; }
 
-  void setBrightness(int aBrightness) {
+  void SetBrightness(int aBrightness) {
     using namespace rapidjson;
-    Document BrightnessDoc;
-    BrightnessDoc.SetObject();
-    auto &alloc = BrightnessDoc.GetAllocator();
+    static const size_t memPoolSize = 1 * 1024;
+    char memPool[memPoolSize];
+    MemoryPoolAllocator<CrtAllocator> alloc(memPool, memPoolSize);
+    auto BrightnessDoc = std::make_unique<Document>(&alloc);
+    BrightnessDoc->SetObject();
     Value brightness(kNumberType);
     brightness.SetInt(aBrightness);
-    BrightnessDoc.AddMember("brightness", brightness, alloc);
+    BrightnessDoc->AddMember("brightness", brightness, alloc);
 
-    CallService("services/light/turn_on", BrightnessDoc);
+    CallService("services/light/turn_on", *BrightnessDoc);
   }
 
 private:
+  int mLastBrightness = 0;
 };
 
-} // namespace HomeAssistant
+} // namespace HomeAssist

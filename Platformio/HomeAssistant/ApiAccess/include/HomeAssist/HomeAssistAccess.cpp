@@ -7,7 +7,7 @@
 #include "HttpClientApi.hpp"
 #endif
 
-using namespace HomeAssistant;
+using namespace HomeAssist;
 
 std::weak_ptr<IHomeAssistApi> HomeAssistantAccess::mCurrentApiAccess;
 

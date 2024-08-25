@@ -24,8 +24,20 @@ void Slider::SetValue(int32_t aValue, lv_anim_enable_t aIsAnimate) {
   });
 }
 
+void Slider::UpdateOnReleaseOnly(bool aOnReleaseFlag) {
+  mOnlyProccessOnRelease = aOnReleaseFlag;
+}
+
 void Slider::OnLvglEvent(lv_event_t *anEvent) {
-  if (anEvent->code == LV_EVENT_VALUE_CHANGED) {
+  switch (anEvent->code) {
+  case LV_EVENT_VALUE_CHANGED:
+    if (mOnlyProccessOnRelease) {
+      return;
+    }
+  case LV_EVENT_RELEASED:
     mOnSliderChange(GetValue());
+    break;
+  default:
+    break;
   }
 }

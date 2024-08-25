@@ -1,13 +1,11 @@
 #pragma once
 #include "HomeAssist/IHomeAssistApi.hpp"
 #include "curl/curl.h"
-#include "rapidjson/document.h"
 #include <functional>
 #include <memory>
-#include <optional>
 #include <string>
 
-namespace HomeAssistant {
+namespace HomeAssist {
 
 class CurlApi : public IHomeAssistApi {
 public:
@@ -18,17 +16,15 @@ public:
   virtual ~CurlApi();
 
   // Send update to Home Assistant and get response json back
-  std::optional<rapidjson::Document>
-  SendUpdate(const std::string &anApiPath,
-             const std::string &aUpdateJson) override;
+  std::string SendUpdate(const std::string &anApiPath,
+                         const std::string &aUpdateJson) override;
 
-  std::optional<rapidjson::Document>
-  SendRequest(const std::string &anApiPath = "") override;
+  std::string SendRequest(const std::string &anApiPath = "") override;
 
 private:
   static constexpr auto jsonHeader = "Content-Type: application/json";
 
-  std::optional<rapidjson::Document> Send(AutoCleanupCurl aCurl);
+  std::string Send(AutoCleanupCurl aCurl);
   AutoCleanupCurl SetupEasyCurl(const std::string &aURL);
   auto SetupHeaderList();
   void AddStandardRequestData(CURL *aCurl, curl_slist *aHeaders);
@@ -51,4 +47,4 @@ private:
   std::string mResponse = "";
 };
 
-} // namespace HomeAssistant
+} // namespace HomeAssist

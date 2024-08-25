@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
+#include <memory>
 #include <optional>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
@@ -11,7 +12,7 @@
 
 using namespace rapidjson;
 
-namespace HomeAssistant {
+namespace HomeAssist {
 
 class HttpClientApi : public IHomeAssistApi {
 public:
@@ -20,7 +21,7 @@ public:
       : mIp(ip), mPort(port) {}
   virtual ~HttpClientApi() = default;
 
-  std::optional<Document> SendRequest(const std::string &apiPath) override {
+  std::string SendRequest(const std::string &apiPath) override {
     HTTPClient http;
     http.begin(String(getURL(apiPath).c_str()));
 
@@ -31,24 +32,21 @@ public:
     int httpCode = http.GET();
     if (httpCode != HTTP_CODE_OK) {
       http.end();
-      return std::nullopt;
+      return "";
     }
 
     String payload = http.getString();
     http.end();
 
-    Document doc;
-    doc.Parse(payload.c_str());
+    Serial.println("Inbound from get");
+    Serial.print(payload);
+    Serial.print("\n\n");
 
-    if (doc.HasParseError()) {
-      return std::nullopt;
-    }
-
-    return doc;
+    return std::string(payload.c_str());
   }
 
-  std::optional<Document> SendUpdate(const std::string &apiPath,
-                                     const std::string &updateJson) override {
+  std::string SendUpdate(const std::string &apiPath,
+                         const std::string &updateJson) override {
     HTTPClient http;
     http.begin(String(getURL(apiPath).c_str()));
 
@@ -60,20 +58,17 @@ public:
         http.POST(updateJson.c_str()); // Convert std::string to C string
     if (httpCode != HTTP_CODE_OK) {
       http.end();
-      return std::nullopt;
+      return "";
     }
 
     String payload = http.getString();
     http.end();
 
-    Document doc;
-    doc.Parse(payload.c_str());
+    Serial.println("Inbound from post");
+    Serial.print(payload);
+    Serial.print("\n\n");
 
-    if (doc.HasParseError()) {
-      return std::nullopt;
-    }
-
-    return doc;
+    return std::string(payload.c_str());
   }
 
 private:
@@ -85,4 +80,4 @@ private:
   std::string mPort;
 };
 
-} // namespace HomeAssistant
+} // namespace HomeAssist

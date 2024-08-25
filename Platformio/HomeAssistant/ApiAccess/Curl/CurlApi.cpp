@@ -1,10 +1,9 @@
 
 #include "CurlApi.hpp"
 #include "HomeAssist/HomeAssistAccess.hpp"
-#include "RapidJsonUtilty.hpp"
 
 #include <memory>
-using namespace HomeAssistant;
+using namespace HomeAssist;
 
 CurlApi::CurlApi(std::string aIp, std::string aPort) : mIp(aIp), mPort(aPort) {
   curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -42,29 +41,20 @@ void CurlApi::AddStandardRequestData(CURL *aCurl, curl_slist *aHeaders) {
   curl_easy_setopt(aCurl, CURLOPT_WRITEDATA, this);
 }
 
-std::optional<rapidjson::Document>
-CurlApi::SendRequest(const std::string &anApiPath) {
+std::string CurlApi::SendRequest(const std::string &anApiPath) {
   auto easyCurl = SetupEasyCurl(anApiPath);
   auto headers = SetupHeaderList();
   AddStandardRequestData(easyCurl.get(), headers.get());
   return Send(std::move(easyCurl));
 }
 
-std::optional<rapidjson::Document> CurlApi::Send(AutoCleanupCurl aCurl) {
+std::string CurlApi::Send(AutoCleanupCurl aCurl) {
   auto code = curl_easy_perform(aCurl.get());
-  if (mResponse == "404: Not Found") {
-    return std::nullopt;
-  }
-
-  auto ret = std::make_optional<rapidjson::Document>();
-  ret->Parse(mResponse.c_str());
-
-  return ret;
+  return mResponse;
 }
 
-std::optional<rapidjson::Document>
-CurlApi::SendUpdate(const std::string &anApiPath,
-                    const std::string &aUpdateJson) {
+std::string CurlApi::SendUpdate(const std::string &anApiPath,
+                                const std::string &aUpdateJson) {
   auto easyCurl = SetupEasyCurl(anApiPath);
   auto headers = SetupHeaderList();
   AddStandardRequestData(easyCurl.get(), headers.get());

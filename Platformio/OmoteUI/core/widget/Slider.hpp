@@ -8,12 +8,14 @@ public:
 
   int32_t GetValue();
   void SetValue(int32_t aValue, lv_anim_enable_t aIsAnimate = LV_ANIM_ON);
+  void UpdateOnReleaseOnly(bool aOnReleaseFlag);
 
 protected:
   void OnLvglEvent(lv_event_t *anEvent) override;
 
 private:
   std::function<void(int32_t)> mOnSliderChange;
+  bool mOnlyProccessOnRelease = false;
 };
 
 } // namespace UI::Widget
