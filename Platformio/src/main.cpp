@@ -25,6 +25,7 @@
 //#include "devices/mediaPlayer/device_shield/device_shield.h"
 //   misc
 #include "devices/misc/device_smarthome/device_smarthome.h"
+//#include "devices/misc/device_airconditioner/device_airconditioner.h"
 // register gui and keys
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/gui/guiRegistry.h"
@@ -35,6 +36,7 @@
 #include "devices/AVreceiver/device_yamahaAmp/gui_yamahaAmp.h"
 #include "devices/mediaPlayer/device_appleTV/gui_appleTV.h"
 #include "devices/misc/device_smarthome/gui_smarthome.h"
+//#include "devices/misc/device_airconditioner/gui_airconditioner.h"
 #include "applicationInternal/keys.h"
 #include "applicationInternal/gui/guiStatusUpdate.h"
 // register scenes
@@ -95,6 +97,7 @@ int main(int argc, char *argv[]) {
   //register_device_shield();
   //   misc
   register_device_smarthome();
+  //register_device_airconditioner();
 
   #if (ENABLE_KEYBOARD_MQTT == 1)
   register_device_keyboard_mqtt();
@@ -111,6 +114,7 @@ int main(int argc, char *argv[]) {
   register_gui_appleTV();
   register_gui_numpad();
   register_gui_smarthome();
+  //register_gui_airconditioner();
   register_gui_yamahaAmp();
   // Only show these GUIs in the main gui list. If you don't set this explicitely, by default all registered guis are shown.
   #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
