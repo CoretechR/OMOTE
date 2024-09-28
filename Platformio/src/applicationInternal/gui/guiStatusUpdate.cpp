@@ -1,4 +1,5 @@
 #include <lvgl.h>
+#include <string.h>
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/memoryUsage.h"
 #include "guis/gui_settings.h"

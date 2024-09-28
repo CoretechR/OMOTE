@@ -23,7 +23,7 @@ void create_tab_content_yamahaAmp(lv_obj_t* tab) {
   lv_obj_set_scrollbar_mode(tab, LV_SCROLLBAR_MODE_ACTIVE);
 
   // -- create a button for "standard" ----------------------------------------
-  lv_obj_t* button = lv_btn_create(tab);
+  lv_obj_t* button = lv_button_create(tab);
   lv_obj_set_size(button, 80, 40);
   lv_obj_set_style_radius(button, 10, LV_PART_MAIN);
   lv_obj_set_style_bg_color(button, color_primary, LV_PART_MAIN);

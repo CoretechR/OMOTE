@@ -31,15 +31,15 @@ void update_timer_label();
 void update_CF_label();
 
 static void airConditioner_event_cb(lv_event_t* e) {
-  lv_obj_t* target = lv_event_get_target(e);
-  lv_obj_t* cont = lv_event_get_current_target(e);
+  lv_obj_t* target = (lv_obj_t*)lv_event_get_target(e);
+  lv_obj_t* cont = (lv_obj_t*)lv_event_get_current_target(e);
   if (target == cont) return; // stop if container was clicked
   
   int user_data = (intptr_t)(target->user_data);
 
   switch (user_data) {
     case 0: {
-      if (lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED)) {
+      if (lv_obj_has_state((lv_obj_t*)lv_event_get_target(e), LV_STATE_CHECKED)) {
         omote_log_i("Air conditioner: on\r\n");
         airConditionerPAC_N81.set_onoff(true);
       } else {
@@ -79,7 +79,7 @@ static void airConditioner_event_cb(lv_event_t* e) {
       break;
     }
     case 5: {
-      if (lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED)) {
+      if (lv_obj_has_state((lv_obj_t*)lv_event_get_target(e), LV_STATE_CHECKED)) {
         omote_log_i("Air conditioner: timer on\r\n");
         airConditionerPAC_N81.set_timer(true);
       } else {
@@ -108,7 +108,7 @@ static void airConditioner_event_cb(lv_event_t* e) {
 }
 
 static void airConditioner_dropdown_cb(lv_event_t* e) {
-  lv_obj_t* target = lv_event_get_target(e);
+  lv_obj_t* target = (lv_obj_t*)lv_event_get_target(e);
   uint16_t selected_index = lv_dropdown_get_selected(target);
       
   omote_log_i("Air conditioner: timer dropdown selected %d\r\n", selected_index);
@@ -135,17 +135,17 @@ void update_CF_label() {
   lv_label_set_text(CFLabel, airConditionerPAC_N81.get_CF_str().c_str());
 }
 
-void create_label(lv_obj_t** label, lv_obj_t* tab, lv_coord_t x_ofs, lv_coord_t y_ofs) {
+void create_label(lv_obj_t** label, lv_obj_t* tab, int32_t x_ofs, int32_t y_ofs) {
   *label = lv_label_create(tab);
   lv_obj_set_style_text_font(*label, &lv_font_montserrat_12, LV_PART_MAIN);
   lv_obj_align(*label, LV_ALIGN_TOP_LEFT, x_ofs, y_ofs);
 }
 
-void create_button(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_t x_ofs, lv_coord_t y_ofs, std::string text, uint8_t user_data) {
+void create_button(lv_obj_t* tab, int32_t width, int32_t height, int32_t x_ofs, int32_t y_ofs, std::string text, uint8_t user_data) {
   lv_obj_t* obj;
   lv_obj_t* buttonLabel;
 
-  obj = lv_btn_create(tab);
+  obj = lv_button_create(tab);
   lv_obj_align(obj, LV_ALIGN_TOP_LEFT, x_ofs, y_ofs);
   lv_obj_set_size(obj, width, height);
   lv_obj_set_style_bg_color(obj, color_primary, LV_PART_MAIN);
@@ -159,7 +159,7 @@ void create_button(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_
   lv_obj_center(buttonLabel);
 }
 
-void create_switch(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_t x_ofs, lv_coord_t y_ofs, uint8_t user_data) {
+void create_switch(lv_obj_t* tab, int32_t width, int32_t height, int32_t x_ofs, int32_t y_ofs, uint8_t user_data) {
   lv_obj_t* obj = lv_switch_create(tab);
   lv_obj_align(obj, LV_ALIGN_TOP_LEFT, x_ofs, y_ofs);
   lv_obj_set_size(obj, width, height);
@@ -168,7 +168,7 @@ void create_switch(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_
   lv_obj_set_user_data(obj,(void *)(intptr_t)user_data); // Add user data so we can identify which button caused the container event
 }
 
-void create_dropdownTimer(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_t x_ofs, lv_coord_t y_ofs, uint8_t user_data) {
+void create_dropdownTimer(lv_obj_t* tab, int32_t width, int32_t height, int32_t x_ofs, int32_t y_ofs, uint8_t user_data) {
   lv_obj_t * dropdownTimer = lv_dropdown_create(tab);
   lv_dropdown_set_options(dropdownTimer, "0 h\n" "1 h\n" "2 h\n" "3 h\n" "4 h\n" "5 h\n" "6 h\n" "7 h\n" "8 h\n" "9 h\n" "10 h\n" "11 h\n" "12 h");
   lv_obj_align(dropdownTimer, LV_ALIGN_TOP_LEFT, x_ofs, y_ofs);

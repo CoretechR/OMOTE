@@ -1,4 +1,5 @@
 #include <lvgl.h>
+#include <stdlib.h>
 
 void init_lvgl_HAL() {
   // Workaround for sdl2 `-m32` crash

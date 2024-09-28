@@ -1,4 +1,5 @@
 #include <lvgl.h>
+#include <string.h>
 #include "applicationInternal/gui/guiBase.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/omote_log.h"
