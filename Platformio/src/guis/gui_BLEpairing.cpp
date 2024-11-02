@@ -138,7 +138,7 @@ static void BLEpairing_dropdown_cb(lv_event_t* e) {
   uint16_t selected_index = lv_dropdown_get_selected(target);
   if (lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) {
     // omote_log_d("BLE pairing: bonded peers dropdown selected index %d\r\n", selected_index);
-    u_int8_t bufferSize = 20;
+    uint8_t bufferSize = 20;
     char buffer[bufferSize];
     lv_dropdown_get_selected_str(target, buffer, bufferSize);
     // omote_log_d("BLE pairing: bonded peers dropdown selected value %s\r\n", buffer);
