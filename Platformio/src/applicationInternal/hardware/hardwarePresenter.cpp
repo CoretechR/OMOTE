@@ -135,9 +135,44 @@ void set_irReceiverEnabled(bool aIrReceiverEnabled) {
 // --- BLE keyboard -----------------------------------------------------------
 #if (ENABLE_KEYBOARD_BLE == 1)
 void init_keyboardBLE() {
+  set_announceBLEmessage_cb_HAL(&receiveBLEmessage_cb);
   init_keyboardBLE_HAL();
 }
 // used by "device_keyboard_ble.cpp", "sleep.cpp"
+
+void keyboardBLE_startAdvertisingForAll() {
+  keyboardBLE_startAdvertisingForAll_HAL();
+}
+void keyboardBLE_startAdvertisingWithWhitelist(std::string peersAllowed) {
+  keyboardBLE_startAdvertisingWithWhitelist_HAL(peersAllowed);
+}
+void keyboardBLE_startAdvertisingDirected(std::string peerAddress, bool isRandomAddress) {
+  keyboardBLE_startAdvertisingDirected_HAL(peerAddress, isRandomAddress);
+}
+void keyboardBLE_stopAdvertising() {
+  keyboardBLE_stopAdvertising_HAL();
+}
+void keyboardBLE_printConnectedClients() {
+  keyboardBLE_printConnectedClients_HAL();
+}
+void keyboardBLE_disconnectAllClients() {
+  keyboardBLE_disconnectAllClients_HAL();
+}
+void keyboardBLE_printBonds() {
+  keyboardBLE_printBonds_HAL();
+}
+std::string keyboardBLE_getBonds() {
+  return keyboardBLE_getBonds_HAL();
+}
+void keyboardBLE_deleteBonds() {
+  keyboardBLE_deleteBonds_HAL();
+}
+bool keyboardBLE_forceConnectionToAddress(std::string peerAddress) {
+  return keyboardBLE_forceConnectionToAddress_HAL(peerAddress);
+}
+bool keyboardBLE_isAdvertising() {
+  return keyboardBLE_isAdvertising_HAL();
+}
 bool keyboardBLE_isConnected() {
   return keyboardBLE_isConnected_HAL();
 }

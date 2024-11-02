@@ -25,7 +25,7 @@ int lastActiveGUIlistIndex;
 void init_preferences_HAL(void) {
   // set some values for tests
   activeScene = "";                  // "Off", "TV", "Fire TV", "Chromecast", "Apple TV";
-  activeGUIname = "Scene selection"; // "Scene selection", "Smart Home", "Settings", "IR Receiver"    // "Numpad", "Apple TV"
+  activeGUIname = "Scene selection"; // "Scene selection", "Smart Home", "Settings", "IR Receiver", "Numpad", "Apple TV", "BLE pairing"
   activeGUIlist = MAIN_GUI_LIST;     // MAIN_GUI_LIST, SCENE_GUI_LIST;
   lastActiveGUIlistIndex = 0;
 }

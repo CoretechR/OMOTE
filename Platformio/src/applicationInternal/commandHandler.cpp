@@ -12,6 +12,8 @@
 #include "applicationInternal/gui/guiBase.h"
 // show received IR and MQTT messages
 #include "guis/gui_irReceiver.h"
+// show received BLE connection messages
+#include "guis/gui_BLEpairing.h"
 
 uint16_t COMMAND_UNKNOWN;
 
@@ -59,18 +61,14 @@ std::map<uint16_t, commandData> commands;
 
 uint16_t uniqueCommandID = 0;
 
-// we don't yet have a command id
+// register a command and give it a command id
 void register_command(uint16_t *command, commandData aCommandData) {
   *command = uniqueCommandID;
   uniqueCommandID++;
 
   commands[*command] = aCommandData;
 }
-// we already have a command id. Only used by BLE keyboard
-void register_command_withID(uint16_t command, commandData aCommandData) {
-  commands[command] = aCommandData;
-}
-// only get a unique ID. used by KEYBOARD_DUMMY, COMMAND_UNKNOWN and BLE keyboard
+// only get a unique ID. used by KEYBOARD_DUMMY and COMMAND_UNKNOWN
 void get_uniqueCommandID(uint16_t *command) {
   *command = uniqueCommandID;
   uniqueCommandID++;
@@ -213,15 +211,8 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
 
     #if (ENABLE_KEYBOARD_BLE == 1)
     case BLE_KEYBOARD: {
-      // the real command for the BLE keyboard is the first element in payload
-      auto current = commandData.commandPayloads.begin();
-      uint16_t command = std::stoi(*current);
-      std::string payload = "";
-      if (additionalPayload != "") {
-        payload = additionalPayload;
-      }
-      omote_log_d("execute: will send BLE keyboard command, command '%u', payload '%s'\r\n", command, payload.c_str());
-      keyboard_ble_executeCommand(command, payload);
+      omote_log_d("execute: will send BLE keyboard command '%u', payload '%s', additionalPayload '%s'\r\n", command, convertStringListToString(commandData.commandPayloads).c_str(), additionalPayload.c_str());
+      keyboard_ble_executeCommand(command, commandData.commandPayloads, additionalPayload);
       break;
     }
     #endif
@@ -268,6 +259,14 @@ void executeCommand(uint16_t command, std::string additionalPayload) {
 void receiveNewIRmessage_cb(std::string message) {
   showNewIRmessage(message);
 }
+
+#if (ENABLE_KEYBOARD_BLE == 1)
+// used as callback from hardware
+void receiveBLEmessage_cb(std::string message) {
+  addBLEmessage(message);
+}
+
+#endif
 #if (ENABLE_WIFI_AND_MQTT == 1)
 void receiveWiFiConnected_cb(bool connected) {
   // show status in header

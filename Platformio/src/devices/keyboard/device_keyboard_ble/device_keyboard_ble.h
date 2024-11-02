@@ -10,6 +10,7 @@
 static_assert(false, "You have to use \"-D ENABLE_BLUETOOTH=1\" in \"platformio.ini\" when having \"-D ENABLE_KEYBOARD_BLE=1\"");
 #endif
 
+// commands without a specific address
 extern uint16_t KEYBOARD_BLE_UP;
 extern uint16_t KEYBOARD_BLE_DOWN;
 extern uint16_t KEYBOARD_BLE_RIGHT;
@@ -30,7 +31,11 @@ extern uint16_t KEYBOARD_BLE_MUTE;
 extern uint16_t KEYBOARD_BLE_VOLUME_INCREMENT;
 extern uint16_t KEYBOARD_BLE_VOLUME_DECREMENT;
 
+// commands with specific address
+extern uint16_t KEYBOARD_BLE_RIGHT_FIRETV;
+extern uint16_t KEYBOARD_BLE_LEFT_NVIDIASHIELD;
+
 void register_device_keyboard_ble();
-void keyboard_ble_executeCommand(uint16_t, std::string additionalPayload = "");
+void keyboard_ble_executeCommand(uint16_t command, std::list<std::string> commandPayloads, std::string additionalPayload = "");
 
 #endif

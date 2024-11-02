@@ -1,4 +1,6 @@
+#include <mutex>
 #include <lvgl.h>
+#include "guis/gui_BLEpairing.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/memoryUsage.h"
 #include "applicationInternal/gui/guiMemoryOptimizer.h"
@@ -26,6 +28,12 @@ lv_style_t panel_style;
 #ifdef drawRedBorderAroundMainWidgets
 lv_style_t style_red_border;
 #endif
+
+// to add text threadsafe
+std::mutex mutex_guiBase;
+bool newWifiLabelStatusAvailable = false;
+bool newWiFiLabelStatus;
+void flushWiFiConnectedStatus();
 
 void guis_doTabCreationOnStartup();
 void guis_doTabCreationAfterSliding(int newTabID);
@@ -300,6 +308,15 @@ void gui_loop(void) {
   // }
 
   lv_timer_handler();
+
+  // flush texts that might have been added from callbacks from other threads
+  // has to be done in a thread safe way in the main thread
+  #if (ENABLE_WIFI_AND_MQTT ==1)
+  flushWiFiConnectedStatus();
+  #endif
+  #if (ENABLE_KEYBOARD_BLE == 1)
+  flushBLEMessages();
+  #endif
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -351,10 +368,23 @@ void setActiveTab(uint32_t index, lv_anim_enable_t anim_en, bool send_tab_change
   }
 }
 
-void showWiFiConnected(bool connected) {
-  if (connected) {
-    if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);}
-  } else {
-    if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, "");}
+void flushWiFiConnectedStatus() {
+  // this is to flush text which was added by another thread via "void showWiFiConnected(bool connected)"
+  // the function "flushWiFiConnectedStatus" is called from the main thread
+  std::lock_guard<std::mutex> lck(mutex_guiBase);
+  if (newWifiLabelStatusAvailable) {
+    if (newWiFiLabelStatus) {
+      if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, LV_SYMBOL_WIFI);}
+    } else {
+      if (WifiLabel != NULL) {lv_label_set_text(WifiLabel, "");}
+    }
+    newWifiLabelStatusAvailable = false;
   }
+}
+
+void showWiFiConnected(bool connected) {
+  // this callback is called from another thread from mqtt_hal_esp32.cpp
+  std::lock_guard<std::mutex> lck(mutex_guiBase);
+  newWifiLabelStatusAvailable = true;
+  newWiFiLabelStatus = connected;
 }

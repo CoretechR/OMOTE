@@ -1,6 +1,10 @@
+#include <sstream>
 #include "WiFi.h"
 #include <PubSubClient.h>
 #include "mqtt_hal_esp32.h"
+#if (ENABLE_KEYBOARD_BLE == 1)
+#include "keyboard_ble_hal_esp32.h"
+#endif
 #include "secrets.h"
 
 #if (ENABLE_WIFI_AND_MQTT == 1)
@@ -63,25 +67,83 @@ void init_mqtt_HAL(void) {
 }
 
 std::string subscribeTopicOMOTEtest = "OMOTE/test";
+// For connecting to one or several BLE clients
+std::string subscribeTopicOMOTE_BLEstartAdvertisingForAll        = "OMOTE/BLE/startAdvertisingForAll";
+std::string subscribeTopicOMOTE_BLEstartAdvertisingWithWhitelist = "OMOTE/BLE/startAdvertisingWithWhitelist";
+std::string subscribeTopicOMOTE_BLEstartAdvertisingDirected      = "OMOTE/BLE/startAdvertisingDirected";
+std::string subscribeTopicOMOTE_BLEstopAdvertising               = "OMOTE/BLE/stopAdvertising";
+std::string subscribeTopicOMOTE_BLEprintConnectedClients         = "OMOTE/BLE/printConnectedClients";
+std::string subscribeTopicOMOTE_BLEdisconnectAllClients          = "OMOTE/BLE/disconnectAllClients";
+std::string subscribeTopicOMOTE_BLEprintBonds                    = "OMOTE/BLE/printBonds";
+std::string subscribeTopicOMOTE_BLEdeleteBonds                   = "OMOTE/BLE/deleteBonds";
 
 void callback(char* topic, byte* payload, unsigned int length) {
   // handle message arrived
   std::string topicReceived(topic);
   std::string strPayload(reinterpret_cast<const char *>(payload), length);
+  Serial.printf("MQTT: received topic %s with payload %s\r\n", topicReceived.c_str(), strPayload.c_str());
 
   if (topicReceived == subscribeTopicOMOTEtest) {
-    Serial.printf("MQTT: received topic %s with payload %s\r\n", subscribeTopicOMOTEtest.c_str(), strPayload.c_str());
+    // Do whatever you want here, if it is ESP32 hardware related.
+    // ...
+
+    // Or forward the topic to "void receiveMQTTmessage_cb" in the "commandHandler.cpp", if it is not ESP32 hardware related
+    thisAnnounceSubscribedTopics_cb(topicReceived, strPayload);
+
+  #if (ENABLE_KEYBOARD_BLE == 1)
+  } else if (topicReceived == subscribeTopicOMOTE_BLEstartAdvertisingForAll) {
+    keyboardBLE_startAdvertisingForAll_HAL();  
+  } else if (topicReceived == subscribeTopicOMOTE_BLEstartAdvertisingWithWhitelist) {
+    keyboardBLE_startAdvertisingWithWhitelist_HAL(strPayload);  
+  } else if (topicReceived == subscribeTopicOMOTE_BLEstartAdvertisingDirected) {
+    // the payload are two values, separated by comma: peerAddress and isRandomAddress 
+    std::stringstream ss(strPayload);
+    if (ss.good())  {
+      std::string peerAddress;
+      std::getline(ss, peerAddress, ',');
+      
+      if (ss.good())  {
+        std::string isRandomAddressStr;
+        std::getline(ss, isRandomAddressStr, ',');
+        bool isRandomAddress = false;
+        if (isRandomAddressStr == "true") {
+          isRandomAddress = true;  
+        }
+        keyboardBLE_startAdvertisingDirected_HAL(peerAddress, isRandomAddress);  
+      }
+    }
+  } else if (topicReceived == subscribeTopicOMOTE_BLEstopAdvertising) {
+    keyboardBLE_stopAdvertising_HAL();  
+  } else if (topicReceived == subscribeTopicOMOTE_BLEprintConnectedClients) {
+    keyboardBLE_printConnectedClients_HAL();
+  } else if (topicReceived == subscribeTopicOMOTE_BLEdisconnectAllClients) {
+    keyboardBLE_disconnectAllClients_HAL();  
+  } else if (topicReceived == subscribeTopicOMOTE_BLEprintBonds) {
+    keyboardBLE_printBonds_HAL();  
+  } else if (topicReceived == subscribeTopicOMOTE_BLEdeleteBonds) {
+    keyboardBLE_deleteBonds_HAL();  
+  #endif
+
+  } else {
+    // forward all other topics to the commandHandler
+    thisAnnounceSubscribedTopics_cb(topicReceived, strPayload);
 
   }
-
-  thisAnnounceSubscribedTopics_cb(topicReceived, strPayload);
 }
 
 void mqtt_subscribeTopics() {
   mqttClient.setCallback(&callback);
 
   mqttClient.subscribe(subscribeTopicOMOTEtest.c_str());
-  Serial.printf("  Successfully subscribed to MQTT topic %s\r\n", subscribeTopicOMOTEtest.c_str());
+  mqttClient.subscribe(subscribeTopicOMOTE_BLEstartAdvertisingForAll.c_str());
+  mqttClient.subscribe(subscribeTopicOMOTE_BLEstartAdvertisingWithWhitelist.c_str());
+  mqttClient.subscribe(subscribeTopicOMOTE_BLEstartAdvertisingDirected.c_str());
+  mqttClient.subscribe(subscribeTopicOMOTE_BLEstopAdvertising.c_str());
+  mqttClient.subscribe(subscribeTopicOMOTE_BLEprintConnectedClients.c_str());
+  mqttClient.subscribe(subscribeTopicOMOTE_BLEdisconnectAllClients.c_str());
+  mqttClient.subscribe(subscribeTopicOMOTE_BLEprintBonds.c_str());
+  mqttClient.subscribe(subscribeTopicOMOTE_BLEdeleteBonds.c_str());
+  Serial.printf("  Successfully subscribed to MQTT topics\r\n");
 
 }
 

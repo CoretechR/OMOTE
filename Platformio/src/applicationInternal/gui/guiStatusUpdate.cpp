@@ -59,17 +59,22 @@ void updateBatteryStatusOnGUI() {
 // if bluetooth is in pairing mode (pairing mode is always on, if not connected), but not connected, then blink
 bool blinkBluetoothLabelIsOn = false;
 void updateKeyboardBLEstatusOnGUI() {
-  if (!keyboardBLE_isConnected()) {
+  if (keyboardBLE_isAdvertising()) {
     blinkBluetoothLabelIsOn = !blinkBluetoothLabelIsOn;
     if (blinkBluetoothLabelIsOn) {
       if (BluetoothLabel != NULL) {lv_label_set_text(BluetoothLabel, LV_SYMBOL_BLUETOOTH);}
     } else {
       if (BluetoothLabel != NULL) {lv_label_set_text(BluetoothLabel, "");}
     }
-  } else {
+  } else if (keyboardBLE_isConnected()) {
     if (!blinkBluetoothLabelIsOn) {
       blinkBluetoothLabelIsOn = true;
       if (BluetoothLabel != NULL) {lv_label_set_text(BluetoothLabel, LV_SYMBOL_BLUETOOTH);}
+    }
+  } else {
+    if (blinkBluetoothLabelIsOn) {
+      blinkBluetoothLabelIsOn = false;
+      if (BluetoothLabel != NULL) {lv_label_set_text(BluetoothLabel, "");}
     }
   }
 }
