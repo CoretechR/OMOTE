@@ -1,4 +1,4 @@
-#if defined(WIN32) || defined(__linux__)
+#if defined(WIN32) || defined(__linux__) || defined(__APPLE__)
 
 #include "applicationInternal/hardware/arduinoLayer.h"
 #include <stdarg.h>

@@ -1,4 +1,8 @@
+#if defined(__APPLE__)
+#include <stdlib.h>
+#else
 #include <malloc.h>
+#endif
 
 #if defined(WIN32)
 // https://www.daniweb.com/programming/software-development/threads/135188/calculate-the-amount-of-heap-memory
@@ -20,7 +24,7 @@ long HeapUsed()
     return used;
 }
 
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__APPLE__)
 long HeapUsed() {
   // don't know how to get used heap size in linux
   return 800000;

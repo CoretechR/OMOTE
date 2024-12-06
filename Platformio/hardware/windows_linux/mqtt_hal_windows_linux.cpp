@@ -90,7 +90,7 @@ void reconnect_mqtt(struct mqtt_client *mqttClient, void**) {
   }
 }
 
-#if !defined(WIN32)
+#if !defined(WIN32) && !defined(__APPLE__)
 std::string getMACaddress() {
   struct ifreq s;
   int fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);

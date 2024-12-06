@@ -7,7 +7,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <sys/ioctl.h>
+#if !defined(__APPLE__)
 #include <linux/if.h>
+#endif
 #else
 #include <ws2tcpip.h>
 #endif
@@ -50,7 +52,7 @@ int open_nb_socket(const char* addr, const char* port, char *MACaddress) {
           continue;
         }
 
-        #if !defined(WIN32)
+        #if !defined(WIN32) && !defined(__APPLE__)
         // get MAC address
         struct ifreq s;
         ioctl(sockfd, SIOCGIFHWADDR, &s);
