@@ -52,7 +52,7 @@
 // in case of Arduino we have a setup() and a loop()
 void setup() {
 
-#elif defined(WIN32) || defined(__linux__)
+#elif defined(WIN32) || defined(__linux__) || defined(__APPLE__)
 // in case of Windows/Linux, we have only a main() function, no setup() and loop(), so we have to simulate them
 // forward declaration of loop()
 void loop(unsigned long *pIMUTaskTimer, unsigned long *pUpdateStatusTimer);
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 
   omote_log_i("Setup finished in %lu ms.\r\n", millis());
 
-  #if defined(WIN32) || defined(__linux__)
+  #if defined(WIN32) || defined(__linux__) || defined(__APPLE__)
   // In Windows/Linux there is no loop function that is automatically being called. So we have to do this on our own infinitely here in main()
   unsigned long IMUTaskTimer = 0;
   unsigned long updateStatusTimer = 0;
@@ -163,7 +163,7 @@ unsigned long updateStatusTimer = 0;
 unsigned long *pIMUTaskTimer = &IMUTaskTimer;
 unsigned long *pUpdateStatusTimer = &updateStatusTimer;
 void loop() {
-#elif defined(WIN32) || defined(__linux__)
+#elif defined(WIN32) || defined(__linux__) || defined(__APPLE__)
 void loop(unsigned long *pIMUTaskTimer, unsigned long *pUpdateStatusTimer) {
 #endif
 
