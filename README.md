@@ -43,9 +43,9 @@ The remote can be charged and programmed via its USB-C port. Open the [PlatformI
 
 As a long term goal, maybe a prebuild firmware will be published, where you can configure your OMOTE via a web interface.
 
-### LVGL GUI simulator for Windows and Linux
+### LVGL GUI simulator for Windows, Linux, and macOS
 
-A simulator for running the LVGL UI on your local Windows or Linux machine is available.
+A simulator for running the LVGL UI on your local Windows, Linux, or macOS machine is available.
 
 You can run the simulator in Visual Studio Code with PlatformIO. No need for any other compiler or development environment (no Visual Studio needed as often done in other LVGL simulators).
 <div align="center">
@@ -73,7 +73,7 @@ The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can 
 ### To Dos for software
 
 Short term goals
-- [x] simulator for creating pages in Windows, WSL2 and Linux
+- [x] simulator for creating pages in Windows, WSL2, Linux, and macOS
 - [x] scene selector page as start page
 - [x] available gui pages based on the currently active scene. Hide pages not needed in a scene
 
