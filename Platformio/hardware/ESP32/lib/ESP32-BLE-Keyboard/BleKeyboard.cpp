@@ -128,12 +128,7 @@ void BleKeyboard::begin(void)
   advertising = pServer->getAdvertising();
   advertising->setAppearance(HID_KEYBOARD);
   advertising->addServiceUUID(hid->hidService()->getUUID());
-  advertising->setScanResponse(false);
-
-  #if defined(USE_NIMBLE_200)
-  // get the peer name on connect
-  pServer->getPeerNameOnConnect(true);
-  #endif
+  advertising->enableScanResponse(false);
 
   /*
     Don't start advertising here. Call one of
@@ -685,7 +680,7 @@ void BleKeyboard::startAdvertisingForAll() {
   this->prepareAdvertising();
 
   advertising->setScanFilter(false, false);
-  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);
+  advertising->setConnectableMode(BLE_GAP_CONN_MODE_UND);
   advertising->start();
   this->_advertising = true;
 
@@ -709,7 +704,7 @@ void BleKeyboard::startAdvertisingWithWhitelist(std::string peersAllowed) {
   }
 
   advertising->setScanFilter(true, true);
-  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);
+  advertising->setConnectableMode(BLE_GAP_CONN_MODE_UND);
   advertising->start();
   this->_advertising = true;
 
@@ -729,8 +724,8 @@ void BleKeyboard::startAdvertisingDirected(std::string peerAddress, bool isRando
     directedAddress = NimBLEAddress(peerAddress, BLE_ADDR_PUBLIC);
   }
   advertising->setScanFilter(false, false);
-  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_DIR);
-  advertising->start(BLE_HS_FOREVER, nullptr, &directedAddress);
+  advertising->setConnectableMode(BLE_GAP_CONN_MODE_DIR);
+  advertising->start(BLE_HS_FOREVER, &directedAddress);
   this->_advertising = true;
 
   std::string message = "";
@@ -761,7 +756,7 @@ void BleKeyboard::printConnectedClients() {
 
   std::vector<uint16_t> m_connectedPeersVec = NimBLEDevice::getServer()->getPeerDevices();
   for (std::vector<uint16_t>::iterator it = m_connectedPeersVec.begin() ; it != m_connectedPeersVec.end(); ++it) {
-    NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerIDInfo(*it);
+    NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(*it);
     sprintf(buffer, "\n client %d: %s", *it, NimBLEAddress(connInfo.getAddress()).toString().c_str());
     message = message + buffer;
     ESP_LOGI(LOG_TAG, "%s", buffer);
@@ -897,7 +892,7 @@ bool BleKeyboard::forceConnectionToAddress(std::string peerAddress) {
       ESP_LOGD(LOG_TAG, "BleKeyboard: already connected, no specific address was provided, nothing to do.\n");
       return true;
     } else {
-      NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerIDInfo(0);
+      NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(0);
       if (NimBLEAddress(connInfo.getAddress()).toString() == peerAddress) {
         ESP_LOGD(LOG_TAG, "BleKeyboard: already connected to address %s, nothing to do\n", peerAddress.c_str());
         return true;
