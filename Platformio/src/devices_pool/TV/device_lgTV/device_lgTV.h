@@ -1,6 +1,8 @@
 #pragma once
 
 // Only activate the commands that are used. Every command takes 100 bytes, wether used or not.
+extern uint16_t LGTV_POWER_ON;
+extern uint16_t LGTV_POWER_OFF;
 extern uint16_t LGTV_POWER_TOGGLE;
 extern uint16_t LGTV_SOURCE;
 extern uint16_t LGTV_NUM_1;
@@ -49,6 +51,7 @@ extern uint16_t LGTV_KEY_D;
 extern uint16_t LGTV_INPUT_HDMI_1;
 extern uint16_t LGTV_INPUT_HDMI_2;
 extern uint16_t LGTV_INPUT_HDMI_3;
+extern uint16_t LGTV_INPUT_HDMI_4;
 extern uint16_t LGTV_INPUT_TV;
 //extern uint16_t LGTV_INPUT_COMPONENT;
 //extern uint16_t LGTV_SLEEP;
