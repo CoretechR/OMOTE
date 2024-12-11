@@ -34,6 +34,7 @@ jobs:
           install: >-
             mingw-w64-${{matrix.env}}-gcc
             mingw-w64-${{matrix.env}}-SDL2
+            mingw-w64-${{matrix.env}}-SDL2_image
       - name: Add paths mingw64
         if: ${{matrix.sys == 'mingw64'}}
         run: |
