@@ -100,18 +100,17 @@ void init_lvgl_HAL() {
   SDL_Window *keypadWindow = keypad_gui_setup();
 
   // Raise the simulator window, sometimes it will get buried on macOS
+  // Unfortunately, at least in WSL2, it is still sometimes buried and has to be brought to the foreground manually
   SDL_RaiseWindow(mSimWindow);
 
   // Arrange our windows nicely
   int x, y;
   SDL_GetWindowPosition(keypadWindow, &x, &y);
-  SDL_SetWindowPosition(mSimWindow, x - (SDL_HOR_RES * SDL_ZOOM) / 2 - 10, y);
-  SDL_SetWindowPosition(keypadWindow, x + (SDL_HOR_RES * SDL_ZOOM) / 2 + 10, y);
+  SDL_SetWindowPosition(mSimWindow, x - (SDL_HOR_RES * SDL_ZOOM) / 2 + 30, y);
+  SDL_SetWindowPosition(keypadWindow, x + (SDL_HOR_RES * SDL_ZOOM) / 2 - 30, y);
 
   /* Tick init.
    * You have to call 'lv_tick_inc()' in periodically to inform lvgl about how much time were elapsed
    * Create an SDL thread to do this*/
   SDL_CreateThread(tick_thread, "tick", NULL);
 }
-
-
