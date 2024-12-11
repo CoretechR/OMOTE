@@ -15,6 +15,7 @@
 #if defined(CONFIG_BT_ENABLED)
 
 #include "NimBLECharacteristic.h"
+#include "NimBLEServer.h"
 #include "NimBLEHIDDevice.h"
 
 #include "Print.h"

@@ -108,28 +108,50 @@ void BleKeyboard::begin(void)
   pServer->setCallbacks(this);
 
   hid = new NimBLEHIDDevice(pServer);
+  #if !defined(USE_NIMBLE_200)
   inputKeyboard = hid->inputReport(KEYBOARD_ID);  // <-- input REPORTID from report map
   outputKeyboard = hid->outputReport(KEYBOARD_ID);
   inputMediaKeys = hid->inputReport(MEDIA_KEYS_ID);
+  #else
+  inputKeyboard = hid->getInputReport(KEYBOARD_ID);  // <-- input REPORTID from report map
+  outputKeyboard = hid->getOutputReport(KEYBOARD_ID);
+  inputMediaKeys = hid->getInputReport(MEDIA_KEYS_ID);
+  #endif
 
   outputKeyboard->setCallbacks(this);
 
+  #if !defined(USE_NIMBLE_200)
   hid->manufacturer()->setValue(deviceManufacturer);
 
   hid->pnp(0x02, vid, pid, version);
   hid->hidInfo(0x00, 0x01);
+  #else
+  hid->setManufacturer(deviceManufacturer);
+
+  hid->setPnp(0x02, vid, pid, version);
+  hid->setHidInfo(0x00, 0x01);
+  #endif
 
 
   NimBLEDevice::setSecurityAuth(true, true, true);
 
+  #if !defined(USE_NIMBLE_200)
   hid->reportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
+  #else
+  hid->setReportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
+  #endif
   hid->startServices();
 
   advertising = pServer->getAdvertising();
   advertising->setAppearance(HID_KEYBOARD);
+  #if !defined(USE_NIMBLE_200)
   advertising->addServiceUUID(hid->hidService()->getUUID());
+  advertising->setScanResponse(false);
+  #else
+  advertising->addServiceUUID(hid->getHidService()->getUUID());
   advertising->enableScanResponse(false);
-
+  #endif
+  
   /*
     Don't start advertising here. Call one of
       startAdvertisingForAll();
@@ -680,7 +702,11 @@ void BleKeyboard::startAdvertisingForAll() {
   this->prepareAdvertising();
 
   advertising->setScanFilter(false, false);
+  #if !defined(USE_NIMBLE_200)
+  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);
+  #else
   advertising->setConnectableMode(BLE_GAP_CONN_MODE_UND);
+  #endif
   advertising->start();
   this->_advertising = true;
 
@@ -704,7 +730,11 @@ void BleKeyboard::startAdvertisingWithWhitelist(std::string peersAllowed) {
   }
 
   advertising->setScanFilter(true, true);
+  #if !defined(USE_NIMBLE_200)
+  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);
+  #else
   advertising->setConnectableMode(BLE_GAP_CONN_MODE_UND);
+  #endif
   advertising->start();
   this->_advertising = true;
 
@@ -724,8 +754,13 @@ void BleKeyboard::startAdvertisingDirected(std::string peerAddress, bool isRando
     directedAddress = NimBLEAddress(peerAddress, BLE_ADDR_PUBLIC);
   }
   advertising->setScanFilter(false, false);
+  #if !defined(USE_NIMBLE_200)
+  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_DIR);
+  advertising->start(BLE_HS_FOREVER, nullptr, &directedAddress);
+  #else
   advertising->setConnectableMode(BLE_GAP_CONN_MODE_DIR);
   advertising->start(BLE_HS_FOREVER, &directedAddress);
+  #endif
   this->_advertising = true;
 
   std::string message = "";
@@ -756,7 +791,11 @@ void BleKeyboard::printConnectedClients() {
 
   std::vector<uint16_t> m_connectedPeersVec = NimBLEDevice::getServer()->getPeerDevices();
   for (std::vector<uint16_t>::iterator it = m_connectedPeersVec.begin() ; it != m_connectedPeersVec.end(); ++it) {
+    #if !defined(USE_NIMBLE_200)
+    NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerIDInfo(*it);
+    #else
     NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(*it);
+    #endif
     sprintf(buffer, "\n client %d: %s", *it, NimBLEAddress(connInfo.getAddress()).toString().c_str());
     message = message + buffer;
     ESP_LOGI(LOG_TAG, "%s", buffer);
@@ -892,7 +931,11 @@ bool BleKeyboard::forceConnectionToAddress(std::string peerAddress) {
       ESP_LOGD(LOG_TAG, "BleKeyboard: already connected, no specific address was provided, nothing to do.\n");
       return true;
     } else {
+      #if !defined(USE_NIMBLE_200)
+      NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerIDInfo(0);
+      #else
       NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(0);
+      #endif
       if (NimBLEAddress(connInfo.getAddress()).toString() == peerAddress) {
         ESP_LOGD(LOG_TAG, "BleKeyboard: already connected to address %s, nothing to do\n", peerAddress.c_str());
         return true;
