@@ -36,12 +36,11 @@ int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
 int event_filter(void *userdata, SDL_Event * event) {
   KeyPadManager* manager = (KeyPadManager*) userdata;
 
-  // We can't just forward the quit event we have to be more aggressive
-  if (event->type == SDL_QUIT) {
-    SDL_DestroyRenderer(manager->renderer);
-    SDL_DestroyWindow(manager->window);
-    SDL_Quit();
-    return 1;
+  // Capture all window close events
+  if (event->type == SDL_WINDOWEVENT) {
+    if (event->window.event == SDL_WINDOWEVENT_CLOSE) {
+      exit(0);
+    }
   }
 
   // The event api isn't consistent with the window id, so we need to check the event type
