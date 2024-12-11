@@ -1,17 +1,12 @@
 #include <stdlib.h>
-#include <sys/time.h>
 #include <lvgl.h>
 #include <SDL2/SDL_thread.h>
 #include "sdl/sdl.h"
 #include "SDL2/SDL_events.h"
 
-long long current_timestamp_hal_windowsLinux() {
-    struct timeval te; 
-    gettimeofday(&te, NULL); // get current time
-    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // calculate milliseconds
-    // printf("milliseconds: %lld\r\n", milliseconds);
-    return milliseconds;
-}
+#include "util_hal_windows_linux.h"
+#include "keypad_gui/keypad_gui.h"
+
 /**
  * A task to measure the elapsed time for LittlevGL
  * @param data unused
@@ -101,9 +96,22 @@ void init_lvgl_HAL() {
   
   SDL_SetWindowTitle(mSimWindow, "OMOTE simulator");
 
+  // Setup the keypad window
+  SDL_Window *keypadWindow = keypad_gui_setup();
+
+  // Raise the simulator window, sometimes it will get buried on macOS
+  SDL_RaiseWindow(mSimWindow);
+
+  // Arrange our windows nicely
+  int x, y;
+  SDL_GetWindowPosition(keypadWindow, &x, &y);
+  SDL_SetWindowPosition(mSimWindow, x - (SDL_HOR_RES * SDL_ZOOM) / 2 - 10, y);
+  SDL_SetWindowPosition(keypadWindow, x + (SDL_HOR_RES * SDL_ZOOM) / 2 + 10, y);
+
   /* Tick init.
    * You have to call 'lv_tick_inc()' in periodically to inform lvgl about how much time were elapsed
    * Create an SDL thread to do this*/
   SDL_CreateThread(tick_thread, "tick", NULL);
-
 }
+
+

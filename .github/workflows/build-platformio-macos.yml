@@ -27,7 +27,7 @@ jobs:
 
       - name: Install SDL2
         run: |
-          brew install sdl2
+          brew install sdl2 sdl2_image
 
 
 
