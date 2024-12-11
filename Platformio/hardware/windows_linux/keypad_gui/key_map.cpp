@@ -8,6 +8,7 @@ using json = nlohmann::json;
 #include "key_map.h"
 
 std::vector<KeyPadKey> loadKeypadMap() {
+  // Map was created with https://n-peugnet.github.io/image-map-creator/ 
   std::ifstream f("./hardware/windows_linux/keypad_gui/buttons.map.json");
 
   json data = json::parse(f);
