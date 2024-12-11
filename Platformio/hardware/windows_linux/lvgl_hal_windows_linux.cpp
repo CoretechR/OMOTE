@@ -1,19 +1,12 @@
 #include <stdlib.h>
-#include <sys/time.h>
 #include <lvgl.h>
 #include <SDL2/SDL_thread.h>
 #include "sdl/sdl.h"
 #include "SDL2/SDL_events.h"
 
+#include "util_hal_windows_linux.h"
 #include "keypad_gui/keypad_gui.h"
 
-long long current_timestamp_hal_windowsLinux() {
-    struct timeval te; 
-    gettimeofday(&te, NULL); // get current time
-    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // calculate milliseconds
-    // printf("milliseconds: %lld\r\n", milliseconds);
-    return milliseconds;
-}
 /**
  * A task to measure the elapsed time for LittlevGL
  * @param data unused
