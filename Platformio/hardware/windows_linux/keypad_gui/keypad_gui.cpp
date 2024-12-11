@@ -133,7 +133,7 @@ SDL_Surface* loadSurface( SDL_Surface* screenSurface )
   SDL_Surface* optimizedSurface = NULL;
 
   //Load image at specified path
-  SDL_Surface* loadedSurface = IMG_Load( "./buttons.png" );
+  SDL_Surface* loadedSurface = IMG_Load( "./hardware/windows_linux/keypad_gui/buttons.png" );
   if( loadedSurface == NULL )
   {
     printf( "Unable to load image! SDL_image Error: %s\n", IMG_GetError() );

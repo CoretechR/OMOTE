@@ -8,7 +8,7 @@ using json = nlohmann::json;
 #include "key_map.h"
 
 std::vector<KeyPadKey> loadKeypadMap() {
-  std::ifstream f("./buttons.map.json");
+  std::ifstream f("./hardware/windows_linux/keypad_gui/buttons.map.json");
 
   json data = json::parse(f);
 
