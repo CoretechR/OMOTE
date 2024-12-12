@@ -1,5 +1,8 @@
+#include <SDL2/SDL.h>
 #include <lvgl.h>
 #include <stdlib.h>
+
+#include "keypad_gui/keypad_gui.h"
 
 void init_lvgl_HAL() {
   // Workaround for sdl2 `-m32` crash
@@ -36,5 +39,22 @@ void init_lvgl_HAL() {
 
   lv_sdl_window_set_title(disp, "OMOTE simulator");
   lv_sdl_window_set_zoom(disp, SDL_ZOOM);
+
+  // Get the SDL window via an event
+  SDL_Event aWindowIdFinder;
+  SDL_PollEvent(&aWindowIdFinder);
+  SDL_Window *mSimWindow = SDL_GetWindowFromID(aWindowIdFinder.window.windowID);
+
+  // Setup the keypad window
+  SDL_Window *keypadWindow = keypad_gui_setup();
+
+  // Raise the simulator window, sometimes it will get buried on macOS
+  SDL_RaiseWindow(mSimWindow);
+
+  // Arrange our windows nicely
+  int x, y;
+  SDL_GetWindowPosition(keypadWindow, &x, &y);
+  SDL_SetWindowPosition(mSimWindow, x - (SDL_HOR_RES * SDL_ZOOM) / 2 - 10, y);
+  SDL_SetWindowPosition(keypadWindow, x + (SDL_HOR_RES * SDL_ZOOM) / 2 + 10, y);
 
 }
