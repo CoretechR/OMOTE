@@ -1,13 +1,9 @@
-#define USE_NIMBLE_200
-// with USE_NIMBLE_200, please also change platformio.ini:
-// either NimBLE 1.4.2
-//  // #define USE_NIMBLE_200
-//	h2zero/NimBLE-Arduino@^1.4.2
-//	;https://github.com/h2zero/NimBLE-Arduino#master
-// or NimBLE 2.0.0 (master branch)
-//  #define USE_NIMBLE_200
-//	;h2zero/NimBLE-Arduino@^1.4.2
-//	https://github.com/h2zero/NimBLE-Arduino#master
+// This include is only needed to determine if NimBLE 1.4.x or 2.0.x is used.
+// NimBLE 2.0.x is using nimble core 1.5, and only in this version BLE_STORE_OBJ_TYPE_LOCAL_IRK is defined
+#include "nimble/nimble/host/include/host/ble_store.h"
+#if defined(BLE_STORE_OBJ_TYPE_LOCAL_IRK)
+#define NIMBLE_ARDUINO_2_x
+#endif
 
 #ifndef ESP32_BLE_KEYBOARD_H
 #define ESP32_BLE_KEYBOARD_H
@@ -190,7 +186,7 @@ public:
   void set_product_id(uint16_t pid);
   void set_version(uint16_t version);
 protected:
-  #if !defined(USE_NIMBLE_200)
+  #if !defined(NIMBLE_ARDUINO_2_x)
   // NimBLEServerCallbacks
   virtual void onConnect(NimBLEServer* pServer) override;
   virtual void onDisconnect(NimBLEServer* pServer) override;

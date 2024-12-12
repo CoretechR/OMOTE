@@ -108,7 +108,7 @@ void BleKeyboard::begin(void)
   pServer->setCallbacks(this);
 
   hid = new NimBLEHIDDevice(pServer);
-  #if !defined(USE_NIMBLE_200)
+  #if !defined(NIMBLE_ARDUINO_2_x)
   inputKeyboard = hid->inputReport(KEYBOARD_ID);  // <-- input REPORTID from report map
   outputKeyboard = hid->outputReport(KEYBOARD_ID);
   inputMediaKeys = hid->inputReport(MEDIA_KEYS_ID);
@@ -120,7 +120,7 @@ void BleKeyboard::begin(void)
 
   outputKeyboard->setCallbacks(this);
 
-  #if !defined(USE_NIMBLE_200)
+  #if !defined(NIMBLE_ARDUINO_2_x)
   hid->manufacturer()->setValue(deviceManufacturer);
 
   hid->pnp(0x02, vid, pid, version);
@@ -135,7 +135,7 @@ void BleKeyboard::begin(void)
 
   NimBLEDevice::setSecurityAuth(true, true, true);
 
-  #if !defined(USE_NIMBLE_200)
+  #if !defined(NIMBLE_ARDUINO_2_x)
   hid->reportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
   #else
   hid->setReportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
@@ -144,7 +144,7 @@ void BleKeyboard::begin(void)
 
   advertising = pServer->getAdvertising();
   advertising->setAppearance(HID_KEYBOARD);
-  #if !defined(USE_NIMBLE_200)
+  #if !defined(NIMBLE_ARDUINO_2_x)
   advertising->addServiceUUID(hid->hidService()->getUUID());
   advertising->setScanResponse(false);
   #else
@@ -529,7 +529,7 @@ size_t BleKeyboard::write(const uint8_t *buffer, size_t size) {
 	return n;
 }
 
-#if !defined(USE_NIMBLE_200)
+#if !defined(NIMBLE_ARDUINO_2_x)
 void BleKeyboard::onConnect(NimBLEServer* pServer) {
 #else
 void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) {
@@ -539,7 +539,7 @@ void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) {
   std::string message = "";
   char buffer[200];
   if (pServer->getConnectedCount() == 1) {
-    #if !defined(USE_NIMBLE_200)
+    #if !defined(NIMBLE_ARDUINO_2_x)
     NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
     #endif
     sprintf(buffer, "BleKeyboard: onConnect: client %s%s, id %s%s, handle %u, isBonded %d",
@@ -560,14 +560,14 @@ void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) {
 
 }
 
-#if defined(USE_NIMBLE_200)
+#if defined(NIMBLE_ARDUINO_2_x)
 void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, std::string& name) {
   this->connected = true;
   this->_advertising = false;
   std::string message = "";
   char buffer[200];
   if (pServer->getConnectedCount() == 1) {
-    #if !defined(USE_NIMBLE_200)
+    #if !defined(NIMBLE_ARDUINO_2_x)
     NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
     #endif
     sprintf(buffer, "BleKeyboard: onConnect with name: client %s%s, id %s%s, handle %u, isBonded %d, name %s",
@@ -590,7 +590,7 @@ void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, std
 }
 #endif
 
-#if !defined(USE_NIMBLE_200)
+#if !defined(NIMBLE_ARDUINO_2_x)
 void BleKeyboard::onDisconnect(NimBLEServer* pServer) {
 #else
 void BleKeyboard::onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) {
@@ -601,7 +601,7 @@ void BleKeyboard::onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, 
   if (pServer->getConnectedCount() == 0) {
   	sprintf(buffer, "BleKeyboard: onDisconnect: no clients connected");
   } else if (pServer->getConnectedCount() == 1) {
-    #if !defined(USE_NIMBLE_200)
+    #if !defined(NIMBLE_ARDUINO_2_x)
     NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
     #endif
     sprintf(buffer, "BleKeyboard: onDisconnect: there is still a client connected %s%s, id %s%s, handle %u, isBonded %d. How can it be???",
@@ -622,7 +622,7 @@ void BleKeyboard::onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, 
 
 }
 
-#if defined(USE_NIMBLE_200)
+#if defined(NIMBLE_ARDUINO_2_x)
 void BleKeyboard::onIdentity(NimBLEConnInfo& connInfo) {
   std::string message = "";
   char buffer[200];
@@ -641,7 +641,7 @@ void BleKeyboard::onIdentity(NimBLEConnInfo& connInfo) {
 }
 #endif
 
-#if !defined(USE_NIMBLE_200)
+#if !defined(NIMBLE_ARDUINO_2_x)
 void BleKeyboard::onWrite(NimBLECharacteristic* pCharacteristic) {
 #else
 void BleKeyboard::onWrite(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo& connInfo) {
@@ -702,7 +702,7 @@ void BleKeyboard::startAdvertisingForAll() {
   this->prepareAdvertising();
 
   advertising->setScanFilter(false, false);
-  #if !defined(USE_NIMBLE_200)
+  #if !defined(NIMBLE_ARDUINO_2_x)
   advertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);
   #else
   advertising->setConnectableMode(BLE_GAP_CONN_MODE_UND);
@@ -730,7 +730,7 @@ void BleKeyboard::startAdvertisingWithWhitelist(std::string peersAllowed) {
   }
 
   advertising->setScanFilter(true, true);
-  #if !defined(USE_NIMBLE_200)
+  #if !defined(NIMBLE_ARDUINO_2_x)
   advertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);
   #else
   advertising->setConnectableMode(BLE_GAP_CONN_MODE_UND);
@@ -754,7 +754,7 @@ void BleKeyboard::startAdvertisingDirected(std::string peerAddress, bool isRando
     directedAddress = NimBLEAddress(peerAddress, BLE_ADDR_PUBLIC);
   }
   advertising->setScanFilter(false, false);
-  #if !defined(USE_NIMBLE_200)
+  #if !defined(NIMBLE_ARDUINO_2_x)
   advertising->setAdvertisementType(BLE_GAP_CONN_MODE_DIR);
   advertising->start(BLE_HS_FOREVER, nullptr, &directedAddress);
   #else
@@ -791,7 +791,7 @@ void BleKeyboard::printConnectedClients() {
 
   std::vector<uint16_t> m_connectedPeersVec = NimBLEDevice::getServer()->getPeerDevices();
   for (std::vector<uint16_t>::iterator it = m_connectedPeersVec.begin() ; it != m_connectedPeersVec.end(); ++it) {
-    #if !defined(USE_NIMBLE_200)
+    #if !defined(NIMBLE_ARDUINO_2_x)
     NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerIDInfo(*it);
     #else
     NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(*it);
@@ -931,7 +931,7 @@ bool BleKeyboard::forceConnectionToAddress(std::string peerAddress) {
       ESP_LOGD(LOG_TAG, "BleKeyboard: already connected, no specific address was provided, nothing to do.\n");
       return true;
     } else {
-      #if !defined(USE_NIMBLE_200)
+      #if !defined(NIMBLE_ARDUINO_2_x)
       NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerIDInfo(0);
       #else
       NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(0);
