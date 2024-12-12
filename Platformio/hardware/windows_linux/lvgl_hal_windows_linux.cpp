@@ -106,8 +106,8 @@ void init_lvgl_HAL() {
   // Arrange our windows nicely
   int x, y;
   SDL_GetWindowPosition(keypadWindow, &x, &y);
-  SDL_SetWindowPosition(mSimWindow, x - (SDL_HOR_RES * SDL_ZOOM) / 2 + 30, y);
-  SDL_SetWindowPosition(keypadWindow, x + (SDL_HOR_RES * SDL_ZOOM) / 2 - 30, y);
+  SDL_SetWindowPosition(mSimWindow, x - (SDL_HOR_RES * SDL_ZOOM) / 2 - 10, y);
+  SDL_SetWindowPosition(keypadWindow, x + (SDL_HOR_RES * SDL_ZOOM) / 2 + 10, y);
 
   /* Tick init.
    * You have to call 'lv_tick_inc()' in periodically to inform lvgl about how much time were elapsed
