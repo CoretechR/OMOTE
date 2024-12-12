@@ -143,7 +143,7 @@ void delete_bonds_if_NimBLE_version_changed() {
     nvs_commit(nimble_bond_handle);
     nvs_close(nimble_bond_handle);
     // ESP needs to be restarted, because NVS data is still in nimble RAM
-    Serial.printf("  NSV partition 'nimble_bond' was erased. Now we have to restart the ESP32 to also clear nimble RAM.\r\n");
+    Serial.printf("  NVS partition 'nimble_bond' was erased. Now we have to restart the ESP32 to also clear nimble RAM.\r\n");
     ESP.restart();
   } else {
     nvs_close(nimble_bond_handle);
