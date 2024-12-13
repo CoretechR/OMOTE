@@ -2,7 +2,6 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "../util_hal_windows_linux.h"
 
 #include "key_map.h"
 
@@ -19,7 +18,7 @@ uint32_t KEY_HOLD_TIME = 500; // Keys are considered held after 500 ms
 // The state to track a single key since the GUI is mouse based
 ActiveKey activeKey = {' ', 0, GUI_KEY_IDLE};
 guiKeyStates lastGUIKeyState = GUI_KEY_IDLE;
-long long holdTimer;
+Uint64 holdTimer;
 
 // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
 int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
@@ -81,7 +80,7 @@ int event_filter(void *userdata, SDL_Event * event) {
             activeKey.key = key.key;
             activeKey.state = event->type == SDL_MOUSEBUTTONDOWN ? GUI_KEY_PRESSED : GUI_KEY_RELEASED;
             activeKey.keyCode = key.id;
-            holdTimer = SDL_MOUSEBUTTONDOWN ? current_timestamp_hal_windowsLinux() : 0;
+            holdTimer = SDL_MOUSEBUTTONDOWN ? SDL_GetTicks64() : 0;
             break;
           }
         }
@@ -168,7 +167,7 @@ KeyState pumpKeys() {
   lastGUIKeyState = activeKey.state;
 
   // If the key has been pressed long enough to be considered held, change the state
-  if (activeKey.state == GUI_KEY_PRESSED && (current_timestamp_hal_windowsLinux() - holdTimer) > KEY_HOLD_TIME) {
+  if (activeKey.state == GUI_KEY_PRESSED && (SDL_GetTicks64() - holdTimer) > KEY_HOLD_TIME) {
     activeKey.state = GUI_KEY_HOLD;
   }
 
