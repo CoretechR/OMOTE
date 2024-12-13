@@ -66,7 +66,7 @@ struct keypad_key {
 	keypad_keyStates kstate;
 	boolean stateChanged;
 };
-keypad_key keys[10];
+keypad_key keys[LIST_MAX];
 
 void keys_getKeys_HAL(void* ptr) {
   customKeypad.getKeys();
