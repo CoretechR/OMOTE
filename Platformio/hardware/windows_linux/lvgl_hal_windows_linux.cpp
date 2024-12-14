@@ -1,10 +1,10 @@
 #include <stdlib.h>
+#include <sys/time.h>
 #include <lvgl.h>
 #include <SDL2/SDL_thread.h>
 #include "sdl/sdl.h"
 #include "SDL2/SDL_events.h"
 
-#include "util_hal_windows_linux.h"
 #include "keypad_gui/keypad_gui.h"
 
 /**
@@ -14,16 +14,14 @@
  */
 static int tick_thread(void * data)
 {
-    (void)data;
-
-    long long lastTimestamp = current_timestamp_hal_windowsLinux();
-    long long newTimestamp = 0;
+    Uint64 lastTimestamp = SDL_GetTicks64();
+    Uint64 newTimestamp = 0;
     while(1) {
         // we don't use this blackbox
         // SDL_Delay(5);   /*Sleep for 5 millisecond*/
         // lv_tick_inc(5); /*Tell lvgl that 5 milliseconds were elapsed*/
-        
-        newTimestamp = current_timestamp_hal_windowsLinux();
+
+        newTimestamp = SDL_GetTicks64();
         if ((newTimestamp - lastTimestamp) > 5) {
           lv_tick_inc(newTimestamp - lastTimestamp);
           lastTimestamp = newTimestamp;
