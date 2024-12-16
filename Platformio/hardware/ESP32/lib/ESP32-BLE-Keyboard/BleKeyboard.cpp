@@ -726,7 +726,7 @@ void BleKeyboard::startAdvertisingWithWhitelist(std::string peersAllowed) {
     std::string address;
     std::getline(ss, address, ',');
     ESP_LOGI(LOG_TAG, "Will add %s to whitelist", address.c_str());
-    NimBLEDevice::whiteListAdd(NimBLEAddress(address));
+    NimBLEDevice::whiteListAdd(NimBLEAddress(address, BLE_ADDR_PUBLIC));
   }
 
   advertising->setScanFilter(true, true);
