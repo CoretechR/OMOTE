@@ -5,6 +5,7 @@
 
 #if (ENABLE_KEYBOARD_BLE == 1)
 
+// commands without a specific address
 uint16_t KEYBOARD_BLE_UP                  ; //"Keyboard_ble_up";
 uint16_t KEYBOARD_BLE_DOWN                ; //"Keyboard_ble_down";
 uint16_t KEYBOARD_BLE_RIGHT               ; //"Keyboard_ble_right";
@@ -25,81 +26,89 @@ uint16_t KEYBOARD_BLE_MUTE                ; //"Keyboard_ble_mute";
 uint16_t KEYBOARD_BLE_VOLUME_INCREMENT    ; //"Keyboard_ble_volume_increment";
 uint16_t KEYBOARD_BLE_VOLUME_DECREMENT    ; //"Keyboard_ble_volume_decrement";
 
-void register_device_keyboard_ble() {
-  // here with the BLE keyboard, we first need to get the unique ID, because this ID has to be used when calling register_command() itself, so we need to already have the id
-  get_uniqueCommandID(&KEYBOARD_BLE_UP)                 ;
-  get_uniqueCommandID(&KEYBOARD_BLE_DOWN)               ;
-  get_uniqueCommandID(&KEYBOARD_BLE_RIGHT)              ;
-  get_uniqueCommandID(&KEYBOARD_BLE_LEFT)               ;
-  get_uniqueCommandID(&KEYBOARD_BLE_SELECT)             ;
-  get_uniqueCommandID(&KEYBOARD_BLE_SENDSTRING)         ;
-  get_uniqueCommandID(&KEYBOARD_BLE_BACK)               ;
-  get_uniqueCommandID(&KEYBOARD_BLE_HOME)               ;
-  get_uniqueCommandID(&KEYBOARD_BLE_MENU)               ;
-  get_uniqueCommandID(&KEYBOARD_BLE_SCAN_PREVIOUS_TRACK);
-  get_uniqueCommandID(&KEYBOARD_BLE_REWIND_LONG)        ;
-  get_uniqueCommandID(&KEYBOARD_BLE_REWIND)             ;
-  get_uniqueCommandID(&KEYBOARD_BLE_PLAYPAUSE)          ;
-  get_uniqueCommandID(&KEYBOARD_BLE_FASTFORWARD)        ;
-  get_uniqueCommandID(&KEYBOARD_BLE_FASTFORWARD_LONG)   ;
-  get_uniqueCommandID(&KEYBOARD_BLE_SCAN_NEXT_TRACK)    ;
-  get_uniqueCommandID(&KEYBOARD_BLE_MUTE)               ;
-  get_uniqueCommandID(&KEYBOARD_BLE_VOLUME_INCREMENT)   ;
-  get_uniqueCommandID(&KEYBOARD_BLE_VOLUME_DECREMENT)   ;
+// commands with specific address
+uint16_t KEYBOARD_BLE_RIGHT_FIRETV;
+uint16_t KEYBOARD_BLE_LEFT_NVIDIASHIELD;
 
-  register_command_withID( KEYBOARD_BLE_UP                  , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_UP)                 }));
-  register_command_withID( KEYBOARD_BLE_DOWN                , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_DOWN)               }));
-  register_command_withID( KEYBOARD_BLE_RIGHT               , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_RIGHT)              }));
-  register_command_withID( KEYBOARD_BLE_LEFT                , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_LEFT)               }));
-  register_command_withID( KEYBOARD_BLE_SELECT              , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_SELECT)             }));
-  register_command_withID( KEYBOARD_BLE_SENDSTRING          , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_SENDSTRING)         })); // payload must be set when calling commandHandler
-  register_command_withID( KEYBOARD_BLE_BACK                , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_BACK)               }));
-  register_command_withID( KEYBOARD_BLE_HOME                , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_HOME)               }));
-  register_command_withID( KEYBOARD_BLE_MENU                , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_MENU)               }));
-  register_command_withID( KEYBOARD_BLE_SCAN_PREVIOUS_TRACK , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_SCAN_PREVIOUS_TRACK)}));
-  register_command_withID( KEYBOARD_BLE_REWIND_LONG         , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_REWIND_LONG)        }));
-  register_command_withID( KEYBOARD_BLE_REWIND              , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_REWIND)             }));
-  register_command_withID( KEYBOARD_BLE_PLAYPAUSE           , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_PLAYPAUSE)          }));
-  register_command_withID( KEYBOARD_BLE_FASTFORWARD         , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_FASTFORWARD)        }));
-  register_command_withID( KEYBOARD_BLE_FASTFORWARD_LONG    , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_FASTFORWARD_LONG)   }));
-  register_command_withID( KEYBOARD_BLE_SCAN_NEXT_TRACK     , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_SCAN_NEXT_TRACK)    }));
-  register_command_withID( KEYBOARD_BLE_MUTE                , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_MUTE)               }));
-  register_command_withID( KEYBOARD_BLE_VOLUME_INCREMENT    , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_VOLUME_INCREMENT)   }));
-  register_command_withID( KEYBOARD_BLE_VOLUME_DECREMENT    , makeCommandData(BLE_KEYBOARD, {std::to_string(KEYBOARD_BLE_VOLUME_DECREMENT)   }));
+void register_device_keyboard_ble() {
+  // The commandData should either
+  // a) contain nothing, which means no specific address the command has to be sent to. You can also use this if you only have one single peer.
+  // b) or contain an address of the peer the BleKeyboard should sent the command to. You need to use addresses if you have more than one peer.
+  register_command(&KEYBOARD_BLE_UP                  , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_DOWN                , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_RIGHT               , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_LEFT                , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_SELECT              , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_SENDSTRING          , makeCommandData(BLE_KEYBOARD, {})); // payload must be set when calling commandHandler
+  register_command(&KEYBOARD_BLE_BACK                , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_HOME                , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_MENU                , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_SCAN_PREVIOUS_TRACK , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_REWIND_LONG         , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_REWIND              , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_PLAYPAUSE           , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_FASTFORWARD         , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_FASTFORWARD_LONG    , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_SCAN_NEXT_TRACK     , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_MUTE                , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_VOLUME_INCREMENT    , makeCommandData(BLE_KEYBOARD, {}));
+  register_command(&KEYBOARD_BLE_VOLUME_DECREMENT    , makeCommandData(BLE_KEYBOARD, {}));
+
+// commands with specific address
+// In the commandData, both the address and the command to be sent have to be provided.
+//   In the commandData, only provide a command that already has received its uniqueCommandID. So don't provide the same command as first parameter AND in the commandData.
+  //register_command(&KEYBOARD_BLE_RIGHT_FIRETV        , makeCommandData(BLE_KEYBOARD, {"11:22:33:44:55:66", std::to_string(KEYBOARD_BLE_RIGHT)}));
+  //register_command(&KEYBOARD_BLE_LEFT_NVIDIASHIELD   , makeCommandData(BLE_KEYBOARD, {"77:88:99:aa:bb:cc", std::to_string(KEYBOARD_BLE_LEFT)}));
 }
 
-void keyboard_ble_executeCommand(uint16_t command, std::string additionalPayload) {
+void keyboard_ble_executeCommand(uint16_t command, std::list<std::string> commandPayloads, std::string additionalPayload) {
   bool doLog = false;
 
-  if (doLog) {
-    if (keyboardBLE_isConnected()) {
-      omote_log_d("BLE keyboard connected, can send key\r\n");
-    } else {
-      omote_log_d("BLE keyboard NOT connected, cannot send key\r\n");
-    }
+  // in the commandPayloads, we either have
+  // a) nothing
+  // b) or the address of the device this command has to be sent to, and the command that shall be sent
+
+  // look if an explicit address was provided
+  std::string address = "";
+  uint16_t commandToBeSent;
+  if (commandPayloads.size() == 2) {
+    address = commandPayloads.front();
+    commandToBeSent = std::stoi(commandPayloads.back());
+  } else {
+    commandToBeSent = command;
+  }
+  omote_log_v("  command          : %d\r\n", command);
+  omote_log_v("  commandToBeSent  : %d\r\n", commandToBeSent);
+  omote_log_v("  address          : %s\r\n", address.c_str());
+  omote_log_v("  additionalPayload: %s\r\n", additionalPayload.c_str());
+
+  // connect to a specific address, and ensure that there is a connection
+  if (!keyboardBLE_forceConnectionToAddress(address)) {
+    omote_log_w("BLE keyboard could not be connected, cannot send key\r\n");
+    return;
   }
 
-  if (command == KEYBOARD_BLE_UP) {
+  if (commandToBeSent == KEYBOARD_BLE_UP) {
     if (doLog) {omote_log_d("UP received\r\n");}
     keyboardBLE_write(BLE_KEY_UP_ARROW);
 
-  } else if (command == KEYBOARD_BLE_DOWN) {
+  } else if (commandToBeSent == KEYBOARD_BLE_DOWN) {
     if (doLog) {omote_log_d("DOWN received\r\n");}
     keyboardBLE_write(BLE_KEY_DOWN_ARROW);
 
-  } else if (command == KEYBOARD_BLE_RIGHT) {
+  } else if (commandToBeSent == KEYBOARD_BLE_RIGHT) {
     if (doLog) {omote_log_d("RIGHT received\r\n");}
     keyboardBLE_write(BLE_KEY_RIGHT_ARROW);
 
-  } else if (command == KEYBOARD_BLE_LEFT) {
+  } else if (commandToBeSent == KEYBOARD_BLE_LEFT) {
     if (doLog) {omote_log_d("LEFT received\r\n");}
     keyboardBLE_write(BLE_KEY_LEFT_ARROW);
 
-  } else if (command == KEYBOARD_BLE_SELECT) {
+  } else if (commandToBeSent == KEYBOARD_BLE_SELECT) {
     if (doLog) {omote_log_d("SELECT received\r\n");}
     keyboardBLE_write(BLE_KEY_RETURN);
 
-  } else if (command == KEYBOARD_BLE_SENDSTRING) {
+  } else if (commandToBeSent == KEYBOARD_BLE_SENDSTRING) {
     if (doLog) {omote_log_d("SENDSTRING received\r\n");}
     if (additionalPayload != "") {
       keyboardBLE_sendString(additionalPayload.c_str());
@@ -107,19 +116,19 @@ void keyboard_ble_executeCommand(uint16_t command, std::string additionalPayload
 
 
 
-  } else if (command == KEYBOARD_BLE_BACK) {
+  } else if (commandToBeSent == KEYBOARD_BLE_BACK) {
     if (doLog) {omote_log_d("BACK received\r\n");}
     // test which one works best for your device
     // keyboardBLE_write(KEY_ESC);
     consumerControlBLE_write(BLE_KEY_MEDIA_WWW_BACK);
 
-  } else if (command == KEYBOARD_BLE_HOME) {
+  } else if (commandToBeSent == KEYBOARD_BLE_HOME) {
     if (doLog) {omote_log_d("HOME received\r\n");}
     // test which one works best for your device
     // keyboardBLE_home();
     consumerControlBLE_write(BLE_KEY_MEDIA_WWW_HOME);
 
-  } else if (command == KEYBOARD_BLE_MENU) {
+  } else if (commandToBeSent == KEYBOARD_BLE_MENU) {
     if (doLog) {omote_log_d("MENU received\r\n");}
     keyboardBLE_write(0xED); // 0xDA + 13 = 0xED
 
@@ -128,49 +137,49 @@ void keyboard_ble_executeCommand(uint16_t command, std::string additionalPayload
   // for more consumerControl codes see
   // https://github.com/espressif/arduino-esp32/blob/master/libraries/USB/src/USBHIDConsumerControl.h
   // https://github.com/adafruit/Adafruit_CircuitPython_HID/blob/main/adafruit_hid/consumer_control_code.py
-  } else if (command == KEYBOARD_BLE_SCAN_PREVIOUS_TRACK) {
+  } else if (commandToBeSent == KEYBOARD_BLE_SCAN_PREVIOUS_TRACK) {
     if (doLog) {omote_log_d("SCAN_PREVIOUS_TRACK received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_PREVIOUS_TRACK);
 
-  } else if (command == KEYBOARD_BLE_REWIND_LONG) {
+  } else if (commandToBeSent == KEYBOARD_BLE_REWIND_LONG) {
     if (doLog) {omote_log_d("REWIND_LONG received\r\n");}
     //keyboardBLE_longpress(KEY_LEFT_ARROW);
     consumerControlBLE_longpress(BLE_KEY_MEDIA_REWIND);
 
-  } else if (command == KEYBOARD_BLE_REWIND) {
+  } else if (commandToBeSent == KEYBOARD_BLE_REWIND) {
     if (doLog) {omote_log_d("REWIND received\r\n");}
     //keyboardBLE_write(KEY_LEFT_ARROW);
     consumerControlBLE_write(BLE_KEY_MEDIA_REWIND);
 
-  } else if (command == KEYBOARD_BLE_PLAYPAUSE) {
+  } else if (commandToBeSent == KEYBOARD_BLE_PLAYPAUSE) {
     if (doLog) {omote_log_d("PLAYPAUSE received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_PLAY_PAUSE);
 
-  } else if (command == KEYBOARD_BLE_FASTFORWARD) {
+  } else if (commandToBeSent == KEYBOARD_BLE_FASTFORWARD) {
     if (doLog) {omote_log_d("FASTFORWARD received\r\n");}
     //keyboardBLE_write(KEY_RIGHT_ARROW);
     consumerControlBLE_write(BLE_KEY_MEDIA_FASTFORWARD);
 
-  } else if (command == KEYBOARD_BLE_FASTFORWARD_LONG) {
+  } else if (commandToBeSent == KEYBOARD_BLE_FASTFORWARD_LONG) {
     if (doLog) {omote_log_d("FASTFORWARD_LONG received\r\n");}
     //keyboardBLE_longpress(KEY_RIGHT_ARROW);
     consumerControlBLE_longpress(BLE_KEY_MEDIA_FASTFORWARD);
 
-  } else if (command == KEYBOARD_BLE_SCAN_NEXT_TRACK) {
+  } else if (commandToBeSent == KEYBOARD_BLE_SCAN_NEXT_TRACK) {
     if (doLog) {omote_log_d("SCAN_NEXT_TRACK received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_NEXT_TRACK);
 
 
 
-  } else if (command == KEYBOARD_BLE_MUTE) {
+  } else if (commandToBeSent == KEYBOARD_BLE_MUTE) {
     if (doLog) {omote_log_d("MUTE received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_MUTE);
 
-  } else if (command == KEYBOARD_BLE_VOLUME_INCREMENT) {
+  } else if (commandToBeSent == KEYBOARD_BLE_VOLUME_INCREMENT) {
     if (doLog) {omote_log_d("VOLUME_INCREMENT received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_VOLUME_UP);
 
-  } else if (command == KEYBOARD_BLE_VOLUME_DECREMENT) {
+  } else if (commandToBeSent == KEYBOARD_BLE_VOLUME_DECREMENT) {
     if (doLog) {omote_log_d("VOLUME_DECREMENT received\r\n");}
     consumerControlBLE_write(BLE_KEY_MEDIA_VOLUME_DOWN);
 

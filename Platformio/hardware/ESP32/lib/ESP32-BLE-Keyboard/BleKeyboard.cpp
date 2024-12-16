@@ -1,17 +1,10 @@
+#include <sstream>
 #include "BleKeyboard.h"
 
-#if defined(USE_NIMBLE)
 #include <NimBLEDevice.h>
 #include <NimBLEServer.h>
 #include <NimBLEUtils.h>
 #include <NimBLEHIDDevice.h>
-#else
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
-#include "BLE2902.h"
-#include "BLEHIDDevice.h"
-#endif // USE_NIMBLE
 #include "HIDTypes.h"
 #include <driver/adc.h>
 #include "sdkconfig.h"
@@ -22,7 +15,7 @@
   #define LOG_TAG ""
 #else
   #include "esp_log.h"
-  static const char* LOG_TAG = "BLEDevice";
+  static const char* LOG_TAG = "NimBLEDevice";
 #endif
 
 
@@ -59,6 +52,7 @@ static const uint8_t _hidReportDescriptor[] = {
   REPORT_COUNT(1),    0x06,          //   REPORT_COUNT (6) ; 6 bytes (Keys)
   REPORT_SIZE(1),     0x08,          //   REPORT_SIZE(8)
   LOGICAL_MINIMUM(1), 0x00,          //   LOGICAL_MINIMUM(0)
+  // https://github.com/T-vK/ESP32-BLE-Keyboard/issues/11
   LOGICAL_MAXIMUM(1), 0x65,          //   LOGICAL_MAXIMUM(0x65) ; 101 keys
   USAGE_PAGE(1),      0x07,          //   USAGE_PAGE (Kbrd/Keypad)
   USAGE_MINIMUM(1),   0x00,          //   USAGE_MINIMUM (0)
@@ -109,51 +103,84 @@ BleKeyboard::BleKeyboard(std::string deviceName, std::string deviceManufacturer,
 
 void BleKeyboard::begin(void)
 {
-  BLEDevice::init(deviceName);
-  BLEServer* pServer = BLEDevice::createServer();
+  NimBLEDevice::init(deviceName);
+  NimBLEServer* pServer = NimBLEDevice::createServer();
   pServer->setCallbacks(this);
 
-  hid = new BLEHIDDevice(pServer);
+  hid = new NimBLEHIDDevice(pServer);
+  #if !defined(NIMBLE_ARDUINO_2_x)
   inputKeyboard = hid->inputReport(KEYBOARD_ID);  // <-- input REPORTID from report map
   outputKeyboard = hid->outputReport(KEYBOARD_ID);
   inputMediaKeys = hid->inputReport(MEDIA_KEYS_ID);
+  #else
+  inputKeyboard = hid->getInputReport(KEYBOARD_ID);  // <-- input REPORTID from report map
+  outputKeyboard = hid->getOutputReport(KEYBOARD_ID);
+  inputMediaKeys = hid->getInputReport(MEDIA_KEYS_ID);
+  #endif
 
   outputKeyboard->setCallbacks(this);
 
+  #if !defined(NIMBLE_ARDUINO_2_x)
   hid->manufacturer()->setValue(deviceManufacturer);
 
   hid->pnp(0x02, vid, pid, version);
   hid->hidInfo(0x00, 0x01);
+  #else
+  hid->setManufacturer(deviceManufacturer);
+
+  hid->setPnp(0x02, vid, pid, version);
+  hid->setHidInfo(0x00, 0x01);
+  #endif
 
 
-#if defined(USE_NIMBLE)
+  NimBLEDevice::setSecurityAuth(true, true, true);
 
-  BLEDevice::setSecurityAuth(true, true, true);
-
-#else
-
-  BLESecurity* pSecurity = new BLESecurity();
-  pSecurity->setAuthenticationMode(ESP_LE_AUTH_REQ_SC_MITM_BOND);
-
-#endif // USE_NIMBLE
-
+  #if !defined(NIMBLE_ARDUINO_2_x)
   hid->reportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
+  #else
+  hid->setReportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
+  #endif
   hid->startServices();
-
-  onStarted(pServer);
 
   advertising = pServer->getAdvertising();
   advertising->setAppearance(HID_KEYBOARD);
+  #if !defined(NIMBLE_ARDUINO_2_x)
   advertising->addServiceUUID(hid->hidService()->getUUID());
   advertising->setScanResponse(false);
-  advertising->start();
+  #else
+  advertising->addServiceUUID(hid->getHidService()->getUUID());
+  advertising->enableScanResponse(false);
+  #endif
+  
+  /*
+    Don't start advertising here. Call one of
+      startAdvertisingForAll();
+      startAdvertisingWithWhitelist(std::string peersAllowed);
+      startAdvertisingDirected(std::string peerAddress, bool isRandomAddress);
+    In case only one peer is bonded, startAdvertisingForAll() is called on initialisation. This is done in startAdvertisingIfExactlyOneBondExists(), which is called in file "keyboard_ble_hal_esp32.cpp" in "void init_keyboardBLE_HAL()"
+  */
+  //advertising->start();
+  //this->_advertising = true;
+
+  // don't do automatic advertising on disconnect
+  pServer->advertiseOnDisconnect(false);
+
   hid->setBatteryLevel(batteryLevel);
 
-  ESP_LOGD(LOG_TAG, "Advertising started!");
+  ESP_LOGD(LOG_TAG, "Finished BleKeyboard::begin");
 }
 
 void BleKeyboard::end(void)
 {
+  // deinit() does a completely shutdown of the device. Too much for our needs.
+  // * @brief Shutdown the NimBLE stack/controller.
+  // * @param [in] clearAll If true, deletes all server/advertising/scan/client objects after deinitializing.
+  // * @note If clearAll is true when called, any references to the created objects become invalid.
+  // NimBLEDevice::deinit();
+}
+
+bool BleKeyboard::isAdvertising(void) {
+  return this->_advertising;
 }
 
 bool BleKeyboard::isConnected(void) {
@@ -198,11 +225,9 @@ void BleKeyboard::sendReport(KeyReport* keys)
   {
     this->inputKeyboard->setValue((uint8_t*)keys, sizeof(KeyReport));
     this->inputKeyboard->notify();
-#if defined(USE_NIMBLE)        
     // vTaskDelay(delayTicks);
     this->delay_ms(_delay_ms);
-#endif // USE_NIMBLE
-  }	
+  }
 }
 
 void BleKeyboard::sendReport(MediaKeyReport* keys)
@@ -211,11 +236,9 @@ void BleKeyboard::sendReport(MediaKeyReport* keys)
   {
     this->inputMediaKeys->setValue((uint8_t*)keys, sizeof(MediaKeyReport));
     this->inputMediaKeys->notify();
-#if defined(USE_NIMBLE)        
     //vTaskDelay(delayTicks);
     this->delay_ms(_delay_ms);
-#endif // USE_NIMBLE
-  }	
+  }
 }
 
 extern
@@ -506,37 +529,124 @@ size_t BleKeyboard::write(const uint8_t *buffer, size_t size) {
 	return n;
 }
 
-void BleKeyboard::onConnect(BLEServer* pServer) {
+#if !defined(NIMBLE_ARDUINO_2_x)
+void BleKeyboard::onConnect(NimBLEServer* pServer) {
+#else
+void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) {
+#endif
   this->connected = true;
-
-#if !defined(USE_NIMBLE)
-
-  BLE2902* desc = (BLE2902*)this->inputKeyboard->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
-  desc->setNotifications(true);
-  desc = (BLE2902*)this->inputMediaKeys->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
-  desc->setNotifications(true);
-
-#endif // !USE_NIMBLE
+  this->_advertising = false;
+  std::string message = "";
+  char buffer[200];
+  if (pServer->getConnectedCount() == 1) {
+    #if !defined(NIMBLE_ARDUINO_2_x)
+    NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
+    #endif
+    sprintf(buffer, "BleKeyboard: onConnect: client %s%s, id %s%s, handle %u, isBonded %d",
+      NimBLEAddress(connInfo.getAddress()).toString().c_str(),
+      this->getAddressTypeStr(connInfo.getAddress()).c_str(),
+      NimBLEAddress(connInfo.getIdAddress()).toString().c_str(),
+      this->getAddressTypeStr(connInfo.getIdAddress()).c_str(),
+      connInfo.getConnHandle(),
+      connInfo.isBonded());
+  } else {
+    sprintf(buffer, "BleKeyboard: onConnect: more than one device connected. How can it be???");
+  }
+	ESP_LOGI(LOG_TAG, "%s", buffer);
+  if (thisBLEKeyboardMessage_cb != NULL) {
+    message = buffer;
+    thisBLEKeyboardMessage_cb(message);
+  }
 
 }
 
-void BleKeyboard::onDisconnect(BLEServer* pServer) {
+#if defined(NIMBLE_ARDUINO_2_x)
+void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, std::string& name) {
+  this->connected = true;
+  this->_advertising = false;
+  std::string message = "";
+  char buffer[200];
+  if (pServer->getConnectedCount() == 1) {
+    #if !defined(NIMBLE_ARDUINO_2_x)
+    NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
+    #endif
+    sprintf(buffer, "BleKeyboard: onConnect with name: client %s%s, id %s%s, handle %u, isBonded %d, name %s",
+      NimBLEAddress(connInfo.getAddress()).toString().c_str(),
+      this->getAddressTypeStr(connInfo.getAddress()).c_str(),
+      NimBLEAddress(connInfo.getIdAddress()).toString().c_str(),
+      this->getAddressTypeStr(connInfo.getIdAddress()).c_str(),
+      connInfo.getConnHandle(),
+      connInfo.isBonded(),
+      name.c_str());
+  } else {
+    sprintf(buffer, "BleKeyboard: onConnect with name: more than one device connected. How can it be???");
+  }
+	ESP_LOGI(LOG_TAG, "%s", buffer);
+  if (thisBLEKeyboardMessage_cb != NULL) {
+    message = buffer;
+    thisBLEKeyboardMessage_cb(message);
+  }
+
+}
+#endif
+
+#if !defined(NIMBLE_ARDUINO_2_x)
+void BleKeyboard::onDisconnect(NimBLEServer* pServer) {
+#else
+void BleKeyboard::onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) {
+#endif
   this->connected = false;
+  std::string message = "";
+  char buffer[200];
+  if (pServer->getConnectedCount() == 0) {
+  	sprintf(buffer, "BleKeyboard: onDisconnect: no clients connected");
+  } else if (pServer->getConnectedCount() == 1) {
+    #if !defined(NIMBLE_ARDUINO_2_x)
+    NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
+    #endif
+    sprintf(buffer, "BleKeyboard: onDisconnect: there is still a client connected %s%s, id %s%s, handle %u, isBonded %d. How can it be???",
+      NimBLEAddress(connInfo.getAddress()).toString().c_str(),
+      this->getAddressTypeStr(connInfo.getAddress()).c_str(),
+      NimBLEAddress(connInfo.getIdAddress()).toString().c_str(),
+      this->getAddressTypeStr(connInfo.getIdAddress()).c_str(),
+      connInfo.getConnHandle(),
+      connInfo.isBonded());
+  } else {
+  	sprintf(buffer, "BleKeyboard: onDisconnect: there are still %d devices connected. How can it be???", pServer->getConnectedCount());
+  }
+  ESP_LOGI(LOG_TAG, "%s", buffer);
+  if (thisBLEKeyboardMessage_cb != NULL) {
+    message = buffer;
+    thisBLEKeyboardMessage_cb(message);
+  }
 
-#if !defined(USE_NIMBLE)
-
-  BLE2902* desc = (BLE2902*)this->inputKeyboard->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
-  desc->setNotifications(false);
-  desc = (BLE2902*)this->inputMediaKeys->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
-  desc->setNotifications(false);
-
-  advertising->start();
-
-#endif // !USE_NIMBLE
 }
 
-void BleKeyboard::onWrite(BLECharacteristic* me) {
-  uint8_t* value = (uint8_t*)(me->getValue().c_str());
+#if defined(NIMBLE_ARDUINO_2_x)
+void BleKeyboard::onIdentity(NimBLEConnInfo& connInfo) {
+  std::string message = "";
+  char buffer[200];
+  sprintf(buffer, "BleKeyboard: onIdentity: client %s%s, id %s%s, handle %u, isBonded %d",
+    NimBLEAddress(connInfo.getAddress()).toString().c_str(),
+    this->getAddressTypeStr(connInfo.getAddress()).c_str(),
+    NimBLEAddress(connInfo.getIdAddress()).toString().c_str(),
+    this->getAddressTypeStr(connInfo.getIdAddress()).c_str(),
+    connInfo.getConnHandle(),
+    connInfo.isBonded());
+	ESP_LOGI(LOG_TAG, "%s", buffer);
+  if (thisBLEKeyboardMessage_cb != NULL) {
+    message = buffer;
+    thisBLEKeyboardMessage_cb(message);
+  }
+}
+#endif
+
+#if !defined(NIMBLE_ARDUINO_2_x)
+void BleKeyboard::onWrite(NimBLECharacteristic* pCharacteristic) {
+#else
+void BleKeyboard::onWrite(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo& connInfo) {
+#endif
+  uint8_t* value = (uint8_t*)(pCharacteristic->getValue().c_str());
   (void)value;
   ESP_LOGI(LOG_TAG, "special keys: %d", *value);
 }
@@ -550,4 +660,302 @@ void BleKeyboard::delay_ms(uint64_t ms) {
     }
     while(esp_timer_get_time() < e) {}
   }
+}
+
+std::string BleKeyboard::getAddressTypeStr(NimBLEAddress address) {
+  if        (address.getType() == BLE_ADDR_PUBLIC) {
+    return ""; // this is the default, don't mention it
+  } else if (address.getType() == BLE_ADDR_RANDOM) {
+    return " (random)";
+  } else if (address.getType() == BLE_ADDR_PUBLIC_ID) {
+    return " (public ID)";
+  } else if (address.getType() == BLE_ADDR_RANDOM_ID) {
+    return " (random ID)";
+  } else {
+    return "";
+  }
+}
+
+void BleKeyboard::clearWhitelist() {
+  // clear whitelist, if there is any
+  if (NimBLEDevice::getWhiteListCount() != 0) {
+    for (int i=0; i < NimBLEDevice::getWhiteListCount() -1; i++) {
+      ESP_LOGI(LOG_TAG, "Will remove %s from whitelist", NimBLEDevice::getWhiteListAddress(i).toString().c_str());
+      NimBLEDevice::whiteListRemove(NimBLEDevice::getWhiteListAddress(i));
+    }
+  }
+}
+
+void BleKeyboard::prepareAdvertising() {
+  // stop advertising
+  if (advertising->isAdvertising()) {
+    advertising->stop();
+    this->_advertising = false;
+  }
+  this->disconnectAllClients();
+  this->clearWhitelist();
+}
+
+void BleKeyboard::startAdvertisingForAll() {
+  // All peers can see the advertising, and all peers are allowed to connect.
+
+  this->prepareAdvertising();
+
+  advertising->setScanFilter(false, false);
+  #if !defined(NIMBLE_ARDUINO_2_x)
+  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);
+  #else
+  advertising->setConnectableMode(BLE_GAP_CONN_MODE_UND);
+  #endif
+  advertising->start();
+  this->_advertising = true;
+
+  ESP_LOGI(LOG_TAG, "Advertising started for all");
+}
+
+void BleKeyboard::startAdvertisingWithWhitelist(std::string peersAllowed) {
+  // All peers can see the advertising, but only peers on the whitelist are allowed to connect.
+  
+  this->prepareAdvertising();
+
+  // Add peers to whitelist.
+  // Only public addresses in the whitelist are supported by this method. If you need random addresses, please change the code accordingly.
+  // the peersAllowed are a comma separated list, which we have to break into single addresses
+  std::stringstream ss(peersAllowed);
+  while(ss.good())  {
+    std::string address;
+    std::getline(ss, address, ',');
+    ESP_LOGI(LOG_TAG, "Will add %s to whitelist", address.c_str());
+    NimBLEDevice::whiteListAdd(NimBLEAddress(address, BLE_ADDR_PUBLIC));
+  }
+
+  advertising->setScanFilter(true, true);
+  #if !defined(NIMBLE_ARDUINO_2_x)
+  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);
+  #else
+  advertising->setConnectableMode(BLE_GAP_CONN_MODE_UND);
+  #endif
+  advertising->start();
+  this->_advertising = true;
+
+  ESP_LOGI(LOG_TAG, "Advertising started with whitelist");
+}
+
+void BleKeyboard::startAdvertisingDirected(std::string peerAddress, bool isRandomAddress) {
+  // Only one single peer can see (reacts to) the advertisement.
+  // This only works for already bonded peers!
+
+  this->prepareAdvertising();
+
+  NimBLEAddress directedAddress;
+  if (isRandomAddress) {
+    directedAddress = NimBLEAddress(peerAddress, BLE_ADDR_RANDOM);
+  } else {
+    directedAddress = NimBLEAddress(peerAddress, BLE_ADDR_PUBLIC);
+  }
+  advertising->setScanFilter(false, false);
+  #if !defined(NIMBLE_ARDUINO_2_x)
+  advertising->setAdvertisementType(BLE_GAP_CONN_MODE_DIR);
+  advertising->start(BLE_HS_FOREVER, nullptr, &directedAddress);
+  #else
+  advertising->setConnectableMode(BLE_GAP_CONN_MODE_DIR);
+  advertising->start(BLE_HS_FOREVER, &directedAddress);
+  #endif
+  this->_advertising = true;
+
+  std::string message = "";
+  char buffer[100];
+  sprintf(buffer, "Direct advertising started to address %s%s",
+    directedAddress.toString().c_str(),
+    this->getAddressTypeStr(directedAddress).c_str());
+  ESP_LOGI(LOG_TAG, "%s", buffer);
+  if (thisBLEKeyboardMessage_cb != NULL) {
+    message = buffer;
+    thisBLEKeyboardMessage_cb(message);
+  }
+}
+
+void BleKeyboard::stopAdvertising() {
+  advertising->stop();
+  this->_advertising = false;
+  ESP_LOGI(LOG_TAG, "Advertising stopped");
+}
+
+void BleKeyboard::printConnectedClients() {
+  std::string message = "";
+  char buffer[50];
+
+  sprintf(buffer, "Connected count: %d", NimBLEDevice::getServer()->getConnectedCount());
+  message = buffer;
+  ESP_LOGI(LOG_TAG, "%s", buffer);
+
+  std::vector<uint16_t> m_connectedPeersVec = NimBLEDevice::getServer()->getPeerDevices();
+  for (std::vector<uint16_t>::iterator it = m_connectedPeersVec.begin() ; it != m_connectedPeersVec.end(); ++it) {
+    #if !defined(NIMBLE_ARDUINO_2_x)
+    NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerIDInfo(*it);
+    #else
+    NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(*it);
+    #endif
+    sprintf(buffer, "\n client %d: %s", *it, NimBLEAddress(connInfo.getAddress()).toString().c_str());
+    message = message + buffer;
+    ESP_LOGI(LOG_TAG, "%s", buffer);
+  }
+  if (thisBLEKeyboardMessage_cb != NULL) {
+    thisBLEKeyboardMessage_cb(message);
+  }
+}
+
+void BleKeyboard::disconnectAllClients() {
+  std::vector<uint16_t> m_connectedPeersVec = NimBLEDevice::getServer()->getPeerDevices();
+  for (std::vector<uint16_t>::iterator it = m_connectedPeersVec.begin() ; it != m_connectedPeersVec.end(); ++it) {
+    ESP_LOGI(LOG_TAG, "Will disconnect peer: %u", *it);
+    // https://github.com/espressif/esp-idf/issues/8555
+    NimBLEDevice::getServer()->disconnect(*it, 0x13);
+  }
+}
+
+void BleKeyboard::printBonds() {
+  std::string message = "";
+  char buffer[50];
+
+  // https://github.com/h2zero/NimBLE-Arduino/issues/579
+
+  sprintf(buffer, "NumBonds: %d", NimBLEDevice::getNumBonds());
+  message = buffer;
+  ESP_LOGI(LOG_TAG, "%s", buffer);
+
+  for (int i=0; i<NimBLEDevice::getNumBonds(); i++) {
+    sprintf(buffer, "\n bond %d: %s", i, NimBLEDevice::getBondedAddress(i).toString().c_str());
+    message = message + buffer;
+    ESP_LOGI(LOG_TAG, "%s", buffer);
+  }
+  if (thisBLEKeyboardMessage_cb != NULL) {
+    thisBLEKeyboardMessage_cb(message);
+  }
+}
+
+std::string BleKeyboard::getBonds() {
+  std::string result = "";
+  for (int i=0; i<NimBLEDevice::getNumBonds(); i++) {
+    if (result == "") {
+      result += NimBLEDevice::getBondedAddress(i).toString();
+    } else {
+      result += ",";
+      result += NimBLEDevice::getBondedAddress(i).toString();
+    }
+  }
+  return result;
+}
+
+void BleKeyboard::deleteBonds() {
+  // https://piratecomm.wordpress.com/2014/01/19/ble-pairing-vs-bonding/
+  NimBLEDevice::deleteAllBonds();
+}
+
+bool BleKeyboard::startAdvertisingIfExactlyOneBondExists() {
+  if (NimBLEDevice::getNumBonds() == 1) {
+    ESP_LOGI(LOG_TAG, "BleKeyboard: exactly one bond exists, will start advertising.\n");
+    startAdvertisingForAll();
+    // why do we use startAdvertisingForAll() and not startAdvertisingDirected()?
+    // Because direct advertising does not work for some devices.
+    // To support such devices, non direct advertising is more stable. It is safe because we have only one bonded peer.
+    // But of course, direct advertisement could also be used.
+    // startAdvertisingDirected(
+    //   NimBLEDevice::getBondedAddress(0).toString(),
+    //   NimBLEDevice::getBondedAddress(0).getType() == BLE_ADDR_PUBLIC ? false : true);
+    return true;
+  } else {
+    ESP_LOGI(LOG_TAG, "BleKeyboard: will not start advertising on init.\n");
+    return false;
+  }
+}
+
+bool BleKeyboard::advertiseAndWaitForConnection(std::string peerAddress) {
+  int connectionTimeout   = 10000; // wait until connection is established
+  int waitAfterConnection = 2000;  // wait after connection was established, before key is actually being sent
+
+  if (peerAddress == "") {
+    startAdvertisingForAll();
+    // we will now wait for connection
+  } else {
+    bool bondFound = false;
+    for (int i=0; i<NimBLEDevice::getNumBonds(); i++) {
+      if (NimBLEDevice::getBondedAddress(i).toString() == peerAddress) {
+        bondFound = true;
+        startAdvertisingDirected(
+          NimBLEDevice::getBondedAddress(i).toString(),
+          NimBLEDevice::getBondedAddress(i).getType() == BLE_ADDR_PUBLIC ? false : true);
+         // we will now wait for connection
+      }   
+    }
+    if (!bondFound) {
+      ESP_LOGW(LOG_TAG, "BleKeyboard: cannot start direct advertising to address %s, because this address is not bonded\n", peerAddress.c_str());
+      return false;
+    }
+  }
+  // advertising was started. Wait for connection
+  ESP_LOGD(LOG_TAG, "BleKeyboard: will do a blocking wait for connection\n");
+
+  unsigned long startTimer = millis();
+  while ((millis() - startTimer < connectionTimeout) && !this->connected) {
+    delay(10);
+  }
+  if (this->connected) {
+    ESP_LOGD(LOG_TAG, "BleKeyboard: connection established\n");
+    // have to wait a little bit before sending the first key, otherwise they sometimes do not work ...
+    startTimer = millis();
+    while (millis() - startTimer < waitAfterConnection) {
+      delay(10);
+    }
+    return true;
+  } else {
+    ESP_LOGW(LOG_TAG, "BleKeyboard: connection failed\n");
+    return false;
+  }
+}
+
+bool BleKeyboard::forceConnectionToAddress(std::string peerAddress) {
+
+  if (NimBLEDevice::getServer()->getConnectedCount() == 0) {
+    if (peerAddress == "") {
+      ESP_LOGD(LOG_TAG, "BleKeyboard: currently no client connected. No specific address was provided. Will start advertising.\n");
+    } else {
+      ESP_LOGD(LOG_TAG, "BleKeyboard: currently no client connected. Will start direct advertising to address %s.\n", peerAddress.c_str());
+    }
+    
+    return advertiseAndWaitForConnection(peerAddress);
+  }
+
+  if (NimBLEDevice::getServer()->getConnectedCount() == 1) {
+    if (peerAddress == "") {
+      ESP_LOGD(LOG_TAG, "BleKeyboard: already connected, no specific address was provided, nothing to do.\n");
+      return true;
+    } else {
+      #if !defined(NIMBLE_ARDUINO_2_x)
+      NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerIDInfo(0);
+      #else
+      NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(0);
+      #endif
+      if (NimBLEAddress(connInfo.getAddress()).toString() == peerAddress) {
+        ESP_LOGD(LOG_TAG, "BleKeyboard: already connected to address %s, nothing to do\n", peerAddress.c_str());
+        return true;
+      } else {
+        ESP_LOGD(LOG_TAG, "BleKeyboard: will disconnect peer %s and start direct advertising to address %s.\n", NimBLEAddress(connInfo.getAddress()).toString().c_str(), peerAddress.c_str());
+  
+        return advertiseAndWaitForConnection(peerAddress);
+      }
+    }
+  }
+
+  if (NimBLEDevice::getServer()->getConnectedCount() > 1) {
+    ESP_LOGW(LOG_TAG, "BleKeyboard: currently connected to more than one client. How can it be???\n");
+    return false;
+  }
+
+  // should never be reached
+  return false;
+}
+  
+void BleKeyboard::set_BLEKeyboardMessage_cb(tBLEKeyboardMessage_cb pBLEKeyboardMessage_cb) {
+  thisBLEKeyboardMessage_cb = pBLEKeyboardMessage_cb;  
 }

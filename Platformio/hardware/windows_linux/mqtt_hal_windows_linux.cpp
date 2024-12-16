@@ -55,6 +55,17 @@ bool getIsWifiConnected_HAL() {
   return (sockfd != -1);
 }
 
+std::string subscribeTopicOMOTEtest = "OMOTE/test";
+// For connecting to one or several BLE clients
+std::string subscribeTopicOMOTE_BLEstartAdvertisingForAll        = "OMOTE/BLE/startAdvertisingForAll";
+std::string subscribeTopicOMOTE_BLEstartAdvertisingWithWhitelist = "OMOTE/BLE/startAdvertisingWithWhitelist";
+std::string subscribeTopicOMOTE_BLEstartAdvertisingDirected      = "OMOTE/BLE/startAdvertisingDirected";
+std::string subscribeTopicOMOTE_BLEstopAdvertising               = "OMOTE/BLE/stopAdvertising";
+std::string subscribeTopicOMOTE_BLEprintConnectedClients         = "OMOTE/BLE/printConnectedClients";
+std::string subscribeTopicOMOTE_BLEdisconnectAllClients          = "OMOTE/BLE/disconnectAllClients";
+std::string subscribeTopicOMOTE_BLEprintBonds                    = "OMOTE/BLE/printBonds";
+std::string subscribeTopicOMOTE_BLEdeleteBonds                   = "OMOTE/BLE/deleteBonds";
+
 void publish_callback(void** state, struct mqtt_response_publish *publish) {
     **(int**)state += 1;
     printf("message nr %d received\r\n", **(int**)state);
@@ -67,11 +78,29 @@ void publish_callback(void** state, struct mqtt_response_publish *publish) {
            payload.c_str()
     );
     
-    thisAnnounceSubscribedTopics_cb(topic, payload);
+    if (topic == subscribeTopicOMOTEtest) {
+      // Do whatever you want here, if it is Windows/Linux hardware related.
+      // ...
+
+      // Or forward the topic to "void receiveMQTTmessage_cb" in the "commandHandler.cpp", if it is not Windows/Linux hardware related
+      thisAnnounceSubscribedTopics_cb(topic, payload);
+
+    } else {
+      // forward all other topics to the commandHandler
+      thisAnnounceSubscribedTopics_cb(topic, payload);
+    }
 }
 
 void mqtt_subscribeTopics() {
-  mqtt_subscribe(&mqttClient, "OMOTE/test", 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTEtest.c_str(), 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTE_BLEstartAdvertisingForAll.c_str(), 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTE_BLEstartAdvertisingWithWhitelist.c_str(), 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTE_BLEstartAdvertisingDirected.c_str(), 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTE_BLEstopAdvertising.c_str(), 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTE_BLEprintConnectedClients.c_str(), 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTE_BLEdisconnectAllClients.c_str(), 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTE_BLEprintBonds.c_str(), 2);
+  mqtt_subscribe(&mqttClient, subscribeTopicOMOTE_BLEdeleteBonds.c_str(), 2);
 
 }
 

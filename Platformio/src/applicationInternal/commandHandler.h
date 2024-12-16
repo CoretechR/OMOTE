@@ -109,11 +109,9 @@ struct commandData {
   std::list<std::string> commandPayloads;
 };
 
-// we don't yet have a command id
+// register a command and give it a command id
 void register_command(uint16_t *command, commandData aCommandData);
-// we already have a command id. Only used by BLE keyboard
-void register_command_withID(uint16_t command, commandData aCommandData);
-// only get a unique ID. used by KEYBOARD_DUMMY, COMMAND_UNKNOWN and BLE keyboard
+// only get a unique ID. used by KEYBOARD_DUMMY and COMMAND_UNKNOWN
 void get_uniqueCommandID(uint16_t *command);
 
 void register_keyboardCommands();
@@ -121,6 +119,10 @@ commandData makeCommandData(commandHandlers a, std::list<std::string> b);
 void executeCommand(uint16_t command, std::string additionalPayload = "");
 
 void receiveNewIRmessage_cb(std::string message);
+#if (ENABLE_KEYBOARD_BLE == 1)
+// used as callback from hardware
+void receiveBLEmessage_cb(std::string message);
+#endif
 #if (ENABLE_WIFI_AND_MQTT == 1)
 // used as callbacks from hardware
 void receiveWiFiConnected_cb(bool connected);

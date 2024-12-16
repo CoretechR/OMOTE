@@ -1,30 +1,18 @@
-// uncomment the following line to use NimBLE library
-//#define USE_NIMBLE
+// This include is only needed to determine if NimBLE 1.4.x or 2.0.x is used.
+// NimBLE 2.0.x is using nimble core 1.5, and only in this version BLE_STORE_OBJ_TYPE_LOCAL_IRK is defined
+#include "nimble/nimble/host/include/host/ble_store.h"
+#if defined(BLE_STORE_OBJ_TYPE_LOCAL_IRK)
+#define NIMBLE_ARDUINO_2_x
+#endif
 
 #ifndef ESP32_BLE_KEYBOARD_H
 #define ESP32_BLE_KEYBOARD_H
 #include "sdkconfig.h"
 #if defined(CONFIG_BT_ENABLED)
 
-#if defined(USE_NIMBLE)
-
 #include "NimBLECharacteristic.h"
+#include "NimBLEServer.h"
 #include "NimBLEHIDDevice.h"
-
-#define BLEDevice                  NimBLEDevice
-#define BLEServerCallbacks         NimBLEServerCallbacks
-#define BLECharacteristicCallbacks NimBLECharacteristicCallbacks
-#define BLEHIDDevice               NimBLEHIDDevice
-#define BLECharacteristic          NimBLECharacteristic
-#define BLEAdvertising             NimBLEAdvertising
-#define BLEServer                  NimBLEServer
-
-#else
-
-#include "BLEHIDDevice.h"
-#include "BLECharacteristic.h"
-
-#endif // USE_NIMBLE
 
 #include "Print.h"
 
@@ -134,26 +122,31 @@ typedef struct
   uint8_t keys[6];
 } KeyReport;
 
-class BleKeyboard : public Print, public BLEServerCallbacks, public BLECharacteristicCallbacks
+typedef void (*tBLEKeyboardMessage_cb)(std::string message);
+
+class BleKeyboard : public Print, public NimBLEServerCallbacks, public NimBLECharacteristicCallbacks
 {
 private:
-  BLEHIDDevice* hid;
-  BLECharacteristic* inputKeyboard;
-  BLECharacteristic* outputKeyboard;
-  BLECharacteristic* inputMediaKeys;
-  BLEAdvertising*    advertising;
-  KeyReport          _keyReport;
-  MediaKeyReport     _mediaKeyReport;
-  std::string        deviceName;
-  std::string        deviceManufacturer;
-  uint8_t            batteryLevel;
-  bool               connected = false;
-  uint32_t           _delay_ms = 7;
+  NimBLEHIDDevice* hid;
+  NimBLECharacteristic* inputKeyboard;
+  NimBLECharacteristic* outputKeyboard;
+  NimBLECharacteristic* inputMediaKeys;
+  NimBLEAdvertising*    advertising;
+  KeyReport             _keyReport;
+  MediaKeyReport        _mediaKeyReport;
+  std::string           deviceName;
+  std::string           deviceManufacturer;
+  uint8_t               batteryLevel;
+  bool                  _advertising = false;
+  bool                  connected = false;
+  uint32_t              _delay_ms = 7;
   void delay_ms(uint64_t ms);
 
   uint16_t vid       = 0x05ac;
   uint16_t pid       = 0x820a;
   uint16_t version   = 0x0210;
+
+  tBLEKeyboardMessage_cb thisBLEKeyboardMessage_cb = NULL;
 
 public:
   BleKeyboard(std::string deviceName = "ESP32 Keyboard", std::string deviceManufacturer = "Espressif", uint8_t batteryLevel = 100);
@@ -169,19 +162,49 @@ public:
   size_t write(const MediaKeyReport c);
   size_t write(const uint8_t *buffer, size_t size);
   void releaseAll(void);
+  bool isAdvertising(void);
   bool isConnected(void);
   void setBatteryLevel(uint8_t level);
   void setName(std::string deviceName);  
   void setDelay(uint32_t ms);
+  // For connecting multiple peers, please see this discussion: https://github.com/h2zero/NimBLE-Arduino/issues/651
+  void startAdvertisingForAll();
+  void startAdvertisingWithWhitelist(std::string peersAllowed);
+  void startAdvertisingDirected(std::string peerAddress, bool isRandomAddress);
+  void stopAdvertising();
+  void printConnectedClients();
+  void disconnectAllClients();
+  void printBonds();
+  std::string getBonds();
+  void deleteBonds();
+  bool startAdvertisingIfExactlyOneBondExists();
+  bool advertiseAndWaitForConnection(std::string peerAddress);
+  bool forceConnectionToAddress(std::string peerAddress);
+  void set_BLEKeyboardMessage_cb(tBLEKeyboardMessage_cb pBLEKeyboardMessage_cb);
 
   void set_vendor_id(uint16_t vid);
   void set_product_id(uint16_t pid);
   void set_version(uint16_t version);
 protected:
-  virtual void onStarted(BLEServer *pServer) { };
-  virtual void onConnect(BLEServer* pServer) override;
-  virtual void onDisconnect(BLEServer* pServer) override;
-  virtual void onWrite(BLECharacteristic* me) override;
+  #if !defined(NIMBLE_ARDUINO_2_x)
+  // NimBLEServerCallbacks
+  virtual void onConnect(NimBLEServer* pServer) override;
+  virtual void onDisconnect(NimBLEServer* pServer) override;
+  // NimBLECharacteristicCallbacks
+  virtual void onWrite(NimBLECharacteristic* pCharacteristic) override;
+  #else
+  // NimBLEServerCallbacks
+  virtual void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override;
+  virtual void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, std::string& name);
+  virtual void onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) override;
+  virtual void onIdentity(NimBLEConnInfo& connInfo) override;
+  // NimBLECharacteristicCallbacks
+  virtual void onWrite(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo& connInfo) override;
+  #endif
+private:
+  std::string getAddressTypeStr(NimBLEAddress address);
+  void clearWhitelist();
+  void prepareAdvertising();
 
 };
 

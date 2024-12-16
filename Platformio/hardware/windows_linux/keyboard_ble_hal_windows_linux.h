@@ -22,7 +22,22 @@ const MediaKeyReport KEY_MEDIA_MUTE = {0, 0};
 const MediaKeyReport KEY_MEDIA_VOLUME_UP = {0, 0};
 const MediaKeyReport KEY_MEDIA_VOLUME_DOWN = {0, 0};
 
+void keyboardBLE_startAdvertisingForAll_HAL();
+void keyboardBLE_startAdvertisingWithWhitelist_HAL(std::string peersAllowed);
+void keyboardBLE_startAdvertisingDirected_HAL(std::string peerAddress, bool isRandomAddress);
+void keyboardBLE_stopAdvertising_HAL();
+void keyboardBLE_printConnectedClients_HAL();
+void keyboardBLE_disconnectAllClients_HAL();
+void keyboardBLE_printBonds_HAL();
+std::string keyboardBLE_getBonds_HAL();
+void keyboardBLE_deleteBonds_HAL();
+bool keyboardBLE_forceConnectionToAddress_HAL(std::string peerAddress);
+typedef void (*tAnnounceBLEmessage_cb)(std::string message);
+extern tAnnounceBLEmessage_cb thisAnnounceBLEmessage_cb;
+void set_announceBLEmessage_cb_HAL(tAnnounceBLEmessage_cb pAnnounceBLEmessage_cb);
+
 void init_keyboardBLE_HAL();
+bool keyboardBLE_isAdvertising_HAL();
 bool keyboardBLE_isConnected_HAL();
 void keyboardBLE_end_HAL();
 void keyboardBLE_write_HAL(uint8_t c);

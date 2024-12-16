@@ -19,7 +19,6 @@
   - and the name of the tab
 */
 #include <string>
-#include <vector>
 #include <map>
 #include <lvgl.h>
 #include "applicationInternal/keys.h"

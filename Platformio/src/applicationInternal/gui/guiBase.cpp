@@ -1,5 +1,6 @@
 #include <mutex>
 #include <lvgl.h>
+#include "guis/gui_BLEpairing.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/memoryUsage.h"
 #include "applicationInternal/gui/guiMemoryOptimizer.h"
@@ -318,6 +319,9 @@ void gui_loop(void) {
   // has to be done in a thread safe way in the main thread
   #if (ENABLE_WIFI_AND_MQTT ==1)
   flushWiFiConnectedStatus();
+  #endif
+  #if (ENABLE_KEYBOARD_BLE == 1)
+  flushBLEMessages();
   #endif
 }
 
