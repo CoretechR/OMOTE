@@ -1,0 +1,3 @@
+[submodule "Platformio/hardware/windows_linux/lib/flirc_sdk"]
+	path = Platformio/hardware/windows_linux/lib/flirc_sdk
+	url = git@github.com:flirc/sdk.git
