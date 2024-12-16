@@ -54,8 +54,10 @@ void addBLEmessage(std::string message) {
 
 lv_obj_t * confirmationDialog_disconnectAllClients;
 static void confirmationDialog_disconnectAllClients_cb(lv_event_t * e) {
-  lv_obj_t * obj = lv_event_get_current_target(e);
-  std::string buttonText = lv_msgbox_get_active_btn_text(obj);
+  lv_obj_t * btn = (lv_obj_t*)lv_event_get_target(e);
+  lv_obj_t * label = lv_obj_get_child(btn, 0);
+  LV_UNUSED(label);
+  std::string buttonText = lv_label_get_text(label);
   lv_msgbox_close(confirmationDialog_disconnectAllClients);
   if (buttonText == "yes") {
     omote_log_d("BLE pairing: all clients have been disconnected\r\n");
@@ -68,8 +70,10 @@ static void confirmationDialog_disconnectAllClients_cb(lv_event_t * e) {
 
 lv_obj_t * confirmationDialog_deleteBonds;
 static void confirmationDialog_deleteBonds_cb(lv_event_t * e) {
-  lv_obj_t * obj = lv_event_get_current_target(e);
-  std::string buttonText = lv_msgbox_get_active_btn_text(obj);
+  lv_obj_t * btn = (lv_obj_t*)lv_event_get_target(e);
+  lv_obj_t * label = lv_obj_get_child(btn, 0);
+  LV_UNUSED(label);
+  std::string buttonText = lv_label_get_text(label);
   lv_msgbox_close(confirmationDialog_deleteBonds);
   if (buttonText == "yes") {
     omote_log_d("BLE pairing: all bonded peers have been deleted\r\n");
@@ -81,8 +85,8 @@ static void confirmationDialog_deleteBonds_cb(lv_event_t * e) {
 }
 
 static void BLEpairing_event_cb(lv_event_t* e) {
-  lv_obj_t* target = lv_event_get_target(e);
-  lv_obj_t* cont = lv_event_get_current_target(e);
+  lv_obj_t* target = (lv_obj_t*)lv_event_get_target(e);
+  lv_obj_t* cont = (lv_obj_t*)lv_event_get_current_target(e);
   if (target == cont) return; // stop if container was clicked
   
   int user_data = (intptr_t)(target->user_data);
@@ -111,10 +115,15 @@ static void BLEpairing_event_cb(lv_event_t* e) {
       break;
     }
     case 4: {
-      static const char * btns[] = {"yes", "no", ""};
-      confirmationDialog_disconnectAllClients = lv_msgbox_create(NULL, "Confirmation", "Really disconnect client?", btns, false);
-      lv_obj_center(confirmationDialog_disconnectAllClients);
-      lv_obj_add_event_cb(confirmationDialog_disconnectAllClients, confirmationDialog_disconnectAllClients_cb, LV_EVENT_VALUE_CHANGED, NULL);
+      confirmationDialog_disconnectAllClients = lv_msgbox_create(NULL);
+      lv_obj_set_size(confirmationDialog_disconnectAllClients, 230, 120);
+      lv_msgbox_add_title(confirmationDialog_disconnectAllClients, "Confirmation");
+      lv_msgbox_add_text(confirmationDialog_disconnectAllClients, "Really disconnect client?");
+      lv_obj_t * btn;
+      btn = lv_msgbox_add_footer_button(confirmationDialog_disconnectAllClients, "yes");
+      lv_obj_add_event_cb(btn, confirmationDialog_disconnectAllClients_cb, LV_EVENT_CLICKED, NULL);
+      btn = lv_msgbox_add_footer_button(confirmationDialog_disconnectAllClients, "no");
+      lv_obj_add_event_cb(btn, confirmationDialog_disconnectAllClients_cb, LV_EVENT_CLICKED, NULL);
       break;
     }
     case 5: {
@@ -123,10 +132,15 @@ static void BLEpairing_event_cb(lv_event_t* e) {
       break;
     }
     case 6: {
-      static const char * btns[] = {"yes", "no", ""};
-      confirmationDialog_deleteBonds = lv_msgbox_create(NULL, "Confirmation", "Really delete all bonds?", btns, false);
-      lv_obj_center(confirmationDialog_deleteBonds);
-      lv_obj_add_event_cb(confirmationDialog_deleteBonds, confirmationDialog_deleteBonds_cb, LV_EVENT_VALUE_CHANGED, NULL);
+      confirmationDialog_deleteBonds = lv_msgbox_create(NULL);
+      lv_obj_set_size(confirmationDialog_deleteBonds, 230, 120);
+      lv_msgbox_add_title(confirmationDialog_deleteBonds, "Confirmation");
+      lv_msgbox_add_text(confirmationDialog_deleteBonds, "Really delete all bonds?");
+      lv_obj_t * btn;
+      btn = lv_msgbox_add_footer_button(confirmationDialog_deleteBonds, "yes");
+      lv_obj_add_event_cb(btn, confirmationDialog_deleteBonds_cb, LV_EVENT_CLICKED, NULL);
+      btn = lv_msgbox_add_footer_button(confirmationDialog_deleteBonds, "no");
+      lv_obj_add_event_cb(btn, confirmationDialog_deleteBonds_cb, LV_EVENT_CLICKED, NULL);
       break;
     }
   }
@@ -134,7 +148,7 @@ static void BLEpairing_event_cb(lv_event_t* e) {
 }
 
 static void BLEpairing_dropdown_cb(lv_event_t* e) {
-  lv_obj_t* target = lv_event_get_target(e);
+  lv_obj_t* target = (lv_obj_t*)lv_event_get_target(e);
   uint16_t selected_index = lv_dropdown_get_selected(target);
   if (lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) {
     // omote_log_d("BLE pairing: bonded peers dropdown selected index %d\r\n", selected_index);
@@ -173,11 +187,11 @@ static void BLEpairing_dropdown_cb(lv_event_t* e) {
   }
 }
 
-void create_button(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_t x_ofs, lv_coord_t y_ofs, std::string text, uint8_t user_data) {
+void create_button(lv_obj_t* tab, int32_t width, int32_t height, int32_t x_ofs, int32_t y_ofs, std::string text, uint8_t user_data) {
   lv_obj_t* obj;
   lv_obj_t* buttonLabel;
 
-  obj = lv_btn_create(tab);
+  obj = lv_button_create(tab);
   lv_obj_align(obj, LV_ALIGN_TOP_LEFT, x_ofs, y_ofs);
   lv_obj_set_size(obj, width, height);
   lv_obj_set_style_bg_color(obj, color_primary, LV_PART_MAIN);
@@ -191,7 +205,7 @@ void create_button(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_
   lv_obj_center(buttonLabel);
 }
 
-void create_dropdownPeers(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_t x_ofs, lv_coord_t y_ofs, uint8_t user_data) {
+void create_dropdownPeers(lv_obj_t* tab, int32_t width, int32_t height, int32_t x_ofs, int32_t y_ofs, uint8_t user_data) {
   dropdownPeers = lv_dropdown_create(tab);
   lv_obj_align(dropdownPeers, LV_ALIGN_TOP_LEFT, x_ofs, y_ofs);
   lv_obj_set_size(dropdownPeers, width, height);
@@ -209,7 +223,7 @@ void create_dropdownPeers(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv
   lv_dropdown_set_options(dropdownPeers, "");
 }
 
-void create_textarea(lv_obj_t* tab, lv_coord_t width, lv_coord_t height, lv_coord_t x_ofs, lv_coord_t y_ofs) {
+void create_textarea(lv_obj_t* tab, int32_t width, int32_t height, int32_t x_ofs, int32_t y_ofs) {
   logText = lv_textarea_create(tab);
   lv_obj_align(logText, LV_ALIGN_TOP_LEFT, x_ofs, y_ofs);
   lv_obj_set_size(logText, width, height);
