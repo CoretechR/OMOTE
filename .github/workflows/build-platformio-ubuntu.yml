@@ -15,6 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - uses: actions/cache@v4
         with:
           path: |
@@ -29,7 +31,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt upgrade -y
-          sudo apt install -y libsdl2-dev libsdl2-image-dev
+          sudo apt install -y libsdl2-dev libsdl2-image-dev libusb-1.0-0-dev libhidapi-dev libhidapi-hidraw0
 
 
 
