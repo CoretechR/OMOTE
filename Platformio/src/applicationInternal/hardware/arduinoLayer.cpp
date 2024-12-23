@@ -4,7 +4,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/time.h>
-//#include "sdl/sdl.h"
 
 long long current_timestamp() {
     struct timeval te; 
@@ -15,8 +14,6 @@ long long current_timestamp() {
 }
 
 void delay(uint32_t ms) {
-  // we don't use this blackbox
-  // SDL_Delay(ms);
   unsigned long startTimer = millis();
   while ((millis() - startTimer) < ms) {
   }
