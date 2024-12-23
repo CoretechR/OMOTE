@@ -1,7 +1,7 @@
 // OMOTE firmware for ESP32
 // 2023 Maximilian Kern
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include <LovyanGFX.hpp>
 #include <Keypad.h> // modified for inverted logic
 #include <Preferences.h>
 #include "SparkFunLIS3DH.h"
@@ -12,7 +12,6 @@
 #include <IRutils.h>
 #include <lvgl.h>
 #include "WiFi.h"
-#include <Adafruit_FT6206.h>
 #include "driver/ledc.h"
 #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
 #include "secrets.h"
@@ -21,7 +20,7 @@
 
 // Pin assignment -----------------------------------------------------------------------------------------------------------------------
 
-#define LCD_DC 9 // defined in TFT_eSPI User_Setup.h
+#define LCD_DC 9
 #define LCD_CS 5
 #define LCD_MOSI 23
 #define LCD_SCK 18
@@ -69,12 +68,60 @@ bool wakeupByIMUEnabled = true;
 LIS3DH IMU(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
 
 // LCD declarations
-TFT_eSPI tft = TFT_eSPI();
 #define screenWidth 240
 #define screenHeight 320
-Adafruit_FT6206 touch = Adafruit_FT6206();
-TS_Point touchPoint;
-TS_Point oldPoint;
+class LGFX : public lgfx::LGFX_Device
+{
+  lgfx::Panel_ILI9341 _panel_instance;
+  lgfx::Bus_SPI _bus_instance;
+  lgfx::Touch_FT5x06 _touch_instance;
+
+  public:
+
+  const char* driver_name = "ILI9341";
+  const char* mcu_name    = "ESP32";
+
+  LGFX(void)
+  {
+    {
+      auto cfg = _bus_instance.config();
+      cfg.freq_write = 40000000;
+      cfg.freq_read  = 16000000;
+      cfg.dma_channel = SPI_DMA_CH_AUTO;
+      cfg.pin_sclk = LCD_SCK;
+      cfg.pin_mosi = LCD_MOSI;
+      cfg.pin_dc   = LCD_DC;
+
+      _bus_instance.config(cfg);
+      _panel_instance.setBus(&_bus_instance);
+    }
+    {
+      auto cfg = _panel_instance.config();
+      cfg.pin_cs           = LCD_CS;
+      cfg.pin_rst          = -1;
+      cfg.pin_busy         = -1;
+      cfg.memory_width     = screenWidth;
+      cfg.memory_height    = screenHeight; // 162 or 160 or 132
+      cfg.panel_width      = screenWidth;
+      cfg.panel_height     = screenHeight;
+      cfg.offset_rotation  = 2;
+
+      _panel_instance.config(cfg);
+    }
+    {
+      auto cfg = _touch_instance.config();
+      cfg.i2c_addr = 0x38;
+      cfg.i2c_port = 0;
+      cfg.pin_sda = SDA;
+      cfg.pin_scl = SCL;
+      cfg.freq = 400000;
+      _touch_instance.config(cfg);
+      _panel_instance.setTouch(&_touch_instance);
+    }
+    setPanel(&_panel_instance);
+  }
+};
+static LGFX tft;
 int backlight_brightness = 255;
 
 // LVGL declarations
@@ -162,34 +209,15 @@ void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *colo
 }
 
 // Read the touchpad
-void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data){
-  // int16_t touchX, touchY;
-  touchPoint = touch.getPoint();
-  int16_t touchX = touchPoint.x;
-  int16_t touchY = touchPoint.y;
-  bool touched = false;
-  if ((touchX > 0) || (touchY > 0)) {
-    touched = true;
-    standbyTimer = SLEEP_TIMEOUT; 
-  }
-
-  if( !touched ){
-    data->state = LV_INDEV_STATE_REL;
-  }
-  else{
-    data->state = LV_INDEV_STATE_PR;
-
-    // Set the coordinates
-    data->point.x = screenWidth - touchX;
-    data->point.y = screenHeight - touchY;
-
-    //Serial.print( "touchpoint: x" );
-    //Serial.print( touchX );
-    //Serial.print( " y" );
-    //Serial.println( touchY );
-    //tft.drawFastHLine(0, screenHeight - touchY, screenWidth, TFT_RED);
-    //tft.drawFastVLine(screenWidth - touchX, 0, screenHeight, TFT_RED);
-  }
+void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data) {
+    uint16_t x, y;
+    if (tft.getTouch(&x, &y)) {
+        data->state = LV_INDEV_STATE_PR;
+        data->point.x = x;
+        data->point.y = y;
+    } else {
+        data->state = LV_INDEV_STATE_REL;
+    }
 }
 
 void activityDetection(){
@@ -453,7 +481,6 @@ void setup() {
   
   // Setup touchscreen
   Wire.begin(SDA, SCL, 400000); // Configure i2c pins and set frequency to 400kHz
-  bool TouchInitSuccessful = touch.begin(128); // Initialize touchscreen and set sensitivity threshold
   
   // Setup LVGL
   lv_init();
@@ -556,13 +583,14 @@ void setup() {
 
 
   // Automated Checks
-
-
-
   uint64_t _chipmacid = 0LL;
   esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
   Serial.print("ESP32 MAC: ");
   Serial.println(_chipmacid);
+  // Check if the touchscreen is responding
+  boolean TouchInitSuccessful = false;
+  Wire.beginTransmission(0x38);
+  if(Wire.endTransmission() == 0) TouchInitSuccessful = true;
 
   
   if(IMUInitSuccessful == 0) lv_table_set_cell_value_fmt(ChecksTable, 6, 1, LV_SYMBOL_OK);
