@@ -112,6 +112,7 @@ class LGFX : public lgfx::LGFX_Device
       cfg.pin_sda = SDA;
       cfg.pin_scl = SCL;
       cfg.freq = 400000;
+      cfg.bus_shared = true;
       cfg.x_min = 0;
       cfg.x_max = screenWidth-1;
       cfg.y_min = 0;
