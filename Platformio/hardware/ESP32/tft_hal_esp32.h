@@ -17,9 +17,6 @@ private:
     lgfx::Touch_FT5x06 _touch_instance;
 
 public:
-    const char* driver_name = "ILI9341";
-    const char* mcu_name = "ESP32";
-
     LGFX(void);
 };
 extern LGFX tft;
