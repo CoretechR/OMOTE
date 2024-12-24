@@ -5,7 +5,11 @@
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 
+#if(OMOTE_HARDWARE_REV >= 5)
+uint8_t IR_LED_GPIO = 5; // IR LED output
+#else
 uint8_t IR_LED_GPIO = 33; // IR LED output
+#endif
 
 IRsend IrSender(IR_LED_GPIO, true);
 

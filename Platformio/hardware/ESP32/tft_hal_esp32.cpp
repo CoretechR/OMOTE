@@ -3,25 +3,59 @@
 #include "tft_hal_esp32.h"
 #include "sleep_hal_esp32.h"
 
-uint8_t SDA_GPIO = 19;
-uint8_t SCL_GPIO = 22;
+#if(OMOTE_HARDWARE_REV >= 5)
+  uint8_t SDA_GPIO = 20;
+  uint8_t SCL_GPIO = 19;
 
-uint8_t LCD_BL_GPIO = 4;
-uint8_t LCD_EN_GPIO = 10;
-uint8_t LCD_CS_GPIO = 5;
-uint8_t LCD_MOSI_GPIO = 23;
-uint8_t LCD_SCK_GPIO = 18;
-uint8_t LCD_DC_GPIO = 9;
+  uint8_t LCD_BL_GPIO = 9;
+  uint8_t LCD_EN_GPIO = 38;
+  uint8_t LCD_CS_GPIO = 39;
+  uint8_t LCD_DC_GPIO = 40;
+  uint8_t LCD_WR_GPIO = 41;
+  uint8_t LCD_RD_GPIO = 42;
+  uint8_t LCD_D0_GPIO = 48;
+  uint8_t LCD_D1_GPIO = 47;
+  uint8_t LCD_D2_GPIO = 21;
+  uint8_t LCD_D3_GPIO = 14;
+  uint8_t LCD_D4_GPIO = 13;
+  uint8_t LCD_D5_GPIO = 12;
+  uint8_t LCD_D6_GPIO = 11;
+  uint8_t LCD_D7_GPIO = 10;
+#else
+  uint8_t SDA_GPIO = 19;
+  uint8_t SCL_GPIO = 22;
+
+  uint8_t LCD_BL_GPIO = 4;
+  uint8_t LCD_EN_GPIO = 10;
+  uint8_t LCD_CS_GPIO = 5;
+  uint8_t LCD_DC_GPIO = 9;
+  uint8_t LCD_MOSI_GPIO = 23;
+  uint8_t LCD_SCK_GPIO = 18;
+#endif
 
 LGFX::LGFX(void) {
   {
     auto cfg = _bus_instance.config();
     cfg.freq_write = SPI_FREQUENCY;
+    #if(OMOTE_HARDWARE_REV >= 5)
+    cfg.pin_wr = LCD_WR_GPIO;
+    cfg.pin_rd = LCD_RD_GPIO;
+    cfg.pin_rs = LCD_DC_GPIO;
+    cfg.pin_d0 = LCD_D0_GPIO;
+    cfg.pin_d1 = LCD_D1_GPIO;
+    cfg.pin_d2 = LCD_D2_GPIO;
+    cfg.pin_d3 = LCD_D3_GPIO;
+    cfg.pin_d4 = LCD_D4_GPIO;
+    cfg.pin_d5 = LCD_D5_GPIO;
+    cfg.pin_d6 = LCD_D6_GPIO;
+    cfg.pin_d7 = LCD_D7_GPIO;
+    #else
     cfg.freq_read  = 16000000;
     cfg.dma_channel = SPI_DMA_CH_AUTO;
     cfg.pin_sclk = LCD_SCK_GPIO;
     cfg.pin_mosi = LCD_MOSI_GPIO;
     cfg.pin_dc   = LCD_DC_GPIO;
+    #endif
     _bus_instance.config(cfg);
     _panel_instance.setBus(&_bus_instance);
   }
@@ -62,7 +96,11 @@ void init_tft(void) {
   // Manual setup because ledcSetup() briefly turns on the backlight
   ledc_channel_config_t ledc_channel_left;
   ledc_channel_left.gpio_num = (gpio_num_t)LCD_BL_GPIO;
+  #if(OMOTE_HARDWARE_REV >= 5)
+  ledc_channel_left.speed_mode = LEDC_LOW_SPEED_MODE;
+  #else
   ledc_channel_left.speed_mode = LEDC_HIGH_SPEED_MODE;
+  #endif
   ledc_channel_left.channel = LEDC_CHANNEL_5;
   ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
   ledc_channel_left.timer_sel = LEDC_TIMER_1;
@@ -78,7 +116,11 @@ void init_tft(void) {
   ledc_channel_config(&ledc_channel_left);
 
   ledc_timer_config_t ledc_timer;
+  #if(OMOTE_HARDWARE_REV >= 5)
+  ledc_timer.speed_mode = LEDC_LOW_SPEED_MODE;
+  #else
   ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
+  #endif
   ledc_timer.duty_resolution = LEDC_TIMER_8_BIT;
   ledc_timer.timer_num = LEDC_TIMER_1;
   ledc_timer.freq_hz = 640;

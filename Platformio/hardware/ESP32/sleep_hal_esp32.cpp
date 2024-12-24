@@ -15,7 +15,11 @@
 // prepare keypad keys to wakeup
 #include "keypad_keys_hal_esp32.h"
 
-uint8_t ACC_INT_GPIO = 13;
+#if (OMOTE_HARDWARE_REV >= 5)
+  uint8_t ACC_INT_GPIO = 2;
+#else
+  uint8_t ACC_INT_GPIO = 13;
+#endif
 
 int MOTION_THRESHOLD = 50;         // motion above threshold keeps device awake
 int DEFAULT_SLEEP_TIMEOUT = 20000; // default time until device enters sleep mode in milliseconds. Can be overridden.
@@ -141,8 +145,21 @@ void enterSleep(){
   // Prepare IO states
   digitalWrite(LCD_DC_GPIO, LOW); // LCD control signals off
   digitalWrite(LCD_CS_GPIO, LOW);
-  digitalWrite(LCD_MOSI_GPIO, LOW);
-  digitalWrite(LCD_SCK_GPIO, LOW);
+  #if(OMOTE_HARDWARE_REV >= 5)
+    digitalWrite(LCD_WR_GPIO, LOW);
+    digitalWrite(LCD_RD_GPIO, LOW);
+    digitalWrite(LCD_D0_GPIO, LOW);
+    digitalWrite(LCD_D1_GPIO, LOW);
+    digitalWrite(LCD_D2_GPIO, LOW);
+    digitalWrite(LCD_D3_GPIO, LOW);
+    digitalWrite(LCD_D4_GPIO, LOW);
+    digitalWrite(LCD_D5_GPIO, LOW);
+    digitalWrite(LCD_D6_GPIO, LOW);
+    digitalWrite(LCD_D7_GPIO, LOW);
+  #else
+    digitalWrite(LCD_MOSI_GPIO, LOW);
+    digitalWrite(LCD_SCK_GPIO, LOW);
+  #endif
   digitalWrite(LCD_EN_GPIO, HIGH); // LCD logic off
   digitalWrite(LCD_BL_GPIO, HIGH); // LCD backlight off
   // pinMode(CRG_STAT, INPUT); // Disable Pull-Up
@@ -150,6 +167,7 @@ void enterSleep(){
   digitalWrite(IR_VCC_GPIO, LOW); // IR Receiver off
 
   // Configure button matrix for ext1 interrupt  
+  #if(OMOTE_HARDWARE_REV < 5)
   pinMode(SW_1_GPIO, OUTPUT);
   pinMode(SW_2_GPIO, OUTPUT);
   pinMode(SW_3_GPIO, OUTPUT);
@@ -165,6 +183,7 @@ void enterSleep(){
   gpio_hold_en((gpio_num_t)SW_3_GPIO);
   gpio_hold_en((gpio_num_t)SW_4_GPIO);
   gpio_hold_en((gpio_num_t)SW_5_GPIO);
+  #endif
   // Force display pins to high impedance
   // Without this the display might not wake up from sleep
   pinMode(LCD_BL_GPIO, INPUT);
@@ -173,7 +192,11 @@ void enterSleep(){
   gpio_hold_en((gpio_num_t)LCD_EN_GPIO);  
   gpio_deep_sleep_hold_en();
   
+  #if(OMOTE_HARDWARE_REV >= 5)
+  esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_LOW);
+  #else
   esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_HIGH);
+  #endif
 
   delay(100);
   // Sleep
@@ -200,11 +223,13 @@ void init_sleep_HAL() {
   pinMode(ACC_INT_GPIO, INPUT);
 
   // Release GPIO hold in case we are coming out of standby
+  #if(OMOTE_HARDWARE_REV < 5)
   gpio_hold_dis((gpio_num_t)SW_1_GPIO);
   gpio_hold_dis((gpio_num_t)SW_2_GPIO);
   gpio_hold_dis((gpio_num_t)SW_3_GPIO);
   gpio_hold_dis((gpio_num_t)SW_4_GPIO);
   gpio_hold_dis((gpio_num_t)SW_5_GPIO);
+  #endif
   gpio_hold_dis((gpio_num_t)LCD_EN_GPIO);
   gpio_hold_dis((gpio_num_t)LCD_BL_GPIO);
   gpio_deep_sleep_hold_dis();
