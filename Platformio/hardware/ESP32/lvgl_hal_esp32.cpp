@@ -26,7 +26,7 @@ static void my_disp_flush( lv_display_t *disp, const lv_area_t *area, uint8_t *p
 }
 
 // Read the touchpad
-void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data) {
+static void my_touchpad_read(lv_indev_t *indev_driver, lv_indev_data_t *data) {
     uint16_t x, y;
     if (tft.getTouch(&x, &y)) {
         data->state = LV_INDEV_STATE_PRESSED;
