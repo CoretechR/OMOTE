@@ -32,6 +32,7 @@ static void my_touchpad_read(lv_indev_t *indev_driver, lv_indev_data_t *data) {
         data->state = LV_INDEV_STATE_PRESSED;
         data->point.x = x;
         data->point.y = y;
+        setLastActivityTimestamp_HAL();
     } else {
         data->state = LV_INDEV_STATE_RELEASED;
     }
