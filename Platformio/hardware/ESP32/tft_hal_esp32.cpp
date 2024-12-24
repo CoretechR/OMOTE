@@ -44,6 +44,10 @@ LGFX::LGFX(void) {
     cfg.pin_sda = SDA_GPIO;
     cfg.pin_scl = SCL_GPIO;
     cfg.freq = 400000;
+    cfg.x_min = 0;
+    cfg.x_max = SCR_WIDTH-1;
+    cfg.y_min = 0;
+    cfg.y_max = SCR_HEIGHT-1;
     _touch_instance.config(cfg);
     _panel_instance.setTouch(&_touch_instance);
   }

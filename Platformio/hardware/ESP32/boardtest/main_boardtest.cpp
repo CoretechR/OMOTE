@@ -112,6 +112,10 @@ class LGFX : public lgfx::LGFX_Device
       cfg.pin_sda = SDA;
       cfg.pin_scl = SCL;
       cfg.freq = 400000;
+      cfg.x_min = 0;
+      cfg.x_max = screenWidth-1;
+      cfg.y_min = 0;
+      cfg.y_max = screenHeight-1;
       _touch_instance.config(cfg);
       _panel_instance.setTouch(&_touch_instance);
     }
