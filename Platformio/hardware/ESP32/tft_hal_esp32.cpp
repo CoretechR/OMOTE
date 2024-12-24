@@ -8,10 +8,48 @@ uint8_t SCL_GPIO = 22;
 
 uint8_t LCD_BL_GPIO = 4;
 uint8_t LCD_EN_GPIO = 10;
+uint8_t LCD_CS_GPIO = 5;
+uint8_t LCD_MOSI_GPIO = 23;
+uint8_t LCD_SCK_GPIO = 18;
+uint8_t LCD_DC_GPIO = 9;
 
-TFT_eSPI tft = TFT_eSPI();
-Adafruit_FT6206 touch = Adafruit_FT6206();
-TS_Point touchPoint;
+LGFX::LGFX(void) {
+  {
+    auto cfg = _bus_instance.config();
+    cfg.freq_write = SPI_FREQUENCY;
+    cfg.freq_read  = 16000000;
+    cfg.dma_channel = SPI_DMA_CH_AUTO;
+    cfg.pin_sclk = LCD_SCK_GPIO;
+    cfg.pin_mosi = LCD_MOSI_GPIO;
+    cfg.pin_dc   = LCD_DC_GPIO;
+    _bus_instance.config(cfg);
+    _panel_instance.setBus(&_bus_instance);
+  }
+  {
+    auto cfg = _panel_instance.config();
+    cfg.pin_cs           = LCD_CS_GPIO;
+    cfg.pin_rst          = -1;
+    cfg.pin_busy         = -1;
+    cfg.memory_width     = SCR_WIDTH;
+    cfg.memory_height    = SCR_HEIGHT;
+    cfg.panel_width      = SCR_WIDTH;
+    cfg.panel_height     = SCR_HEIGHT;
+    cfg.offset_rotation  = 2;
+    _panel_instance.config(cfg);
+  }
+  {
+    auto cfg = _touch_instance.config();
+    cfg.i2c_addr = 0x38;
+    cfg.i2c_port = 0;
+    cfg.pin_sda = SDA_GPIO;
+    cfg.pin_scl = SCL_GPIO;
+    cfg.freq = 400000;
+    _touch_instance.config(cfg);
+    _panel_instance.setTouch(&_touch_instance);
+  }
+  setPanel(&_panel_instance);
+}
+LGFX tft;
 byte backlightBrightness = 255;
 
 void init_tft(void) {
@@ -65,21 +103,8 @@ void init_tft(void) {
   delay(5); // Wait for the LCD driver to power on
   tft.init();
   tft.initDMA();
-  tft.setRotation(0);
   tft.fillScreen(TFT_BLACK);
   tft.setSwapBytes(true);
-  
-  // SDA and SCL need to be set explicitly, because for IMU you cannot set it explicitly in the constructor.
-  // Configure i2c pins and set frequency to 400kHz
-  Wire.begin(SDA_GPIO, SCL_GPIO, 400000);
-  // Setup touchscreen
-  touch.begin(128); // Initialize touchscreen and set sensitivity threshold
-}
-
-void get_touchpoint(int16_t *touchX, int16_t *touchY) {
-  touchPoint = touch.getPoint();
-  *touchX = touchPoint.x;
-  *touchY = touchPoint.y;
 }
 
 void update_backligthBrighness_HAL(void) {

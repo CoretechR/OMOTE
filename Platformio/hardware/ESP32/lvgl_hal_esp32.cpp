@@ -26,34 +26,15 @@ static void my_disp_flush( lv_display_t *disp, const lv_area_t *area, uint8_t *p
 }
 
 // Read the touchpad
-static void my_touchpad_read(lv_indev_t *indev_driver, lv_indev_data_t *data) {
-  int16_t touchX;
-  int16_t touchY;
-  get_touchpoint(&touchX, &touchY);
-  
-  bool touched = false;
-  if ((touchX > 0) || (touchY > 0)) {
-    touched = true;
-    setLastActivityTimestamp_HAL();
-  }
-
-  if( !touched ){
-    data->state = LV_INDEV_STATE_RELEASED;
-  }
-  else{
-    data->state = LV_INDEV_STATE_PRESSED;
-
-    // Set the coordinates
-    data->point.x = SCR_WIDTH - touchX;
-    data->point.y = SCR_HEIGHT - touchY;
-
-    //Serial.print( "touchpoint: x" );
-    //Serial.print( touchX );
-    //Serial.print( " y" );
-    //Serial.println( touchY );
-    //tft.drawFastHLine(0, SCR_HEIGHT - touchY, SCR_WIDTH, TFT_RED);
-    //tft.drawFastVLine(SCR_WIDTH - touchX, 0, SCR_HEIGHT, TFT_RED);
-  }
+void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data) {
+    uint16_t x, y;
+    if (tft.getTouch(&x, &y)) {
+        data->state = LV_INDEV_STATE_PRESSED;
+        data->point.x = x;
+        data->point.y = y;
+    } else {
+        data->state = LV_INDEV_STATE_RELEASED;
+    }
 }
 
 /*LVGL draw into this buffer, 1/10 screen size usually works well. The size is in bytes*/

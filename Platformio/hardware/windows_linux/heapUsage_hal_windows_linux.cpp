@@ -7,21 +7,32 @@
 #if defined(WIN32)
 // https://www.daniweb.com/programming/software-development/threads/135188/calculate-the-amount-of-heap-memory
 // returns used heap size in bytes or negative if heap is corrupted.
+// It seems the while loop sometimes never ends. Reason unknown.
+// If this happens, stop after 200 iterations and return the fake numer 800000, as we are doing in Linux.
+// Update: and even with this fallback sometimes the function does not return. Weird. So simply return 800000.
 long HeapUsed()
 {
+    return 800000;
+
     _HEAPINFO info = { 0, 0, 0 };
     long used = 0;
     int rc;
-
-    while ((rc=_heapwalk(&info)) == _HEAPOK)
+    
+    int loopCounter = 0;
+    while (((rc=_heapwalk(&info)) == _HEAPOK) && (loopCounter < 200))
     {
         if (info._useflag == _USEDENTRY)
             used += info._size;
+        loopCounter++;
         }
     if (rc != _HEAPEND && rc != _HEAPEMPTY)
         used = (used?-used:-1);
 
-    return used;
+    if (loopCounter <= 200) {
+      return used;
+    } else {
+      return 800000;
+    }
 }
 
 #elif defined(__linux__) || defined(__APPLE__)
