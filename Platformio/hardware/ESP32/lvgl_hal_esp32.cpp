@@ -26,34 +26,15 @@ void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *colo
 }
 
 // Read the touchpad
-void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data){
-  int16_t touchX;
-  int16_t touchY;
-  get_touchpoint(&touchX, &touchY);
-  
-  bool touched = false;
-  if ((touchX > 0) || (touchY > 0)) {
-    touched = true;
-    setLastActivityTimestamp_HAL();
-  }
-
-  if( !touched ){
-    data->state = LV_INDEV_STATE_REL;
-  }
-  else{
-    data->state = LV_INDEV_STATE_PR;
-
-    // Set the coordinates
-    data->point.x = SCR_WIDTH - touchX;
-    data->point.y = SCR_HEIGHT - touchY;
-
-    //Serial.print( "touchpoint: x" );
-    //Serial.print( touchX );
-    //Serial.print( " y" );
-    //Serial.println( touchY );
-    //tft.drawFastHLine(0, SCR_HEIGHT - touchY, SCR_WIDTH, TFT_RED);
-    //tft.drawFastVLine(SCR_WIDTH - touchX, 0, SCR_HEIGHT, TFT_RED);
-  }
+void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data) {
+    uint16_t x, y;
+    if (tft.getTouch(&x, &y)) {
+        data->state = LV_INDEV_STATE_PR;
+        data->point.x = x;
+        data->point.y = y;
+    } else {
+        data->state = LV_INDEV_STATE_REL;
+    }
 }
 
 static lv_disp_draw_buf_t draw_buf;
