@@ -78,9 +78,6 @@ class LGFX : public lgfx::LGFX_Device
 
   public:
 
-  const char* driver_name = "ILI9341";
-  const char* mcu_name    = "ESP32";
-
   LGFX(void)
   {
     {
