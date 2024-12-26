@@ -5,8 +5,10 @@
 #endif
 
 #if(OMOTE_HARDWARE_REV >= 5)
-uint8_t SW_1_GPIO = 32;
-uint64_t BUTTON_PIN_BITMASK = 0b1110110000000000000000000010000000000000; //IO34+IO35+IO37+IO38+IO39(+IO13)
+uint8_t TCA_INT_GPIO = 8;
+uint64_t BUTTON_PIN_BITMASK = 0b0000000000000000000000000000000100000100; //IO02+IO08)
+
+Adafruit_TCA8418 keypad;
 #else
 uint8_t SW_1_GPIO = 32; // 1...5: Output
 uint8_t SW_2_GPIO = 26;
@@ -59,7 +61,13 @@ Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS
 
 void init_keys_HAL(void) {
   #if(OMOTE_HARDWARE_REV >= 5)
-
+  if (!keypad.begin(TCA8418_DEFAULT_ADDR, &Wire)) {
+    Serial.println("Keypad not found!");
+  }
+  keypad.matrix(ROWS, COLS);
+  pinMode(TCA_INT_GPIO, INPUT);
+  keypad.flush();
+  keypad.enableInterrupts();
   #else
   // Button Pin Definition
   pinMode(SW_1_GPIO, OUTPUT);
