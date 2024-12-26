@@ -917,6 +917,10 @@ bool BleKeyboard::advertiseAndWaitForConnection(std::string peerAddress) {
 bool BleKeyboard::forceConnectionToAddress(std::string peerAddress) {
 
   if (NimBLEDevice::getServer()->getConnectedCount() == 0) {
+    if (NimBLEDevice::getNumBonds() == 0) {
+      ESP_LOGW(LOG_TAG, "BleKeyboard: currently no client bonded. Please first pair a device. Please see the OMOTE Wiki. Cannot send key.\n");
+      return false;
+    }
     if (peerAddress == "") {
       ESP_LOGD(LOG_TAG, "BleKeyboard: currently no client connected. No specific address was provided. Will start advertising.\n");
     } else {

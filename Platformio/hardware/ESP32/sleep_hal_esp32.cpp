@@ -21,7 +21,7 @@
   uint8_t ACC_INT_GPIO = 13;
 #endif
 
-int MOTION_THRESHOLD = 50;         // motion above threshold keeps device awake
+int MOTION_THRESHOLD = 80;         // motion above threshold keeps device awake
 int DEFAULT_SLEEP_TIMEOUT = 20000; // default time until device enters sleep mode in milliseconds. Can be overridden.
 
 // is "lift to wake" enabled
