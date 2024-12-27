@@ -44,7 +44,6 @@ LGFX::LGFX(void) {
     cfg.pin_sda = SDA_GPIO;
     cfg.pin_scl = SCL_GPIO;
     cfg.freq = 400000;
-    cfg.bus_shared = true;
     cfg.x_min = 0;
     cfg.x_max = SCR_WIDTH-1;
     cfg.y_min = 0;

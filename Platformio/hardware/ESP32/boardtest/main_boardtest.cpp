@@ -62,7 +62,7 @@ SFE_MAX1704X fuelGauge(MAX1704X_MAX17048);
 // IMU declarations
 int motion = 0;
 #define SLEEP_TIMEOUT 20000 // time until device enters sleep mode in milliseconds
-#define MOTION_THRESHOLD 50 // motion above threshold keeps device awake
+#define MOTION_THRESHOLD 80 // motion above threshold keeps device awake
 int standbyTimer = SLEEP_TIMEOUT;
 bool wakeupByIMUEnabled = true;
 LIS3DH IMU(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
@@ -112,7 +112,6 @@ class LGFX : public lgfx::LGFX_Device
       cfg.pin_sda = SDA;
       cfg.pin_scl = SCL;
       cfg.freq = 400000;
-      cfg.bus_shared = true;
       cfg.x_min = 0;
       cfg.x_max = screenWidth-1;
       cfg.y_min = 0;
