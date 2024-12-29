@@ -1,17 +1,10 @@
 name: Ubuntu build
 
-on: [push,workflow_dispatch]
+on: [push,workflow_dispatch,pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-
-
-
-
-
-
 
     steps:
       - uses: actions/checkout@v4
@@ -30,21 +23,6 @@ jobs:
           sudo apt update
           sudo apt upgrade -y
           sudo apt install -y libsdl2-dev libsdl2-image-dev
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
