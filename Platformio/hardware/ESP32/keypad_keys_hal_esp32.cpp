@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "driver/ledc.h"
 #include "lib/Keypad/src/Keypad.h" // modified for inverted logic
 #if(OMOTE_HARDWARE_REV >= 5)
   #include <Adafruit_TCA8418.h>
@@ -9,6 +10,7 @@ uint8_t TCA_INT_GPIO = 8;
 uint64_t BUTTON_PIN_BITMASK = 0b0000000000000000000000000000000100000100; //IO02+IO08)
 
 Adafruit_TCA8418 keypad;
+byte keyboardBrightness = 255;
 #else
 uint8_t SW_1_GPIO = 32; // 1...5: Output
 uint8_t SW_2_GPIO = 26;
@@ -61,6 +63,7 @@ Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS
 
 void init_keys_HAL(void) {
   #if(OMOTE_HARDWARE_REV >= 5)
+
   if (!keypad.begin(TCA8418_DEFAULT_ADDR, &Wire)) {
     Serial.println("Keypad not found!");
   }
@@ -68,6 +71,11 @@ void init_keys_HAL(void) {
   pinMode(TCA_INT_GPIO, INPUT);
   keypad.flush();
   keypad.enableInterrupts();
+
+  ledcSetup(LEDC_CHANNEL_6, 5000, 8);
+  ledcAttachPin(46, LEDC_CHANNEL_6);
+  ledcWrite(LEDC_CHANNEL_6, 0);
+
   #else
   // Button Pin Definition
   pinMode(SW_1_GPIO, OUTPUT);
@@ -95,16 +103,97 @@ keypad_key keys[LIST_MAX];
 void keys_getKeys_HAL(void* ptr) {
   #if(OMOTE_HARDWARE_REV >= 5)
 
-  #else
-  customKeypad.getKeys();
+    // https://github.com/adafruit/Adafruit_TCA8418/blob/main/examples/tca8418_keypad_gpio_interrupt/tca8418_keypad_gpio_interrupt.ino
+    int intStat = keypad.readRegister(TCA8418_REG_INT_STAT);
+    if (intStat & 0x01) // Byte 0: K_INT (keyboard interrupt)
+    {
+      // datasheet page 16 - Table 2
+      int keyCode = keypad.getEvent();
+      if (keyCode & 0x80) Serial.print("PRESS\t ");
+      else Serial.print("RELEASE\t ");
+      //  map keyCode to GPIO nr.
+      keyCode &= 0x7F;
 
-  for(int i=0; i < LIST_MAX; i++) {
-    (*(keypad_key*)ptr).kchar        = customKeypad.key[i].kchar;
-    (*(keypad_key*)ptr).kcode        = customKeypad.key[i].kcode;
-    (*(keypad_key*)ptr).kstate       = (keypad_keyStates)(customKeypad.key[i].kstate);
-    (*(keypad_key*)ptr).stateChanged = customKeypad.key[i].stateChanged;
-    // https://www.geeksforgeeks.org/void-pointer-c-cpp/
-    ptr = (void *) ((intptr_t)(ptr) + sizeof(keypad_key));
-  }
-  #endif
+      if (keyCode > 96)  //  GPIO
+      {
+        // process  gpio
+        keyCode -= 97;
+        Serial.print(keyCode);
+        Serial.println();
+      }
+      else
+      {
+        // process  matrix
+        keyCode--;
+        Serial.print(keyCode / 10);
+        Serial.print("\t ");
+        Serial.print(keyCode % 10);
+        Serial.println();
+      }
+
+      //  clear the EVENT IRQ flag
+      keypad.writeRegister(TCA8418_REG_INT_STAT, 1);
+    }
+    if (intStat & 0x02) // Byte 1: GPI_INT (GPIO interrupt)
+    {
+      //  reading the registers is mandatory to clear IRQ flag
+      //  can also be used to find the GPIO changed
+      //  as these registers are a bitmap of the gpio pins.
+      keypad.readRegister(TCA8418_REG_GPIO_INT_STAT_1);
+      keypad.readRegister(TCA8418_REG_GPIO_INT_STAT_2);
+      keypad.readRegister(TCA8418_REG_GPIO_INT_STAT_3);
+      //  clear GPIO IRQ flag
+      keypad.writeRegister(TCA8418_REG_INT_STAT, 2);
+    }
+
+    //  check pending events
+    int intstat = keypad.readRegister(TCA8418_REG_INT_STAT);
+
+
+
+
+
+    //for(int i=0; i < LIST_MAX; i++) {
+    //  (*(keypad_key*)ptr).kchar        = customKeypad.key[i].kchar;
+    //  (*(keypad_key*)ptr).kcode        = customKeypad.key[i].kcode;
+    //  (*(keypad_key*)ptr).kstate       = (keypad_keyStates)(customKeypad.key[i].kstate);
+    //  (*(keypad_key*)ptr).stateChanged = customKeypad.key[i].stateChanged;
+    //  // https://www.geeksforgeeks.org/void-pointer-c-cpp/
+    //  ptr = (void *) ((intptr_t)(ptr) + sizeof(keypad_key));
+    //}
+  #else
+    customKeypad.getKeys();
+
+    for(int i=0; i < LIST_MAX; i++) {
+      (*(keypad_key*)ptr).kchar        = customKeypad.key[i].kchar;
+      (*(keypad_key*)ptr).kcode        = customKeypad.key[i].kcode;
+      (*(keypad_key*)ptr).kstate       = (keypad_keyStates)(customKeypad.key[i].kstate);
+      (*(keypad_key*)ptr).stateChanged = customKeypad.key[i].stateChanged;
+      // https://www.geeksforgeeks.org/void-pointer-c-cpp/
+      ptr = (void *) ((intptr_t)(ptr) + sizeof(keypad_key));
+    }
+    #endif
 }
+
+#if(OMOTE_HARDWARE_REV >= 5)
+void update_keyboardBrightness_HAL(void) {
+  // A variable declared static inside a function is visible only inside that function, exists only once (not created/destroyed for each call) and is permanent. It is in a sense a private global variable.
+  static int fadeInTimer = millis(); // fadeInTimer = time after setup
+  if (millis() < fadeInTimer + keyboardBrightness) {
+    // after boot or wakeup, fade in backlight brightness
+    // fade in lasts for <backlightBrightness> ms
+    ledcWrite(LEDC_CHANNEL_6, millis() - fadeInTimer);
+  }
+  else {
+    // normal mode, set full backlightBrightness
+    ledcWrite(LEDC_CHANNEL_6, keyboardBrightness);
+  }
+}
+
+uint8_t get_keyboardBrightness_HAL() {
+  return keyboardBrightness;
+};
+void set_keyboardBrightness_HAL(uint8_t aKeyboardBrightness) {
+  keyboardBrightness = aKeyboardBrightness;
+};
+#endif

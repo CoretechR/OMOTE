@@ -49,6 +49,11 @@ struct keypad_key {
 const uint8_t keypad_maxkeys = 10;
 extern keypad_key keypad_keys[keypad_maxkeys];
 void getKeys(keypad_key *keypad_keys);
+#if(OMOTE_HARDWARE_REV >= 5)
+void update_keyboardBrightness(void);
+uint8_t get_keyboardBrightness();
+void set_keyboardBrightness(uint8_t aKeyboardBrightness);
+#endif
 
 // --- IR sender --------------------------------------------------------------
 void init_infraredSender(void);
@@ -112,7 +117,7 @@ void consumerControlBLE_longpress(const MediaKeyReport value);
 #endif
 
 // --- tft --------------------------------------------------------------------
-void update_backligthBrighness(void);
+void update_backlightBrightness(void);
 uint8_t get_backlightBrightness();
 void set_backlightBrightness(uint8_t aBacklightBrightness);
 

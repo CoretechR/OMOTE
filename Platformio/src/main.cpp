@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
   register_specialCommands();
   //   TV
   register_device_samsungTV();
-//  register_device_lgTV();
+  //register_device_lgTV();
   //   AV receiver
   register_device_yamahaAmp();
   //register_device_denonAvr();
@@ -177,8 +177,11 @@ void loop(unsigned long *pIMUTaskTimer, unsigned long *pUpdateStatusTimer) {
 #endif
 
   // --- do as often as possible --------------------------------------------------------
-  // update backlight brightness. Fade in on startup, dim before going to sleep
-  update_backligthBrighness();
+  // update backlight and keyboard brightness. Fade in on startup, dim before going to sleep
+  update_backlightBrightness();
+  #if(OMOTE_HARDWARE_REV >= 5)
+    update_keyboardBrightness();
+  #endif
   // keypad handling: get key states from hardware and process them
   keypad_loop();
   // process IR receiver, if activated

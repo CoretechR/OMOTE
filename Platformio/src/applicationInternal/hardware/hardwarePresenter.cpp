@@ -101,7 +101,17 @@ keypad_key keypad_keys[keypad_maxkeys];
 void getKeys(keypad_key *keys) {
   keys_getKeys_HAL(keys);
 }
-
+#if(OMOTE_HARDWARE_REV >= 5)
+void update_keyboardBrightness(void) {
+  update_keyboardBrightness_HAL();
+}
+uint8_t get_keyboardBrightness() {
+  return get_keyboardBrightness_HAL();
+}
+void set_keyboardBrightness(uint8_t aKeyboardBrightness){
+  set_keyboardBrightness_HAL(aKeyboardBrightness);
+}
+#endif
 // --- IR sender --------------------------------------------------------------
 void init_infraredSender(void) {
   init_infraredSender_HAL();  
@@ -200,9 +210,9 @@ void consumerControlBLE_longpress(const MediaKeyReport value) {
 #endif
 
 // --- tft --------------------------------------------------------------------
-void update_backligthBrighness(void) {
-  update_backligthBrighness_HAL();
-};
+void update_backlightBrightness(void) {
+  update_backlightBrightness_HAL();
+}
 uint8_t get_backlightBrightness() {
   return get_backlightBrightness_HAL();
 }

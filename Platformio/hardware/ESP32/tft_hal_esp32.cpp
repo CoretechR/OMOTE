@@ -153,7 +153,7 @@ void init_tft(void) {
   tft.setSwapBytes(true);
 }
 
-void update_backligthBrighness_HAL(void) {
+void update_backlightBrightness_HAL(void) {
   // A variable declared static inside a function is visible only inside that function, exists only once (not created/destroyed for each call) and is permanent. It is in a sense a private global variable.
   static int fadeInTimer = millis(); // fadeInTimer = time after setup
   if (millis() < fadeInTimer + backlightBrightness) {
