@@ -225,8 +225,15 @@ TextStyle UIElement::GetTextStyle(lv_style_selector_t aStyle) {
       .Opacity(lv_obj_get_style_text_opa(mLvglSelf, aStyle));
 }
 
+void UIElement::AddStyle(lv_style_t *aStyle,
+                         lv_style_selector_t aStyleSelector) {
+  LvglResourceManager::GetInstance().AttemptNow(
+      [=] { lv_obj_add_style(mLvglSelf, aStyle, aStyleSelector); });
+}
+
 void UIElement::AlignTo(UIElement *anElementToAlignTo, lv_align_t anAlignment,
                         lv_coord_t aXoffset, lv_coord_t aYOffset) {
+
   LvglResourceManager::GetInstance().AttemptNow([=] {
     lv_obj_align_to(mLvglSelf, anElementToAlignTo->mLvglSelf, anAlignment,
                     aXoffset, aYOffset);
