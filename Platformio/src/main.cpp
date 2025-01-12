@@ -71,11 +71,7 @@ int main(int argc, char *argv[]) {
   init_preferences();
   // blinking led
   init_userled();
-  // Power Pin definition
-  init_battery();
 
-  // button Pin definition for hardware keys
-  init_keys();
   // setup IR sender
   init_infraredSender();
   #if (ENABLE_KEYBOARD_BLE == 1)
@@ -141,9 +137,15 @@ int main(int argc, char *argv[]) {
   set_scenes_on_sceneSelectionGUI({scene_name_TV, scene_name_fireTV, scene_name_chromecast, scene_name_appleTV});
 
   // init GUI - will initialize tft, touch and lvgl
-  init_gui();
+  init_gui(); // This has to come before any other i2c devices are initialized, otherwise the i2c bus will not be powered
   setLabelActiveScene();
   gui_loop(); // Run the LVGL UI once before the loop takes over
+  
+  // Power Pin and battery monitor definition
+  init_battery();
+
+  // setup keyboard matrix driver
+  init_keys();
 
   // setup the Inertial Measurement Unit (IMU) for motion detection. Has to be after init_gui(), otherwise I2C will not work
   init_IMU();

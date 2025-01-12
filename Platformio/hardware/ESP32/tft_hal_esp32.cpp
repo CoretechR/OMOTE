@@ -3,6 +3,14 @@
 #include "tft_hal_esp32.h"
 #include "sleep_hal_esp32.h"
 
+// The ESP32 can only do LOW_SPEED_MODE
+#if(OMOTE_HARDWARE_REV >= 5)
+#define LEDC_SPEED_MODE LEDC_LOW_SPEED_MODE
+#else
+#define LEDC_SPEED_MODE LEDC_HIGH_SPEED_MODE
+#endif
+
+// Set pins for 8-bit mode (ESP32-S3) or SPI (ESP32)
 #if(OMOTE_HARDWARE_REV >= 5)
   uint8_t SDA_GPIO = 20;
   uint8_t SCL_GPIO = 19;
@@ -95,11 +103,7 @@ void init_tft(void) {
   // Manual setup because ledcSetup() briefly turns on the backlight
   ledc_channel_config_t ledc_channel_left;
   ledc_channel_left.gpio_num = (gpio_num_t)LCD_BL_GPIO;
-  #if(OMOTE_HARDWARE_REV >= 5)
-  ledc_channel_left.speed_mode = LEDC_LOW_SPEED_MODE;
-  #else
-  ledc_channel_left.speed_mode = LEDC_HIGH_SPEED_MODE;
-  #endif
+  ledc_channel_left.speed_mode = LEDC_SPEED_MODE;
   ledc_channel_left.channel = LEDC_CHANNEL_5;
   ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
   ledc_channel_left.timer_sel = LEDC_TIMER_1;
@@ -115,11 +119,7 @@ void init_tft(void) {
   ledc_channel_config(&ledc_channel_left);
 
   ledc_timer_config_t ledc_timer;
-  #if(OMOTE_HARDWARE_REV >= 5)
-  ledc_timer.speed_mode = LEDC_LOW_SPEED_MODE;
-  #else
-  ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
-  #endif
+  ledc_timer.speed_mode = LEDC_SPEED_MODE;
   ledc_timer.duty_resolution = LEDC_TIMER_8_BIT;
   ledc_timer.timer_num = LEDC_TIMER_1;
   ledc_timer.freq_hz = 640;
@@ -159,15 +159,21 @@ void update_backlightBrightness_HAL(void) {
   if (millis() < fadeInTimer + backlightBrightness) {
     // after boot or wakeup, fade in backlight brightness
     // fade in lasts for <backlightBrightness> ms
-    ledcWrite(5, millis() - fadeInTimer);
+    ledcWrite(LEDC_CHANNEL_5, millis() - fadeInTimer);
   } else {
     if (millis() - get_lastActivityTimestamp() > get_sleepTimeout_HAL() - 2000) {
       // less than 2000 ms until standby
       // dim backlight
-      ledcWrite(5, get_backlightBrightness_HAL() * 0.3);
+      ledcWrite(LEDC_CHANNEL_5, get_backlightBrightness_HAL() * 0.3);
     } else {
       // normal mode, set full backlightBrightness
-      ledcWrite(5, backlightBrightness);
+      // turn off PWM if backlight is at full brightness
+      if(backlightBrightness < 255){
+        ledcWrite(LEDC_CHANNEL_5, backlightBrightness);
+      }
+      else{
+        ledc_stop(LEDC_SPEED_MODE, LEDC_CHANNEL_5, 255);
+      }
     }
   }
 }
