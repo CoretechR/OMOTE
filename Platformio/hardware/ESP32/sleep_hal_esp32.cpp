@@ -110,9 +110,9 @@ void configIMUInterruptsBeforeGoingToSleep()
   //LIS3DH_CTRL_REG5
   //Set interrupt polarity 
   #if(OMOTE_HARDWARE_REV >= 5)
-  IMU.writeRegister(LIS3DH_CTRL_REG6, 0x00); // For active-low interrupt
+  IMU.writeRegister(LIS3DH_CTRL_REG6, 0x02); // For active-low interrupt
   #else
-  IMU.writeRegister(LIS3DH_CTRL_REG6, 0x02); // For active-high interrupt
+  IMU.writeRegister(LIS3DH_CTRL_REG6, 0x00); // For active-high interrupt
   #endif
 
   //LIS3DH_CTRL_REG3
