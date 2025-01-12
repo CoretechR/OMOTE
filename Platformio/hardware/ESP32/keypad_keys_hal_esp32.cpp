@@ -185,8 +185,14 @@ void update_keyboardBrightness_HAL(void) {
     ledcWrite(LEDC_CHANNEL_6, millis() - fadeInTimer);
   }
   else {
-    // normal mode, set full backlightBrightness
-    ledcWrite(LEDC_CHANNEL_6, keyboardBrightness);
+    // normal mode, set full backlightBrightness    
+    // turn off PWM if backlight is at full brightness
+    if(keyboardBrightness < 255){
+      ledcWrite(LEDC_CHANNEL_6, keyboardBrightness);
+    }
+    else{
+      ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_6, 255);
+    }
   }
 }
 

@@ -59,6 +59,13 @@ void update_userled() {
   update_userled_HAL();
 }
 
+// --- SD card ----------------------------------------------------------------
+#if(OMOTE_HARDWARE_REV >= 5)
+void init_SD_card(void) {
+  init_SD_HAL();
+}
+#endif
+
 // --- battery ----------------------------------------------------------------
 void init_battery(void) {
   init_battery_HAL();

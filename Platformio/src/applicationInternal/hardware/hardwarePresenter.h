@@ -55,6 +55,11 @@ uint8_t get_keyboardBrightness();
 void set_keyboardBrightness(uint8_t aKeyboardBrightness);
 #endif
 
+// --- SD card ----------------------------------------------------------------
+#if(OMOTE_HARDWARE_REV >= 5)
+void init_SD_card(void);
+#endif
+
 // --- IR sender --------------------------------------------------------------
 void init_infraredSender(void);
 enum IRprotocols {

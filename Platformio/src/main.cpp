@@ -71,6 +71,10 @@ int main(int argc, char *argv[]) {
   init_preferences();
   // blinking led
   init_userled();
+  // startup SD card
+  #if(OMOTE_HARDWARE_REV >= 5)
+  init_SD_card();
+  #endif
 
   // setup IR sender
   init_infraredSender();

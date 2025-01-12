@@ -8,6 +8,8 @@
 #include "infrared_receiver_hal_esp32.h"
 // turn off tft
 #include "tft_hal_esp32.h"
+// turn off SD card
+#include "sd_card_hal_esp32.h"
 // disconnect WiFi
 #include "mqtt_hal_esp32.h"
 // disconnect BLE keyboard
@@ -170,6 +172,9 @@ void enterSleep(){
   #endif
   digitalWrite(LCD_EN_GPIO, HIGH); // LCD logic off
   digitalWrite(LCD_BL_GPIO, HIGH); // LCD backlight off
+  #if(OMOTE_HARDWARE_REV >= 5)
+  digitalWrite(SD_EN_GPIO, HIGH); // SD card off
+  #endif
   // pinMode(CRG_STAT, INPUT); // Disable Pull-Up
   pinMode(IR_RX_GPIO, INPUT); // force IR receiver pin to INPUT to prevent high current during sleep (additional 60 uA)
   digitalWrite(IR_VCC_GPIO, LOW); // IR Receiver off

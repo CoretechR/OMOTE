@@ -1,6 +1,7 @@
 #include <Preferences.h>
 #include "sleep_hal_esp32.h"
 #include "tft_hal_esp32.h"
+#include "keypad_keys_hal_esp32.h"
 
 Preferences preferences;
 
@@ -18,6 +19,10 @@ void init_preferences_HAL(void) {
     set_sleepTimeout_HAL(preferences.getUInt("slpTimeout"));
     // from tft.h
     set_backlightBrightness_HAL(preferences.getUChar("blBrightness"));
+    // from keyboard.h
+    #if(OMOTE_HARDWARE_REV >= 5)
+    set_keyboardBrightness_HAL(preferences.getUChar("kbBrightness"));
+    #endif
     // from here
     activeScene = std::string(preferences.getString("currentScene").c_str());
     activeGUIname = std::string(preferences.getString("currentGUIname").c_str());
@@ -38,6 +43,10 @@ void save_preferences_HAL(void) {
   // from tft.h
   preferences.putUInt("slpTimeout", get_sleepTimeout_HAL());
   preferences.putUChar("blBrightness", get_backlightBrightness_HAL());
+  // from keyboard.h
+  #if(OMOTE_HARDWARE_REV >= 5)
+  preferences.putUInt("kbBrightness", get_keyboardBrightness_HAL());
+  #endif
   // from here
   preferences.putString("currentScene", activeScene.c_str());
   preferences.putString("currentGUIname", activeGUIname.c_str());
