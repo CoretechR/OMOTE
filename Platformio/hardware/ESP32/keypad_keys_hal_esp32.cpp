@@ -67,11 +67,17 @@ void init_keys_HAL(void) {
   if (!keypad.begin(TCA8418_DEFAULT_ADDR, &Wire)) {
     Serial.println("Keypad not found!");
   }
-  keypad.matrix(ROWS, COLS);
+  keypad.matrix(ROWS, COLS);  
+  keypad.pinMode(5, INPUT_PULLUP);  // SW_PWR
+  keypad.pinMode(6, INPUT_PULLUP);  // SD_DET
+  keypad.pinMode(13, INPUT); // USB_3V3
+
   pinMode(TCA_INT_GPIO, INPUT);
   keypad.flush();
-  keypad.enableInterrupts();
-
+  keypad.writeRegister(TCA8418_REG_CFG, 0b00000001);
+  keypad.writeRegister(TCA8418_REG_GPI_EM_1, 0b00111111);
+  keypad.writeRegister(TCA8418_REG_GPI_EM_2, 0b00011111); // disable interrupt for COL5 (USB_3V3)
+  
   ledcSetup(LEDC_CHANNEL_6, 5000, 8);
   ledcAttachPin(46, LEDC_CHANNEL_6);
   ledcWrite(LEDC_CHANNEL_6, 0);
