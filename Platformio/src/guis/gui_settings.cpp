@@ -52,7 +52,7 @@ static void timout_event_cb(lv_event_t* e){
     case 5: {set_sleepTimeout( 600000); break;}
     case 6: {set_sleepTimeout(3600000); break;}
   }
-  omote_log_v("New timeout: %lu ms\r\n", actualSleepTimeout);
+  omote_log_v("New timeout: %lu ms\r\n", get_sleepTimeout());
   setLastActivityTimestamp();
   // save preferences now, otherwise if you set a very big timeout and upload your firmware again, it never got saved
   save_preferences();

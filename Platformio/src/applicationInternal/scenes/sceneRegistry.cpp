@@ -170,7 +170,7 @@ gui_list get_gui_list_withFallback(GUIlists gui_list) {
       #if (USE_SCENE_SPECIFIC_GUI_LIST != 0)
         // look if the active scene has a definition for a gui list
         if ((registered_scenes.count(gui_memoryOptimizer_getActiveSceneName()) > 0) && (registered_scenes.at(gui_memoryOptimizer_getActiveSceneName()).this_gui_list != NULL)) {
-          omote_log_v("get_gui_list: will use gui_list from scene %s\r\n", sceneName.c_str());
+          omote_log_v("get_gui_list: will use gui_list from scene %s\r\n", gui_memoryOptimizer_getActiveSceneName().c_str());
           return registered_scenes.at(gui_memoryOptimizer_getActiveSceneName()).this_gui_list;
         } else {
           // no scene specific gui list was defined
