@@ -17,7 +17,7 @@
 extern uint64_t BUTTON_PIN_BITMASK;
 
 void init_keys_HAL(void);
-void keys_getKeys_HAL(void* ptr);
+void keys_getKeys_HAL(void* ptr, unsigned long currentMillis);
 
 #if(OMOTE_HARDWARE_REV >= 5)
     // called from the HAL

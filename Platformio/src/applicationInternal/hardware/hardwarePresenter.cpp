@@ -104,9 +104,20 @@ void set_wakeupByIMUEnabled(bool aWakeupByIMUEnabled) {
 void init_keys(void) {
   init_keys_HAL();  
 }
-keypad_key keypad_keys[keypad_maxkeys];
-void getKeys(keypad_key *keys) {
-  keys_getKeys_HAL(keys);
+// Used in keypad_getRawKeys to save the raw key states.
+// Holds the raw keystates as received from the keypad (OMOTE_HARDWARE_REV <= 4), the TCA8418 (OMOTE_HARDWARE_REV >= 5) or the simulator.
+// We expect only IDLE_PRESSED and IDLE_RELEASED, because this is what all three sources can deliver (only the keypad could also deliver IDLE and HOLD)
+// The whole array is passed as a pointer to the hardware implementation, which fills it with the raw key states.
+rawKey rawKeys[][keypadCOLS] = {
+  {{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW}},
+  {{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW}},
+  {{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW}},
+  {{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW}},
+  {{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW},{0, NO_KEY, IDLE_RAW}},
+};
+void getKeys(rawKey rawKeys[keypadROWS][keypadCOLS], unsigned long currentMillis) {
+  // we need to provide currentMillis to the hardware, because at least in case of the simulator there is no way to access millis()
+  keys_getKeys_HAL(rawKeys, currentMillis);
 }
 #if(OMOTE_HARDWARE_REV >= 5)
 void update_keyboardBrightness(void) {
