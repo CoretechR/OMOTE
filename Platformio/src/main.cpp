@@ -78,9 +78,6 @@ int main(int argc, char *argv[]) {
 
   // setup IR sender
   init_infraredSender();
-  #if (ENABLE_KEYBOARD_BLE == 1)
-  init_keyboardBLE();
-  #endif
 
   // register commands for the devices
   register_specialCommands();
@@ -147,6 +144,11 @@ int main(int argc, char *argv[]) {
   
   // Power Pin and battery monitor definition
   init_battery();
+
+  // init BLE keyboard. Has to be after init_gui (because of powered I2C) and after init_battery (because of fuel gauge init)
+  #if (ENABLE_KEYBOARD_BLE == 1)
+  init_keyboardBLE();
+  #endif
 
   // setup keyboard matrix driver
   init_keys();
