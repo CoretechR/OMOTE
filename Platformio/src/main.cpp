@@ -73,7 +73,8 @@ int main(int argc, char *argv[]) {
   init_userled();
   // startup SD card
   #if(OMOTE_HARDWARE_REV >= 5)
-  init_SD_card();
+  // SD card is currently not used, so save some time on startup and don't init the SD card
+  // init_SD_card();
   #endif
 
   // setup IR sender
