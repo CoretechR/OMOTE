@@ -5,6 +5,7 @@
 #else
   #include "lib/Keypad/src/Keypad.h" // modified for inverted logic
 #endif
+#include "sleep_hal_esp32.h"
 
 // has to be exactly the same structure as in hardwarePresenter.h
 const uint8_t keypadROWS = 5; //five rows
@@ -182,9 +183,11 @@ void keys_getKeys_HAL(void* ptr, unsigned long currentMillis) {
     rawKeys[row][col].keyChar = keypadChars[row][col];
     if (rawKeyState == PRESSED_RAW) {
       rawKeys[row][col].rawKeyState = PRESSED_RAW;
+      setLastActivityTimestamp_HAL();
 
     } else if (rawKeyState == RELEASED_RAW) {
       rawKeys[row][col].rawKeyState = RELEASED_RAW;
+      setLastActivityTimestamp_HAL();
     }
 
     // Serial.printf("esp32 TCA8418 event: %c, %d %d, %d\r\n", keypadChars[row][col], row, col, rawKeyState);
@@ -207,9 +210,11 @@ void keys_getKeys_HAL(void* ptr, unsigned long currentMillis) {
       rawKeys[row][col].keyChar = customKeypad.key[i].kchar;
       if (customKeypad.key[i].kstate == PRESSED) {
         rawKeys[row][col].rawKeyState = PRESSED_RAW;
+        setLastActivityTimestamp_HAL();
     
       } else if (customKeypad.key[i].kstate == RELEASED) {
         rawKeys[row][col].rawKeyState = RELEASED_RAW;
+        setLastActivityTimestamp_HAL();
       }
       // Serial.printf("esp32 keypad event for key %d: %c, %d %d, %d\r\n", i, rawKeys[row][col].keyChar, row, col, customKeypad.key[i].kstate);
     }
