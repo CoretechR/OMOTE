@@ -6,7 +6,7 @@
 #include <IRsend.h>
 
 #if(OMOTE_HARDWARE_REV >= 5)
-uint8_t IR_LED_GPIO = 5; // IR LED output
+uint8_t IR_LED_GPIO = 5;  // IR LED output
 #else
 uint8_t IR_LED_GPIO = 33; // IR LED output
 #endif

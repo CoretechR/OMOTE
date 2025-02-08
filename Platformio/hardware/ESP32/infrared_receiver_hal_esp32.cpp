@@ -49,7 +49,6 @@ uint8_t IR_RX_GPIO  = 15; // IR receiver input
 uint8_t IR_VCC_GPIO = 25; // IR receiver power
 #endif
 
-
 bool irReceiverEnabled = false;
 
 tAnnounceNewIRmessage_cb thisAnnounceNewIRmessage_cb = NULL;
