@@ -1,5 +1,6 @@
 
 #include "display.hpp"
+
 #include "Wire.h"
 #include "driver/ledc.h"
 #include "omoteconfig.h"
@@ -9,31 +10,48 @@ std::shared_ptr<Display> Display::getInstance() {
     DisplayAbstract::mInstance =
         std::shared_ptr<Display>(new Display(LCD_BL, LCD_EN));
   }
-  return std::static_pointer_cast<Display>(mInstance);
+  return std::static_point er_cast<Display>(mInstance);
 }
 
 Display::Display(int backlight_pin, int enable_pin)
-    : DisplayAbstract(), mBacklightPin(backlight_pin), mEnablePin(enable_pin),
-      tft(TFT_eSPI()), touch(Adafruit_FT6206()) {
+    : DisplayAbstract(),
+      mBacklightPin(backlight_pin),
+      mEnablePin(enable_pin),
+      tft(TFT_eSPI()),
+      touch(Adafruit_FT6206()) {
   pinMode(mEnablePin, OUTPUT);
   digitalWrite(mEnablePin, HIGH);
   pinMode(mBacklightPin, OUTPUT);
   digitalWrite(mBacklightPin, HIGH);
 
-  setupBacklight(); // This eliminates the flash of the backlight
+  setupBacklight();  // This eliminates the flash of the backlight
 
   // Slowly charge the VSW voltage to prevent a brownout
   // Workaround for hardware rev 1!
+
   for (int i = 0; i < 100; i++) {
-    digitalWrite(this->mEnablePin, HIGH); // LCD Logic off
+    digitalWrite(this->mEnablePin, HIGH);  // LCD Logic off
     delayMicroseconds(1);
-    digitalWrite(this->mEnablePin, LOW); // LCD Logic on
+    digitalWrite(this->mEnablePin, LOW);  // LCD Logic on
   }
 
   setupTFT();
   setupTouchScreen();
   mFadeTaskMutex = xSemaphoreCreateBinary();
   xSemaphoreGive(mFadeTaskMutex);
+}
+
+void Display::wake() {
+  if (mIsAsleep) {
+    mIsAsleep = false;
+    startFade();
+  }
+}
+void Display::sleep() {
+  if (!mIsAsleep) {
+    mIsAsleep = true;
+    startFade();
+  }
 }
 
 void Display::setupBacklight() {
@@ -45,7 +63,7 @@ void Display::setupBacklight() {
   ledc_channel_left.channel = LEDC_CHANNEL_5;
   ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
   ledc_channel_left.timer_sel = LEDC_TIMER_1;
-  ledc_channel_left.flags.output_invert = 1; // Can't do this with ledcSetup()
+  ledc_channel_left.flags.output_invert = 1;  // Can't do this with ledcSetup()
   ledc_channel_left.duty = 0;
   ledc_channel_left.hpoint = 0;
   ledc_timer_config_t ledc_timer;
@@ -70,7 +88,7 @@ void Display::setupTFT() {
 void Display::setupTouchScreen() {
   // Configure i2c pins and set frequency to 400kHz
   Wire.begin(TFT_SDA, TFT_SCL, 400000);
-  touch.begin(128); // Initialize touchscreen and set sensitivity threshold
+  touch.begin(128);  // Initialize touchscreen and set sensitivity threshold
 }
 
 void Display::setBrightness(uint8_t brightness) {
@@ -132,7 +150,7 @@ void Display::fadeImpl(void *) {
   bool fadeDone = false;
   while (!fadeDone) {
     fadeDone = getInstance()->fade();
-    vTaskDelay(3 / portTICK_PERIOD_MS); // 3 miliseconds between steps
+    vTaskDelay(3 / portTICK_PERIOD_MS);  // 3 miliseconds between steps
     // 0 - 255 will take about .75 seconds to fade up.
   }
 
@@ -140,19 +158,19 @@ void Display::fadeImpl(void *) {
   getInstance()->mDisplayFadeTask = nullptr;
   xSemaphoreGive(getInstance()->mFadeTaskMutex);
 
-  vTaskDelete(nullptr); // Delete Fade Task
+  vTaskDelete(nullptr);  // Delete Fade Task
 }
 
 bool Display::fade() {
   // Early return no fade needed.
-  if (mBrightness == mAwakeBrightness || isAsleep && mBrightness == 0) {
+  if (mBrightness == mAwakeBrightness || mIsAsleep && mBrightness == 0) {
     return true;
   }
 
-  bool fadeDown = isAsleep || mBrightness > mAwakeBrightness;
+  bool fadeDown = mIsAsleep || mBrightness > mAwakeBrightness;
   if (fadeDown) {
     setCurrentBrightness(mBrightness - 1);
-    auto setPoint = isAsleep ? 0 : mAwakeBrightness;
+    auto setPoint = mIsAsleep ? 0 : mAwakeBrightness;
     return mBrightness == setPoint;
   } else {
     setCurrentBrightness(mBrightness + 1);

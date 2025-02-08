@@ -1,11 +1,13 @@
 #pragma once
+#include <Adafruit_FT6206.h>
+#include <TFT_eSPI.h>
+
+#include <memory>
+
 #include "DisplayAbstract.h"
 #include "HardwareAbstract.hpp"
 #include "Notification.hpp"
 #include "driver/ledc.h"
-#include <Adafruit_FT6206.h>
-#include <TFT_eSPI.h>
-#include <memory>
 
 /*LEDC Channel to use for the LCD backlight*/
 #define LCD_BACKLIGHT_LEDC_CHANNEL LEDC_CHANNEL_5
@@ -17,7 +19,7 @@
 #define DEFAULT_BACKLIGHT_BRIGHTNESS 128
 
 class Display : public DisplayAbstract {
-public:
+ public:
   static std::shared_ptr<Display> getInstance();
 
   /// @brief Set brightness setting and fade to it
@@ -30,20 +32,10 @@ public:
     return mTouchEvent;
   }
 
-  inline void wake() {
-    if (isAsleep) {
-      isAsleep = false;
-      startFade();
-    }
-  }
-  inline void sleep() {
-    if (!isAsleep) {
-      isAsleep = true;
-      startFade();
-    }
-  }
+  void wake();
+  void sleep();
 
-protected:
+ protected:
   virtual void flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area,
                             lv_color_t *color_p);
   virtual void screenInput(lv_indev_drv_t *indev_driver,
@@ -60,7 +52,7 @@ protected:
   /// @param brightness
   void setCurrentBrightness(uint8_t brightness);
 
-private:
+ private:
   Display(int backlight_pin, int enable_pin);
   void setupTFT();
   void setupTouchScreen();
@@ -80,7 +72,7 @@ private:
   SemaphoreHandle_t mFadeTaskMutex = nullptr;
   static void fadeImpl(void *aBrightness);
 
-  uint8_t mBrightness = 0;        // Current display brightness
-  uint8_t mAwakeBrightness = 100; // Current setting for brightness when awake
-  bool isAsleep = false;
+  uint8_t mBrightness = 0;       // Current display brightness
+  uint8_t mAwakeBrightness = 0;  // Current setting for brightness when awake
+  bool mIsAsleep = false;
 };
