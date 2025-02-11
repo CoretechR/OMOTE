@@ -58,6 +58,7 @@ void activityDetection() {
   motion = (abs(accXold - accX) + abs(accYold - accY) + abs(accZold - accZ));
   // If the motion exceeds the threshold, the lastActivityTimestamp is updated
   if(motion > MOTION_THRESHOLD) {
+    // Serial.printf("Motion activity %d at %lu ms\r\n", motion, millis());
     setLastActivityTimestamp_HAL();
   }
 

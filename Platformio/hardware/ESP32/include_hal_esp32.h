@@ -10,7 +10,7 @@
 #include "ESP32/lvgl_hal_esp32.h"
 #include "ESP32/mqtt_hal_esp32.h"
 #include "ESP32/preferencesStorage_hal_esp32.h"
+#include "ESP32/sd_card_hal_esp32.h"
 #include "ESP32/sleep_hal_esp32.h"
 #include "ESP32/tft_hal_esp32.h"
 #include "ESP32/user_led_hal_esp32.h"
-#include "ESP32/sd_card_hal_esp32.h"
