@@ -13285,7 +13285,7 @@
 		)
 		(fp_arc
 			(start 5.997926 25.19481)
-			(mid 6.349398 24.346284)
+			(mid 6.349398 24.34628)
 			(end 7.197926 23.99481)
 			(stroke
 				(width 0.2)
@@ -24761,6 +24761,7 @@
 			(net 43 "GND")
 			(pinfunction "1")
 			(pintype "input")
+			(zone_connect 2)
 			(uuid "4cf3f315-7427-4df0-86af-8db436033623")
 		)
 		(pad "1" thru_hole circle
@@ -25896,7 +25897,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C114626"
+		(property "LCSC" "C105580"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -30062,7 +30063,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C114626"
+		(property "LCSC" "C105580"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -35084,7 +35085,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -36086,7 +36087,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -42324,7 +42325,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -42947,7 +42948,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -43202,7 +43203,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -43457,7 +43458,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -43945,7 +43946,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -44200,7 +44201,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -45067,7 +45068,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -45457,7 +45458,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -50257,7 +50258,7 @@
 				(justify mirror)
 			)
 		)
-		(property "LCSC" "C965807"
+		(property "LCSC" "C84265"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
