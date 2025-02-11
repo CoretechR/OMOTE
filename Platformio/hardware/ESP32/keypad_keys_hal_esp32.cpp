@@ -218,7 +218,7 @@ void keys_getKeys_HAL(void* ptr, unsigned long currentMillis) {
       }
       // Serial.printf("esp32 keypad event for key %d: %c, %d %d, %d\r\n", i, rawKeys[row][col].keyChar, row, col, customKeypad.key[i].kstate);
     }
-    #endif
+  #endif
 }
 
 #if(OMOTE_HARDWARE_REV >= 5)
