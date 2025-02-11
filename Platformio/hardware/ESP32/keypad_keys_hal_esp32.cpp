@@ -237,7 +237,7 @@ void update_keyboardBrightness_HAL(void) {
       ledcWrite(LEDC_CHANNEL_6, keyboardBrightness);
     }
     else{
-      ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_6, 255);
+      ledc_stop(LEDC_SPEED_MODE, LEDC_CHANNEL_6, 255);
     }
   }
 }
