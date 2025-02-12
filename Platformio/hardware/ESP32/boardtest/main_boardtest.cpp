@@ -138,7 +138,7 @@ int battery_percentage = 100;
 bool battery_ischarging = false;
 
 // IMU declarations -------------------------------------------------------------------------------
-int motion = 0;
+int IMUInitSuccessful = false;
 #define SLEEP_TIMEOUT 20000 // time until device enters sleep mode in milliseconds
 #define MOTION_THRESHOLD 80 // motion above threshold keeps device awake
 int standbyTimer = SLEEP_TIMEOUT;
@@ -334,10 +334,11 @@ void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data) {
     }
 }
 
-void activityDetection(){
+int activityDetection(){
   static int accXold;
   static int accYold;
   static int accZold;
+  static int motion = 0;
   int accX = IMU.readFloatAccelX()*1000;
   int accY = IMU.readFloatAccelY()*1000;
   int accZ = IMU.readFloatAccelZ()*1000;
@@ -357,6 +358,8 @@ void activityDetection(){
   accXold = accX;
   accYold = accY;
   accZold = accZ;
+
+  return motion;
 }
 
 void configIMUInterruptsBeforeGoingToSleep()
@@ -708,7 +711,7 @@ void setup() {
   lv_table_set_cell_value_fmt(checksTable, 3, 1, "press any");
   lv_table_set_cell_value_fmt(checksTable, 4, 1, "press any");
   lv_table_set_cell_value_fmt(checksTable, 8, 1, "0");
-  lv_table_set_cell_value_fmt(checksTable, 9, 1, "%d", standbyTimer/1000);
+  lv_table_set_cell_value_fmt(checksTable, 9, 1, "%.1f", 0.001f * (float)standbyTimer);
 
   // restart button
   lv_obj_t * btnRestart = lv_btn_create(lv_scr_act());
@@ -785,7 +788,7 @@ void setup() {
   IMU.settings.xAccelEnabled = 1;
   IMU.settings.yAccelEnabled = 1;
   IMU.settings.zAccelEnabled = 1;
-  int IMUInitSuccessful = IMU.begin();  
+  IMUInitSuccessful = IMU.begin();  
   uint8_t intDataRead;
   IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC);//clear interrupt
   
@@ -888,8 +891,12 @@ void loop() {
 
   // Refresh IMU data at 10Hz ---------------------------------------------------------------------
   static unsigned long IMUTaskTimer = millis();
-  if(millis() - IMUTaskTimer >= 100){
-    activityDetection();
+  if(millis() - IMUTaskTimer >= 100) {
+    static int currentMotion = 0;
+    currentMotion = activityDetection();
+    if(IMUInitSuccessful == 0) lv_table_set_cell_value_fmt(checksTable, 5, 1, "%s  %d", LV_SYMBOL_OK, currentMotion);
+    else lv_table_set_cell_value_fmt(checksTable, 5, 1, LV_SYMBOL_WARNING);
+  
     if((standbyTimer == 0) && !show_touches){
       Serial.println("Entering Sleep Mode. Goodbye.");
       enterSleep();
@@ -928,8 +935,8 @@ void loop() {
 
   // standby countdown ----------------------------------------------------------------------------
   static unsigned long standbyTimerInfo = millis();
-  if (millis() - standbyTimerInfo >= 1000) {
-    lv_table_set_cell_value_fmt(checksTable, 9, 1, "%d", standbyTimer/1000);
+  if (millis() - standbyTimerInfo >= 100) {
+    lv_table_set_cell_value_fmt(checksTable, 9, 1, "%.1f", 0.001f * (float)standbyTimer);
     standbyTimerInfo = millis();
   }
 
