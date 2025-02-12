@@ -1,6 +1,8 @@
 #include "Keyboard.hpp"
-#include "BackgroundScreen.hpp"
+
 #include <cmath>
+
+#include "BackgroundScreen.hpp"
 
 using namespace UI;
 using namespace UI::Widget;
@@ -19,7 +21,7 @@ Keyboard::Keyboard(std::function<void(std::string)> aOnUserCompletedTextEntry,
   }
 
   mKeyboard->OnLvglEvent([this](auto aEvent) {
-    if (aEvent->code == LV_EVENT_READY) {
+    if (lv_event_get_code(aEvent) == LV_EVENT_READY) {
       std::string userEnteredText =
           std::string(lv_textarea_get_text(mTextArea->LvglSelf()));
       mOnUserCompleteTextEntry(userEnteredText);

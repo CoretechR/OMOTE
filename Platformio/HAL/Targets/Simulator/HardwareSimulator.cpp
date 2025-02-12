@@ -1,35 +1,38 @@
 #include "HardwareSimulator.hpp"
 
-#include "SDLDisplay.hpp"
 #include <sstream>
 
+#include "SDLDisplay.hpp"
+
 HardwareSimulator::HardwareSimulator()
-    : HardwareAbstract(), mTickThread([]() {
+    : HardwareAbstract(),
+      mTickThread([]() {
         while (true) {
-          std::this_thread::sleep_for(std::chrono::milliseconds(2));
-          lv_tick_inc(2); /*Tell lvgl that 2 milliseconds were elapsed*/
+          std::this_thread::sleep_for(std::chrono::milliseconds(200000));
+          // lv_tick_inc(2); /*Tell lvgl that 2 milliseconds were elapsed*/
         }
       }),
       mBattery(std::make_shared<BatterySimulator>()),
       mDisplay(SDLDisplay::getInstance()),
       mWifiHandler(std::make_shared<wifiHandlerSim>()),
-      mKeys(std::make_shared<KeyPressSim>()), mIr(std::make_shared<IRSim>()),
+      mKeys(std::make_shared<KeyPressSim>()),
+      mIr(std::make_shared<IRSim>()),
       mStats(std::make_shared<StatsSimulator>()) {
   mHardwareStatusTitleUpdate = std::thread([this] {
     int dataToShow = 0;
     while (true) {
       std::stringstream title;
       switch (dataToShow) {
-      case 0:
-        title << "Batt:" << mBattery->getPercentage() << "%" << std::endl;
-        break;
-      case 1:
-        title << "BKLght: " << static_cast<int>(mDisplay->getBrightness())
-              << std::endl;
-        dataToShow = -1;
-        break;
-      default:
-        dataToShow = -1;
+        case 0:
+          title << "Batt:" << mBattery->getPercentage() << "%" << std::endl;
+          break;
+        case 1:
+          title << "BKLght: " << static_cast<int>(mDisplay->getBrightness())
+                << std::endl;
+          dataToShow = -1;
+          break;
+        default:
+          dataToShow = -1;
       }
       dataToShow++;
 

@@ -3,7 +3,7 @@
 namespace UI {
 
 class ID {
-public:
+ public:
   static constexpr auto INVALID = 0;
 
   enum class Screens {
@@ -21,6 +21,7 @@ public:
     DropDown,
     Keyboard,
     BrightnessSlider,
+    Joystick,
     INVALID_WIDGET_ID
   };
 
@@ -32,18 +33,19 @@ public:
     IrLearner,
     Demo,
     Tv,
+    CarController,
     INVALID_PAGE_ID
   };
 
-  ID() : mId(INVALID){};
-  ID(ID::Screens aScreenId) : mId(static_cast<int>(aScreenId)){};
-  ID(ID::Widgets aWidgetId) : mId(static_cast<int>(aWidgetId)){};
-  ID(ID::Pages aPageId) : mId(static_cast<int>(aPageId)){};
+  ID() : mId(INVALID) {};
+  ID(ID::Screens aScreenId) : mId(static_cast<int>(aScreenId)) {};
+  ID(ID::Widgets aWidgetId) : mId(static_cast<int>(aWidgetId)) {};
+  ID(ID::Pages aPageId) : mId(static_cast<int>(aPageId)) {};
 
   bool operator==(const ID aOther) const { return aOther.mId == mId; }
 
-private:
+ private:
   const int mId;
 };
 
-} // namespace UI
+}  // namespace UI

@@ -5,12 +5,12 @@ using namespace UI::Screen;
 Base::Base(ID aId) : UIElement(lv_obj_create(NULL), aId) {}
 
 void Base::Show() {
-  lv_scr_load_anim(LvglSelf(), mPushAnimation, mTransitionAnimationTime,
-                   mTransitionDelayTime, false);
+  lv_screen_load_anim(LvglSelf(), mPushAnimation, mTransitionAnimationTime,
+                      mTransitionDelayTime, false);
   UIElement::OnShow();
 }
 
-void Base::SetPushAnimation(lv_scr_load_anim_t aShowAnimation) {
+void Base::SetPushAnimation(lv_screen_load_anim_t aShowAnimation) {
   mPushAnimation = aShowAnimation;
 }
 

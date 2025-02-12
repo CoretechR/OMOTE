@@ -4,7 +4,7 @@ namespace UI {
 UIElement::UIElement(lv_obj_t *aLvglSelf, ID aId)
     : mLvglSelf(aLvglSelf), mId(aId) {
   auto lock = LvglResourceManager::GetInstance().scopeLock();
-  mLvglSelf->user_data = this;
+  lv_obj_set_user_data(mLvglSelf, this);
   // Register Handler so that all object are able to override OnLvglEvent to
   // handle events easilyOnLvEvent
   lv_obj_add_event_cb(mLvglSelf, UIElement::LvglEventHandler, LV_EVENT_ALL,
@@ -16,9 +16,9 @@ UIElement::~UIElement() {
   if (lv_obj_is_valid(LvglSelf())) {
     StopLvglEventHandler();
     if (mLvglKeepAliveTime > 0) {
-      lv_obj_del_delayed(LvglSelf(), mLvglKeepAliveTime);
+      lv_obj_delete_delayed(LvglSelf(), mLvglKeepAliveTime);
     } else {
-      lv_obj_del(LvglSelf());
+      lv_obj_delete(LvglSelf());
     }
   }
 }
@@ -26,7 +26,7 @@ UIElement::~UIElement() {
 UIElement *UIElement::GetParent() {
   auto lock = LvglResourceManager::GetInstance().scopeLock();
   if (auto parent = lv_obj_get_parent(mLvglSelf); parent) {
-    if (auto parentElem = parent->user_data; parentElem) {
+    if (auto parentElem = lv_obj_get_user_data(parent); parentElem) {
       return reinterpret_cast<UIElement *>(parentElem);
     }
   }
@@ -233,7 +233,6 @@ void UIElement::AddStyle(lv_style_t *aStyle,
 
 void UIElement::AlignTo(UIElement *anElementToAlignTo, lv_align_t anAlignment,
                         lv_coord_t aXoffset, lv_coord_t aYOffset) {
-
   LvglResourceManager::GetInstance().AttemptNow([=] {
     lv_obj_align_to(mLvglSelf, anElementToAlignTo->mLvglSelf, anAlignment,
                     aXoffset, aYOffset);
@@ -322,7 +321,8 @@ void UIElement::OnShow() {
 
 void UIElement::LvglEventHandler(lv_event_t *anEvent) {
   auto lock = LvglResourceManager::GetInstance().scopeLock();
-  reinterpret_cast<UIElement *>(anEvent->user_data)->OnLvglEvent(anEvent);
+  reinterpret_cast<UIElement *>(lv_event_get_user_data(anEvent))
+      ->OnLvglEvent(anEvent);
 }
 
-} // namespace UI
+}  // namespace UI

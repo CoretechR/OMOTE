@@ -11,7 +11,7 @@ Animation::Animation(std::function<void(int32_t)> aAnimator,
   lv_anim_set_time(&mAnimation, aAnimationTime);
 }
 
-Animation::~Animation() { lv_anim_custom_del(&mAnimation, AnimatorImpl); }
+Animation::~Animation() { lv_anim_custom_delete(&mAnimation, AnimatorImpl); }
 
 void Animation::HandleAnimationComplete(
     std::function<void()> onAnimationComplete) {

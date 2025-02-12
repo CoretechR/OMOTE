@@ -8,13 +8,17 @@
 #include "HardwareRevX.hpp"
 #endif
 
+std::unique_ptr<HardwareAbstract> HardwareFactory::mHardware = nullptr;
+
+void HardwareFactory::Init() {
 #if OMOTE_SIM
-std::unique_ptr<HardwareAbstract> HardwareFactory::mHardware =
-    std::make_unique<HardwareSimulator>();
+  mHardware = std::make_unique<HardwareSimulator>();
 #endif
 #if OMOTE_ESP32
-std::unique_ptr<HardwareAbstract> HardwareFactory::mHardware =
-    std::make_unique<HardwareRevX>();
+  std::unique_ptr<HardwareAbstract> HardwareFactory::mHardware =
+      std::make_unique<HardwareRevX>();
 #endif
+  mHardware->init();
+}
 
 HardwareAbstract &HardwareFactory::getAbstract() { return *mHardware; }

@@ -82,7 +82,8 @@
         "codecvt": "cpp",
         "regex": "cpp",
         "hash_set": "cpp",
-        "text_encoding": "cpp"
+        "text_encoding": "cpp",
+        "lv_string.h": "c"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO",
     "editor.formatOnSave": true,

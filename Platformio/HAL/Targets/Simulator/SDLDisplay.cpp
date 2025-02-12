@@ -1,5 +1,5 @@
 #include "SDLDisplay.hpp"
-#include "sdl/sdl.h"
+
 #include <string>
 
 std::shared_ptr<SDLDisplay> SDLDisplay::getInstance() {
@@ -15,22 +15,14 @@ uint8_t SDLDisplay::getBrightness() { return mBrightness; }
 
 void SDLDisplay::turnOff() {}
 
-void SDLDisplay::flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area,
-                              lv_color_t *color_p) {
-  sdl_display_flush(disp, area, color_p);
-}
-
-void SDLDisplay::screenInput(lv_indev_drv_t *indev_driver,
-                             lv_indev_data_t *data) {
-  sdl_mouse_read(indev_driver, data);
-}
-
 void SDLDisplay::setTitle(std::string aNewTitle) {
   SDL_SetWindowTitle(mSimWindow, aNewTitle.c_str());
 }
 
 SDLDisplay::SDLDisplay() : DisplayAbstract() {
-  sdl_init();
+  lv_group_set_default(lv_group_create());
+  auto display = lv_sdl_window_create(SDL_HOR_RES, SDL_VER_RES);
+  lv_display_set_default(display);
 
   // Get the SDL window via an event
   SDL_Event aWindowIdFinder;

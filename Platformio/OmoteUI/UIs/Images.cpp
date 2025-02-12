@@ -1084,95 +1084,94 @@ inline static const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST uint8_t
 };
 
 void Images::setupImageDescriptions() {
-  this->low_brightness.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->low_brightness.header.always_zero = 0;
-  this->low_brightness.header.reserved = 0;
+  this->low_brightness.header.cf = LV_COLOR_FORMAT_A8;
+  this->low_brightness.header.flags = 0;
+  this->low_brightness.header.reserved_2 = 0;
   this->low_brightness.header.w = 16;
   this->low_brightness.header.h = 16;
   this->low_brightness.data_size = 256;
   this->low_brightness.data = low_brightness_map;
 
-  this->high_brightness.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->high_brightness.header.always_zero = 0;
-  this->high_brightness.header.reserved = 0;
+  this->high_brightness.header.cf = LV_COLOR_FORMAT_A8;
+  this->high_brightness.header.flags = 0;
+  this->high_brightness.header.reserved_2 = 0;
   this->high_brightness.header.w = 18;
   this->high_brightness.header.h = 18;
   this->high_brightness.data_size = 352;
   this->high_brightness.data = high_brightness_map;
 
-  this->appleTvIcon.header.cf = LV_IMG_CF_TRUE_COLOR;
-  this->appleTvIcon.header.always_zero = 0;
-  this->appleTvIcon.header.reserved = 0;
+  this->appleTvIcon.header.cf = LV_COLOR_FORMAT_NATIVE;
+  this->appleTvIcon.header.flags = 0;
+  this->appleTvIcon.header.reserved_2 = 0;
   this->appleTvIcon.header.w = 91;
   this->appleTvIcon.header.h = 42;
-  this->appleTvIcon.data_size = 3822 * LV_COLOR_SIZE / 8;
+  this->appleTvIcon.data_size = 3822 * sizeof(lv_color_t) / 8;
   this->appleTvIcon.data = appleTvIcon_map;
 
-  this->appleDisplayIcon.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->appleDisplayIcon.header.always_zero = 0;
-  this->appleDisplayIcon.header.reserved = 0;
+  this->appleDisplayIcon.header.cf = LV_COLOR_FORMAT_A8;
+  this->appleDisplayIcon.header.flags = 0;
+  this->appleDisplayIcon.header.reserved_2 = 0;
   this->appleDisplayIcon.header.w = 25;
   this->appleDisplayIcon.header.h = 20;
   this->appleDisplayIcon.data_size = 500;
   this->appleDisplayIcon.data = appleDisplayIcon_map;
 
-  this->appleBackIcon.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->appleBackIcon.header.always_zero = 0;
-  this->appleBackIcon.header.reserved = 0;
+  this->appleBackIcon.header.cf = LV_COLOR_FORMAT_A8;
+  this->appleBackIcon.header.flags = 0;
+  this->appleBackIcon.header.reserved_2 = 0;
   this->appleBackIcon.header.w = 13;
   this->appleBackIcon.header.h = 25;
   this->appleBackIcon.data_size = 325;
   this->appleBackIcon.data = appleBackIcon_map;
 
-  this->lightbulb_icon.header.cf = LV_IMG_CF_ALPHA_8BIT,
-  lightbulb_icon.header.always_zero = 0,
-  this->lightbulb_icon.header.reserved = 0, lightbulb_icon.header.w = 12,
-  this->lightbulb_icon.header.h = 20, lightbulb_icon.data_size = 240,
-  this->lightbulb_icon.data = lightbulb_map;
+  this->lightbulb_icon.header.cf = LV_COLOR_FORMAT_A8,
+  lightbulb_icon.header.flags = 0, this->lightbulb_icon.header.reserved_2 = 0,
+  lightbulb_icon.header.w = 12, this->lightbulb_icon.header.h = 20,
+  lightbulb_icon.data_size = 240, this->lightbulb_icon.data = lightbulb_map;
 
-  this->gradientLeft.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->gradientLeft.header.always_zero = 0;
-  this->gradientLeft.header.reserved = 0;
+  this->gradientLeft.header.cf = LV_COLOR_FORMAT_A8;
+  this->gradientLeft.header.flags = 0;
+  this->gradientLeft.header.reserved_2 = 0;
   this->gradientLeft.header.w = 30;
   this->gradientLeft.header.h = 1;
   this->gradientLeft.data_size = 30;
   this->gradientLeft.data = gradientLeft_map;
 
-  this->gradientRight.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->gradientRight.header.always_zero = 0;
-  this->gradientRight.header.reserved = 0;
+  this->gradientRight.header.cf = LV_COLOR_FORMAT_A8;
+  this->gradientRight.header.flags = 0;
+  this->gradientRight.header.reserved_2 = 0;
   this->gradientRight.header.w = 30;
   this->gradientRight.header.h = 1;
   this->gradientRight.data_size = 30;
   this->gradientRight.data = gradientRight_map;
 
-  this->wifiNoSignal.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->wifiNoSignal.header.always_zero = 0;
-  this->wifiNoSignal.header.reserved = 0;
+  this->wifiNoSignal.header.cf = LV_COLOR_FORMAT_A8;
+  this->wifiNoSignal.header.flags = 0;
+  this->wifiNoSignal.header.reserved_2 = 0;
   this->wifiNoSignal.header.w = 25;
   this->wifiNoSignal.header.h = 21;
   this->wifiNoSignal.data_size = 525;
   this->wifiNoSignal.data = WiFi_No_Signal_map;
 
-  this->wifiLowSignal.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->wifiLowSignal.header.always_zero = 0;
-  this->wifiLowSignal.header.reserved = 0;
+  this->wifiLowSignal.header.cf = LV_COLOR_FORMAT_A8;
+  this->wifiLowSignal.header.flags = 0;
+  this->wifiLowSignal.header.reserved_2 = 0;
   this->wifiLowSignal.header.w = 25;
   this->wifiLowSignal.header.h = 21;
   this->wifiLowSignal.data_size = 525;
   this->wifiLowSignal.data = WiFi_Low_Signal_map;
 
-  this->wifiMidSignal.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->wifiMidSignal.header.always_zero = 0;
-  this->wifiMidSignal.header.reserved = 0;
+  this->wifiMidSignal.header.cf = LV_COLOR_FORMAT_A8;
+  this->wifiMidSignal.header.flags = 0;
+  this->wifiMidSignal.header.reserved_2 = 0;
   this->wifiMidSignal.header.w = 25;
   this->wifiMidSignal.header.h = 21;
   this->wifiMidSignal.data_size = 525;
   this->wifiMidSignal.data = WiFi_Mid_Signal_map;
 
-  this->wifiHighSignal.header.cf = LV_IMG_CF_ALPHA_8BIT;
-  this->wifiHighSignal.header.always_zero = 0;
-  this->wifiHighSignal.header.reserved = 0;
+  this->wifiHighSignal.header.cf = LV_COLOR_FORMAT_A8;
+  this->wifiHighSignal.header.flags = 0;
+  this->wifiHighSignal.header.reserved_2 = 0;
   this->wifiHighSignal.header.w = 25;
   this->wifiHighSignal.header.h = 21;
   this->wifiHighSignal.data_size = 525;

@@ -19,6 +19,7 @@ Display::Display(int backlight_pin, int enable_pin)
       mEnablePin(enable_pin),
       tft(TFT_eSPI()),
       touch(Adafruit_FT6206()) {
+  InitDisplay(lv_display_create(SCREEN_WIDTH, SCREEN_HEIGHT));
   pinMode(mEnablePin, OUTPUT);
   digitalWrite(mEnablePin, HIGH);
   pinMode(mBacklightPin, OUTPUT);
@@ -117,7 +118,7 @@ void Display::turnOff() {
   gpio_hold_en((gpio_num_t)mEnablePin);
 }
 
-void Display::screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
+void Display::screenInput(lv_indev_t *indev, lv_indev_data_t *data) {
   // int16_t touchX, touchY;
   touchPoint = touch.getPoint();
   int16_t touchX = touchPoint.x;
@@ -188,14 +189,14 @@ void Display::startFade() {
   xSemaphoreGive(mFadeTaskMutex);
 }
 
-void Display::flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area,
-                           lv_color_t *color_p) {
+void Display::flushDisplay(lv_disp_t *disp, const lv_area_t *area,
+                           uint8_t *pixelMap) {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
 
   tft.startWrite();
   tft.setAddrWindow(area->x1, area->y1, w, h);
-  tft.pushPixelsDMA((uint16_t *)&color_p->full, w * h);
+  tft.pushPixelsDMA((uint16_t *)&pixelMap, w * h);
   tft.endWrite();
 
   lv_disp_flush_ready(disp);

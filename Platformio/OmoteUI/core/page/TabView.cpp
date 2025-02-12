@@ -1,19 +1,19 @@
 #include "TabView.hpp"
-#include "BackgroundScreen.hpp"
+
 #include <string>
+
+#include "BackgroundScreen.hpp"
 
 using namespace UI::Page;
 
 Tab::Tab(lv_obj_t *aTab, Base::Ptr aContent)
-    : Base(aTab, aContent->GetID()), mContent(AddElement(std::move(aContent))) {
-}
+    : Base(aTab, aContent->GetID()),
+      mContent(AddElement(std::move(aContent))) {}
 
 /////////////////////TabView/////////////////////////////////////
 
 TabView::TabView(ID aId)
-    : Base(lv_tabview_create(Screen::BackgroundScreen::getLvInstance(),
-                             LV_DIR_TOP, 0),
-           aId) {}
+    : Base(lv_tabview_create(Screen::BackgroundScreen::getLvInstance()), aId) {}
 
 void TabView::AddTab(Page::Base::Ptr aPage) {
   auto tab = std::make_unique<Tab>(
@@ -53,7 +53,7 @@ bool TabView::KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
 };
 
 void TabView::OnLvglEvent(lv_event_t *anEvent) {
-  if (anEvent->code == LV_EVENT_VALUE_CHANGED) {
+  if (lv_event_get_code(anEvent) == LV_EVENT_VALUE_CHANGED) {
     HandleTabChange();
   }
 }

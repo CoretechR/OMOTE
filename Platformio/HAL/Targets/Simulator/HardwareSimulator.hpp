@@ -1,6 +1,7 @@
 ﻿#pragma once
-#include "HardwareAbstract.hpp"
+#include <thread>
 
+#include "HardwareAbstract.hpp"
 #include "IRSim.hpp"
 #include "KeyPressSim.hpp"
 #include "SDLDisplay.hpp"
@@ -8,14 +9,12 @@
 #include "batterySimulator.hpp"
 #include "wifiHandlerSim.hpp"
 
-#include <thread>
-
 class HardwareSimulator : public HardwareAbstract {
-public:
+ public:
   HardwareSimulator();
 
-  void init() override{};
-  void loopHandler() override{};
+  void init() override {};
+  void loopHandler() override {};
 
   void debugPrint(const char *fmt, ...) override {
     va_list arguments;
@@ -40,7 +39,7 @@ public:
   uint16_t getSleepTimeout() override;
   void setSleepTimeout(uint16_t sleepTimeout) override;
 
-private:
+ private:
   std::thread mTickThread;
   std::thread mHardwareStatusTitleUpdate;
 
