@@ -15,8 +15,7 @@ void HardwareFactory::Init() {
   mHardware = std::make_unique<HardwareSimulator>();
 #endif
 #if OMOTE_ESP32
-  std::unique_ptr<HardwareAbstract> HardwareFactory::mHardware =
-      std::make_unique<HardwareRevX>();
+  mHardware = std::make_unique<HardwareRevX>();
 #endif
   mHardware->init();
 }

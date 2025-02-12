@@ -13,7 +13,9 @@ Tab::Tab(lv_obj_t *aTab, Base::Ptr aContent)
 /////////////////////TabView/////////////////////////////////////
 
 TabView::TabView(ID aId)
-    : Base(lv_tabview_create(Screen::BackgroundScreen::getLvInstance()), aId) {}
+    : Base(lv_tabview_create(Screen::BackgroundScreen::getLvInstance()), aId) {
+  lv_tabview_set_tab_bar_size(LvglSelf(), 0);
+}
 
 void TabView::AddTab(Page::Base::Ptr aPage) {
   auto tab = std::make_unique<Tab>(

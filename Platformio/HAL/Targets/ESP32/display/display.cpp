@@ -19,7 +19,11 @@ Display::Display(int backlight_pin, int enable_pin)
       mEnablePin(enable_pin),
       tft(TFT_eSPI()),
       touch(Adafruit_FT6206()) {
-  InitDisplay(lv_display_create(SCREEN_WIDTH, SCREEN_HEIGHT));
+  lv_display_t *display = lv_display_create(SCREEN_WIDTH, SCREEN_HEIGHT);
+  lv_display_set_flush_cb(display, [](auto aDisplay, auto aArea, auto aPxMap) {
+    getInstance()->flushDisplay(aDisplay, aArea, aPxMap);
+  });
+
   pinMode(mEnablePin, OUTPUT);
   digitalWrite(mEnablePin, HIGH);
   pinMode(mBacklightPin, OUTPUT);

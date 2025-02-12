@@ -36,10 +36,9 @@ class Display : public DisplayAbstract {
   void sleep();
 
  protected:
-  void flushDisplay(lv_disp_t *disp, const lv_area_t *area,
-                    uint8_t *pixelMap) override;
+  void flushDisplay(lv_disp_t *disp, const lv_area_t *area, uint8_t *pixelMap);
 
-  void screenInput(lv_indev_t *indev, lv_indev_data_t *data) override;
+  void screenInput(lv_indev_t *indev, lv_indev_data_t *data);
 
   /// @brief Fade toward brightness based on isAwake
   /// @return True - Fade complete
