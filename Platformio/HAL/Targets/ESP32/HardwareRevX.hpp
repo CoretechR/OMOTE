@@ -1,28 +1,27 @@
 #pragma once
-#include "SparkFunLIS3DH.h"
-
-#include "EspStats.hpp"
-#include "HardwareAbstract.hpp"
-#include "battery.hpp"
-#include "lvgl.h"
-#include "wifihandler.hpp"
 #include <Arduino.h>
 #include <IRutils.h>
 #include <Preferences.h>
 #include <PubSubClient.h>
+
 #include <functional>
 #include <memory>
 
-#include "omoteconfig.h"
-
 #include "BatteryInterface.h"
+#include "EspStats.hpp"
+#include "HardwareAbstract.hpp"
 #include "IRTransceiver.hpp"
+#include "SparkFunLIS3DH.h"
+#include "battery.hpp"
 #include "display.hpp"
 #include "keys.hpp"
+#include "lvgl.h"
+#include "omoteconfig.h"
 #include "wifiHandlerInterface.h"
+#include "wifihandler.hpp"
 
 class HardwareRevX : public HardwareAbstract {
-public:
+ public:
   enum class WakeReason { RESET, IMU, KEYPAD };
 
   HardwareRevX();
@@ -51,7 +50,7 @@ public:
   // TODO move to a freertos task
   void loopHandler() override;
 
-protected:
+ protected:
   // Init Functions to setup hardware
   void initIO();
   void restorePreferences();
@@ -64,7 +63,7 @@ protected:
   // Tasks
   void startTasks();
 
-private:
+ private:
   std::shared_ptr<Battery> mBattery;
   std::shared_ptr<Display> mDisplay;
   std::shared_ptr<wifiHandler> mWifiHandler;
@@ -72,7 +71,8 @@ private:
   std::shared_ptr<IRTransceiver> mIr;
   std::shared_ptr<EspStats> mStats = nullptr;
   // IMU Motion Detection
-  LIS3DH IMU = LIS3DH(I2C_MODE, 0x19); // Default constructor is I2C, addr 0x19.
+  LIS3DH IMU =
+      LIS3DH(I2C_MODE, 0x19);  // Default constructor is I2C, addr 0x19.
   int standbyTimer = SLEEP_TIMEOUT;
   int sleepTimeout = SLEEP_TIMEOUT;
   int motion = 0;
@@ -80,9 +80,9 @@ private:
 
   Preferences preferences;
   bool wakeupByIMUEnabled = true;
-  byte currentDevice = 1; // Current Device to control (allows switching
-                          // mappings between devices)
+  byte currentDevice = 1;  // Current Device to control (allows switching
+                           // mappings between devices)
 
   static std::shared_ptr<HardwareRevX> mInstance;
-  Handler<TS_Point> mTouchHandler;
+  Handler<Display::TouchPointType> mTouchHandler;
 };

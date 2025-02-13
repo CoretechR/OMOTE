@@ -1,7 +1,6 @@
 #pragma once
-#include <Adafruit_FT6206.h>
-#include <TFT_eSPI.h>
 
+#include <LovyanGFX.hpp>
 #include <memory>
 
 #include "DisplayAbstract.h"
@@ -18,8 +17,23 @@
 
 #define DEFAULT_BACKLIGHT_BRIGHTNESS 128
 
+class LGFX : public lgfx::LGFX_Device {
+ public:
+  LGFX(void);
+
+ private:
+  lgfx::Panel_ILI9341 _panel_instance;
+  lgfx::Bus_SPI _bus_instance;
+  lgfx::Touch_FT5x06 _touch_instance;
+};
+
 class Display : public DisplayAbstract {
  public:
+  static constexpr auto DRAW_BUF_SIZE =
+      SCREEN_WIDTH * SCREEN_HEIGHT / 10 * (LV_COLOR_DEPTH / 8);
+
+  using TouchPointType = std::pair<int, int>;
+
   static std::shared_ptr<Display> getInstance();
 
   /// @brief Set brightness setting and fade to it
@@ -28,7 +42,7 @@ class Display : public DisplayAbstract {
   virtual uint8_t getBrightness() override;
   virtual void turnOff() override;
 
-  std::shared_ptr<Notification<TS_Point>> TouchNotification() {
+  std::shared_ptr<Notification<TouchPointType>> TouchNotification() {
     return mTouchEvent;
   }
 
@@ -54,18 +68,19 @@ class Display : public DisplayAbstract {
  private:
   Display(int backlight_pin, int enable_pin);
   void setupTFT();
-  void setupTouchScreen();
   void setupBacklight();
 
   int mEnablePin;
   int mBacklightPin;
-  TFT_eSPI tft;
+  LGFX tft;
 
-  Adafruit_FT6206 touch;
-  TS_Point touchPoint;
-  TS_Point oldPoint;
-  std::shared_ptr<Notification<TS_Point>> mTouchEvent =
-      std::make_shared<Notification<TS_Point>>();
+  uint8_t bufA[DRAW_BUF_SIZE];
+  uint8_t bufB[DRAW_BUF_SIZE];
+
+  TouchPointType mTouchPoint;
+  TouchPointType mOldPoint;
+  std::shared_ptr<Notification<TouchPointType>> mTouchEvent =
+      std::make_shared<Notification<TouchPointType>>();
 
   TaskHandle_t mDisplayFadeTask = nullptr;
   SemaphoreHandle_t mFadeTaskMutex = nullptr;

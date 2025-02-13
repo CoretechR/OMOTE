@@ -21,12 +21,12 @@ void SDLDisplay::setTitle(std::string aNewTitle) {
 
 SDLDisplay::SDLDisplay() : DisplayAbstract() {
   lv_group_set_default(lv_group_create());
-  auto display = lv_sdl_window_create(SDL_HOR_RES, SDL_VER_RES);
-  lv_display_set_default(display);
+  mDisplay = lv_sdl_window_create(SDL_HOR_RES, SDL_VER_RES);
+  lv_display_set_default(mDisplay);
 
   lv_indev_t* mouse = lv_sdl_mouse_create();
   lv_indev_set_group(mouse, lv_group_get_default());
-  lv_indev_set_display(mouse, display);
+  lv_indev_set_display(mouse, mDisplay);
 
   // Get the SDL window via an event
   SDL_Event aWindowIdFinder;

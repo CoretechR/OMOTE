@@ -1,8 +1,6 @@
-#if false
-
 #pragma once
 
-#if __has_include("lvgl_joystick.h")
+// #if __has_include("lvgl_joystick.h")
 #include <functional>
 
 #include "WidgetBase.hpp"
@@ -13,9 +11,9 @@ namespace UI::Widget {
 class Joystick : public Base {
  public:
   using UpdateHandler = std::function<void(int16_t, int16_t)>;
-  Joystick(Joystick::UpdateHandler, int aX, int aY, int aRadius,
-           int aStickRadius, lv_align_t aAlign = LV_ALIGN_CENTER,
-           lv_style_t* aStyle = nullptr, lv_style_t* aStickStyle = nullptr);
+  Joystick(Joystick::UpdateHandler, int aRadius, int aStickRadius,
+           lv_align_t aAlign = LV_ALIGN_CENTER, lv_style_t* aStyle = nullptr,
+           lv_style_t* aStickStyle = nullptr);
 
   ~Joystick() override;
 
@@ -30,5 +28,4 @@ class Joystick : public Base {
 
 }  // namespace UI::Widget
 
-#endif
-#endif
+// #endif

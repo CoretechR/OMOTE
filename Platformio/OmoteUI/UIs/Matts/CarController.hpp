@@ -1,4 +1,3 @@
-#if false
 #pragma once
 
 #include "ControllerData.hpp"
@@ -26,7 +25,8 @@ class CarController : public Base {
   Widget::Joystick* mJoystick;
 
   ControllerData mControlData;
+  int mX = 0;
+  int mY = 0;
 };
 
 }  // namespace UI::Page
-#endif
