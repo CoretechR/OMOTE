@@ -19,6 +19,7 @@ struct rawKey {
 
 #if(OMOTE_HARDWARE_REV >= 5)
 uint8_t TCA_INT_GPIO = 8;
+uint8_t KBD_BL_GPIO = 46;
 uint64_t BUTTON_PIN_BITMASK = 0b0000000000000000000000000000000100000100; //IO02+IO08)
 
 Adafruit_TCA8418 keypad;
@@ -95,7 +96,7 @@ void init_keys_HAL(void) {
   keypad.writeRegister(TCA8418_REG_GPI_EM_2, 0b00011111); // disable interrupt for COL5 (USB_3V3)
   
   ledcSetup(LEDC_CHANNEL_6, 5000, 8);
-  ledcAttachPin(46, LEDC_CHANNEL_6);
+  ledcAttachPin(KBD_BL_GPIO, LEDC_CHANNEL_6);
   ledcWrite(LEDC_CHANNEL_6, 0);
 
   #else

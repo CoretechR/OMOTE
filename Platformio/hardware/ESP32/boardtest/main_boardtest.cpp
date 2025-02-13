@@ -62,6 +62,7 @@
   uint8_t SD_MOSI_GPIO = 17;
   uint8_t SD_SCK_GPIO = 15;
   
+  uint8_t KBD_BL_GPIO = 46;
 #else
   uint8_t SDA_GPIO = 19;
   uint8_t SCL_GPIO = 22;
@@ -763,7 +764,7 @@ void setup() {
   keypad.writeRegister(TCA8418_REG_GPI_EM_2, 0b00011111); // disable interrupt for COL5 (USB_3V3)
   
   ledcSetup(LEDC_CHANNEL_6, 5000, 8);
-  ledcAttachPin(46, LEDC_CHANNEL_6);
+  ledcAttachPin(KBD_BL_GPIO, LEDC_CHANNEL_6);
   ledcWrite(LEDC_CHANNEL_6, 0);
 
   #else
