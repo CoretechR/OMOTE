@@ -1,5 +1,5 @@
 // OMOTE firmware for ESP32
-// 2023-2024 Maximilian Kern / Klaus Musch
+// 2023-2025 Maximilian Kern, Klaus Musch
 
 #include "applicationInternal/omote_log.h"
 // init hardware and hardware loop
