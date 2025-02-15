@@ -181,7 +181,7 @@ void create_tab_content_settings(lv_obj_t* tab) {
   lv_obj_set_style_img_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_align(brightnessIcon, LV_ALIGN_TOP_LEFT, 0, 0);
   slider = lv_slider_create(menuBox);
-  lv_slider_set_range(slider, 60, 255);
+  lv_slider_set_range(slider, 0, 255);
   lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
   lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_MAIN);
   lv_obj_set_style_bg_color(slider, lv_color_lighten(color_primary, 50), LV_PART_MAIN);
