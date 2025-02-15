@@ -1,4 +1,5 @@
 #include "List.hpp"
+
 #include "BackgroundScreen.hpp"
 #include "LvglResourceManager.hpp"
 using namespace UI;
@@ -8,7 +9,7 @@ ListItem::ListItem(lv_obj_t *aListItem, std::function<void()> onItemSelected)
     : UIElement(aListItem, ID()), mSelectedHandler(std::move(onItemSelected)) {}
 
 void ListItem::OnLvglEvent(lv_event_t *anEvent) {
-  if (anEvent->code == LV_EVENT_CLICKED) {
+  if (lv_event_get_code(anEvent) == LV_EVENT_CLICKED) {
     if (mSelectedHandler) {
       mSelectedHandler();
     }

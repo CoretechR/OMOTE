@@ -1,0 +1,3 @@
+[submodule "Platformio/lib/rapidjson"]
+	path = Platformio/lib/rapidjson
+	url = https://github.com/Tencent/rapidjson/

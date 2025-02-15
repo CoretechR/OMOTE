@@ -1,20 +1,20 @@
 ﻿#pragma once
-#include "HardwareAbstract.hpp"
+#include <thread>
 
+#include "HardwareAbstract.hpp"
 #include "IRSim.hpp"
 #include "KeyPressSim.hpp"
 #include "SDLDisplay.hpp"
+#include "StatsSimulator.hpp"
 #include "batterySimulator.hpp"
 #include "wifiHandlerSim.hpp"
 
-#include <thread>
-
 class HardwareSimulator : public HardwareAbstract {
-public:
+ public:
   HardwareSimulator();
 
-  void init() override{};
-  void loopHandler() override{};
+  void init() override {};
+  void loopHandler() override {};
 
   void debugPrint(const char *fmt, ...) override {
     va_list arguments;
@@ -28,6 +28,7 @@ public:
   std::shared_ptr<wifiHandlerInterface> wifi() override;
   std::shared_ptr<KeyPressAbstract> keys() override;
   std::shared_ptr<IRInterface> ir() override;
+  std::shared_ptr<SystemStatsInterface> stats() override;
 
   char getCurrentDevice() override;
   void setCurrentDevice(char currentDevice) override;
@@ -38,8 +39,7 @@ public:
   uint16_t getSleepTimeout() override;
   void setSleepTimeout(uint16_t sleepTimeout) override;
 
-private:
-  std::thread mTickThread;
+ private:
   std::thread mHardwareStatusTitleUpdate;
 
   std::shared_ptr<BatterySimulator> mBattery;
@@ -47,4 +47,5 @@ private:
   std::shared_ptr<wifiHandlerSim> mWifiHandler;
   std::shared_ptr<KeyPressSim> mKeys;
   std::shared_ptr<IRSim> mIr;
+  std::shared_ptr<StatsSimulator> mStats;
 };

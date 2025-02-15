@@ -6,6 +6,7 @@
 #include "IRInterface.hpp"
 #include "KeyPressAbstract.hpp"
 #include "Notification.hpp"
+#include "SystemStatsInterface.h"
 #include "wifiHandlerInterface.h"
 
 #include <memory>
@@ -29,6 +30,7 @@ public:
   virtual std::shared_ptr<wifiHandlerInterface> wifi() = 0;
   virtual std::shared_ptr<KeyPressAbstract> keys() = 0;
   virtual std::shared_ptr<IRInterface> ir() = 0;
+  virtual std::shared_ptr<SystemStatsInterface> stats() = 0;
 
   virtual char getCurrentDevice() = 0;
   virtual void setCurrentDevice(char currentDevice) = 0;

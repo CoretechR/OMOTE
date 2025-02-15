@@ -1,8 +1,49 @@
 
 #include "display.hpp"
-#include "Wire.h"
+
 #include "driver/ledc.h"
 #include "omoteconfig.h"
+
+LGFX::LGFX(void) {
+  {
+    auto cfg = _bus_instance.config();
+    cfg.freq_write = SPI_FREQUENCY;
+    cfg.freq_read = 16000000;
+    cfg.dma_channel = SPI_DMA_CH_AUTO;
+    cfg.pin_sclk = LCD_SCK;
+    cfg.pin_mosi = LCD_MOSI;
+    cfg.pin_dc = LCD_DC;
+    _bus_instance.config(cfg);
+    _panel_instance.setBus(&_bus_instance);
+  }
+  {
+    auto cfg = _panel_instance.config();
+    cfg.pin_cs = LCD_CS;
+    cfg.pin_rst = -1;
+    cfg.pin_busy = -1;
+    cfg.memory_width = SCREEN_WIDTH;
+    cfg.memory_height = SCREEN_HEIGHT;
+    cfg.panel_width = SCREEN_WIDTH;
+    cfg.panel_height = SCREEN_HEIGHT;
+    cfg.offset_rotation = 2;
+    _panel_instance.config(cfg);
+  }
+  {
+    auto cfg = _touch_instance.config();
+    cfg.i2c_addr = 0x38;
+    cfg.i2c_port = 0;
+    cfg.pin_sda = TFT_SDA;
+    cfg.pin_scl = TFT_SCL;
+    cfg.freq = 400000;
+    cfg.x_min = 0;
+    cfg.x_max = SCREEN_WIDTH - 1;
+    cfg.y_min = 0;
+    cfg.y_max = SCREEN_HEIGHT - 1;
+    _touch_instance.config(cfg);
+    _panel_instance.setTouch(&_touch_instance);
+  }
+  setPanel(&_panel_instance);
+}
 
 std::shared_ptr<Display> Display::getInstance() {
   if (DisplayAbstract::mInstance == nullptr) {
@@ -13,27 +54,57 @@ std::shared_ptr<Display> Display::getInstance() {
 }
 
 Display::Display(int backlight_pin, int enable_pin)
-    : DisplayAbstract(), mBacklightPin(backlight_pin), mEnablePin(enable_pin),
-      tft(TFT_eSPI()), touch(Adafruit_FT6206()) {
+    : DisplayAbstract(), mBacklightPin(backlight_pin), mEnablePin(enable_pin) {
+  mDisplay = lv_display_create(SCREEN_WIDTH, SCREEN_HEIGHT);
+  lv_display_set_flush_cb(mDisplay, [](auto aDisplay, auto aArea, auto aPxMap) {
+    getInstance()->flushDisplay(aDisplay, aArea, aPxMap);
+  });
+
+  lv_display_set_buffers(mDisplay, bufA, bufB, sizeof(bufA),
+                         LV_DISPLAY_RENDER_MODE_PARTIAL);
+
+  lv_tick_set_cb([] { return static_cast<uint32_t>(millis()); });
+
+  lv_indev_t *indev = lv_indev_create();
+  lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+  lv_indev_set_read_cb(indev, [](auto aIndev, auto aData) {
+    getInstance()->screenInput(aIndev, aData);
+  });
+
   pinMode(mEnablePin, OUTPUT);
   digitalWrite(mEnablePin, HIGH);
   pinMode(mBacklightPin, OUTPUT);
   digitalWrite(mBacklightPin, HIGH);
 
-  setupBacklight(); // This eliminates the flash of the backlight
+  setupBacklight();  // This eliminates the flash of the backlight
 
   // Slowly charge the VSW voltage to prevent a brownout
   // Workaround for hardware rev 1!
+
   for (int i = 0; i < 100; i++) {
-    digitalWrite(this->mEnablePin, HIGH); // LCD Logic off
+    digitalWrite(this->mEnablePin, HIGH);  // LCD Logic off
     delayMicroseconds(1);
-    digitalWrite(this->mEnablePin, LOW); // LCD Logic on
+    digitalWrite(this->mEnablePin, LOW);  // LCD Logic on
   }
 
   setupTFT();
-  setupTouchScreen();
+
   mFadeTaskMutex = xSemaphoreCreateBinary();
   xSemaphoreGive(mFadeTaskMutex);
+}
+
+void Display::wake() {
+  if (mIsAsleep) {
+    mIsAsleep = false;
+    startFade();
+  }
+}
+
+void Display::sleep() {
+  if (!mIsAsleep) {
+    mIsAsleep = true;
+    startFade();
+  }
 }
 
 void Display::setupBacklight() {
@@ -45,7 +116,7 @@ void Display::setupBacklight() {
   ledc_channel_left.channel = LEDC_CHANNEL_5;
   ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
   ledc_channel_left.timer_sel = LEDC_TIMER_1;
-  ledc_channel_left.flags.output_invert = 1; // Can't do this with ledcSetup()
+  ledc_channel_left.flags.output_invert = 1;  // Can't do this with ledcSetup()
   ledc_channel_left.duty = 0;
   ledc_channel_left.hpoint = 0;
   ledc_timer_config_t ledc_timer;
@@ -65,12 +136,6 @@ void Display::setupTFT() {
   tft.setRotation(0);
   tft.fillScreen(TFT_BLACK);
   tft.setSwapBytes(true);
-}
-
-void Display::setupTouchScreen() {
-  // Configure i2c pins and set frequency to 400kHz
-  Wire.begin(TFT_SDA, TFT_SCL, 400000);
-  touch.begin(128); // Initialize touchscreen and set sensitivity threshold
 }
 
 void Display::setBrightness(uint8_t brightness) {
@@ -99,32 +164,16 @@ void Display::turnOff() {
   gpio_hold_en((gpio_num_t)mEnablePin);
 }
 
-void Display::screenInput(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
-  // int16_t touchX, touchY;
-  touchPoint = touch.getPoint();
-  int16_t touchX = touchPoint.x;
-  int16_t touchY = touchPoint.y;
-  bool touched = false;
-  if ((touchX > 0) || (touchY > 0)) {
-    touched = true;
-    mTouchEvent->notify(touchPoint);
-  }
-
-  if (!touched) {
-    data->state = LV_INDEV_STATE_REL;
+void Display::screenInput(lv_indev_t *indev, lv_indev_data_t *data) {
+  uint16_t x, y = 0;
+  if (tft.getTouch(&x, &y)) {
+    data->state = LV_INDEV_STATE_PRESSED;
+    data->point.x = x;
+    data->point.y = y;
+    mTouchPoint = {x, y};
+    mTouchEvent->notify(mTouchPoint);
   } else {
-    data->state = LV_INDEV_STATE_PR;
-
-    // Set the coordinates
-    data->point.x = SCREEN_WIDTH - touchX;
-    data->point.y = SCREEN_HEIGHT - touchY;
-
-    // Serial.print( "touchpoint: x" );
-    // Serial.print( touchX );
-    // Serial.print( " y" );
-    // Serial.println( touchY );
-    // tft.drawFastHLine(0, screenHeight - touchY, screenWidth, TFT_RED);
-    // tft.drawFastVLine(screenWidth - touchX, 0, screenHeight, TFT_RED);
+    data->state = LV_INDEV_STATE_RELEASED;
   }
 }
 
@@ -132,7 +181,7 @@ void Display::fadeImpl(void *) {
   bool fadeDone = false;
   while (!fadeDone) {
     fadeDone = getInstance()->fade();
-    vTaskDelay(3 / portTICK_PERIOD_MS); // 3 miliseconds between steps
+    vTaskDelay(3 / portTICK_PERIOD_MS);  // 3 miliseconds between steps
     // 0 - 255 will take about .75 seconds to fade up.
   }
 
@@ -140,19 +189,19 @@ void Display::fadeImpl(void *) {
   getInstance()->mDisplayFadeTask = nullptr;
   xSemaphoreGive(getInstance()->mFadeTaskMutex);
 
-  vTaskDelete(nullptr); // Delete Fade Task
+  vTaskDelete(nullptr);  // Delete Fade Task
 }
 
 bool Display::fade() {
   // Early return no fade needed.
-  if (mBrightness == mAwakeBrightness || isAsleep && mBrightness == 0) {
+  if (mBrightness == mAwakeBrightness || mIsAsleep && mBrightness == 0) {
     return true;
   }
 
-  bool fadeDown = isAsleep || mBrightness > mAwakeBrightness;
+  bool fadeDown = mIsAsleep || mBrightness > mAwakeBrightness;
   if (fadeDown) {
     setCurrentBrightness(mBrightness - 1);
-    auto setPoint = isAsleep ? 0 : mAwakeBrightness;
+    auto setPoint = mIsAsleep ? 0 : mAwakeBrightness;
     return mBrightness == setPoint;
   } else {
     setCurrentBrightness(mBrightness + 1);
@@ -170,15 +219,15 @@ void Display::startFade() {
   xSemaphoreGive(mFadeTaskMutex);
 }
 
-void Display::flushDisplay(lv_disp_drv_t *disp, const lv_area_t *area,
-                           lv_color_t *color_p) {
+void Display::flushDisplay(lv_disp_t *disp, const lv_area_t *area,
+                           uint8_t *pixelMap) {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
 
   tft.startWrite();
   tft.setAddrWindow(area->x1, area->y1, w, h);
-  tft.pushPixelsDMA((uint16_t *)&color_p->full, w * h);
+  tft.writePixelsDMA((uint16_t *)pixelMap, w * h, true);
   tft.endWrite();
 
-  lv_disp_flush_ready(disp);
+  lv_display_flush_ready(disp);
 }

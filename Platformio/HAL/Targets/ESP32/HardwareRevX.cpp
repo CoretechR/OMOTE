@@ -76,6 +76,7 @@ void HardwareRevX::init() {
   mKeys = std::make_shared<Keys>();
   // TODO Could IR be a weak ref only used when needed then deallocate?
   mIr = std::make_shared<IRTransceiver>();
+
   restorePreferences();
 
   mTouchHandler.SetNotification(mDisplay->TouchNotification());
@@ -110,6 +111,13 @@ std::shared_ptr<DisplayAbstract> HardwareRevX::display() { return mDisplay; }
 std::shared_ptr<KeyPressAbstract> HardwareRevX::keys() { return mKeys; }
 
 std::shared_ptr<IRInterface> HardwareRevX::ir() { return mIr; }
+
+std::shared_ptr<SystemStatsInterface> HardwareRevX::stats() {
+  if (!mStats) {
+    mStats = std::make_shared<EspStats>();
+  }
+  return mStats;
+}
 
 void HardwareRevX::activityDetection() {
   static int accXold;

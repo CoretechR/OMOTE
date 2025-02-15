@@ -15,8 +15,10 @@ HomeScreen::HomeScreen()
 
   // Adds pages to the Tab view
   mTabView->AddTab(std::make_unique<Page::SettingsPage>());
-  mTabView->AddTab(std::make_unique<Page::Demo>());
-  mTabView->AddTab(std::make_unique<Page::IrLearner>());
+}
+
+void HomeScreen::AddPage(Page::Base::Ptr aPage) {
+  mTabView->AddTab(std::move(aPage));
 }
 
 void HomeScreen::SetBgColor(lv_color_t value, lv_style_selector_t selector) {

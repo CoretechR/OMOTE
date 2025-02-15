@@ -69,6 +69,8 @@ public:
                             lv_style_selector_t aStyle = LV_PART_MAIN);
   TextStyle GetTextStyle(lv_style_selector_t aStyle = LV_PART_MAIN);
 
+  virtual void AddStyle(lv_style_t *aStyle, lv_style_selector_t aStyleSelector);
+
   template <class UIElemTy>
   UIElemTy *AddElement(std::unique_ptr<UIElemTy> aWidget);
 
@@ -79,7 +81,7 @@ public:
 
   size_t GetNumContainedElements() { return mContainedElements.size(); }
 
-  ID GetID() { return mId; };
+  virtual ID GetID() { return mId; };
 
   template <class UIElemTy> static UIElemTy GetElement(lv_obj_t *aLvglObject);
 

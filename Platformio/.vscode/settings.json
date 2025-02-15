@@ -78,9 +78,16 @@
         "cfenv": "cpp",
         "typeindex": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "codecvt": "cpp",
+        "regex": "cpp",
+        "hash_set": "cpp",
+        "text_encoding": "cpp",
+        "lv_string.h": "c",
+        "math.h": "c"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO",
     "editor.formatOnSave": true,
-    "idf.portWin": "COM8"
+    "idf.portWin": "COM8",
+    "C_Cpp.clang_format_fallbackStyle": "Google"
 }
