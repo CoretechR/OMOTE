@@ -24414,9 +24414,9 @@
 		(at 278.13 181.61 180)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "099165d1-c181-4acb-9f72-a6b013d975aa")
 		(property "Reference" "C14"
 			(at 281.94 180.3399 0)
@@ -26536,7 +26536,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "4k7"
+		(property "Value" "10k"
 			(at 321.31 97.7899 0)
 			(effects
 				(font
@@ -26572,7 +26572,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C99782"
+		(property "LCSC" "C98220"
 			(at 318.77 96.52 0)
 			(effects
 				(font
@@ -27625,7 +27625,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "330"
+		(property "Value" "1k"
 			(at 314.96 100.33 90)
 			(effects
 				(font
@@ -27661,7 +27661,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C105881"
+		(property "LCSC" "C22548"
 			(at 313.69 102.87 0)
 			(effects
 				(font
@@ -35763,7 +35763,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "330"
+		(property "Value" "1k"
 			(at 193.04 212.09 90)
 			(effects
 				(font
@@ -35799,7 +35799,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C105881"
+		(property "LCSC" "C22548"
 			(at 191.77 214.63 0)
 			(effects
 				(font
@@ -41644,7 +41644,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "330"
+		(property "Value" "1k"
 			(at 328.93 195.58 90)
 			(effects
 				(font
@@ -41680,7 +41680,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C105881"
+		(property "LCSC" "C22548"
 			(at 327.66 198.12 0)
 			(effects
 				(font
@@ -42184,7 +42184,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "330"
+		(property "Value" "1k"
 			(at 194.31 134.62 90)
 			(effects
 				(font
@@ -42220,7 +42220,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C105881"
+		(property "LCSC" "C22548"
 			(at 193.04 137.16 0)
 			(effects
 				(font
