@@ -1,21 +1,23 @@
 #pragma once
-#include "HomeAssist/IHomeAssistApi.hpp"
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
-#include <memory>
-#include <optional>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
+
+#include <memory>
+#include <optional>
 #include <string>
+
+#include "HomeAssist/IHomeAssistApi.hpp"
 
 using namespace rapidjson;
 
 namespace HomeAssist {
 
 class HttpClientApi : public IHomeAssistApi {
-public:
+ public:
   HttpClientApi(const std::string &ip = HOMEASSISTANT_IP_ADDRESS,
                 const std::string &port = HOMEASSISTANT_PORT)
       : mIp(ip), mPort(port) {}
@@ -54,8 +56,7 @@ public:
                    "Bearer " + String(HOMEASSISTANT_API_TOKEN));
     http.addHeader("Content-Type", "application/json");
 
-    int httpCode =
-        http.POST(updateJson.c_str()); // Convert std::string to C string
+    int httpCode = http.POST(updateJson.c_str());
     if (httpCode != HTTP_CODE_OK) {
       http.end();
       return "";
@@ -71,13 +72,17 @@ public:
     return std::string(payload.c_str());
   }
 
-private:
+ private:
   std::string getURL(const std::string &path) {
-    return "http://" + mIp + ":" + mPort + "/api/" + path;
+    std::string url = "http://" + mIp + ":" + mPort + "/api/" + path;
+#if defined(HOMEASSISTANT_URL)
+    url = std::string(HOMEASSISTANT_URL) + "/api/" + path;
+#endif
+    return url;
   }
 
   std::string mIp;
   std::string mPort;
 };
 
-} // namespace HomeAssist
+}  // namespace HomeAssist
