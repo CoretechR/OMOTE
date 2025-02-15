@@ -10,7 +10,7 @@ std::shared_ptr<Display> Display::getInstance() {
     DisplayAbstract::mInstance =
         std::shared_ptr<Display>(new Display(LCD_BL, LCD_EN));
   }
-  return std::static_point er_cast<Display>(mInstance);
+  return std::static_pointer_cast<Display>(mInstance);
 }
 
 Display::Display(int backlight_pin, int enable_pin)
