@@ -40,7 +40,6 @@ class HardwareSimulator : public HardwareAbstract {
   void setSleepTimeout(uint16_t sleepTimeout) override;
 
  private:
-  std::thread mTickThread;
   std::thread mHardwareStatusTitleUpdate;
 
   std::shared_ptr<BatterySimulator> mBattery;

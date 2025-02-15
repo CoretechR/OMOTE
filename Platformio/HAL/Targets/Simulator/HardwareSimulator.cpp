@@ -6,12 +6,6 @@
 
 HardwareSimulator::HardwareSimulator()
     : HardwareAbstract(),
-      mTickThread([]() {
-        while (true) {
-          std::this_thread::sleep_for(std::chrono::milliseconds(200000));
-          // lv_tick_inc(2); /*Tell lvgl that 2 milliseconds were elapsed*/
-        }
-      }),
       mBattery(std::make_shared<BatterySimulator>()),
       mDisplay(SDLDisplay::getInstance()),
       mWifiHandler(std::make_shared<wifiHandlerSim>()),
