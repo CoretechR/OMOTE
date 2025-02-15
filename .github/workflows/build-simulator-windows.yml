@@ -17,7 +17,8 @@ jobs:
             mingw-w64-x86_64-curl
             python3-pip
       - uses: actions/checkout@v3
-
+          with:
+            submodules: recursive
       - name: Install Platform IOCore
         run: pip install --upgrade platformio
 
