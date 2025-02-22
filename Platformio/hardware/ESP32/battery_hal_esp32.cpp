@@ -34,7 +34,9 @@ void get_battery_status_HAL(int *battery_voltage, int *battery_percentage, bool 
   #if (OMOTE_HARDWARE_REV >= 4)
     // With hardware rev 4, battery state of charge is monitored by a MAX17048 fuel gauge
     *battery_voltage = (int)(fuelGauge.getVoltage()*1000);
-    *battery_percentage = (int)fuelGauge.getSOC();
+    float soc = fuelGauge.getSOC();
+    if (soc > 100.0) soc = 100.0;
+    *battery_percentage = (int)soc;
     *battery_ischarging = !digitalRead(CRG_STAT_GPIO);
 
     //Serial.print(" LiIon Voltage: ");

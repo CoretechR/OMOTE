@@ -911,7 +911,9 @@ void loop() {
   if(fuelGaugeInitSuccessful && (millis() - batteryTaskTimer >= 1000)){
     // With hardware rev 4, battery state of charge is monitored by a MAX17048 fuel gauge
     battery_voltage = (int)(fuelGauge.getVoltage()*1000);
-    battery_percentage = (int)fuelGauge.getSOC();
+    float soc = fuelGauge.getSOC();
+    if (soc > 100.0) soc = 100.0;
+    battery_percentage = (int)soc;
     battery_ischarging = !digitalRead(CRG_STAT_GPIO);
   #else
   if(millis() - batteryTaskTimer >= 1000){
