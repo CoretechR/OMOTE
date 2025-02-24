@@ -1,5 +1,4 @@
 #include "Button.hpp"
-
 #include "BackgroundScreen.hpp"
 
 using namespace UI::Widget;

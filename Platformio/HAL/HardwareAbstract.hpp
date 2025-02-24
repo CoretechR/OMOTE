@@ -5,6 +5,8 @@
 #include "DisplayAbstract.h"
 #include "IRInterface.hpp"
 #include "KeyPressAbstract.hpp"
+#include "wifiHandlerInterface.h"
+
 #include "Notification.hpp"
 #include "SystemStatsInterface.h"
 #include "wifiHandlerInterface.h"

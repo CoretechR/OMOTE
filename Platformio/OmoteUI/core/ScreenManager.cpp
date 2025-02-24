@@ -1,5 +1,4 @@
 #include "ScreenManager.hpp"
-
 #include "PopUpScreen.hpp"
 
 using namespace UI::Screen;

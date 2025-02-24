@@ -1,5 +1,4 @@
 #include "Slider.hpp"
-
 #include "BackgroundScreen.hpp"
 #include "LvglResourceManager.hpp"
 

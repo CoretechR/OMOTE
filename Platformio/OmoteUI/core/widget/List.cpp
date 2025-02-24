@@ -1,5 +1,4 @@
 #include "List.hpp"
-
 #include "BackgroundScreen.hpp"
 #include "LvglResourceManager.hpp"
 using namespace UI;

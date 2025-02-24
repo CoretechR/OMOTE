@@ -5,12 +5,12 @@
 
 class wifiHandlerInterface {
 public:
-  virtual ~wifiHandlerInterface(){};
-
   wifiHandlerInterface() = default;
+  virtual ~wifiHandlerInterface() = default;
+  
   struct WifiInfo {
     WifiInfo() = default;
-    WifiInfo(const std::string &aSsid, int aRssi) : ssid(aSsid), rssi(aRssi) {}
+    WifiInfo(std::string aSsid, int aRssi) : ssid(aSsid), rssi(aRssi) {}
 
     std::string ssid = "";
     int rssi = 0;
@@ -18,8 +18,7 @@ public:
 
   struct wifiStatus {
     wifiStatus() = default;
-    wifiStatus(bool aConnected, const std::string &aIp,
-               const std::string &aSsid)
+    wifiStatus(bool aConnected, std::string aIp, std::string aSsid)
         : isConnected(aConnected), IP(aIp), ssid(aSsid){};
 
     bool isConnected = false;
