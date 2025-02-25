@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
 #if(OMOTE_HARDWARE_REV >= 5)
-uint8_t USER_LED_GPIO = 45;
+const uint8_t USER_LED_GPIO = 45;
 #else
-uint8_t USER_LED_GPIO = 2;
+const uint8_t USER_LED_GPIO = 2;
 #endif
 
 void init_userled_HAL(void) {

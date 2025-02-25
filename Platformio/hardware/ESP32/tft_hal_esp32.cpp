@@ -12,33 +12,33 @@
 
 // Set pins for 8-bit mode (ESP32-S3) or SPI (ESP32)
 #if(OMOTE_HARDWARE_REV >= 5)
-  uint8_t SDA_GPIO = 20;
-  uint8_t SCL_GPIO = 19;
+  const uint8_t SDA_GPIO = 20;
+  const uint8_t SCL_GPIO = 19;
 
-  uint8_t LCD_BL_GPIO = 9;
-  uint8_t LCD_EN_GPIO = 38;
-  uint8_t LCD_CS_GPIO = 39;
-  uint8_t LCD_DC_GPIO = 40;
-  uint8_t LCD_WR_GPIO = 41;
-  uint8_t LCD_RD_GPIO = 42;
-  uint8_t LCD_D0_GPIO = 48;
-  uint8_t LCD_D1_GPIO = 47;
-  uint8_t LCD_D2_GPIO = 21;
-  uint8_t LCD_D3_GPIO = 14;
-  uint8_t LCD_D4_GPIO = 13;
-  uint8_t LCD_D5_GPIO = 12;
-  uint8_t LCD_D6_GPIO = 11;
-  uint8_t LCD_D7_GPIO = 10;
+  const uint8_t LCD_BL_GPIO = 9;
+  const uint8_t LCD_EN_GPIO = 38;
+  const uint8_t LCD_CS_GPIO = 39;
+  const uint8_t LCD_DC_GPIO = 40;
+  const uint8_t LCD_WR_GPIO = 41;
+  const uint8_t LCD_RD_GPIO = 42;
+  const uint8_t LCD_D0_GPIO = 48;
+  const uint8_t LCD_D1_GPIO = 47;
+  const uint8_t LCD_D2_GPIO = 21;
+  const uint8_t LCD_D3_GPIO = 14;
+  const uint8_t LCD_D4_GPIO = 13;
+  const uint8_t LCD_D5_GPIO = 12;
+  const uint8_t LCD_D6_GPIO = 11;
+  const uint8_t LCD_D7_GPIO = 10;
 #else
-  uint8_t SDA_GPIO = 19;
-  uint8_t SCL_GPIO = 22;
+  const uint8_t SDA_GPIO = 19;
+  const uint8_t SCL_GPIO = 22;
 
-  uint8_t LCD_BL_GPIO = 4;
-  uint8_t LCD_EN_GPIO = 10;
-  uint8_t LCD_CS_GPIO = 5;
-  uint8_t LCD_DC_GPIO = 9;
-  uint8_t LCD_MOSI_GPIO = 23;
-  uint8_t LCD_SCK_GPIO = 18;
+  const uint8_t LCD_BL_GPIO = 4;
+  const uint8_t LCD_EN_GPIO = 10;
+  const uint8_t LCD_CS_GPIO = 5;
+  const uint8_t LCD_DC_GPIO = 9;
+  const uint8_t LCD_MOSI_GPIO = 23;
+  const uint8_t LCD_SCK_GPIO = 18;
 #endif
 
 LGFX::LGFX(void) {

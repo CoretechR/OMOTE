@@ -1,18 +1,18 @@
 #include <Arduino.h>
 
 #if (OMOTE_HARDWARE_REV <= 3)
-  uint8_t ADC_BAT_GPIO = 36;  // Battery voltage sense input (1/2 divider), GPIO36, ADC1_CH0, RTC_GPIO0
-  // uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
+  const uint8_t ADC_BAT_GPIO = 36;  // Battery voltage sense input (1/2 divider), GPIO36, ADC1_CH0, RTC_GPIO0
+  // const uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
 #elif (OMOTE_HARDWARE_REV == 4)
   #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
   // Initialize MAX17048 battery fuel gauge
   SFE_MAX1704X fuelGauge(MAX1704X_MAX17048);
-  uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
+  const uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
 #elif (OMOTE_HARDWARE_REV >= 5)
   #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
   // Initialize MAX17048 battery fuel gauge
   SFE_MAX1704X fuelGauge(MAX1704X_MAX17048);
-  uint8_t CRG_STAT_GPIO = 1;  // battery charger feedback
+  const uint8_t CRG_STAT_GPIO = 1;  // battery charger feedback
 #endif
 
 void init_battery_HAL(void) {

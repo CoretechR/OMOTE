@@ -3,11 +3,11 @@
 #include <SD.h>
 #include <SPI.h>
 
-uint8_t SD_EN_GPIO = 16;
-uint8_t SD_CS_GPIO = 18;
-uint8_t SD_MISO_GPIO = 7;
-uint8_t SD_MOSI_GPIO = 17;
-uint8_t SD_SCK_GPIO = 15;
+const uint8_t SD_EN_GPIO = 16;
+const uint8_t SD_CS_GPIO = 18;
+const uint8_t SD_MISO_GPIO = 7;
+const uint8_t SD_MOSI_GPIO = 17;
+const uint8_t SD_SCK_GPIO = 15;
 
 void init_SD_HAL(void) {
   pinMode(SD_EN_GPIO, OUTPUT);

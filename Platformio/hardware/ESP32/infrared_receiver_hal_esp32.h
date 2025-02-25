@@ -1,7 +1,7 @@
 #pragma once
 
-extern uint8_t IR_RX_GPIO;
-extern uint8_t IR_VCC_GPIO;
+extern const uint8_t IR_RX_GPIO;
+extern const uint8_t IR_VCC_GPIO;
 
 #include <string>
 

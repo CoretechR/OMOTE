@@ -18,9 +18,9 @@
 #include "keypad_keys_hal_esp32.h"
 
 #if (OMOTE_HARDWARE_REV >= 5)
-  uint8_t ACC_INT_GPIO = 2;
+  const uint8_t ACC_INT_GPIO = 2;
 #else
-  uint8_t ACC_INT_GPIO = 13;
+  const uint8_t ACC_INT_GPIO = 13;
 #endif
 
 int MOTION_THRESHOLD = 80;         // motion above threshold keeps device awake

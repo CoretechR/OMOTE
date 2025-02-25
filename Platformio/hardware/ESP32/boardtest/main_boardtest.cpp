@@ -28,83 +28,83 @@
 // Pin assignment ---------------------------------------------------------------------------------
 
 #if(OMOTE_HARDWARE_REV >= 5)
-  uint8_t SDA_GPIO = 20;
-  uint8_t SCL_GPIO = 19;
+  const uint8_t SDA_GPIO = 20;
+  const uint8_t SCL_GPIO = 19;
 
-  uint8_t LCD_BL_GPIO = 9;
-  uint8_t LCD_EN_GPIO = 38;
-  uint8_t LCD_CS_GPIO = 39;
-  uint8_t LCD_DC_GPIO = 40;
-  uint8_t LCD_WR_GPIO = 41;
-  uint8_t LCD_RD_GPIO = 42;
-  uint8_t LCD_D0_GPIO = 48;
-  uint8_t LCD_D1_GPIO = 47;
-  uint8_t LCD_D2_GPIO = 21;
-  uint8_t LCD_D3_GPIO = 14;
-  uint8_t LCD_D4_GPIO = 13;
-  uint8_t LCD_D5_GPIO = 12;
-  uint8_t LCD_D6_GPIO = 11;
-  uint8_t LCD_D7_GPIO = 10;
+  const uint8_t LCD_BL_GPIO = 9;
+  const uint8_t LCD_EN_GPIO = 38;
+  const uint8_t LCD_CS_GPIO = 39;
+  const uint8_t LCD_DC_GPIO = 40;
+  const uint8_t LCD_WR_GPIO = 41;
+  const uint8_t LCD_RD_GPIO = 42;
+  const uint8_t LCD_D0_GPIO = 48;
+  const uint8_t LCD_D1_GPIO = 47;
+  const uint8_t LCD_D2_GPIO = 21;
+  const uint8_t LCD_D3_GPIO = 14;
+  const uint8_t LCD_D4_GPIO = 13;
+  const uint8_t LCD_D5_GPIO = 12;
+  const uint8_t LCD_D6_GPIO = 11;
+  const uint8_t LCD_D7_GPIO = 10;
 
-  uint8_t USER_LED_GPIO = 45;
+  const uint8_t USER_LED_GPIO = 45;
 
-  uint8_t IR_RX_GPIO  = 4; // IR receiver input
-  uint8_t IR_VCC_GPIO = 6; // IR receiver power
-  uint8_t IR_LED_GPIO = 5;  // IR LED output
+  const uint8_t IR_RX_GPIO  = 4; // IR receiver input
+  const uint8_t IR_VCC_GPIO = 6; // IR receiver power
+  const uint8_t IR_LED_GPIO = 5;  // IR LED output
 
-  uint8_t ACC_INT_GPIO = 2;
+  const uint8_t ACC_INT_GPIO = 2;
 
   #define LEDC_SPEED_MODE LEDC_LOW_SPEED_MODE
 
-  uint8_t SD_EN_GPIO = 16;
-  uint8_t SD_CS_GPIO = 18;
-  uint8_t SD_MISO_GPIO = 7;
-  uint8_t SD_MOSI_GPIO = 17;
-  uint8_t SD_SCK_GPIO = 15;
+  const uint8_t SD_EN_GPIO = 16;
+  const uint8_t SD_CS_GPIO = 18;
+  const uint8_t SD_MISO_GPIO = 7;
+  const uint8_t SD_MOSI_GPIO = 17;
+  const uint8_t SD_SCK_GPIO = 15;
   
-  uint8_t KBD_BL_GPIO = 46;
+  const uint8_t KBD_BL_GPIO = 46;
 #else
-  uint8_t SDA_GPIO = 19;
-  uint8_t SCL_GPIO = 22;
+  const uint8_t SDA_GPIO = 19;
+  const uint8_t SCL_GPIO = 22;
 
-  uint8_t LCD_BL_GPIO = 4;
-  uint8_t LCD_EN_GPIO = 10;
-  uint8_t LCD_CS_GPIO = 5;
-  uint8_t LCD_DC_GPIO = 9;
-  uint8_t LCD_MOSI_GPIO = 23;
-  uint8_t LCD_SCK_GPIO = 18;
+  const uint8_t LCD_BL_GPIO = 4;
+  const uint8_t LCD_EN_GPIO = 10;
+  const uint8_t LCD_CS_GPIO = 5;
+  const uint8_t LCD_DC_GPIO = 9;
+  const uint8_t LCD_MOSI_GPIO = 23;
+  const uint8_t LCD_SCK_GPIO = 18;
 
-  uint8_t USER_LED_GPIO = 2;
+  const uint8_t USER_LED_GPIO = 2;
 
-  uint8_t IR_RX_GPIO  = 15; // IR receiver input
-  uint8_t IR_VCC_GPIO = 25; // IR receiver power
-  uint8_t IR_LED_GPIO = 33; // IR LED output
+  const uint8_t IR_RX_GPIO  = 15; // IR receiver input
+  const uint8_t IR_VCC_GPIO = 25; // IR receiver power
+  const uint8_t IR_LED_GPIO = 33; // IR LED output
 
-  uint8_t ACC_INT_GPIO = 13;
+  const uint8_t ACC_INT_GPIO = 13;
 
   #define LEDC_SPEED_MODE LEDC_HIGH_SPEED_MODE
 #endif
 
 #if (OMOTE_HARDWARE_REV <= 3)
-  uint8_t ADC_BAT_GPIO = 36;  // Battery voltage sense input (1/2 divider), GPIO36, ADC1_CH0, RTC_GPIO0
-  // uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
+  const uint8_t ADC_BAT_GPIO = 36;  // Battery voltage sense input (1/2 divider), GPIO36, ADC1_CH0, RTC_GPIO0
+  // const uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
 #elif (OMOTE_HARDWARE_REV == 4)
   #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
   // Initialize MAX17048 battery fuel gauge
   SFE_MAX1704X fuelGauge(MAX1704X_MAX17048);
-  uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
+  const uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
 #elif (OMOTE_HARDWARE_REV >= 5)
   #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
   // Initialize MAX17048 battery fuel gauge
   SFE_MAX1704X fuelGauge(MAX1704X_MAX17048);
-  uint8_t CRG_STAT_GPIO = 1;  // battery charger feedback
+  const uint8_t CRG_STAT_GPIO = 1;  // battery charger feedback
 #endif
 
 const uint8_t keypadROWS = 5; //five rows
 const uint8_t keypadCOLS = 5; //five columns
 #if(OMOTE_HARDWARE_REV >= 5)
-uint8_t TCA_INT_GPIO = 8;
-uint64_t BUTTON_PIN_BITMASK = 0b0000000000000000000000000000000100000100; //IO02+IO08)
+const uint8_t TCA_INT_GPIO = 8;
+const uint64_t BUTTON_PIN_BITMASK = 0b0000000000000000000000000000000100000100; //IO02+IO08)
 
 Adafruit_TCA8418 keypad;
 byte keyboardBrightness = 255;
@@ -118,17 +118,17 @@ char keypadChars[keypadROWS][keypadCOLS] = {
 };
 
 #else
-uint8_t SW_1_GPIO = 32; // 1...5: Output
-uint8_t SW_2_GPIO = 26;
-uint8_t SW_3_GPIO = 27;
-uint8_t SW_4_GPIO = 14;
-uint8_t SW_5_GPIO = 12;
-uint8_t SW_A_GPIO = 37; // A...E: Input
-uint8_t SW_B_GPIO = 38;
-uint8_t SW_C_GPIO = 39;
-uint8_t SW_D_GPIO = 34;
-uint8_t SW_E_GPIO = 35;
-uint64_t BUTTON_PIN_BITMASK = 0b1110110000000000000000000010000000000000; //IO34+IO35+IO37+IO38+IO39(+IO13)
+const uint8_t SW_1_GPIO = 32; // 1...5: Output
+const uint8_t SW_2_GPIO = 26;
+const uint8_t SW_3_GPIO = 27;
+const uint8_t SW_4_GPIO = 14;
+const uint8_t SW_5_GPIO = 12;
+const uint8_t SW_A_GPIO = 37; // A...E: Input
+const uint8_t SW_B_GPIO = 38;
+const uint8_t SW_C_GPIO = 39;
+const uint8_t SW_D_GPIO = 34;
+const uint8_t SW_E_GPIO = 35;
+const uint64_t BUTTON_PIN_BITMASK = 0b1110110000000000000000000010000000000000; //IO34+IO35+IO37+IO38+IO39(+IO13)
 #endif
 
 // Variables and Object declarations --------------------------------------------------------------
