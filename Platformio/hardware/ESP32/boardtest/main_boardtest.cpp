@@ -541,7 +541,7 @@ void setup() {
 
   // Find out wakeup cause ------------------------------------------------------------------------
   if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1) {
-    if (log(esp_sleep_get_ext1_wakeup_status())/log(2) == 13) {
+    if (log(esp_sleep_get_ext1_wakeup_status())/log(2) == ACC_INT_GPIO) {
       wakeup_reason = WAKEUP_BY_IMU;
     } else {
       wakeup_reason = WAKEUP_BY_KEYPAD;
