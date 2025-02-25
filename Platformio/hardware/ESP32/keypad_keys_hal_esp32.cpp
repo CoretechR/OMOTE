@@ -34,17 +34,17 @@ char keypadChars[keypadROWS][keypadCOLS] = {
 };
 
 #else
-const uint8_t SW_1_GPIO = 32; // 1...5: Output
-const uint8_t SW_2_GPIO = 26;
-const uint8_t SW_3_GPIO = 27;
-const uint8_t SW_4_GPIO = 14;
-const uint8_t SW_5_GPIO = 12;
+uint8_t SW_1_GPIO = 32; // 1...5: Output
+uint8_t SW_2_GPIO = 26;
+uint8_t SW_3_GPIO = 27;
+uint8_t SW_4_GPIO = 14;
+uint8_t SW_5_GPIO = 12;
 const uint8_t SW_A_GPIO = 37; // A...E: Input
 const uint8_t SW_B_GPIO = 38;
 const uint8_t SW_C_GPIO = 39;
 const uint8_t SW_D_GPIO = 34;
 const uint8_t SW_E_GPIO = 35;
-const uint64_t BUTTON_PIN_BITMASK = 0b1110110000000000000000000010000000000000; //IO34+IO35+IO37+IO38+IO39(+IO13)
+uint64_t BUTTON_PIN_BITMASK = 0b1110110000000000000000000010000000000000; //IO34+IO35+IO37+IO38+IO39(+IO13)
 
 // Keypad declarations
 // define the symbols on the buttons of the keypads
