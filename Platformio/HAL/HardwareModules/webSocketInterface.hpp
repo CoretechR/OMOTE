@@ -5,6 +5,7 @@
 class webSocketInterface {
  public:
   using MessageCallback = std::function<void(const std::string&)>;
+  virtual ~webSocketInterface() = default;
 
   virtual void connect(const std::string& url) = 0;
   virtual void disconnect() = 0;
