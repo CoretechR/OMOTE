@@ -15,6 +15,7 @@ jobs:
             mingw-w64-x86_64-SDL2
             mingw-w64-x86_64-python
             mingw-w64-x86_64-curl
+            mingw-w64-x86_64-libwebsockets
             python3-pip
       - uses: actions/checkout@v3
         with:

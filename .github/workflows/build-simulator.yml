@@ -28,6 +28,9 @@ jobs:
       - name: Install cURL
         run : sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
 
+      - name: Install websocketpp
+        run : sudo apt-get update && sudo apt-get install -y libwebsocketpp-dev
+
       - name: Build PlatformIO Project 64 bit sim
         working-directory: ./Platformio
         run: pio run --environment x64_sim
