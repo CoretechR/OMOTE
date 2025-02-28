@@ -7,6 +7,7 @@
 #include "SDLDisplay.hpp"
 #include "StatsSimulator.hpp"
 #include "batterySimulator.hpp"
+#include "webSocketSimulator.hpp"
 #include "wifiHandlerSim.hpp"
 
 class HardwareSimulator : public HardwareAbstract {
@@ -29,6 +30,7 @@ class HardwareSimulator : public HardwareAbstract {
   std::shared_ptr<KeyPressAbstract> keys() override;
   std::shared_ptr<IRInterface> ir() override;
   std::shared_ptr<SystemStatsInterface> stats() override;
+  std::shared_ptr<webSocketInterface> webSocket() override;
 
   char getCurrentDevice() override;
   void setCurrentDevice(char currentDevice) override;
@@ -48,4 +50,5 @@ class HardwareSimulator : public HardwareAbstract {
   std::shared_ptr<KeyPressSim> mKeys;
   std::shared_ptr<IRSim> mIr;
   std::shared_ptr<StatsSimulator> mStats;
+  std::shared_ptr<webSocketSimulator> mWebSocket;
 };

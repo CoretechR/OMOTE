@@ -1,20 +1,19 @@
-﻿// OMOTE Hardware Abstraction
+// OMOTE Hardware Abstraction
 // 2023 Matthew Colvin
 #pragma once
+#include <memory>
+
 #include "BatteryInterface.h"
 #include "DisplayAbstract.h"
 #include "IRInterface.hpp"
 #include "KeyPressAbstract.hpp"
-#include "wifiHandlerInterface.h"
-
 #include "Notification.hpp"
 #include "SystemStatsInterface.h"
+#include "webSocketInterface.hpp"
 #include "wifiHandlerInterface.h"
 
-#include <memory>
-
 class HardwareAbstract {
-public:
+ public:
   HardwareAbstract();
 
   /// @brief Override in order to do setup of hardware devices post construction
@@ -33,6 +32,7 @@ public:
   virtual std::shared_ptr<KeyPressAbstract> keys() = 0;
   virtual std::shared_ptr<IRInterface> ir() = 0;
   virtual std::shared_ptr<SystemStatsInterface> stats() = 0;
+  virtual std::shared_ptr<webSocketInterface> webSocket() = 0;
 
   virtual char getCurrentDevice() = 0;
   virtual void setCurrentDevice(char currentDevice) = 0;

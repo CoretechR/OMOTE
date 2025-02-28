@@ -53,6 +53,10 @@ std::shared_ptr<SystemStatsInterface> HardwareSimulator::stats() {
   return mStats;
 }
 
+std::shared_ptr<webSocketInterface> HardwareSimulator::webSocket() {
+  return mWebSocket;
+}
+
 char HardwareSimulator::getCurrentDevice() { return 0; }
 
 void HardwareSimulator::setCurrentDevice(char currentDevice) {}
