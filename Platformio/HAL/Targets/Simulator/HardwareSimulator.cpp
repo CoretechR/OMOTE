@@ -54,7 +54,14 @@ std::shared_ptr<SystemStatsInterface> HardwareSimulator::stats() {
 }
 
 std::shared_ptr<webSocketInterface> HardwareSimulator::webSocket() {
-  return mWebSocket;
+  for (auto& socket : mWebSockets) {
+    if (socket.expired()) {
+      auto newsocket = std::make_shared<webSocketSimulator>();
+      socket = newsocket;
+      return newsocket;
+    }
+  }
+  return nullptr;
 }
 
 char HardwareSimulator::getCurrentDevice() { return 0; }

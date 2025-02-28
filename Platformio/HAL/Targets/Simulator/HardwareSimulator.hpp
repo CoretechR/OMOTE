@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <thread>
 
 #include "HardwareAbstract.hpp"
@@ -42,6 +42,9 @@ class HardwareSimulator : public HardwareAbstract {
   void setSleepTimeout(uint16_t sleepTimeout) override;
 
  private:
+  // Completely arbitrary limit on the number of web sockets
+  static constexpr auto WebSocketLimit = 5;
+
   std::thread mHardwareStatusTitleUpdate;
 
   std::shared_ptr<BatterySimulator> mBattery;
@@ -50,5 +53,5 @@ class HardwareSimulator : public HardwareAbstract {
   std::shared_ptr<KeyPressSim> mKeys;
   std::shared_ptr<IRSim> mIr;
   std::shared_ptr<StatsSimulator> mStats;
-  std::shared_ptr<webSocketSimulator> mWebSocket;
+  std::array<std::weak_ptr<webSocketSimulator>, WebSocketLimit> mWebSockets;
 };

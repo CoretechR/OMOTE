@@ -24,8 +24,8 @@ void webSocketSimulator::connect(const std::string& url) {
 
   connectionHandle = con->get_handle();
   wsClient.connect(con);
+  wsClient.run();
 
-  wsThread = std::thread([this]() { wsClient.run(); });
   connected = true;
   std::cout << "Connected to " << url << std::endl;
 }
