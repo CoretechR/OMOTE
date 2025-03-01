@@ -4,17 +4,17 @@
 #include <memory>
 #include <string>
 
-#include "HomeAssist/WebSocket/Message/WebSocketMessage.hpp"
+#include "HomeAssist/WebSocket/Message/Message.hpp"
 
 namespace HomeAssist::WebSocket {
 
-class WebSocketMessageHandler {
+class MessageHandler {
  public:
-  using MessageType = const WebSocketMessage&;
+  using MessageType = const Message&;
   using MessageProccessor = std::function<bool(MessageType)>;
 
-  WebSocketMessageHandler(MessageProccessor aMessageProccessor);
-  virtual ~WebSocketMessageHandler() = default;
+  MessageHandler(MessageProccessor aMessageProccessor);
+  virtual ~MessageHandler() = default;
 
   bool ProcessMessage(MessageType aMessageToProccess);
 
@@ -24,16 +24,14 @@ class WebSocketMessageHandler {
   MessageProccessor mMessageProccessor;
 };
 
-inline WebSocketMessageHandler::WebSocketMessageHandler(
-    MessageProccessor aMessageProccessor)
+inline MessageHandler::MessageHandler(MessageProccessor aMessageProccessor)
     : mMessageProccessor(aMessageProccessor) {}
 
-inline bool WebSocketMessageHandler::ProcessMessage(
-    MessageType aMessageToProccess) {
+inline bool MessageHandler::ProcessMessage(MessageType aMessageToProccess) {
   return mMessageProccessor ? mMessageProccessor(aMessageToProccess) : false;
 }
 
-inline void WebSocketMessageHandler::SetMessageProccessor(
+inline void MessageHandler::SetMessageProccessor(
     MessageProccessor aMessageProccessor) {
   mMessageProccessor = aMessageProccessor;
 }

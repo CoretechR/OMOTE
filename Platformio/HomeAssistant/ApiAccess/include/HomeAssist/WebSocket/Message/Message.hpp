@@ -6,7 +6,7 @@
 
 namespace HomeAssist::WebSocket {
 
-class WebSocketMessage {
+class Message {
  public:
   enum class Success : int8_t { unknown, success, failure };
   enum class Type : int8_t {
@@ -19,8 +19,8 @@ class WebSocketMessage {
     result
   };
 
-  WebSocketMessage(const rapidjson::Document& messageJson);
-  virtual ~WebSocketMessage();
+  Message(const rapidjson::Document& messageJson);
+  virtual ~Message();
 
   inline Type GetType() const;
   inline Success GetSuccess() const;
@@ -32,12 +32,8 @@ class WebSocketMessage {
   Type mType = Type::unknown;
 };
 
-inline WebSocketMessage::Type WebSocketMessage::GetType() const {
-  return mType;
-}
-inline WebSocketMessage::Success WebSocketMessage::GetSuccess() const {
-  return mSuccess;
-}
-inline int WebSocketMessage::GetId() const { return mId; }
+inline Message::Type Message::GetType() const { return mType; }
+inline Message::Success Message::GetSuccess() const { return mSuccess; }
+inline int Message::GetId() const { return mId; }
 
 }  // namespace HomeAssist::WebSocket

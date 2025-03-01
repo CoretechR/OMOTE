@@ -1,6 +1,6 @@
 #pragma once
 #include "BasicUI.hpp"
-#include "HomeAssist/WebSocket/WebSocketApi.hpp"
+#include "HomeAssist/WebSocket/Api.hpp"
 
 namespace UI {
 
@@ -9,8 +9,7 @@ class HomeAssistUI : public BasicUI {
   HomeAssistUI();
 
  private:
-  std::unique_ptr<HomeAssist::WebSocket::WebSocketApi> mHomeAssistSock =
-      nullptr;
+  std::unique_ptr<HomeAssist::WebSocket::Api> mHomeAssistSock = nullptr;
 };
 
 }  // namespace UI

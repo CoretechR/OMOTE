@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace HomeAssist::WebSocket {
+namespace HomeAssist {
 
 static const auto HomeAssistAuthResponse = R"---(
     {
@@ -45,4 +45,4 @@ static const auto ConfigAreaRegistryList = R"---(
     }
     )---";
 
-}  // namespace HomeAssist::WebSocket
+}  // namespace HomeAssist

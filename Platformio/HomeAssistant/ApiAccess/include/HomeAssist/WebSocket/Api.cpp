@@ -1,15 +1,14 @@
-#include "HomeAssist/WebSocket/WebSocketApi.hpp"
-
 #include "HardwareFactory.hpp"
-#include "HomeAssist/WebSocket/Message/WebSocketMessage.hpp"
-#include "HomeAssist/WebSocket/Message/WebSocketPredefinedMessages.hpp"
-#include "HomeAssist/WebSocket/Session/IWebSocketSession.hpp"
+#include "HomeAssist/WebSocket/Api.hpp"
+#include "HomeAssist/WebSocket/Message/Message.hpp"
+#include "HomeAssist/WebSocket/Message/PredefinedMessages.hpp"
+#include "HomeAssist/WebSocket/Session/ISession.hpp"
 #include "RapidJsonUtilty.hpp"
 #include "rapidjson/document.h"
 
 namespace HomeAssist::WebSocket {
 
-WebSocketApi::WebSocketApi(std::shared_ptr<webSocketInterface> socket)
+Api::Api(std::shared_ptr<webSocketInterface> socket)
     : mHomeAssistSocket(socket) {
   if (mHomeAssistSocket) {
     mHomeAssistSocket->connect("ws://homeassistant.local:8123/api/websocket");
@@ -20,9 +19,9 @@ WebSocketApi::WebSocketApi(std::shared_ptr<webSocketInterface> socket)
   }
 }
 
-WebSocketApi::~WebSocketApi() {}
+Api::~Api() {}
 
-void WebSocketApi::ProccessMessages() {
+void Api::ProccessMessages() {
   while (mIncomingMessageQueue.size() > 0) {
     auto message = std::move(mIncomingMessageQueue.front());
     mIncomingMessageQueue.pop();
@@ -37,7 +36,7 @@ void WebSocketApi::ProccessMessages() {
   CleanUpSessions();
 }
 
-void WebSocketApi::CleanUpSessions() {
+void Api::CleanUpSessions() {
   for (auto sessionIter = mSessions.begin(); sessionIter != mSessions.end();) {
     if (!*sessionIter) {
       sessionIter = mSessions.erase(sessionIter);
@@ -47,17 +46,17 @@ void WebSocketApi::CleanUpSessions() {
   }
 }
 
-bool WebSocketApi::PreProccessMessage(WebSocketMessage& aMessage) {
+bool Api::PreProccessMessage(Message& aMessage) {
   if (mConnectionStatus == ConnectionStatus::Initializing) {
     switch (aMessage.GetType()) {
-      case WebSocketMessage::Type::auth_required:
+      case Message::Type::auth_required:
         mHomeAssistSocket->sendMessage(HomeAssistAuthResponse);
         return true;
-      case WebSocketMessage::Type::auth_ok:
+      case Message::Type::auth_ok:
         mConnectionStatus = ConnectionStatus::Connected;
         mHomeAssistSocket->sendMessage(ConfigAreaRegistryList);
         return true;
-      case WebSocketMessage::Type::auth_invalid:
+      case Message::Type::auth_invalid:
         mConnectionStatus = ConnectionStatus::Failed;
         return true;
       default:
@@ -67,12 +66,12 @@ bool WebSocketApi::PreProccessMessage(WebSocketMessage& aMessage) {
   return false;
 }
 
-void WebSocketApi::ParseIncomingMessage(const std::string& messageStr) {
+void Api::ParseIncomingMessage(const std::string& messageStr) {
   rapidjson::Document messageJson;
   messageJson.Parse(messageStr.c_str());
   auto prettyDebugString = ToPrettyString(messageJson);
   HardwareFactory::getAbstract().debugPrint("%s", prettyDebugString.c_str());
-  auto messageObj = std::make_unique<WebSocketMessage>(messageJson);
+  auto messageObj = std::make_unique<Message>(messageJson);
   if (PreProccessMessage(*messageObj)) {
     return;
   }

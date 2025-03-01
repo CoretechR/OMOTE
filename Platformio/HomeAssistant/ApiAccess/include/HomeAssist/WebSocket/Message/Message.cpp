@@ -1,19 +1,19 @@
-#include "HomeAssist/WebSocket/Message/WebSocketMessage.hpp"
-
 #include <map>
 #include <string>
 
+#include "HomeAssist/WebSocket/Message/Message.hpp"
+
 namespace HomeAssist::WebSocket {
 
-static std::map<std::string, WebSocketMessage::Type> typeMap = {
-    {"auth", WebSocketMessage::Type::auth},
-    {"auth_required", WebSocketMessage::Type::auth_required},
-    {"auth_ok", WebSocketMessage::Type::auth_ok},
-    {"auth_invalid", WebSocketMessage::Type::auth_invalid},
-    {"event", WebSocketMessage::Type::event},
-    {"result", WebSocketMessage::Type::result}};
+static std::map<std::string, Message::Type> typeMap = {
+    {"auth", Message::Type::auth},
+    {"auth_required", Message::Type::auth_required},
+    {"auth_ok", Message::Type::auth_ok},
+    {"auth_invalid", Message::Type::auth_invalid},
+    {"event", Message::Type::event},
+    {"result", Message::Type::result}};
 
-WebSocketMessage::WebSocketMessage(const rapidjson::Document& messageJson) {
+Message::Message(const rapidjson::Document& messageJson) {
   if (messageJson.HasMember("id") && messageJson["id"].IsInt()) {
     mId = messageJson["id"].GetInt();
   }
@@ -26,7 +26,7 @@ WebSocketMessage::WebSocketMessage(const rapidjson::Document& messageJson) {
   }
 }
 
-WebSocketMessage::~WebSocketMessage() {
+Message::~Message() {
   // Destructor implementation
 }
 

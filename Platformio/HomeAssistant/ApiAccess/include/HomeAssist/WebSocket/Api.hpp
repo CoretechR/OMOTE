@@ -7,15 +7,15 @@
 
 namespace HomeAssist::WebSocket {
 
-class WebSocketMessage;
-class IWebSocketSession;
+class Message;
+class ISession;
 
-class WebSocketApi {
+class Api {
  public:
   enum class ConnectionStatus { Initializing, Connected, Disconnected, Failed };
 
-  WebSocketApi(std::shared_ptr<webSocketInterface> socket);
-  virtual ~WebSocketApi();
+  Api(std::shared_ptr<webSocketInterface> socket);
+  virtual ~Api();
 
   void ProccessMessages();
 
@@ -24,7 +24,7 @@ class WebSocketApi {
    * @brief Used for preproccessing message before we store it on the queue
    * @return true the message was preproccessed and should not be stored
    */
-  bool PreProccessMessage(WebSocketMessage& aMessage);
+  bool PreProccessMessage(Message& aMessage);
   void ParseIncomingMessage(const std::string& messageStr);
 
   void SetupSession() {}
@@ -33,8 +33,8 @@ class WebSocketApi {
  private:
   ConnectionStatus mConnectionStatus = ConnectionStatus::Initializing;
   std::shared_ptr<webSocketInterface> mHomeAssistSocket = nullptr;
-  std::queue<std::unique_ptr<WebSocketMessage>> mIncomingMessageQueue;
-  std::vector<std::unique_ptr<IWebSocketSession>> mSessions;
+  std::queue<std::unique_ptr<Message>> mIncomingMessageQueue;
+  std::vector<std::unique_ptr<ISession>> mSessions;
 };
 
 }  // namespace HomeAssist::WebSocket
