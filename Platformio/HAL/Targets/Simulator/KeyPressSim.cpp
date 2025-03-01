@@ -3,12 +3,14 @@
 #include <memory>
 
 KeyPressSim::KeyPressSim()
-    : mKeyHandlerThread([this] {
-        while (true) {
-          HandleKeyPresses();
-          std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        }
-      }) {
+    : mKeyHandlerThread(
+          [this] {  // Delay to avoid issues with thread init issues with SDL
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            while (true) {
+              HandleKeyPresses();
+              std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+          }) {
   SDL_AddEventWatch(KeyPressSim::GrabKeyImpl, this);
 };
 
