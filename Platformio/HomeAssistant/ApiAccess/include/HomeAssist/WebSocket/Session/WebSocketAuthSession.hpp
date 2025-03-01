@@ -5,7 +5,7 @@
 #include "HomeAssist/WebSocket/Session/IWebSocketSession.hpp"
 #include "HomeAssist/WebSocket/WebSocketRequest.hpp"
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 class WebSocketAuthSession : public IWebSocketSession {
  public:
@@ -32,4 +32,4 @@ class WebSocketAuthSession : public IWebSocketSession {
   bool mIsAuthenticated = false;
 };
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

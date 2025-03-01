@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 static std::map<std::string, WebSocketMessage::Type> typeMap = {
     {"auth", WebSocketMessage::Type::auth},
@@ -30,4 +30,4 @@ WebSocketMessage::~WebSocketMessage() {
   // Destructor implementation
 }
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

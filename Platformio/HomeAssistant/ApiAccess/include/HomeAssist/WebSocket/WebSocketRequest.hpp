@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 class WebSocketRequest {
  public:
@@ -22,4 +22,4 @@ inline std::string WebSocketRequest::GetRequestMessage() {
   return mRequestMessage;
 }
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

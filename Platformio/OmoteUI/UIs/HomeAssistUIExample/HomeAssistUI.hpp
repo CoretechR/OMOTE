@@ -9,7 +9,8 @@ class HomeAssistUI : public BasicUI {
   HomeAssistUI();
 
  private:
-  std::unique_ptr<HomeAssist::WebSocketApi> mHomeAssistSock = nullptr;
+  std::unique_ptr<HomeAssist::WebSocket::WebSocketApi> mHomeAssistSock =
+      nullptr;
 };
 
 }  // namespace UI

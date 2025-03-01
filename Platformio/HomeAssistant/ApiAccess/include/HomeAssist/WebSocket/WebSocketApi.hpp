@@ -5,7 +5,7 @@
 
 #include "webSocketInterface.hpp"
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 class WebSocketMessage;
 class IWebSocketSession;
@@ -37,4 +37,4 @@ class WebSocketApi {
   std::vector<std::unique_ptr<IWebSocketSession>> mSessions;
 };
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

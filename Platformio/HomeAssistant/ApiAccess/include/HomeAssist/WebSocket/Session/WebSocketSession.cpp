@@ -3,7 +3,7 @@
 #include "HomeAssist/WebSocket/Message/WebSocketMessageHandler.hpp"
 #include "HomeAssist/WebSocket/WebSocketRequest.hpp"
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 WebSocketSession::WebSocketSession(
     std::unique_ptr<WebSocketRequest> aRequest,
@@ -34,4 +34,4 @@ WebSocketRequest* WebSocketSession::BorrowEndRequest() {
   return mEndRequest.get();
 }
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

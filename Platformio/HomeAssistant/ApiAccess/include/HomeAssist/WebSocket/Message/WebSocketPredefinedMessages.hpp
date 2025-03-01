@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace HomeAssist::WebSocket {
+
 static const auto HomeAssistAuthResponse = R"---(
     {
       "type": "auth",
@@ -42,3 +44,5 @@ static const auto ConfigAreaRegistryList = R"---(
       "type": "config/area_registry/list"
     }
     )---";
+
+}  // namespace HomeAssist::WebSocket

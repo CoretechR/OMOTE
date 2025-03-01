@@ -7,7 +7,8 @@
 #include "RapidJsonUtilty.hpp"
 #include "rapidjson/document.h"
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
+
 WebSocketApi::WebSocketApi(std::shared_ptr<webSocketInterface> socket)
     : mHomeAssistSocket(socket) {
   if (mHomeAssistSocket) {
@@ -78,4 +79,4 @@ void WebSocketApi::ParseIncomingMessage(const std::string& messageStr) {
   mIncomingMessageQueue.push(std::move(messageObj));
 }
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

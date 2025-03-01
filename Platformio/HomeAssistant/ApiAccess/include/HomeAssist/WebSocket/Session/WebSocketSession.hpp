@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 class WebSocketMessage;
 class WebSocketMessageHandler;
@@ -28,4 +28,4 @@ class WebSocketSession {
   std::weak_ptr<WebSocketMessageHandler> mMessageHandler;
 };
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

@@ -6,7 +6,7 @@
 
 #include "HomeAssist/WebSocket/Message/WebSocketMessage.hpp"
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 class WebSocketMessageHandler {
  public:
@@ -38,4 +38,4 @@ inline void WebSocketMessageHandler::SetMessageProccessor(
   mMessageProccessor = aMessageProccessor;
 }
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

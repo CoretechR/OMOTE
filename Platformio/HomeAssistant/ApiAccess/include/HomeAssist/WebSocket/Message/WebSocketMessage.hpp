@@ -4,7 +4,7 @@
 
 #include "rapidjson/document.h"
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 class WebSocketMessage {
  public:
@@ -40,4 +40,4 @@ inline WebSocketMessage::Success WebSocketMessage::GetSuccess() const {
 }
 inline int WebSocketMessage::GetId() const { return mId; }
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket

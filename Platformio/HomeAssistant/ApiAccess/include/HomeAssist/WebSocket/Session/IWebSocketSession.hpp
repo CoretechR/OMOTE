@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace HomeAssist {
+namespace HomeAssist::WebSocket {
 
 class WebSocketMessage;
 class WebSocketMessageHandler;
@@ -19,4 +19,4 @@ class IWebSocketSession {
   virtual bool IsComplete() const = 0;
 };
 
-}  // namespace HomeAssist
+}  // namespace HomeAssist::WebSocket
