@@ -1,5 +1,5 @@
-#include "BasicUI.hpp"
 #include "HardwareFactory.hpp"
+#include "HomeAssistUIExample/HomeAssistUI.hpp"
 
 namespace OMOTE {
 std::shared_ptr<UI::UIBase> ui = nullptr;
@@ -7,7 +7,7 @@ std::shared_ptr<UI::UIBase> ui = nullptr;
 void setup() {
   lv_init();
   HardwareFactory::Init();
-  ui = std::make_unique<UI::BasicUI>();
+  ui = std::make_unique<UI::HomeAssistUI>();
   lv_timer_handler();  // Run the LVGL UI once before the loop takes over
 }
 

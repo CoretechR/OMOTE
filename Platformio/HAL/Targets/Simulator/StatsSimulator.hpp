@@ -16,12 +16,12 @@ class StatsSimulator : public SystemStatsInterface {
 };
 
 inline StatsSimulator::StatsSimulator()
-    : mHeapNotifyThread([this] {
-        while (true) {
-          SendFreeHeapNotification();
-          std::this_thread::sleep_for(std::chrono::seconds(2));
-        }
-      })
+// : mHeapNotifyThread([this] {
+//     while (true) {
+//       SendFreeHeapNotification();
+//       std::this_thread::sleep_for(std::chrono::seconds(2));
+//     }
+//   })
 
 {}
 
