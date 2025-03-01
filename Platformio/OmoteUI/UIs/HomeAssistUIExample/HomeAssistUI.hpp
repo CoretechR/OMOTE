@@ -1,6 +1,6 @@
 #pragma once
 #include "BasicUI.hpp"
-#include "HomeAssist/WebSocketApi.hpp"
+#include "HomeAssist/WebSocket/WebSocketApi.hpp"
 
 namespace UI {
 

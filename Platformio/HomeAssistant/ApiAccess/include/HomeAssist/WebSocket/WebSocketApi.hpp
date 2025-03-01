@@ -8,6 +8,7 @@
 namespace HomeAssist {
 
 class WebSocketMessage;
+class IWebSocketSession;
 
 class WebSocketApi {
  public:
@@ -15,6 +16,8 @@ class WebSocketApi {
 
   WebSocketApi(std::shared_ptr<webSocketInterface> socket);
   virtual ~WebSocketApi();
+
+  void ProccessMessages();
 
  protected:
   /**
@@ -24,10 +27,14 @@ class WebSocketApi {
   bool PreProccessMessage(WebSocketMessage& aMessage);
   void ParseIncomingMessage(const std::string& messageStr);
 
+  void SetupSession() {}
+  void CleanUpSessions();
+
  private:
   ConnectionStatus mConnectionStatus = ConnectionStatus::Initializing;
   std::shared_ptr<webSocketInterface> mHomeAssistSocket = nullptr;
   std::queue<std::unique_ptr<WebSocketMessage>> mIncomingMessageQueue;
+  std::vector<std::unique_ptr<IWebSocketSession>> mSessions;
 };
 
 }  // namespace HomeAssist

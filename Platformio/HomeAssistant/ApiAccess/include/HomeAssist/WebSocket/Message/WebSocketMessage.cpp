@@ -1,4 +1,4 @@
-#include "HomeAssist/WebSocketMessage.hpp"
+#include "HomeAssist/WebSocket/Message/WebSocketMessage.hpp"
 
 #include <map>
 #include <string>
