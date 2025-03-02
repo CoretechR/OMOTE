@@ -8,11 +8,15 @@ Message::Attributes::Attributes(EntityType aEntityType,
                                 const rapidjson::Value& aAttributeVal) {
   switch (aEntityType) {
     case EntityType::Light:
-      std::make_unique<Light>(aAttributeVal);
+      mLightAttributes = std::make_unique<Light>(aAttributeVal);
       break;
     default:
       break;
   }
+}
+
+Message::Attributes::Light* Message::Attributes::BorrowLight() {
+  return mLightAttributes.get();
 }
 
 Message::Attributes::~Attributes() {}

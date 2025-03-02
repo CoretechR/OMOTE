@@ -51,4 +51,7 @@ void Message::SaveStateInfo(const rapidjson::Document& aMessageJson) {
   }
 }
 
+Message::State* Message::BorrowToState() const { return mToState.get(); }
+Message::State* Message::BorrowFromState() const { return mFromState.get(); }
+
 }  // namespace HomeAssist::WebSocket

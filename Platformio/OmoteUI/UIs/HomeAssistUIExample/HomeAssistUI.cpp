@@ -1,9 +1,11 @@
 #include "HomeAssistUIExample/HomeAssistUI.hpp"
 
 #include "HardwareFactory.hpp"
+#include "HomeAssist/WebSocket/Message/Attributes/Light.hpp"
 #include "HomeAssist/WebSocket/Message/Message.hpp"
 #include "HomeAssist/WebSocket/Message/MessageHandler.hpp"
 #include "HomeAssist/WebSocket/Message/PredefinedMessages.hpp"
+#include "HomeAssist/WebSocket/Message/State.hpp"
 #include "HomeAssist/WebSocket/Session/Session.hpp"
 
 using namespace UI;
@@ -16,8 +18,16 @@ HomeAssistUI::HomeAssistUI()
           std::make_unique<Api>(HardwareFactory::getAbstract().webSocket())) {
   mMessageHandler =
       std::make_shared<MessageHandler>([](const Message& aMessage) {
-        HardwareFactory::getAbstract().debugPrint(
-            "Message Type in UI: %d", static_cast<int>(aMessage.GetType()));
+        if (auto* newState = aMessage.BorrowToState(); newState) {
+          if (auto* attributes = newState->BorrowAttributes(); attributes) {
+            if (auto* light = attributes->BorrowLight(); light) {
+              auto [r, g, b] = light->GetRgb();
+              HardwareFactory::getAbstract().debugPrint(
+                  "Light Update in UI: Brightness:%d color:r:%dg:%db:%d \n",
+                  light->GetBrightness(), r, g, b);
+            }
+          }
+        }
         return true;
       });
 

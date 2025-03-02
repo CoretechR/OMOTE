@@ -88,7 +88,7 @@ void Api::ParseIncomingMessage(const std::string& messageStr) {
   rapidjson::Document messageJson;
   messageJson.Parse(messageStr.c_str());
   auto prettyDebugString = ToPrettyString(messageJson);
-  HardwareFactory::getAbstract().debugPrint("%s", prettyDebugString.c_str());
+  // HardwareFactory::getAbstract().debugPrint("%s", prettyDebugString.c_str());
   auto messageObj = std::make_unique<Message>(messageJson);
   if (PreProccessMessage(*messageObj)) {
     return;

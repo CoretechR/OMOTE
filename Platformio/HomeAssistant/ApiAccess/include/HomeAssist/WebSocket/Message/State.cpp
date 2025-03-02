@@ -14,6 +14,10 @@ Message::State::State(const rapidjson::Value& aStateValue) {
 
 Message::State::~State() {}
 
+Message::Attributes* Message::State::BorrowAttributes() {
+  return mAttributes.get();
+}
+
 void Message::State::SaveBasicInfo(const rapidjson::Value& aStateValue) {
   if (aStateValue.HasMember("entity_id") &&
       aStateValue["entity_id"].IsString()) {

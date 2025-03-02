@@ -22,6 +22,7 @@ class HardwareSimulator : public HardwareAbstract {
     va_start(arguments, fmt);
     vprintf(fmt, arguments);
     va_end(arguments);
+    fflush(stdout);
   }
 
   std::shared_ptr<BatteryInterface> battery() override;

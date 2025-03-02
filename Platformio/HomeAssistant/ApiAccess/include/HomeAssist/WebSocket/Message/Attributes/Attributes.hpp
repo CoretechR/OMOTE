@@ -11,8 +11,10 @@ class Message::Attributes {
   Attributes(EntityType aEntityType, const rapidjson::Value& aAttributeVal);
   ~Attributes();
 
+  Light* BorrowLight();
+
  private:
-  std::unique_ptr<Light> aLightAttributes;
+  std::unique_ptr<Light> mLightAttributes;
 };
 
 }  // namespace HomeAssist::WebSocket

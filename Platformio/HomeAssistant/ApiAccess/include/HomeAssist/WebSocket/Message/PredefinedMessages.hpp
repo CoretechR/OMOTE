@@ -17,8 +17,7 @@ static const auto TestSubEvent = R"---(
       "trigger": {
           "platform": "state",
           "entity_id": "light.overhead_lights",
-          "from": "on", 
-          "to": "off"
+          "attribute": "brightness"
       }
     }
     )---";

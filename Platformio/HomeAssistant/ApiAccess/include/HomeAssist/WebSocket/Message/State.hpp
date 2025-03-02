@@ -11,6 +11,8 @@ class Message::State {
   State(const rapidjson::Value& aStateValue);
   virtual ~State();
 
+  Attributes* BorrowAttributes();
+
  private:
   void SaveBasicInfo(const rapidjson::Value& aStateValue);
   void SaveAttributes(const rapidjson::Value& aAttributesListValue);

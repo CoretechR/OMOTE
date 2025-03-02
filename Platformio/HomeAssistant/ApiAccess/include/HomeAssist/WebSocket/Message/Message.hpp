@@ -29,6 +29,9 @@ class Message {
   inline Success GetSuccess() const;
   inline int GetId() const;
 
+  State* BorrowToState() const;
+  State* BorrowFromState() const;
+
  private:
   void SaveBasicInfo(const rapidjson::Document& aMessageJson);
   void SaveStateInfo(const rapidjson::Document& aMessageJson);
