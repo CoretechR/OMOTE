@@ -1,7 +1,9 @@
-#include "HardwareFactory.hpp"
 #include "HomeAssist/WebSocket/Api.hpp"
+
+#include "HardwareFactory.hpp"
 #include "HomeAssist/WebSocket/Message/Message.hpp"
 #include "HomeAssist/WebSocket/Message/PredefinedMessages.hpp"
+#include "HomeAssist/WebSocket/Session/AuthSession.hpp"
 #include "HomeAssist/WebSocket/Session/ISession.hpp"
 #include "RapidJsonUtilty.hpp"
 #include "rapidjson/document.h"
@@ -17,6 +19,7 @@ Api::Api(std::shared_ptr<webSocketInterface> socket)
           ParseIncomingMessage(messageStr);
         });
   }
+  mAuthSession = std::make_unique<AuthSession>(mHomeAssistSocket);
 }
 
 Api::~Api() {}
@@ -47,21 +50,12 @@ void Api::CleanUpSessions() {
 }
 
 bool Api::PreProccessMessage(Message& aMessage) {
-  if (mConnectionStatus == ConnectionStatus::Initializing) {
-    switch (aMessage.GetType()) {
-      case Message::Type::auth_required:
-        mHomeAssistSocket->sendMessage(HomeAssistAuthResponse);
-        return true;
-      case Message::Type::auth_ok:
-        mConnectionStatus = ConnectionStatus::Connected;
-        mHomeAssistSocket->sendMessage(ConfigAreaRegistryList);
-        return true;
-      case Message::Type::auth_invalid:
-        mConnectionStatus = ConnectionStatus::Failed;
-        return true;
-      default:
-        return false;
+  if (mAuthSession && mAuthSession->ProcessMessage(aMessage)) {
+    if (mAuthSession->IsComplete()) {
+      mConnectionStatus = mAuthSession->GetConnectionStatus();
+      mAuthSession = nullptr;
     }
+    return true;
   }
   return false;
 }

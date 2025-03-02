@@ -9,6 +9,7 @@ namespace HomeAssist::WebSocket {
 
 class Message;
 class ISession;
+class AuthSession;
 
 class Api {
  public:
@@ -35,6 +36,7 @@ class Api {
   std::shared_ptr<webSocketInterface> mHomeAssistSocket = nullptr;
   std::queue<std::unique_ptr<Message>> mIncomingMessageQueue;
   std::vector<std::unique_ptr<ISession>> mSessions;
+  std::unique_ptr<AuthSession> mAuthSession;
 };
 
 }  // namespace HomeAssist::WebSocket

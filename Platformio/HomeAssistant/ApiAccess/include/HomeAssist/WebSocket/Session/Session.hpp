@@ -2,25 +2,24 @@
 
 #include <memory>
 
+#include "HomeAssist/WebSocket/Session/ISession.hpp"
+
 namespace HomeAssist::WebSocket {
 
 class Message;
 class MessageHandler;
 class Request;
 
-class Session {
+class Session : public ISession {
  public:
   Session(std::unique_ptr<Request> aRequest,
           std::shared_ptr<MessageHandler> aMessageHandler);
 
-  Request* BorrowStartRequest();
-  Request* BorrowEndRequest();
+  Request* BorrowStartRequest() override;
+  Request* BorrowEndRequest() override;
 
-  virtual bool ProcessMessage(const Message& aMessage);
-  virtual bool IsComplete() const;
-
- protected:
-  Session(std::shared_ptr<MessageHandler> aMessageHandler);
+  bool ProcessMessage(const Message& aMessage) override;
+  bool IsComplete() const override;
 
  private:
   std::unique_ptr<Request> mStartRequest = nullptr;

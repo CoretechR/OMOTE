@@ -9,9 +9,6 @@ Session::Session(std::unique_ptr<Request> aRequest,
                  std::shared_ptr<MessageHandler> aMessageHandler)
     : mStartRequest(std::move(aRequest)), mMessageHandler(aMessageHandler) {}
 
-Session::Session(std::shared_ptr<MessageHandler> aMessageHandler)
-    : mMessageHandler(aMessageHandler) {}
-
 bool Session::ProcessMessage(const Message& aMessage) {
   if (auto handler = mMessageHandler.lock(); handler) {
     return handler->ProcessMessage(aMessage);
