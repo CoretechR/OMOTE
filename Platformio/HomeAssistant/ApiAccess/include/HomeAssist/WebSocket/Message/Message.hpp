@@ -8,6 +8,9 @@ namespace HomeAssist::WebSocket {
 
 class Message {
  public:
+  class State;
+  class Attributes;
+
   enum class Success : int8_t { unknown, success, failure };
   enum class Type : int8_t {
     unknown,
@@ -27,9 +30,14 @@ class Message {
   inline int GetId() const;
 
  private:
+  void SaveBasicInfo(const rapidjson::Document& aMessageJson);
+  void SaveStateInfo(const rapidjson::Document& aMessageJson);
+
   int mId = 0;
   Success mSuccess = Success::unknown;
   Type mType = Type::unknown;
+  std::unique_ptr<State> mFromState;
+  std::unique_ptr<State> mToState;
 };
 
 inline Message::Type Message::GetType() const { return mType; }

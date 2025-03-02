@@ -1,7 +1,10 @@
+#include "HomeAssist/WebSocket/Message/Message.hpp"
+
 #include <map>
 #include <string>
 
-#include "HomeAssist/WebSocket/Message/Message.hpp"
+#include "HomeAssist/WebSocket/Message/State.hpp"
+#include "RapidJsonUtilty.hpp"
 
 namespace HomeAssist::WebSocket {
 
@@ -13,21 +16,39 @@ static std::map<std::string, Message::Type> typeMap = {
     {"event", Message::Type::event},
     {"result", Message::Type::result}};
 
-Message::Message(const rapidjson::Document& messageJson) {
-  if (messageJson.HasMember("id") && messageJson["id"].IsInt()) {
-    mId = messageJson["id"].GetInt();
-  }
-  if (messageJson.HasMember("type") && messageJson["type"].IsString()) {
-    mType = typeMap[messageJson["type"].GetString()];
-  }
-  if (messageJson.HasMember("success") && messageJson["success"].IsBool()) {
-    mSuccess =
-        messageJson["success"].GetBool() ? Success::success : Success::failure;
+Message::Message(const rapidjson::Document& aMessageJson) {
+  SaveBasicInfo(aMessageJson);
+  if (mType == Type::event) {
+    SaveStateInfo(aMessageJson);
   }
 }
 
-Message::~Message() {
-  // Destructor implementation
+Message::~Message() {};
+
+void Message::SaveBasicInfo(const rapidjson::Document& aMessageJson) {
+  if (aMessageJson.HasMember("id") && aMessageJson["id"].IsInt()) {
+    mId = aMessageJson["id"].GetInt();
+  }
+  if (aMessageJson.HasMember("type") && aMessageJson["type"].IsString()) {
+    mType = typeMap[aMessageJson["type"].GetString()];
+  }
+  if (aMessageJson.HasMember("success") && aMessageJson["success"].IsBool()) {
+    mSuccess =
+        aMessageJson["success"].GetBool() ? Success::success : Success::failure;
+  }
+}
+
+void Message::SaveStateInfo(const rapidjson::Document& aMessageJson) {
+  if (auto oldStateVal = GetNestedField(
+          aMessageJson, {"event", "variables", "trigger", "from_state"});
+      oldStateVal) {
+    mFromState = std::make_unique<State>(*oldStateVal);
+  }
+  if (auto newStateVal = GetNestedField(
+          aMessageJson, {"event", "variables", "trigger", "to_state"});
+      newStateVal) {
+    mToState = std::make_unique<State>(*newStateVal);
+  }
 }
 
 }  // namespace HomeAssist::WebSocket

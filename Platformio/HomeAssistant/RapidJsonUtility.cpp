@@ -18,3 +18,15 @@ std::string ToPrettyString(rapidjson::Document &aDoc) {
   aDoc.Accept(prettyWrite);
   return std::string(buff.GetString());
 }
+
+const rapidjson::Value *GetNestedField(
+    const rapidjson::Value &aValue, const std::vector<std::string> &aFields) {
+  const rapidjson::Value *value = &aValue;
+  for (const auto &field : aFields) {
+    if (!value || !value->IsObject() || !value->HasMember(field.c_str())) {
+      return nullptr;
+    }
+    value = &(*value)[field.c_str()];
+  }
+  return value;
+}
