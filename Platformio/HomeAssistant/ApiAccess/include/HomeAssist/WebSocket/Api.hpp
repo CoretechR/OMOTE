@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <queue>
 
@@ -39,8 +40,9 @@ class Api {
   ConnectionStatus mConnectionStatus = ConnectionStatus::Initializing;
   std::shared_ptr<webSocketInterface> mHomeAssistSocket = nullptr;
   std::queue<std::unique_ptr<Message>> mIncomingMessageQueue;
-  std::vector<std::unique_ptr<ISession>> mSessions;
+  std::map<int, std::unique_ptr<ISession>> mSessions;
   std::unique_ptr<AuthSession> mAuthSession;
+  int mNextRequestId = 1;
 };
 
 }  // namespace HomeAssist::WebSocket

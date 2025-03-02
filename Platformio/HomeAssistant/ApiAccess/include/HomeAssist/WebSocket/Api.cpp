@@ -36,10 +36,10 @@ void Api::ProccessSessions() {
     return;
   }
   for (auto& session : mSessions) {
-    if (!session->IsRunning()) {
-      if (auto* request = session->BorrowStartRequest(); request) {
+    if (!session.second->IsRunning()) {
+      if (auto* request = session.second->BorrowStartRequest(); request) {
         mHomeAssistSocket->sendMessage(request->GetRequestMessage());
-        session->MarkStarted();
+        session.second->MarkStarted();
       }
     }
   }
@@ -49,19 +49,23 @@ void Api::ProccessMessages() {
   while (mIncomingMessageQueue.size() > 0) {
     auto message = std::move(mIncomingMessageQueue.front());
     mIncomingMessageQueue.pop();
-    for (auto& session : mSessions) {
-      if (session->ProcessMessage(*message)) {
-        break;
-      } else if (session->IsComplete()) {
-        session = nullptr;
+    auto& session = mSessions[message->GetId()];
+    if (!session) {
+      return;
+    }
+    session->ProcessMessage(*message);
+    if (session->IsComplete()) {
+      if (auto* request = session->BorrowEndRequest(); request) {
+        mHomeAssistSocket->sendMessage(request->GetRequestMessage());
       }
+      session->MarkComplete();
     }
   }
 }
 
 void Api::CleanUpSessions() {
   for (auto sessionIter = mSessions.begin(); sessionIter != mSessions.end();) {
-    if (!*sessionIter) {
+    if ((*sessionIter).second == nullptr) {
       sessionIter = mSessions.erase(sessionIter);
     } else {
       ++sessionIter;
@@ -93,7 +97,12 @@ void Api::ParseIncomingMessage(const std::string& messageStr) {
 }
 
 void Api::AddSession(std::unique_ptr<ISession> aNewSession) {
-  mSessions.push_back(std::move(aNewSession));
+  if (aNewSession->BorrowStartRequest() == nullptr) {
+    HardwareFactory::getAbstract().debugPrint("Session Missing Start Request!");
+  }
+  auto newSessionId = mNextRequestId++;
+  aNewSession->BorrowStartRequest()->SetId(newSessionId);
+  mSessions[newSessionId] = std::move(aNewSession);
 }
 
 }  // namespace HomeAssist::WebSocket

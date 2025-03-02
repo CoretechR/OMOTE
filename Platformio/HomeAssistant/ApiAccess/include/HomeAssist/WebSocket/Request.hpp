@@ -15,6 +15,8 @@ class Request {
 
   std::string GetRequestMessage();
 
+  void SetId(int aId);
+
  private:
   rapidjson::Document mRequestMessage;
 };
@@ -26,5 +28,7 @@ inline Request::Request(std::string aRequestMessage) {
 inline std::string Request::GetRequestMessage() {
   return ToString(mRequestMessage);
 }
+
+inline void Request::SetId(int aId) { mRequestMessage["id"] = aId; }
 
 }  // namespace HomeAssist::WebSocket
