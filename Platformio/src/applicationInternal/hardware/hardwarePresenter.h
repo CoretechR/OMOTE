@@ -39,16 +39,29 @@ void set_wakeupByIMUEnabled(bool aWakeupByIMUEnabled);
 
 // --- keypad -----------------------------------------------------------------
 void init_keys(void);
-enum keypad_keyStates {IDLE, PRESSED, HOLD, RELEASED};
-struct keypad_key {
-	char kchar;
-	int kcode;
-	keypad_keyStates kstate;
-	bool stateChanged;
+const char NO_KEY = '\0';
+// -- has to be exactly the same structure as in the hardware implementations, because only a pointer is passed
+const uint8_t keypadROWS = 5; //five rows
+const uint8_t keypadCOLS = 5; //five columns
+enum keypad_rawKeyStates {IDLE_RAW, PRESSED_RAW,       RELEASED_RAW};
+struct rawKey {
+  unsigned long timestampReceived;
+  char keyChar;
+  keypad_rawKeyStates rawKeyState;
 };
-const uint8_t keypad_maxkeys = 10;
-extern keypad_key keypad_keys[keypad_maxkeys];
-void getKeys(keypad_key *keypad_keys);
+// --
+extern rawKey rawKeys[][keypadCOLS];
+void getKeys(rawKey (*rawKeys)[keypadCOLS], unsigned long currentMillis);
+#if(OMOTE_HARDWARE_REV >= 5)
+void update_keyboardBrightness(void);
+uint8_t get_keyboardBrightness();
+void set_keyboardBrightness(uint8_t aKeyboardBrightness);
+#endif
+
+// --- SD card ----------------------------------------------------------------
+#if(OMOTE_HARDWARE_REV >= 5)
+void init_SD_card(void);
+#endif
 
 // --- IR sender --------------------------------------------------------------
 void init_infraredSender(void);
@@ -112,7 +125,7 @@ void consumerControlBLE_longpress(const MediaKeyReport value);
 #endif
 
 // --- tft --------------------------------------------------------------------
-void update_backligthBrighness(void);
+void update_backlightBrightness(void);
 uint8_t get_backlightBrightness();
 void set_backlightBrightness(uint8_t aBacklightBrightness);
 

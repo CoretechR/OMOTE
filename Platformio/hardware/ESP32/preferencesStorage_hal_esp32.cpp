@@ -1,6 +1,7 @@
 #include <Preferences.h>
 #include "sleep_hal_esp32.h"
 #include "tft_hal_esp32.h"
+#include "keypad_keys_hal_esp32.h"
 
 Preferences preferences;
 
@@ -15,16 +16,20 @@ void init_preferences_HAL(void) {
   if (preferences.getBool("alreadySetUp")) {
     // from sleep.h
     set_wakeupByIMUEnabled_HAL(preferences.getBool("wkpByIMU"));
-    set_sleepTimeout_HAL(preferences.getUInt("slpTimeout"));
+    set_sleepTimeout_HAL(preferences.getUInt("slpTimeout", 20000));
     // from tft.h
-    set_backlightBrightness_HAL(preferences.getUChar("blBrightness"));
+    set_backlightBrightness_HAL(preferences.getUChar("blBrightness", 255));
+    // from keyboard.h
+    #if(OMOTE_HARDWARE_REV >= 5)
+    set_keyboardBrightness_HAL(preferences.getUChar("kbBrightness", 255));
+    #endif
     // from here
     activeScene = std::string(preferences.getString("currentScene").c_str());
     activeGUIname = std::string(preferences.getString("currentGUIname").c_str());
     activeGUIlist =(preferences.getInt("currentGUIlist"));
     lastActiveGUIlistIndex = (preferences.getInt("lastActiveIndex"));
 
-    // Serial.printf("Preferences restored: brightness %d, GUI %s, scene %s\r\n", get_backlightBrightness_HAL(), get_activeGUIname().c_str(), get_activeScene().c_str());
+    // Serial.printf("Preferences restored: blBrightness %d, kbBrightness %d, GUI %s, scene %s\r\n", get_backlightBrightness_HAL(), get_keyboardBrightness_HAL(), activeGUIname.c_str(), activeScene.c_str());
   } else {
     // Serial.printf("No preferences to restore\r\n");
   }
@@ -38,6 +43,10 @@ void save_preferences_HAL(void) {
   // from tft.h
   preferences.putUInt("slpTimeout", get_sleepTimeout_HAL());
   preferences.putUChar("blBrightness", get_backlightBrightness_HAL());
+  // from keyboard.h
+  #if(OMOTE_HARDWARE_REV >= 5)
+  preferences.putUInt("kbBrightness", get_keyboardBrightness_HAL());
+  #endif
   // from here
   preferences.putString("currentScene", activeScene.c_str());
   preferences.putString("currentGUIname", activeGUIname.c_str());

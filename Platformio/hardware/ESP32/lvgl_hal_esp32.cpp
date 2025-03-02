@@ -32,7 +32,11 @@ static void my_touchpad_read(lv_indev_t *indev_driver, lv_indev_data_t *data) {
         data->state = LV_INDEV_STATE_PRESSED;
         data->point.x = x;
         data->point.y = y;
-        setLastActivityTimestamp_HAL();
+        setLastActivityTimestamp_HAL();    
+        
+        // Uncomment this to show the touchpoint
+        //tft.drawFastHLine(0, y, SCR_WIDTH, TFT_RED);
+        //tft.drawFastVLine(x, 0, SCR_HEIGHT, TFT_RED);
     } else {
         data->state = LV_INDEV_STATE_RELEASED;
     }

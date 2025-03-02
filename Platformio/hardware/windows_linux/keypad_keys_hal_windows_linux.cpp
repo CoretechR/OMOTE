@@ -5,32 +5,46 @@
 void init_keys_HAL(void) {
 }
 
-enum keypad_keyStates {IDLE_HAL, PRESSED_HAL, HOLD_HAL, RELEASED_HAL};
-struct keypad_key {
-	char kchar;
-	int kcode;
-	keypad_keyStates kstate;
-	bool stateChanged;
+// has to be exactly the same structure as in hardwarePresenter.h
+const uint8_t keypadROWS = 5; //five rows
+const uint8_t keypadCOLS = 5; //five columns
+enum keypad_rawKeyStates {IDLE_RAW, PRESSED_RAW,       RELEASED_RAW};
+struct rawKey {
+  unsigned long timestampReceived;
+  char keyChar;
+  keypad_rawKeyStates rawKeyState;
 };
-keypad_key keys[10];
 
-void keys_getKeys_HAL(void* ptr) {
-  auto keyState = pumpKeys();
+void keys_getKeys_HAL(void* ptr, unsigned long currentMillis) {
 
-  // Populate the single key the keypad gui supports
-  (*(keypad_key*)ptr).kchar        = keyState.key.key;
-  (*(keypad_key*)ptr).kcode        = keyState.key.keyCode;
-  (*(keypad_key*)ptr).kstate       = (keypad_keyStates)(keyState.key.state);
-  (*(keypad_key*)ptr).stateChanged = keyState.stateChanged;
-  ptr = (void *) ((intptr_t)(ptr) + sizeof(keypad_key));
-
-  // Pad out the rest of the possible keys with empty values
-  for(int i=1; i < 10; i++) {
-    (*(keypad_key*)ptr).kchar        = ' ';
-    (*(keypad_key*)ptr).kcode        = 0;
-    (*(keypad_key*)ptr).kstate       = IDLE_HAL;
-    (*(keypad_key*)ptr).stateChanged = false;
-    // https://www.geeksforgeeks.org/void-pointer-c-cpp/
-    ptr = (void *) ((intptr_t)(ptr) + sizeof(keypad_key));
+  if (keyEventsQueue.empty()) {
+    return;
   }
+
+  // https://stackoverflow.com/questions/68788080/is-it-possible-to-pass-a-2d-array-using-a-void-pointer-in-c
+  // https://www.geeksforgeeks.org/pass-2d-array-parameter-c/
+  // https://stackoverflow.com/questions/16724368/how-to-pass-a-2d-array-by-pointer-in-c
+  // cast the pointer to the same structure as in hardwarePresenter.h
+  rawKey (*rawKeys)[keypadCOLS] = static_cast<rawKey (*)[keypadCOLS]>(ptr);
+
+  // get first event in queue
+  KeyEvent event = keyEventsQueue.front();
+
+  // get the row and col from the lastActiveKey
+  uint8_t row = event.keyCode / keypadROWS;
+  uint8_t col = event.keyCode % keypadCOLS;
+
+  rawKeys[row][col].timestampReceived = currentMillis;
+
+  rawKeys[row][col].keyChar = event.keyChar;
+  if (event.keyState == PRESSED_SIMULATOR) {
+    rawKeys[row][col].rawKeyState = PRESSED_RAW;
+
+  } else if (event.keyState == RELEASED_SIMULATOR) {
+    rawKeys[row][col].rawKeyState = RELEASED_RAW;
+  }
+
+  // printf("simulator key event: %c, %d %d, %d, removed from queue\r\n", rawKeys[row][col].keyChar, row, col, rawKeys[row][col].rawKeyState);
+  // remove first event
+  keyEventsQueue.pop();
 }

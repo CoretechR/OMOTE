@@ -1,6 +1,6 @@
 name: Windows build
 
-on: [push,workflow_dispatch]
+on: [push,workflow_dispatch,pull_request]
 
 jobs:
   build:
@@ -49,13 +49,21 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
-      - name: Build PlatformIO env:ESP32
+      - name: Build PlatformIO env:ESP32-Rev1toRev4
         working-directory: ./Platformio
-        run: pio run -e esp32
+        run: pio run -e esp32-Rev1toRev4
 
-      - name: Build PlatformIO env:ESP32_testboard
+      - name: Build PlatformIO env:ESP32_testboard-Rev1toRev4
         working-directory: ./Platformio
-        run: pio run -e esp32_testboard
+        run: pio run -e esp32_testboard-Rev1toRev4
+
+      - name: Build PlatformIO env:ESP32-S3-Rev5andHigher
+        working-directory: ./Platformio
+        run: pio run -e esp32-s3-Rev5andHigher
+
+      - name: Build PlatformIO env:ESP32-S3_testboard-Rev5andHigher
+        working-directory: ./Platformio
+        run: pio run -e esp32-s3_testboard-Rev5andHigher
 
       - name: Build PlatformIO env:windows_64bit
         if: ${{matrix.sys == 'mingw64'}}

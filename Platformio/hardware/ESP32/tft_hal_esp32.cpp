@@ -3,25 +3,67 @@
 #include "tft_hal_esp32.h"
 #include "sleep_hal_esp32.h"
 
-uint8_t SDA_GPIO = 19;
-uint8_t SCL_GPIO = 22;
+// The ESP32 can only do LOW_SPEED_MODE
+#if(OMOTE_HARDWARE_REV >= 5)
+#define LEDC_SPEED_MODE LEDC_LOW_SPEED_MODE
+#else
+#define LEDC_SPEED_MODE LEDC_HIGH_SPEED_MODE
+#endif
 
-uint8_t LCD_BL_GPIO = 4;
-uint8_t LCD_EN_GPIO = 10;
-uint8_t LCD_CS_GPIO = 5;
-uint8_t LCD_MOSI_GPIO = 23;
-uint8_t LCD_SCK_GPIO = 18;
-uint8_t LCD_DC_GPIO = 9;
+// Set pins for 8-bit mode (ESP32-S3) or SPI (ESP32)
+#if(OMOTE_HARDWARE_REV >= 5)
+  const uint8_t SDA_GPIO = 20;
+  const uint8_t SCL_GPIO = 19;
+
+  const uint8_t LCD_BL_GPIO = 9;
+  const uint8_t LCD_EN_GPIO = 38;
+  const uint8_t LCD_CS_GPIO = 39;
+  const uint8_t LCD_DC_GPIO = 40;
+  const uint8_t LCD_WR_GPIO = 41;
+  const uint8_t LCD_RD_GPIO = 42;
+  const uint8_t LCD_D0_GPIO = 48;
+  const uint8_t LCD_D1_GPIO = 47;
+  const uint8_t LCD_D2_GPIO = 21;
+  const uint8_t LCD_D3_GPIO = 14;
+  const uint8_t LCD_D4_GPIO = 13;
+  const uint8_t LCD_D5_GPIO = 12;
+  const uint8_t LCD_D6_GPIO = 11;
+  const uint8_t LCD_D7_GPIO = 10;
+#else
+  const uint8_t SDA_GPIO = 19;
+  const uint8_t SCL_GPIO = 22;
+
+  const uint8_t LCD_BL_GPIO = 4;
+  const uint8_t LCD_EN_GPIO = 10;
+  const uint8_t LCD_CS_GPIO = 5;
+  const uint8_t LCD_DC_GPIO = 9;
+  const uint8_t LCD_MOSI_GPIO = 23;
+  const uint8_t LCD_SCK_GPIO = 18;
+#endif
 
 LGFX::LGFX(void) {
   {
     auto cfg = _bus_instance.config();
     cfg.freq_write = SPI_FREQUENCY;
+    #if(OMOTE_HARDWARE_REV >= 5)
+    cfg.pin_wr = LCD_WR_GPIO;
+    cfg.pin_rd = LCD_RD_GPIO;
+    cfg.pin_rs = LCD_DC_GPIO;
+    cfg.pin_d0 = LCD_D0_GPIO;
+    cfg.pin_d1 = LCD_D1_GPIO;
+    cfg.pin_d2 = LCD_D2_GPIO;
+    cfg.pin_d3 = LCD_D3_GPIO;
+    cfg.pin_d4 = LCD_D4_GPIO;
+    cfg.pin_d5 = LCD_D5_GPIO;
+    cfg.pin_d6 = LCD_D6_GPIO;
+    cfg.pin_d7 = LCD_D7_GPIO;
+    #else
     cfg.freq_read  = 16000000;
     cfg.dma_channel = SPI_DMA_CH_AUTO;
     cfg.pin_sclk = LCD_SCK_GPIO;
     cfg.pin_mosi = LCD_MOSI_GPIO;
     cfg.pin_dc   = LCD_DC_GPIO;
+    #endif
     _bus_instance.config(cfg);
     _panel_instance.setBus(&_bus_instance);
   }
@@ -61,7 +103,7 @@ void init_tft(void) {
   // Manual setup because ledcSetup() briefly turns on the backlight
   ledc_channel_config_t ledc_channel_left;
   ledc_channel_left.gpio_num = (gpio_num_t)LCD_BL_GPIO;
-  ledc_channel_left.speed_mode = LEDC_HIGH_SPEED_MODE;
+  ledc_channel_left.speed_mode = LEDC_SPEED_MODE;
   ledc_channel_left.channel = LEDC_CHANNEL_5;
   ledc_channel_left.intr_type = LEDC_INTR_DISABLE;
   ledc_channel_left.timer_sel = LEDC_TIMER_1;
@@ -77,7 +119,7 @@ void init_tft(void) {
   ledc_channel_config(&ledc_channel_left);
 
   ledc_timer_config_t ledc_timer;
-  ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
+  ledc_timer.speed_mode = LEDC_SPEED_MODE;
   ledc_timer.duty_resolution = LEDC_TIMER_8_BIT;
   ledc_timer.timer_num = LEDC_TIMER_1;
   ledc_timer.freq_hz = 640;
@@ -111,21 +153,27 @@ void init_tft(void) {
   tft.setSwapBytes(true);
 }
 
-void update_backligthBrighness_HAL(void) {
+void update_backlightBrightness_HAL(void) {
   // A variable declared static inside a function is visible only inside that function, exists only once (not created/destroyed for each call) and is permanent. It is in a sense a private global variable.
   static int fadeInTimer = millis(); // fadeInTimer = time after setup
   if (millis() < fadeInTimer + backlightBrightness) {
     // after boot or wakeup, fade in backlight brightness
     // fade in lasts for <backlightBrightness> ms
-    ledcWrite(5, millis() - fadeInTimer);
+    ledcWrite(LEDC_CHANNEL_5, millis() - fadeInTimer);
   } else {
     if (millis() - get_lastActivityTimestamp() > get_sleepTimeout_HAL() - 2000) {
       // less than 2000 ms until standby
       // dim backlight
-      ledcWrite(5, get_backlightBrightness_HAL() * 0.3);
+      ledcWrite(LEDC_CHANNEL_5, get_backlightBrightness_HAL() * 0.3);
     } else {
       // normal mode, set full backlightBrightness
-      ledcWrite(5, backlightBrightness);
+      // turn off PWM if backlight is at full brightness
+      if(backlightBrightness < 255){
+        ledcWrite(LEDC_CHANNEL_5, backlightBrightness);
+      }
+      else{
+        ledc_stop(LEDC_SPEED_MODE, LEDC_CHANNEL_5, 255);
+      }
     }
   }
 }

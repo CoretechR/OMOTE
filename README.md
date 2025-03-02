@@ -4,6 +4,7 @@
 
 ![Ubuntu build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-ubuntu.yml/badge.svg)
 ![Windows Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-windows.yml/badge.svg)
+![MacOS Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-macos.yml/badge.svg)
 [![OMOTE Discord](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=shield)][link1]
 
 ## Overview
@@ -71,11 +72,6 @@ The 2.8" capacitive touchscreen can be sourced from Adafruit ([2770](https://www
 The [housing and buttons](https://github.com/CoretechR/OMOTE/tree/main/CAD) can be printed using PLA or PETG. The parts from the project photos were sliced with PrusaSlicer with a layer height of 0.25mm and printed using ColorFabb PETG. It is important that the case part is printed with its flat side towards the print bed using lots of support structures. If your printer is well calibrated, the cover plate will snap onto the case.
 
 ### To Dos for software
-
-Short term goals
-- [x] simulator for creating pages in Windows, WSL2, Linux, and macOS
-- [x] scene selector page as start page
-- [x] available gui pages based on the currently active scene. Hide pages not needed in a scene
 
 Long term goals (not yet scheduled)
 - [ ] Easier configuration

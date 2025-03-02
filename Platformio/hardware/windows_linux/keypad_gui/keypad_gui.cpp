@@ -13,12 +13,7 @@ struct KeyPadManager {
 
 SDL_Surface* loadSurface( SDL_Surface* screenSurface );
 
-uint32_t KEY_HOLD_TIME = 500; // Keys are considered held after 500 ms
-
-// The state to track a single key since the GUI is mouse based
-ActiveKey activeKey = {' ', 0, GUI_KEY_IDLE};
-guiKeyStates lastGUIKeyState = GUI_KEY_IDLE;
-Uint64 holdTimer;
+std::queue<KeyEvent> keyEventsQueue;
 
 // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
 int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
@@ -77,10 +72,12 @@ int event_filter(void *userdata, SDL_Event * event) {
           // Check if the mouse event is inside one of the key polygons
           if (pnpoly(key.num_vert, key.vertx, key.verty, mouse_event->x, mouse_event->y))
           {
-            activeKey.key = key.key;
-            activeKey.state = event->type == SDL_MOUSEBUTTONDOWN ? GUI_KEY_PRESSED : GUI_KEY_RELEASED;
-            activeKey.keyCode = key.id;
-            holdTimer = SDL_MOUSEBUTTONDOWN ? SDL_GetTicks64() : 0;
+            KeyEvent keyEvent;
+            keyEvent.keyChar = key.key;
+            keyEvent.keyCode = key.id;
+            keyEvent.keyState = event->type == SDL_MOUSEBUTTONDOWN ? PRESSED_SIMULATOR : RELEASED_SIMULATOR;
+            // printf("simulator click event: %c, %d %d, %d, added to queue\r\n", keyEvent.keyChar, keyEvent.keyCode/5, keyEvent.keyCode%5, keyEvent.keyState);
+            keyEventsQueue.push(keyEvent);
             break;
           }
         }
@@ -150,36 +147,4 @@ SDL_Surface* loadSurface( SDL_Surface* screenSurface )
   }
 
   return optimizedSurface;
-}
-
-// The function pumpKeys() is polled by the main application.
-// Do some extra work when we poll it to help marry the SDL event based syetem with the polling system
-// This is also a very simple version of the state machine that the real Keypad library uses
-KeyState pumpKeys() {
-  // Store the current state of our active key so we can return it
-  auto currentKey = activeKey;
-
-  // Check if the key state has changed
-  bool stateChanged = false;
-  if (activeKey.state != lastGUIKeyState) {
-    stateChanged = true;
-  }
-  lastGUIKeyState = activeKey.state;
-
-  // If the key has been pressed long enough to be considered held, change the state
-  if (activeKey.state == GUI_KEY_PRESSED && (SDL_GetTicks64() - holdTimer) > KEY_HOLD_TIME) {
-    activeKey.state = GUI_KEY_HOLD;
-  }
-
-  // Reset the key if it was released
-  if (activeKey.state == GUI_KEY_RELEASED) {
-    activeKey.key = ' ';
-    activeKey.state = GUI_KEY_IDLE;
-    holdTimer = 0;
-  }
-
-  return {
-    currentKey,
-    stateChanged
-  };
 }
