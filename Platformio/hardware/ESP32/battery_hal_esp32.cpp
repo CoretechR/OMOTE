@@ -1,12 +1,19 @@
 #include <Arduino.h>
-#if (OMOTE_HARDWARE_REV >= 4)
+
+#if (OMOTE_HARDWARE_REV <= 3)
+  const uint8_t ADC_BAT_GPIO = 36;  // Battery voltage sense input (1/2 divider), GPIO36, ADC1_CH0, RTC_GPIO0
+  // const uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
+#elif (OMOTE_HARDWARE_REV == 4)
   #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
   // Initialize MAX17048 battery fuel gauge
   SFE_MAX1704X fuelGauge(MAX1704X_MAX17048);
+  const uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
+#elif (OMOTE_HARDWARE_REV >= 5)
+  #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
+  // Initialize MAX17048 battery fuel gauge
+  SFE_MAX1704X fuelGauge(MAX1704X_MAX17048);
+  const uint8_t CRG_STAT_GPIO = 1;  // battery charger feedback
 #endif
-
-uint8_t CRG_STAT_GPIO = 21; // battery charger feedback,                  GPIO21, VSPIHD, EMAC_TX_EN
-uint8_t ADC_BAT_GPIO = 36;  // Battery voltage sense input (1/2 divider), GPIO36, ADC1_CH0, RTC_GPIO0
 
 void init_battery_HAL(void) {
   #if (OMOTE_HARDWARE_REV >= 4)
@@ -27,7 +34,9 @@ void get_battery_status_HAL(int *battery_voltage, int *battery_percentage, bool 
   #if (OMOTE_HARDWARE_REV >= 4)
     // With hardware rev 4, battery state of charge is monitored by a MAX17048 fuel gauge
     *battery_voltage = (int)(fuelGauge.getVoltage()*1000);
-    *battery_percentage = (int)fuelGauge.getSOC();
+    float soc = fuelGauge.getSOC();
+    if (soc > 100.0) soc = 100.0;
+    *battery_percentage = (int)soc;
     *battery_ischarging = !digitalRead(CRG_STAT_GPIO);
 
     //Serial.print(" LiIon Voltage: ");

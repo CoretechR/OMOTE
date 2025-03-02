@@ -14,7 +14,7 @@ lv_obj_t* objBattSettingsVoltage;
 lv_obj_t* objBattSettingsPercentage;
 //lv_obj_t* objBattSettingsIscharging;
 
-// Slider Event handler
+// Display Backlight Slider Event handler
 static void bl_slider_event_cb(lv_event_t* e){
   lv_obj_t* slider = lv_event_get_target(e);
   int32_t slider_value = lv_slider_get_value(slider);
@@ -22,6 +22,17 @@ static void bl_slider_event_cb(lv_event_t* e){
   if (slider_value > 255) {slider_value = 255;}
   set_backlightBrightness(slider_value);
 }
+
+#if(OMOTE_HARDWARE_REV >= 5)
+// Keyboard Backlight Slider Event handler
+static void kb_slider_event_cb(lv_event_t* e){
+  lv_obj_t* slider = lv_event_get_target(e);
+  int32_t slider_value = lv_slider_get_value(slider);
+  if (slider_value < 0)  {slider_value = 0;}
+  if (slider_value > 255) {slider_value = 255;}
+  set_keyboardBrightness(slider_value);
+}
+#endif
 
 // Wakeup by IMU Switch Event handler
 static void WakeEnableSetting_event_cb(lv_event_t* e){
@@ -41,7 +52,7 @@ static void timout_event_cb(lv_event_t* e){
     case 5: {set_sleepTimeout( 600000); break;}
     case 6: {set_sleepTimeout(3600000); break;}
   }
-  omote_log_v("New timeout: %lu ms\r\n", actualSleepTimeout);
+  omote_log_v("New timeout: %lu ms\r\n", get_sleepTimeout());
   setLastActivityTimestamp();
   // save preferences now, otherwise if you set a very big timeout and upload your firmware again, it never got saved
   save_preferences();
@@ -154,6 +165,36 @@ void create_tab_content_settings(lv_obj_t* tab) {
   // menuLabel = lv_label_create(menuBox);
   // lv_label_set_text(menuLabel, LV_SYMBOL_RIGHT);
   // lv_obj_align(menuLabel, LV_ALIGN_TOP_RIGHT, 0, 32);
+
+  #if(OMOTE_HARDWARE_REV >= 5)
+  // Another setting for the keyboard ----------------------------------------------------------
+  menuLabel = lv_label_create(tab);
+  lv_label_set_text(menuLabel, "Keyboard");
+  menuBox = lv_obj_create(tab);
+  lv_obj_set_size(menuBox, lv_pct(100), 44);
+  lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
+  lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
+  
+  brightnessIcon = lv_img_create(menuBox);
+  lv_img_set_src(brightnessIcon, &low_brightness);
+  lv_obj_set_style_img_recolor(brightnessIcon, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_img_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_align(brightnessIcon, LV_ALIGN_TOP_LEFT, 0, 0);
+  slider = lv_slider_create(menuBox);
+  lv_slider_set_range(slider, 0, 255);
+  lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
+  lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_set_style_bg_color(slider, lv_color_lighten(color_primary, 50), LV_PART_MAIN);
+  lv_slider_set_value(slider, get_keyboardBrightness(), LV_ANIM_OFF);
+  lv_obj_set_size(slider, lv_pct(66), 10);
+  lv_obj_align(slider, LV_ALIGN_TOP_MID, 0, 3);
+  brightnessIcon = lv_img_create(menuBox);
+  lv_img_set_src(brightnessIcon, &high_brightness);
+  lv_obj_set_style_img_recolor(brightnessIcon, lv_color_white(), LV_PART_MAIN);
+  lv_obj_set_style_img_recolor_opa(brightnessIcon, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_align(brightnessIcon, LV_ALIGN_TOP_RIGHT, 0, -1);
+  lv_obj_add_event_cb(slider, kb_slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+  #endif
 
   // Another setting for the battery ----------------------------------------------------------
   menuLabel = lv_label_create(tab);

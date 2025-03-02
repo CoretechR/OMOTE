@@ -3,7 +3,7 @@
 
 uint8_t backlightBrightness = 255;
 
-void update_backligthBrighness_HAL(void) {
+void update_backlightBrightness_HAL(void) {
   // nothing to do, we don't want to dim the simulator
 
 };
