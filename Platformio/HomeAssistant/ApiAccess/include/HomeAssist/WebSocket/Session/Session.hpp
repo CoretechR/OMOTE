@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "HomeAssist/WebSocket/Request.hpp"
 #include "HomeAssist/WebSocket/Session/ISession.hpp"
 
 namespace HomeAssist::WebSocket {

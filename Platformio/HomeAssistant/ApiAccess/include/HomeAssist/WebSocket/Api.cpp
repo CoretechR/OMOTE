@@ -24,6 +24,27 @@ Api::Api(std::shared_ptr<webSocketInterface> socket)
 
 Api::~Api() {}
 
+void Api::Proccess() {
+  ProccessSessions();
+  ProccessMessages();
+}
+
+void Api::ProccessSessions() {
+  CleanUpSessions();
+  // Bail we are not connected don't start sessions
+  if (mConnectionStatus != ConnectionStatus::Connected) {
+    return;
+  }
+  for (auto& session : mSessions) {
+    if (!session->IsRunning()) {
+      if (auto* request = session->BorrowStartRequest(); request) {
+        mHomeAssistSocket->sendMessage(request->GetRequestMessage());
+        session->MarkStarted();
+      }
+    }
+  }
+}
+
 void Api::ProccessMessages() {
   while (mIncomingMessageQueue.size() > 0) {
     auto message = std::move(mIncomingMessageQueue.front());
@@ -36,7 +57,6 @@ void Api::ProccessMessages() {
       }
     }
   }
-  CleanUpSessions();
 }
 
 void Api::CleanUpSessions() {
@@ -70,6 +90,10 @@ void Api::ParseIncomingMessage(const std::string& messageStr) {
     return;
   }
   mIncomingMessageQueue.push(std::move(messageObj));
+}
+
+void Api::AddSession(std::unique_ptr<ISession> aNewSession) {
+  mSessions.push_back(std::move(aNewSession));
 }
 
 }  // namespace HomeAssist::WebSocket

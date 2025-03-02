@@ -18,7 +18,9 @@ class Api {
   Api(std::shared_ptr<webSocketInterface> socket);
   virtual ~Api();
 
-  void ProccessMessages();
+  void Proccess();
+
+  void AddSession(std::unique_ptr<ISession> aSession);
 
  protected:
   /**
@@ -28,8 +30,10 @@ class Api {
   bool PreProccessMessage(Message& aMessage);
   void ParseIncomingMessage(const std::string& messageStr);
 
-  void SetupSession() {}
+  void ProccessSessions();
   void CleanUpSessions();
+
+  void ProccessMessages();
 
  private:
   ConnectionStatus mConnectionStatus = ConnectionStatus::Initializing;
