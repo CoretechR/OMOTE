@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "rapidjson/document.h"
 
@@ -8,7 +9,7 @@ namespace HomeAssist::WebSocket {
 
 class Message {
  public:
-  class State;
+  class Entity;
   class Attributes;
 
   enum class Success : int8_t { unknown, success, failure };
@@ -29,18 +30,21 @@ class Message {
   inline Success GetSuccess() const;
   inline int GetId() const;
 
-  State* BorrowToState() const;
-  State* BorrowFromState() const;
+  Entity* BorrowToState() const;
+  Entity* BorrowFromState() const;
+  const std::vector<std::unique_ptr<Entity>>& BorrowEntityList() const;
 
  private:
   void SaveBasicInfo(const rapidjson::Document& aMessageJson);
   void SaveStateInfo(const rapidjson::Document& aMessageJson);
+  void SaveResultInfo(const rapidjson::Document& aMessageJson);
 
   int mId = 0;
   Success mSuccess = Success::unknown;
   Type mType = Type::unknown;
-  std::unique_ptr<State> mFromState;
-  std::unique_ptr<State> mToState;
+  std::unique_ptr<Entity> mFromState;
+  std::unique_ptr<Entity> mToState;
+  std::vector<std::unique_ptr<Entity>> mEntityList;
 };
 
 inline Message::Type Message::GetType() const { return mType; }

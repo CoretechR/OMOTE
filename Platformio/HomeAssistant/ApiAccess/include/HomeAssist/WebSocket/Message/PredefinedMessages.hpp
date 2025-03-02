@@ -22,6 +22,13 @@ static const auto TestSubEvent = R"---(
     }
     )---";
 
+static const auto GetStatesMessage = R"---(
+    {
+      "id": 0,
+      "type": "get_states"
+    }
+    )---";
+
 static const auto TestSubAllEvent = R"---(
     {
       "id": 1,

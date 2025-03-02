@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-#include "HomeAssist/WebSocket/Message/State.hpp"
+#include "HomeAssist/WebSocket/Message/Entity.hpp"
 #include "RapidJsonUtilty.hpp"
 
 namespace HomeAssist::WebSocket {
@@ -18,8 +18,13 @@ static std::map<std::string, Message::Type> typeMap = {
 
 Message::Message(const rapidjson::Document& aMessageJson) {
   SaveBasicInfo(aMessageJson);
-  if (mType == Type::event) {
-    SaveStateInfo(aMessageJson);
+  switch (mType) {
+    case Type::event:
+      SaveStateInfo(aMessageJson);
+      break;
+    case Type::result:
+      SaveResultInfo(aMessageJson);
+      break;
   }
 }
 
@@ -42,16 +47,31 @@ void Message::SaveStateInfo(const rapidjson::Document& aMessageJson) {
   if (auto oldStateVal = GetNestedField(
           aMessageJson, {"event", "variables", "trigger", "from_state"});
       oldStateVal) {
-    mFromState = std::make_unique<State>(*oldStateVal);
+    mFromState = std::make_unique<Entity>(*oldStateVal);
   }
   if (auto newStateVal = GetNestedField(
           aMessageJson, {"event", "variables", "trigger", "to_state"});
       newStateVal) {
-    mToState = std::make_unique<State>(*newStateVal);
+    mToState = std::make_unique<Entity>(*newStateVal);
   }
 }
 
-Message::State* Message::BorrowToState() const { return mToState.get(); }
-Message::State* Message::BorrowFromState() const { return mFromState.get(); }
+void Message::SaveResultInfo(const rapidjson::Document& aMessageJson) {
+  if (aMessageJson.HasMember("result") && aMessageJson["result"].IsArray()) {
+    const auto& resultArray = aMessageJson["result"].GetArray();
+    for (const auto& item : resultArray) {
+      if (item.IsObject() && item.HasMember("entity_id")) {
+        mEntityList.push_back(std::make_unique<Entity>(item));
+      }
+    }
+  }
+}
+
+Message::Entity* Message::BorrowToState() const { return mToState.get(); }
+Message::Entity* Message::BorrowFromState() const { return mFromState.get(); }
+const std::vector<std::unique_ptr<Message::Entity>>& Message::BorrowEntityList()
+    const {
+  return mEntityList;
+};
 
 }  // namespace HomeAssist::WebSocket

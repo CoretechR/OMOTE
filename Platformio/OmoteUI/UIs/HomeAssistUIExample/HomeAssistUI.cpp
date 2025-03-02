@@ -2,10 +2,10 @@
 
 #include "HardwareFactory.hpp"
 #include "HomeAssist/WebSocket/Message/Attributes/Light.hpp"
+#include "HomeAssist/WebSocket/Message/Entity.hpp"
 #include "HomeAssist/WebSocket/Message/Message.hpp"
 #include "HomeAssist/WebSocket/Message/MessageHandler.hpp"
 #include "HomeAssist/WebSocket/Message/PredefinedMessages.hpp"
-#include "HomeAssist/WebSocket/Message/State.hpp"
 #include "HomeAssist/WebSocket/Session/Session.hpp"
 
 using namespace UI;
@@ -31,10 +31,27 @@ HomeAssistUI::HomeAssistUI()
         return true;
       });
 
-  auto request = std::make_unique<Request>(HomeAssist::TestSubEvent);
+  mDeviceFinder = std::make_shared<MessageHandler>([](const Message& aMessage) {
+    for (const auto& entity : aMessage.BorrowEntityList()) {
+      if (auto* attributes = entity->BorrowAttributes(); attributes) {
+        if (auto* light = attributes->BorrowLight(); light) {
+          HardwareFactory::getAbstract().debugPrint(
+              "Id: %s State: %s Brightness:%d \n", entity->GetId().c_str(),
+              entity->GetState().c_str(), light->GetBrightness());
+        }
+      }
+    }
+    return true;
+  });
+
+  auto lightRequest = std::make_unique<Request>(HomeAssist::TestSubEvent);
+  auto stateRequest = std::make_unique<Request>(HomeAssist::GetStatesMessage);
+
+  // mHomeAssistApi->AddSession(
+  //     std::make_unique<Session>(std::move(lightRequest), mMessageHandler));
 
   mHomeAssistApi->AddSession(
-      std::make_unique<Session>(std::move(request), mMessageHandler));
+      std::make_unique<Session>(std::move(stateRequest), mDeviceFinder));
 }
 
 void HomeAssistUI::loopHandler() {

@@ -1,10 +1,10 @@
-#include "HomeAssist/WebSocket/Message/State.hpp"
+#include "HomeAssist/WebSocket/Message/Entity.hpp"
 
 #include "HomeAssist/WebSocket/Message/Attributes/Attributes.hpp"
 
 using namespace HomeAssist::WebSocket;
 
-Message::State::State(const rapidjson::Value& aStateValue) {
+Message::Entity::Entity(const rapidjson::Value& aStateValue) {
   SaveBasicInfo(aStateValue);
   if (aStateValue.HasMember("attributes") &&
       aStateValue["attributes"].IsObject()) {
@@ -12,13 +12,17 @@ Message::State::State(const rapidjson::Value& aStateValue) {
   }
 }
 
-Message::State::~State() {}
+Message::Entity::~Entity() {}
 
-Message::Attributes* Message::State::BorrowAttributes() {
+std::string Message::Entity::GetId() { return mEntityId; }
+
+std::string Message::Entity::GetState() { return mState; }
+
+Message::Attributes* Message::Entity::BorrowAttributes() {
   return mAttributes.get();
 }
 
-void Message::State::SaveBasicInfo(const rapidjson::Value& aStateValue) {
+void Message::Entity::SaveBasicInfo(const rapidjson::Value& aStateValue) {
   if (aStateValue.HasMember("entity_id") &&
       aStateValue["entity_id"].IsString()) {
     mEntityId = aStateValue["entity_id"].GetString();
@@ -28,7 +32,7 @@ void Message::State::SaveBasicInfo(const rapidjson::Value& aStateValue) {
   }
 }
 
-void Message::State::SaveAttributes(
+void Message::Entity::SaveAttributes(
     const rapidjson::Value& aAttributesListValue) {
   if (mEntityId.find("light") == 0) {
     mAttributes = std::make_unique<Attributes>(Attributes::EntityType::Light,

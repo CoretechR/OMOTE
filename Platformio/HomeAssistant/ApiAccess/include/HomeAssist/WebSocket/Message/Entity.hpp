@@ -6,10 +6,13 @@
 
 namespace HomeAssist::WebSocket {
 
-class Message::State {
+class Message::Entity {
  public:
-  State(const rapidjson::Value& aStateValue);
-  virtual ~State();
+  Entity(const rapidjson::Value& aStateValue);
+  virtual ~Entity();
+
+  std::string GetId();
+  std::string GetState();
 
   Attributes* BorrowAttributes();
 
