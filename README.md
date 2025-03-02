@@ -4,6 +4,7 @@
 
 ![Ubuntu build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-ubuntu.yml/badge.svg)
 ![Windows Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-windows.yml/badge.svg)
+![MacOS Build](https://github.com/CoretechR/OMOTE/actions/workflows/build-platformio-macos.yml/badge.svg)
 [![OMOTE Discord](https://discordapp.com/api/guilds/1138116475559882852/widget.png?style=shield)][link1]
 
 ## Overview
