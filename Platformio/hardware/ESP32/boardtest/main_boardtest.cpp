@@ -300,6 +300,9 @@ static void my_disp_flush( lv_display_t *disp, const lv_area_t *area, uint8_t *p
 
   tft.startWrite();
   tft.setAddrWindow(area->x1, area->y1, w, h);
+  // single buffer bufA
+  // tft.pushColors((uint16_t *)px_map, w * h, true);
+  // double buffer bufA and bufB
   tft.pushPixelsDMA((uint16_t*)px_map, w * h);
   tft.endWrite();
 
@@ -313,6 +316,19 @@ static void my_touchpad_read(lv_indev_t *indev_driver, lv_indev_data_t *data) {
         data->state = LV_INDEV_STATE_PRESSED;
         data->point.x = x;
         data->point.y = y;
+
+        standbyTimer = SLEEP_TIMEOUT;
+
+        count_touches++;
+        // draw touch point
+        if (show_touches) {
+          if (x >= 0 && x < tft.width() && y >= 0 && y < tft.height()) {
+            tft.drawPixel(x, y, TFT_RED);
+          }
+        }
+
+        lv_table_set_cell_value_fmt(checksTable, 8, 1, "%" LV_PRIu32, count_touches);
+
     } else {
         data->state = LV_INDEV_STATE_RELEASED;
     }
