@@ -1,6 +1,7 @@
 // OMOTE Hardware Abstraction
 // 2023 Matthew Colvin
 #pragma once
+#include <chrono>
 #include <memory>
 
 #include "BatteryInterface.h"
@@ -33,6 +34,8 @@ class HardwareAbstract {
   virtual std::shared_ptr<IRInterface> ir() = 0;
   virtual std::shared_ptr<SystemStatsInterface> stats() = 0;
   virtual std::shared_ptr<webSocketInterface> webSocket() = 0;
+
+  virtual std::chrono::milliseconds execTime() = 0;
 
   virtual char getCurrentDevice() = 0;
   virtual void setCurrentDevice(char currentDevice) = 0;

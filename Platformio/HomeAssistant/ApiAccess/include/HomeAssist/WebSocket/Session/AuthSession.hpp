@@ -1,5 +1,6 @@
 #pragma once
 
+#include "HardwareFactory.hpp"
 #include "HomeAssist/WebSocket/Api.hpp"
 #include "HomeAssist/WebSocket/Message/Message.hpp"
 #include "HomeAssist/WebSocket/Message/MessageHandler.hpp"
@@ -20,12 +21,17 @@ class AuthSession : public ISession {
 
   Api::ConnectionStatus GetConnectionStatus() const;
 
+  void SendAuth();
+
+  bool IsAuthSent();
+
  private:
   Request* BorrowEndRequest() override { return nullptr; }
   Request* BorrowStartRequest() override { return nullptr; }
 
   std::shared_ptr<webSocketInterface> mHomeAssitSocket = nullptr;
   Api::ConnectionStatus mConnectionStatus = Api::ConnectionStatus::Initializing;
+  bool mIsAuthSent = false;
 };
 
 AuthSession::AuthSession(std::shared_ptr<webSocketInterface> aHomeAssistSocket)
@@ -38,10 +44,11 @@ Api::ConnectionStatus AuthSession::GetConnectionStatus() const {
 bool AuthSession::ProcessMessage(const Message& aMessage) {
   switch (aMessage.GetType()) {
     case Message::Type::auth_required:
-      mHomeAssitSocket->sendMessage(HomeAssistAuthResponse);
+      SendAuth();
       return true;
     case Message::Type::auth_ok:
       mConnectionStatus = Api::ConnectionStatus::Connected;
+      HardwareFactory::getAbstract().debugPrint("HOLY_SHIT Connected");
       return true;
     case Message::Type::auth_invalid:
       mConnectionStatus = Api::ConnectionStatus::Failed;
@@ -55,5 +62,12 @@ bool AuthSession::IsComplete() const {
   return mHomeAssitSocket == nullptr ||
          mConnectionStatus == Api::ConnectionStatus::Connected;
 }
+
+void AuthSession::SendAuth() {
+  mHomeAssitSocket->sendMessage(HomeAssistAuthResponse);
+  mIsAuthSent = true;
+}
+
+bool AuthSession::IsAuthSent() { return mIsAuthSent; }
 
 }  // namespace HomeAssist::WebSocket

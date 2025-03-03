@@ -36,6 +36,9 @@ class HardwareRevX : public HardwareAbstract {
   virtual std::shared_ptr<KeyPressAbstract> keys() override;
   virtual std::shared_ptr<IRInterface> ir() override;
   virtual std::shared_ptr<SystemStatsInterface> stats() override;
+  virtual std::shared_ptr<webSocketInterface> webSocket() override;
+
+  virtual std::chrono::milliseconds execTime() override;
 
   virtual char getCurrentDevice() override;
   virtual void setCurrentDevice(char currentDevice) override;

@@ -13,18 +13,34 @@ namespace HomeAssist::WebSocket {
 Api::Api(std::shared_ptr<webSocketInterface> socket)
     : mHomeAssistSocket(socket) {
   if (mHomeAssistSocket) {
-    mHomeAssistSocket->connect("ws://homeassistant.local:8123/api/websocket");
     mHomeAssistSocket->setMessageCallback(
         [this](const std::string& messageStr) {
           ParseIncomingMessage(messageStr);
         });
+    mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
+    mLastConnectRetry = HardwareFactory::getAbstract().execTime();
+    mAuthSession = std::make_unique<AuthSession>(mHomeAssistSocket);
   }
-  mAuthSession = std::make_unique<AuthSession>(mHomeAssistSocket);
 }
 
 Api::~Api() {}
 
 void Api::Proccess() {
+  auto execTime = HardwareFactory::getAbstract().execTime();
+  if (!mHomeAssistSocket) {
+    return;
+  }
+  auto tenSecondsSinceRetry = [this, execTime]() {
+    return execTime > mLastConnectRetry + std::chrono::seconds(10);
+  };
+  if (!mHomeAssistSocket->isConnected() && tenSecondsSinceRetry()) {
+    mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
+    mLastConnectRetry = execTime;
+  }
+  if (mAuthSession && mHomeAssistSocket->isConnected() &&
+      !mAuthSession->IsAuthSent()) {
+    mAuthSession->SendAuth();
+  }
   ProccessSessions();
   ProccessMessages();
 }
@@ -46,6 +62,9 @@ void Api::ProccessSessions() {
 }
 
 void Api::ProccessMessages() {
+  if (!mHomeAssistSocket) {
+    return;
+  }
   while (mIncomingMessageQueue.size() > 0) {
     auto message = std::move(mIncomingMessageQueue.front());
     mIncomingMessageQueue.pop();
@@ -85,9 +104,9 @@ bool Api::PreProccessMessage(Message& aMessage) {
 }
 
 void Api::ParseIncomingMessage(const std::string& messageStr) {
-  rapidjson::Document messageJson;
-  messageJson.Parse(messageStr.c_str());
-  auto prettyDebugString = ToPrettyString(messageJson);
+  MemConciousDocument messageJson;
+  messageJson.Parse(messageStr.c_str(), messageStr.size());
+  // auto prettyDebugString = ToPrettyString(messageJson);
   // HardwareFactory::getAbstract().debugPrint("%s", prettyDebugString.c_str());
   auto messageObj = std::make_unique<Message>(messageJson);
   if (PreProccessMessage(*messageObj)) {

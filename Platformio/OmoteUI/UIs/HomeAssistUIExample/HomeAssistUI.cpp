@@ -12,10 +12,14 @@ using namespace UI;
 
 using namespace HomeAssist::WebSocket;
 
-HomeAssistUI::HomeAssistUI()
-    : BasicUI(),
-      mHomeAssistApi(
-          std::make_unique<Api>(HardwareFactory::getAbstract().webSocket())) {
+HomeAssistUI::HomeAssistUI() : BasicUI() {
+  auto socket = HardwareFactory::getAbstract().webSocket();
+  if (!socket) {
+    return;
+  }
+
+  mHomeAssistApi =
+      std::make_unique<Api>(HardwareFactory::getAbstract().webSocket());
   mMessageHandler =
       std::make_shared<MessageHandler>([](const Message& aMessage) {
         if (auto* newState = aMessage.BorrowToState(); newState) {
@@ -56,5 +60,7 @@ HomeAssistUI::HomeAssistUI()
 
 void HomeAssistUI::loopHandler() {
   BasicUI::loopHandler();
-  mHomeAssistApi->Proccess();
+  if (mHomeAssistApi) {
+    mHomeAssistApi->Proccess();
+  }
 }

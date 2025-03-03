@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <map>
 #include <memory>
 #include <queue>
@@ -37,6 +38,7 @@ class Api {
   void ProccessMessages();
 
  private:
+  std::chrono::milliseconds mLastConnectRetry;
   ConnectionStatus mConnectionStatus = ConnectionStatus::Initializing;
   std::shared_ptr<webSocketInterface> mHomeAssistSocket = nullptr;
   std::queue<std::unique_ptr<Message>> mIncomingMessageQueue;

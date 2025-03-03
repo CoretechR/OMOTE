@@ -1,5 +1,6 @@
 #pragma once
 #include "HomeAssist/WebSocket/Message/Message.hpp"
+#include "RapidJsonUtilty.hpp"
 
 namespace HomeAssist::WebSocket {
 
@@ -8,7 +9,7 @@ class Message::Attributes {
   class Light;
   enum class EntityType { Unknown, Light };
 
-  Attributes(EntityType aEntityType, const rapidjson::Value& aAttributeVal);
+  Attributes(EntityType aEntityType, const MemConciousValue& aAttributeVal);
   ~Attributes();
 
   Light* BorrowLight();

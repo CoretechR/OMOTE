@@ -11,7 +11,8 @@ HardwareSimulator::HardwareSimulator()
       mWifiHandler(std::make_shared<wifiHandlerSim>()),
       mKeys(std::make_shared<KeyPressSim>()),
       mIr(std::make_shared<IRSim>()),
-      mStats(std::make_shared<StatsSimulator>()) {
+      mStats(std::make_shared<StatsSimulator>()),
+      mStartTime(std::chrono::high_resolution_clock::now()) {
   mHardwareStatusTitleUpdate = std::thread([this] {
     int dataToShow = 0;
     while (true) {
@@ -62,6 +63,13 @@ std::shared_ptr<webSocketInterface> HardwareSimulator::webSocket() {
     }
   }
   return nullptr;
+}
+
+std::chrono::milliseconds HardwareSimulator::execTime() {
+  auto now = std::chrono::high_resolution_clock::now();
+  auto duration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(now - mStartTime);
+  return duration;
 }
 
 char HardwareSimulator::getCurrentDevice() { return 0; }

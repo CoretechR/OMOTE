@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "rapidjson/document.h"
+#include "RapidJsonUtilty.hpp"
 
 namespace HomeAssist::WebSocket {
 
@@ -23,7 +23,7 @@ class Message {
     result
   };
 
-  Message(const rapidjson::Document& messageJson);
+  Message(const MemConciousDocument& messageJson);
   virtual ~Message();
 
   inline Type GetType() const;
@@ -35,9 +35,9 @@ class Message {
   const std::vector<std::unique_ptr<Entity>>& BorrowEntityList() const;
 
  private:
-  void SaveBasicInfo(const rapidjson::Document& aMessageJson);
-  void SaveStateInfo(const rapidjson::Document& aMessageJson);
-  void SaveResultInfo(const rapidjson::Document& aMessageJson);
+  void SaveBasicInfo(const MemConciousDocument& aMessageJson);
+  void SaveStateInfo(const MemConciousDocument& aMessageJson);
+  void SaveResultInfo(const MemConciousDocument& aMessageJson);
 
   int mId = 0;
   Success mSuccess = Success::unknown;

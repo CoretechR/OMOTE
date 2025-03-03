@@ -9,7 +9,6 @@ namespace HomeAssist::WebSocket {
 
 class Request {
  public:
-  Request(rapidjson::Document aRequestMessage);
   Request(std::string aRequestMessage);
   ~Request() = default;
 
@@ -18,12 +17,11 @@ class Request {
   void SetId(int aId);
 
  private:
-  rapidjson::Document mRequestMessage;
+  MemConciousDocument mRequestMessage;
 };
 
-inline Request::Request(std::string aRequestMessage) {
-  mRequestMessage.Parse(aRequestMessage.c_str());
-}
+inline Request::Request(std::string aRequestMessage)
+    : mRequestMessage(GetDocument(aRequestMessage)) {}
 
 inline std::string Request::GetRequestMessage() {
   return ToString(mRequestMessage);

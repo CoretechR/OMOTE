@@ -1,6 +1,8 @@
 #include "HardwareRevX.hpp"
+
 #include "IRTransceiver.hpp"
 #include "display.hpp"
+#include "esp32WebSocket.hpp"
 #include "wifihandler.hpp"
 
 void HardwareRevX::initIO() {
@@ -24,8 +26,8 @@ void HardwareRevX::initIO() {
   pinMode(IR_RX, INPUT);
   pinMode(IR_LED, OUTPUT);
   pinMode(IR_VCC, OUTPUT);
-  digitalWrite(IR_LED, HIGH); // HIGH off - LOW on
-  digitalWrite(IR_VCC, LOW);  // HIGH on - LOW off
+  digitalWrite(IR_LED, HIGH);  // HIGH off - LOW on
+  digitalWrite(IR_VCC, LOW);   // HIGH on - LOW off
 
   // LCD Pin Definition
   pinMode(LCD_EN, OUTPUT);
@@ -119,6 +121,15 @@ std::shared_ptr<SystemStatsInterface> HardwareRevX::stats() {
   return mStats;
 }
 
+std::shared_ptr<webSocketInterface> HardwareRevX::webSocket() {
+  return std::make_shared<esp32WebSocket>(mWifiHandler);
+  // return nullptr;
+}
+
+std::chrono::milliseconds HardwareRevX::execTime() {
+  return std::chrono::milliseconds(millis());
+}
+
 void HardwareRevX::activityDetection() {
   static int accXold;
   static int accYold;
@@ -131,11 +142,9 @@ void HardwareRevX::activityDetection() {
   motion = (abs(accXold - accX) + abs(accYold - accY) + abs(accZold - accZ));
   // Calculate time to standby
   standbyTimer -= 100;
-  if (standbyTimer < 0)
-    standbyTimer = 0;
+  if (standbyTimer < 0) standbyTimer = 0;
   // If the motion exceeds the threshold, the standbyTimer is reset
-  if (motion > MOTION_THRESHOLD)
-    standbyTimer = sleepTimeout;
+  if (motion > MOTION_THRESHOLD) standbyTimer = sleepTimeout;
 
   // Store the current acceleration and time
   accXold = accX;
@@ -174,20 +183,20 @@ void HardwareRevX::enterSleep() {
 
   // Configure IMU
   uint8_t intDataRead;
-  IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
+  IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC);  // clear interrupt
   configIMUInterrupts();
   IMU.readRegister(&intDataRead,
-                   LIS3DH_INT1_SRC); // really clear interrupt
+                   LIS3DH_INT1_SRC);  // really clear interrupt
 
   // Prepare IO states
-  digitalWrite(LCD_DC, LOW); // LCD control signals off
+  digitalWrite(LCD_DC, LOW);  // LCD control signals off
   digitalWrite(LCD_CS, LOW);
   digitalWrite(LCD_MOSI, LOW);
   digitalWrite(LCD_SCK, LOW);
-  digitalWrite(LCD_EN, HIGH); // LCD logic off
-  digitalWrite(LCD_BL, HIGH); // LCD backlight off
-  pinMode(CRG_STAT, INPUT);   // Disable Pull-Up
-  digitalWrite(IR_VCC, LOW);  // IR Receiver off
+  digitalWrite(LCD_EN, HIGH);  // LCD logic off
+  digitalWrite(LCD_BL, HIGH);  // LCD backlight off
+  pinMode(CRG_STAT, INPUT);    // Disable Pull-Up
+  digitalWrite(IR_VCC, LOW);   // IR Receiver off
 
   // Configure button matrix for ext1 interrupt
   pinMode(SW_1, OUTPUT);
@@ -228,11 +237,11 @@ void HardwareRevX::configIMUInterrupts() {
   // dataToWrite |= 0x40;//6D, 0 = interrupt source, 1 = 6 direction source
   // Set these to enable individual axes of generation source (or direction)
   //  -- high and low are used generically
-  dataToWrite |= 0x20; // Z high
+  dataToWrite |= 0x20;  // Z high
   // dataToWrite |= 0x10;//Z low
-  dataToWrite |= 0x08; // Y high
+  dataToWrite |= 0x08;  // Y high
   // dataToWrite |= 0x04;//Y low
-  dataToWrite |= 0x02; // X high
+  dataToWrite |= 0x02;  // X high
   // dataToWrite |= 0x01;//X low
   if (wakeupByIMUEnabled)
     IMU.writeRegister(LIS3DH_INT1_CFG, 0b00101010);
@@ -249,14 +258,14 @@ void HardwareRevX::configIMUInterrupts() {
   dataToWrite = 0;
   // minimum duration of the interrupt
   // LSB equals 1/(sample rate)
-  dataToWrite |= 0x00; // 1 * 1/50 s = 20ms
+  dataToWrite |= 0x00;  // 1 * 1/50 s = 20ms
   IMU.writeRegister(LIS3DH_INT1_DURATION, dataToWrite);
 
   // LIS3DH_CTRL_REG5
   // Int1 latch interrupt and 4D on  int1 (preserve fifo en)
   IMU.readRegister(&dataToWrite, LIS3DH_CTRL_REG5);
-  dataToWrite &= 0xF3; // Clear bits of interest
-  dataToWrite |= 0x08; // Latch interrupt (Cleared by reading int1_src)
+  dataToWrite &= 0xF3;  // Clear bits of interest
+  dataToWrite |= 0x08;  // Latch interrupt (Cleared by reading int1_src)
   // dataToWrite |= 0x04; //Pipe 4D detection from 6D recognition to int1?
   IMU.writeRegister(LIS3DH_CTRL_REG5, dataToWrite);
 
@@ -264,8 +273,8 @@ void HardwareRevX::configIMUInterrupts() {
   // Choose source for pin 1
   dataToWrite = 0;
   // dataToWrite |= 0x80; //Click detect on pin 1
-  dataToWrite |= 0x40; // AOI1 event (Generator 1 interrupt on pin 1)
-  dataToWrite |= 0x20; // AOI2 event ()
+  dataToWrite |= 0x40;  // AOI1 event (Generator 1 interrupt on pin 1)
+  dataToWrite |= 0x20;  // AOI2 event ()
   // dataToWrite |= 0x10; //Data ready
   // dataToWrite |= 0x04; //FIFO watermark
   // dataToWrite |= 0x02; //FIFO overrun
@@ -292,8 +301,8 @@ void HardwareRevX::restorePreferences() {
 void HardwareRevX::setupIMU() {
   // Setup hal
   IMU.settings.accelSampleRate =
-      50; // Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
-  IMU.settings.accelRange = 2; // Max G force readable.  Can be: 2, 4, 8, 16
+      50;  // Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
+  IMU.settings.accelRange = 2;  // Max G force readable.  Can be: 2, 4, 8, 16
   IMU.settings.adcEnabled = 0;
   IMU.settings.tempEnabled = 0;
   IMU.settings.xAccelEnabled = 1;
@@ -301,7 +310,7 @@ void HardwareRevX::setupIMU() {
   IMU.settings.zAccelEnabled = 1;
   IMU.begin();
   uint8_t intDataRead;
-  IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC); // clear interrupt
+  IMU.readRegister(&intDataRead, LIS3DH_INT1_SRC);  // clear interrupt
 }
 
 void HardwareRevX::startTasks() {}

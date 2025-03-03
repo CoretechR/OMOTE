@@ -12,7 +12,7 @@ class Message::Attributes::Light {
   static constexpr auto INVALIDINT = -1;
   enum class ColorModes { Brightness, ColorTemp, rgb };
 
-  Light(const rapidjson::Value& aAttributeListVal);
+  Light(const MemConciousValue& aAttributeListVal);
   ~Light();
 
   int GetBrightness();

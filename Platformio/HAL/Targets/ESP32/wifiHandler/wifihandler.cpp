@@ -1,9 +1,10 @@
 #include "wifihandler.hpp"
-#include "HardwareAbstract.hpp"
-#include "WiFi.h"
+
 #include <Arduino.h>
 #include <Preferences.h>
 
+#include "HardwareAbstract.hpp"
+#include "WiFi.h"
 #include "omoteconfig.h"
 
 std::shared_ptr<wifiHandler> wifiHandler::mInstance = nullptr;
@@ -18,34 +19,34 @@ std::shared_ptr<wifiHandler> wifiHandler::getInstance() {
 void wifiHandler::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t aEventInfo) {
   int no_networks = 0;
   switch (event) {
-  case ARDUINO_EVENT_WIFI_SCAN_DONE: {
-    no_networks = WiFi.scanComplete();
-    auto info = std::vector<WifiInfo>(no_networks);
-    for (int i = 0; i < no_networks; i++) {
-      auto ssid =
-          WiFi.SSID(i).c_str() ? std::string(WiFi.SSID(i).c_str()) : "No SSID";
-      info[i] = WifiInfo(ssid, WiFi.RSSI(i));
+    case ARDUINO_EVENT_WIFI_SCAN_DONE: {
+      no_networks = WiFi.scanComplete();
+      auto info = std::vector<WifiInfo>(no_networks);
+      for (int i = 0; i < no_networks; i++) {
+        auto ssid = WiFi.SSID(i).c_str() ? std::string(WiFi.SSID(i).c_str())
+                                         : "No SSID";
+        info[i] = WifiInfo(ssid, WiFi.RSSI(i));
+      }
+      mScanNotification->notify(info);
+      if (WiFi.isConnected() == false) {
+        WiFi.reconnect();
+      }
+      break;
     }
-    mScanNotification->notify(info);
-    if (WiFi.isConnected() == false) {
-      WiFi.reconnect();
-    }
-    break;
-  }
-  case ARDUINO_EVENT_WIFI_STA_CONNECTED:
-    StoreCredentials();
-    WiFi.setAutoConnect(true);
-    UpdateStatus();
-    break;
-  case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-  case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
-  case ARDUINO_EVENT_WIFI_STA_LOST_IP:
-  case ARDUINO_EVENT_WIFI_STA_STOP:
-    UpdateStatus();
-    break;
-  default:
-    break;
+    case ARDUINO_EVENT_WIFI_STA_CONNECTED:
+      StoreCredentials();
+      WiFi.setAutoConnect(true);
+      UpdateStatus();
+      break;
+    case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+    case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+    case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
+    case ARDUINO_EVENT_WIFI_STA_LOST_IP:
+    case ARDUINO_EVENT_WIFI_STA_STOP:
+      UpdateStatus();
+      break;
+    default:
+      break;
   }
   if (WiFi.status() == WL_CONNECT_FAILED) {
     Serial.println("connection failed.");
@@ -57,24 +58,14 @@ void wifiHandler::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t aEventInfo) {
 void wifiHandler::UpdateStatus() {
   Serial.println("update_status");
 
-  wifiStatus status;
-  // wifiStatus *status = new wifiStatus();
-  status.isConnected = WiFi.isConnected();
-  // status->IP = WiFi.localIP();
   IPAddress ip = WiFi.localIP();
   String ip_str = ip.toString();
-  status.IP = ip.toString().c_str();
 
-  // ip.copy(status->IP, ip.length());
-  String ssid = WiFi.SSID();
-  status.ssid = WiFi.SSID().c_str();
+  mCurrentStatus.isConnected = WiFi.isConnected();
+  mCurrentStatus.IP = std::string(ip_str.c_str());
+  mCurrentStatus.ssid = WiFi.SSID().c_str();
 
-  // this->wifi_status.isConnected = WiFi.isConnected();
-  // this->wifi_status.IP = WiFi.localIP();
-  // this->wifi_status.isConnected = true;
-
-  // Serial.println(WiFi.localIP());
-  mStatusUpdate->notify(status);
+  mStatusUpdate->notify(mCurrentStatus);
 }
 
 void wifiHandler::StoreCredentials() {

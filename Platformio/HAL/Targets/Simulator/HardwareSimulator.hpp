@@ -33,6 +33,8 @@ class HardwareSimulator : public HardwareAbstract {
   std::shared_ptr<SystemStatsInterface> stats() override;
   std::shared_ptr<webSocketInterface> webSocket() override;
 
+  std::chrono::milliseconds execTime() override;
+
   char getCurrentDevice() override;
   void setCurrentDevice(char currentDevice) override;
 
@@ -55,4 +57,6 @@ class HardwareSimulator : public HardwareAbstract {
   std::shared_ptr<IRSim> mIr;
   std::shared_ptr<StatsSimulator> mStats;
   std::array<std::weak_ptr<webSocketSimulator>, WebSocketLimit> mWebSockets;
+
+  std::chrono::system_clock::time_point mStartTime;
 };
