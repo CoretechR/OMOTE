@@ -10,7 +10,7 @@
 #include "KeyPressAbstract.hpp"
 #include "Notification.hpp"
 #include "SystemStatsInterface.h"
-#include "webSocketInterface.hpp"
+#include "websockets/webSocketInterface.hpp"
 #include "wifiHandlerInterface.h"
 
 class HardwareAbstract {

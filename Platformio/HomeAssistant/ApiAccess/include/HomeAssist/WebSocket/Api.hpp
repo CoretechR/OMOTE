@@ -5,7 +5,7 @@
 #include <memory>
 #include <queue>
 
-#include "webSocketInterface.hpp"
+#include "websockets/webSocketInterface.hpp"
 
 namespace HomeAssist::WebSocket {
 

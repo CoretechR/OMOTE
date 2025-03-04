@@ -163,6 +163,7 @@ esp32WebSocket::ProcessingStatus esp32WebSocket::processMessageData(
     }
     return ProcessingStatus::Appending;
   }
+  return ProcessingStatus::Dropping;
 }
 
 bool esp32WebSocket::startMultiEventData(

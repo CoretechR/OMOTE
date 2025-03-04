@@ -2,6 +2,8 @@
 #include <functional>
 #include <string>
 
+#include "websockets/IHandleJsonMessage.hpp"
+
 class webSocketInterface {
  public:
   using MessageCallback = std::function<void(const std::string&)>;
