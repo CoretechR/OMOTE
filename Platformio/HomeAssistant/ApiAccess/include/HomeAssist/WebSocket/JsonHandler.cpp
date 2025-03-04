@@ -4,8 +4,8 @@ using namespace HAL::WebSocket;
 
 namespace HomeAssist::WebSocket {
 
-JsonHandler::JsonHandler(IHandleJsonMessage::DocumentProccessor aProcessor)
-    : IHandleJsonMessage(aProcessor) {}
+JsonHandler::JsonHandler(IProcessJsonMessage::DocumentProccessor aProcessor)
+    : IProcessJsonMessage(aProcessor) {}
 
 JsonHandler::~JsonHandler() {}
 

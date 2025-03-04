@@ -1,11 +1,11 @@
 #pragma once
 
 #include "rapidjson/document.h"
-#include "websockets/IHandleJsonMessage.hpp"
+#include "websockets/IProcessJsonMessage.hpp"
 
 namespace HomeAssist::WebSocket {
 
-class JsonHandler : public HAL::WebSocket::IHandleJsonMessage {
+class JsonHandler : public HAL::WebSocket::IProcessJsonMessage {
  public:
   JsonHandler(DocumentProccessor aProcessor);
 
