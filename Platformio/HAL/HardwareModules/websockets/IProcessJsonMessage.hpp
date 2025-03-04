@@ -48,43 +48,4 @@ class IProcessJsonMessage {
   std::unique_ptr<ChunkProcessor> mChunkProcessor = nullptr;
 };
 
-inline IProcessJsonMessage::IProcessJsonMessage(
-    DocumentProccessor aDocProcessor,
-    std::unique_ptr<ChunkProcessor> aChunkProcessor)
-    : mDocProcessor(aDocProcessor),
-      mChunkProcessor(std::move(aChunkProcessor)) {}
-
-inline bool IProcessJsonMessage::ProcessDocument(
-    const MemConciousDocument& aRecievedDocument) {
-  if (mDocProcessor) {
-    return mDocProcessor(aRecievedDocument);
-  }
-  return false;
-}
-
-inline bool IProcessJsonMessage::HasChunkProcessor() {
-  return mChunkProcessor != nullptr;
-}
-
-inline rapidjson::ParseResult IProcessJsonMessage::ProcessChunk(
-    const std::string& aJsonChunk) {
-  if (!mChunkProcessor) {
-    return rapidjson::ParseResult(
-        rapidjson::ParseErrorCode::kParseErrorUnspecificSyntaxError, 0);
-  }
-  auto stream = rapidjson::StringStream(aJsonChunk.c_str());
-  return mChunkReader.Parse(stream, *mChunkProcessor);
-}
-
-inline rapidjson::ParseResult IProcessJsonMessage::ProcessJsonAsDoc(
-    std::string& aJsonString) {
-  MemConciousDocument aDoc;
-  return aDoc.ParseInsitu(aJsonString.data());
-  // mDocProcessor(aDoc);
-}
-
-inline IProcessJsonMessage::ProcessResult::ProcessResult(
-    rapidjson::ParseResult aResult, ErrorCode aInternalError)
-    : mParseResult(aResult), mError(aInternalError) {}
-
 }  // namespace HAL::WebSocket

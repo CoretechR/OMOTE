@@ -88,7 +88,8 @@
         "source_location": "cpp",
         "*.ipp": "cpp",
         "csignal": "cpp",
-        "coroutine": "cpp"
+        "coroutine": "cpp",
+        "ranges": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO",
     "editor.formatOnSave": true,
