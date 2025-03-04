@@ -126,9 +126,11 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
       mIncomingMessage += {aEventData->data_ptr, aEventData->data_len};
       break;
     case Step::Partial:
-      if (auto *handler = mJsonHandler->BorrowLargeMessageHander(); handler) {
-        auto stream = rapidjson::StringStream(aEventData->data_ptr);
-        mReader.Parse(stream, *handler);
+      if (mJsonHandler) {
+        auto parseErr = mJsonHandler->ProcessChunk(
+            {aEventData->data_ptr, aEventData->data_len});
+        if (parseErr != rapidjson::ParseErrorCode::kParseErrorNone) {
+        }
       }
       break;
     case Step::Drop:
@@ -199,9 +201,7 @@ esp32WebSocket::ProcessingStep esp32WebSocket::getStartStep(
   if (isProccessInMemory) {
     step = ProcessingStep::Reserve;
   } else {
-    auto havePartialHandler =
-        mJsonHandler && mJsonHandler->BorrowLargeMessageHander();
-    if (havePartialHandler) {
+    if (mJsonHandler && mJsonHandler->HasChunkProcessor()) {
       step = ProcessingStep::Partial;
     } else {
       ESP_LOGI(TAG,

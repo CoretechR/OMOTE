@@ -9,12 +9,7 @@ JsonHandler::JsonHandler(IHandleJsonMessage::DocumentProccessor aProcessor)
 
 JsonHandler::~JsonHandler() {}
 
-rapidjson::BaseReaderHandler<>* JsonHandler::BorrowLargeMessageHander() {
-  // Implement your handler here
-  return nullptr;
-}
-
-bool JsonHandler::IsLargeHandlerPrefered() {
+bool JsonHandler::IsChunkProcessingPrefered() {
   // Implement your logic here
   return false;
 }

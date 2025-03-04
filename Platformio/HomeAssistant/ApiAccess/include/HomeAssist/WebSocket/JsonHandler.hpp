@@ -11,9 +11,7 @@ class JsonHandler : public HAL::WebSocket::IHandleJsonMessage {
 
   virtual ~JsonHandler();
 
-  rapidjson::BaseReaderHandler<>* BorrowLargeMessageHander() override;
-
-  bool IsLargeHandlerPrefered() override;
+  bool IsChunkProcessingPrefered() override;
 };
 
 }  // namespace HomeAssist::WebSocket
