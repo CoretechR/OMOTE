@@ -1,6 +1,7 @@
 #include "HomeAssist/WebSocket/Api.hpp"
 
 #include "HardwareFactory.hpp"
+#include "HomeAssist/WebSocket/JsonHandler.hpp"
 #include "HomeAssist/WebSocket/Message/Message.hpp"
 #include "HomeAssist/WebSocket/Message/PredefinedMessages.hpp"
 #include "HomeAssist/WebSocket/Session/AuthSession.hpp"
@@ -17,6 +18,9 @@ Api::Api(std::shared_ptr<webSocketInterface> socket)
         [this](const std::string& messageStr) {
           ParseIncomingMessage(messageStr);
         });
+    mHomeAssistSocket->SetJsonHandler(std::make_unique<JsonHandler>(
+        [this](const auto& aDoc) { return ProccessDocument(aDoc); }));
+
     mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
     mLastConnectRetry = HardwareFactory::getAbstract().execTime();
     mAuthSession = std::make_unique<AuthSession>(mHomeAssistSocket);
@@ -106,13 +110,18 @@ bool Api::PreProccessMessage(Message& aMessage) {
 void Api::ParseIncomingMessage(const std::string& messageStr) {
   MemConciousDocument messageJson;
   messageJson.Parse(messageStr.c_str(), messageStr.size());
-  // auto prettyDebugString = ToPrettyString(messageJson);
+  ProccessDocument(messageJson);
+}
+
+bool Api::ProccessDocument(const MemConciousDocument& aDocFromSocket) {
+  // auto prettyDebugString = ToPrettyString(aDocFromSocket);
   // HardwareFactory::getAbstract().debugPrint("%s", prettyDebugString.c_str());
-  auto messageObj = std::make_unique<Message>(messageJson);
+  auto messageObj = std::make_unique<Message>(aDocFromSocket);
   if (PreProccessMessage(*messageObj)) {
-    return;
+    return true;
   }
   mIncomingMessageQueue.push(std::move(messageObj));
+  return true;
 }
 
 void Api::AddSession(std::unique_ptr<ISession> aNewSession) {

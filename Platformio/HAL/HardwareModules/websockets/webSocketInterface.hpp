@@ -14,6 +14,9 @@ class webSocketInterface {
   webSocketInterface(
       std::unique_ptr<HAL::WebSocket::IHandleJsonMessage> aJsonHandler);
 
+  void SetJsonHandler(
+      std::unique_ptr<HAL::WebSocket::IHandleJsonMessage> aJsonHandler);
+
   virtual bool isConnected() const = 0;
   virtual void connect(const std::string& url) = 0;
   virtual void disconnect() = 0;
@@ -28,3 +31,8 @@ class webSocketInterface {
 inline webSocketInterface::webSocketInterface(
     std::unique_ptr<HAL::WebSocket::IHandleJsonMessage> aJsonHandler)
     : mJsonHandler(std::move(aJsonHandler)) {}
+
+inline void webSocketInterface::SetJsonHandler(
+    std::unique_ptr<HAL::WebSocket::IHandleJsonMessage> aNewJsonHandler) {
+  mJsonHandler = std::move(aNewJsonHandler);
+}

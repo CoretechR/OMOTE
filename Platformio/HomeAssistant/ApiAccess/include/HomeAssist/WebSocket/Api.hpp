@@ -31,6 +31,7 @@ class Api {
    */
   bool PreProccessMessage(Message& aMessage);
   void ParseIncomingMessage(const std::string& messageStr);
+  bool ProccessDocument(const MemConciousDocument& aDocFromSocket);
 
   void ProccessSessions();
   void CleanUpSessions();
