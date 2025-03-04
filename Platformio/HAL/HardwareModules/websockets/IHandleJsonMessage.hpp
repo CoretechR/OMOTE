@@ -12,7 +12,7 @@ namespace HAL::WebSocket {
  */
 class IHandleJsonMessage {
  public:
-  using DocumentProccessor = std::function<void(const MemConciousDocument&)>;
+  using DocumentProccessor = std::function<bool(const MemConciousDocument&)>;
 
   IHandleJsonMessage() = default;
   virtual ~IHandleJsonMessage() = default;
@@ -21,9 +21,12 @@ class IHandleJsonMessage {
   /**
    * Return a reader that is prepared to handle a large message chunk by chunk
    */
-  virtual rapidjson::Reader* BorrowLargeMessageReader() = 0;
+  virtual rapidjson::BaseReaderHandler<>* BorrowLargeMessageHander() = 0;
 
-  void ProcessDocument(const MemConciousDocument& aRecievedDocument);
+  /**
+   * Return true if processed successfully false otherwise
+   */
+  bool ProcessDocument(const MemConciousDocument& aRecievedDocument);
 
  private:
   DocumentProccessor mProcessor = nullptr;
@@ -32,11 +35,12 @@ class IHandleJsonMessage {
 inline IHandleJsonMessage::IHandleJsonMessage(DocumentProccessor aProcessor)
     : mProcessor(aProcessor) {}
 
-inline void IHandleJsonMessage::ProcessDocument(
+inline bool IHandleJsonMessage::ProcessDocument(
     const MemConciousDocument& aRecievedDocument) {
   if (mProcessor) {
-    mProcessor(aRecievedDocument);
+    return mProcessor(aRecievedDocument);
   }
+  return false;
 }
 
 }  // namespace HAL::WebSocket

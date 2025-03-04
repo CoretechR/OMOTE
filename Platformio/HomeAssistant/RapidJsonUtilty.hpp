@@ -4,6 +4,9 @@
 #include <vector>
 
 #include "rapidjson/document.h"
+#include "rapidjson/reader.h"
+
+using BigMessageHandle = rapidjson::BaseReaderHandler<>;
 
 class MemConciousAllocator;
 

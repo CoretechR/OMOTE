@@ -12,7 +12,7 @@
 
 class esp32WebSocket : public webSocketInterface {
  public:
-  enum class ProcessingStatus { TooBig, Appending, Done, Dropping };
+  enum class ProcessingStep { Append, Drop, Partial, Reserve };
 
   esp32WebSocket(std::shared_ptr<wifiHandler> aWifiHandler);
 
@@ -24,10 +24,13 @@ class esp32WebSocket : public webSocketInterface {
 
  private:
   void proccessEventData(esp_websocket_event_data_t *aEventData);
-  void printDebugInfo(esp_websocket_event_data_t *aEventData);
+  void printDebugInfo(esp_websocket_event_data_t *aEventData,
+                      ProcessingStep aNextStep);
 
-  ProcessingStatus processMessageData(esp_websocket_event_data_t *aEventData);
-  bool startMultiEventData(esp_websocket_event_data_t *aEventData);
+  ProcessingStep getNextStep(esp_websocket_event_data_t *aEventData);
+  ProcessingStep getStartStep(esp_websocket_event_data_t *aEventData);
+
+  void processStoredMessage();
 
   static void websocket_event_handler(void *handler_args, esp_event_base_t base,
                                       int32_t event_id, void *event_data);
@@ -35,6 +38,7 @@ class esp32WebSocket : public webSocketInterface {
   std::shared_ptr<wifiHandler> mWifiHandler;
   esp_websocket_client_handle_t client;
   esp_websocket_client_config_t mConfig{};
+  rapidjson::Reader mReader;
 
   std::string mIncomingMessage;
 

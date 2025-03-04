@@ -9,7 +9,10 @@
 static const char *TAG = "esp32WebSocket";
 
 esp32WebSocket::esp32WebSocket(std::shared_ptr<wifiHandler> aWifiHandler)
-    : mWifiHandler(aWifiHandler), client(nullptr), connected(false) {}
+    : mWifiHandler(aWifiHandler),
+      client(nullptr),
+      connected(false),
+      mIncomingMessage() {}
 
 void esp32WebSocket::connect(const std::string &url) {
   if (client && !connected) {
@@ -104,10 +107,6 @@ void esp32WebSocket::setMessageCallback(MessageCallback callback) {
 bool esp32WebSocket::isConnected() const { return connected; }
 
 void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
-  // printDebugInfo(aEventData);
-  if (aEventData->data_len == 0) {
-    return;
-  }
   // Todo is this a standard timeout message?
   if (aEventData->op_code == 0x08 && aEventData->data_len == 2) {
     ESP_LOGI(TAG, "Received closed message with code=%d",
@@ -116,81 +115,110 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
     return;
   }
 
-  switch (processMessageData(aEventData)) {
-    case ProcessingStatus::TooBig:
-    case ProcessingStatus::Appending:
-      return;
+  auto nextStep = getNextStep(aEventData);
+  printDebugInfo(aEventData, nextStep);
+  using Step = ProcessingStep;
+  switch (nextStep) {
+    case Step::Reserve:
+      mIncomingMessage.reserve(aEventData->payload_len);
+      [[fallthrough]];
+    case Step::Append:
+      mIncomingMessage += {aEventData->data_ptr, aEventData->data_len};
+      break;
+    case Step::Partial:
+      if (auto *handler = mJsonHandler->BorrowLargeMessageHander(); handler) {
+        auto stream = rapidjson::StringStream(aEventData->data_ptr);
+        mReader.Parse(stream, *handler);
+      }
+      break;
+    case Step::Drop:
+      break;
     default:
       break;
   }
 
-  if (messageCallback) {
-    if (mIncomingMessage.length() == aEventData->payload_len) {
-      messageCallback(mIncomingMessage);
-      mIncomingMessage.clear();
-      mIncomingMessage.shrink_to_fit();
-    }
+  auto isMessageGathered = aEventData->payload_len == mIncomingMessage.length();
+  if (isMessageGathered) {
+    processStoredMessage();
+    mIncomingMessage.clear();
+    mIncomingMessage.shrink_to_fit();
   }
 }
 
-esp32WebSocket::ProcessingStatus esp32WebSocket::processMessageData(
+void esp32WebSocket::processStoredMessage() {
+  if (mJsonHandler) {
+    MemConciousDocument doc;
+    doc.ParseInsitu(mIncomingMessage.data());
+    // Give JsonHandler a crack at it and
+    // if not pass it down to the string handler
+    if (!doc.HasParseError() && mJsonHandler->ProcessDocument(doc)) {
+      return;
+    }
+  }
+  if (messageCallback) {
+    messageCallback(mIncomingMessage);
+  }
+}
+
+esp32WebSocket::ProcessingStep esp32WebSocket::getNextStep(
     esp_websocket_event_data_t *aEventData) {
-  if (mIncomingMessage.empty() &&
-      aEventData->payload_len == aEventData->data_len) {
-    mIncomingMessage = std::string(aEventData->data_ptr, aEventData->data_len);
-    return ProcessingStatus::Done;
+  if (aEventData->data_len == 0) {
+    return ProcessingStep::Drop;
   }
 
-  const auto IsStartOfLargeData =
+  if (mIncomingMessage.empty() &&
+      aEventData->payload_len == aEventData->data_len) {
+    return ProcessingStep::Reserve;
+  }
+
+  const auto IsStartOfMultiEventData =
       aEventData->payload_len > aEventData->data_len &&
       aEventData->payload_offset == 0;
-  if (IsStartOfLargeData) {
-    return startMultiEventData(aEventData) ? ProcessingStatus::Appending
-                                           : ProcessingStatus::TooBig;
+  if (IsStartOfMultiEventData) {
+    return getStartStep(aEventData);
   }
 
   if (aEventData->payload_offset > 0 && mIncomingMessage.empty()) {
-    return ProcessingStatus::Dropping;
+    return ProcessingStep::Drop;
   }
 
-  const auto IsAppending = !mIncomingMessage.empty();
-  if (IsAppending) {
-    mIncomingMessage.insert(aEventData->payload_offset, aEventData->data_ptr);
-    const auto IsMessageComplete =
-        mIncomingMessage.size() == aEventData->payload_len;
-    if (IsMessageComplete) {
-      return ProcessingStatus::Done;
-    }
-    return ProcessingStatus::Appending;
-  }
-  return ProcessingStatus::Dropping;
+  return !mIncomingMessage.empty() ? ProcessingStep::Append
+                                   : ProcessingStep::Drop;
 }
 
-bool esp32WebSocket::startMultiEventData(
+esp32WebSocket::ProcessingStep esp32WebSocket::getStartStep(
     esp_websocket_event_data_t *aEventData) {
-  auto freeHeap = esp_get_free_heap_size();
-  if (freeHeap < aEventData->payload_len) {
-    ESP_LOGI(TAG, "Cannot Proccess not enough Heap:%d  Msg Size:%d", freeHeap,
-             aEventData->payload_len);
+  auto step = ProcessingStep::Drop;
 
-    mIncomingMessage.clear();
-    mIncomingMessage.shrink_to_fit();
-    return false;
+  auto freeHeap = esp_get_free_heap_size();
+  auto isProccessInMemory = aEventData->payload_len < (freeHeap / 2);
+  if (isProccessInMemory) {
+    step = ProcessingStep::Reserve;
+  } else {
+    auto havePartialHandler =
+        mJsonHandler && mJsonHandler->BorrowLargeMessageHander();
+    if (havePartialHandler) {
+      step = ProcessingStep::Partial;
+    } else {
+      ESP_LOGI(TAG,
+               "Cannot proccess not enough heap and no partial handler:%d  Msg "
+               "Size:%d",
+               freeHeap, aEventData->payload_len);
+    }
   }
-  mIncomingMessage = std::string(aEventData->data_ptr, aEventData->data_len);
-  mIncomingMessage.reserve(aEventData->payload_len);
-  return true;
+  return step;
 }
 
-void esp32WebSocket::printDebugInfo(esp_websocket_event_data_t *aEventData) {
+void esp32WebSocket::printDebugInfo(esp_websocket_event_data_t *aEventData,
+                                    ProcessingStep aNextStep) {
   if (!aEventData) {
     return;
   }
   ESP_LOGI(TAG,
            "Received aEventData: opcode=%d, payload_len=%d, data_len=%d, "
-           "data_offset=%d",
+           "data_offset=%d ,NextStep =%d",
            aEventData->op_code, aEventData->payload_len, aEventData->data_len,
-           aEventData->payload_offset);
+           aEventData->payload_offset, aNextStep);
   if (aEventData->data_ptr) {
     // ESP_LOGI(TAG, "Message: %s", aEventData->data_ptr);
   }
