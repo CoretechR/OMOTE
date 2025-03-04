@@ -166,6 +166,10 @@ esp32WebSocket::ProcessingStep esp32WebSocket::getNextStep(
     return ProcessingStep::Drop;
   }
 
+  if (mJsonHandler && mJsonHandler->IsLargeHandlerPrefered()) {
+    return ProcessingStep::Partial;
+  }
+
   if (mIncomingMessage.empty() &&
       aEventData->payload_len == aEventData->data_len) {
     return ProcessingStep::Reserve;

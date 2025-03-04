@@ -24,6 +24,11 @@ class IHandleJsonMessage {
   virtual rapidjson::BaseReaderHandler<>* BorrowLargeMessageHander() = 0;
 
   /**
+   * Return true if large reader is prefered
+   */
+  virtual bool IsLargeHandlerPrefered() = 0;
+
+  /**
    * Return true if processed successfully false otherwise
    */
   bool ProcessDocument(const MemConciousDocument& aRecievedDocument);
