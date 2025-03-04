@@ -238,8 +238,8 @@ void init_gui_memoryUsage_bar() {
 
   MemoryUsageLabel = lv_label_create(memoryUsageBar);
   lv_label_set_text(MemoryUsageLabel, "");
-  lv_obj_align(MemoryUsageLabel, LV_ALIGN_TOP_LEFT, 0, labelsPositionTop);
-  lv_obj_set_style_text_font(MemoryUsageLabel, &lv_font_montserrat_12, LV_PART_MAIN);
+  lv_obj_align(MemoryUsageLabel, LV_ALIGN_TOP_LEFT, 0 +2, labelsPositionTop +2);
+  lv_obj_set_style_text_font(MemoryUsageLabel, &lv_font_montserrat_10, LV_PART_MAIN);
   lv_label_set_recolor(MemoryUsageLabel, true);
 }
 
