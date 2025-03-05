@@ -9,6 +9,8 @@ class Api;
 
 class ChunkForwarder : public HAL::WebSocket::Json::IChunkProcessor {
  public:
+  static constexpr auto InvalidId = -1;
+
   ChunkForwarder(Api& aApi);
   virtual ~ChunkForwarder() = default;
 
@@ -34,6 +36,10 @@ class ChunkForwarder : public HAL::WebSocket::Json::IChunkProcessor {
  private:
   Api& mApi;
   std::weak_ptr<HAL::WebSocket::Json::IChunkProcessor> mProcessor;
+  bool mInObject = false;
+  bool mFoundId = false;
+  bool mProcessingId = false;
+  int mCurrentId = InvalidId;
 };
 
 }  // namespace HomeAssist::WebSocket

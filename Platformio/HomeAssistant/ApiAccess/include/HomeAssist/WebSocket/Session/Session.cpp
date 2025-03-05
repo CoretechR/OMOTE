@@ -19,6 +19,10 @@ bool Session::ProcessMessage(const Message& aMessage) {
   }
   return false;
 }
+std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor>
+Session::GetChunkProcessor() {
+  return mChunkProcessor.lock();
+}
 
 bool Session::IsComplete() const {
   // Our message handler and chunk processor are no longer active so we are done

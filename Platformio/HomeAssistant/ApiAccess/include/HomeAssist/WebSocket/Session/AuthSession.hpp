@@ -28,6 +28,10 @@ class AuthSession : public ISession {
  private:
   Request* BorrowEndRequest() override { return nullptr; }
   Request* BorrowStartRequest() override { return nullptr; }
+  std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> GetChunkProcessor()
+      override {
+    return nullptr;
+  }
 
   std::shared_ptr<webSocketInterface> mHomeAssitSocket = nullptr;
   Api::ConnectionStatus mConnectionStatus = Api::ConnectionStatus::Initializing;

@@ -2,6 +2,10 @@
 
 #include <memory>
 
+namespace HAL::WebSocket::Json {
+class IChunkProcessor;
+}
+
 namespace HomeAssist::WebSocket {
 
 class Message;
@@ -21,13 +25,16 @@ class ISession {
 
   virtual bool ProcessMessage(const Message& aMessage) = 0;
   virtual bool IsComplete() const = 0;
+  virtual std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor>
+  GetChunkProcessor() = 0;
 
- private:
+ protected:
   bool mIsRunning = false;
+  bool mIsComplete = false;
 };
 
 inline bool ISession::IsRunning() const { return mIsRunning; }
 inline void ISession::MarkStarted() { mIsRunning = true; }
-inline void ISession::MarkComplete() { mIsRunning = false; }
+inline void ISession::MarkComplete() { mIsComplete = true; }
 
 }  // namespace HomeAssist::WebSocket

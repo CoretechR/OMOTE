@@ -1,5 +1,8 @@
 #include "HomeAssist/WebSocket/ChunkForwarder.hpp"
 
+#include "HomeAssist/WebSocket/Api.hpp"
+#include "HomeAssist/WebSocket/Session/ISession.hpp"
+
 using namespace HAL::WebSocket::Json;
 
 namespace HomeAssist::WebSocket {
@@ -23,6 +26,18 @@ bool ChunkForwarder::Bool(bool b) {
   return false;
 }
 bool ChunkForwarder::Int(int i) {
+  if (mProcessingId) {
+    mCurrentId = i;
+    mFoundId = true;
+    mProcessingId = false;
+
+    if (auto& session = mApi.mSessions[mCurrentId]; session) {
+      if (auto newProcessor = session->GetChunkProcessor(); newProcessor) {
+        mProcessor = newProcessor;
+      }
+    }
+  }
+
   if (auto processor = mProcessor.lock()) {
     return processor->Int(i);
   }
@@ -67,18 +82,25 @@ bool ChunkForwarder::String(const Ch* str, rapidjson::SizeType length,
   return false;
 }
 bool ChunkForwarder::StartObject() {
+  mInObject = true;
   if (auto processor = mProcessor.lock()) {
     return processor->StartObject();
   }
   return false;
 }
 bool ChunkForwarder::Key(const Ch* str, rapidjson::SizeType length, bool copy) {
+  if (strcmp(str, "id") == 0) {
+    mProcessingId = true;
+  }
   if (auto processor = mProcessor.lock()) {
     return processor->Key(str, length, copy);
   }
   return false;
 }
 bool ChunkForwarder::EndObject(rapidjson::SizeType memberCount) {
+  mInObject = false;
+  mFoundId = false;
+  mCurrentId = InvalidId;
   if (auto processor = mProcessor.lock()) {
     return processor->EndObject(memberCount);
   }
