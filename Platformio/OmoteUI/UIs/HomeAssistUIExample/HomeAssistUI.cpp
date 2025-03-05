@@ -61,6 +61,6 @@ HomeAssistUI::HomeAssistUI() : BasicUI() {
 void HomeAssistUI::loopHandler() {
   BasicUI::loopHandler();
   if (mHomeAssistApi) {
-    mHomeAssistApi->Proccess();
+    mHomeAssistApi->Process();
   }
 }

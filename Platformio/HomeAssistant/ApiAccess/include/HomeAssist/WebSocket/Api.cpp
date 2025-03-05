@@ -14,12 +14,8 @@ namespace HomeAssist::WebSocket {
 Api::Api(std::shared_ptr<webSocketInterface> socket)
     : mHomeAssistSocket(socket) {
   if (mHomeAssistSocket) {
-    mHomeAssistSocket->setMessageCallback(
-        [this](const std::string& messageStr) {
-          ParseIncomingMessage(messageStr);
-        });
     mHomeAssistSocket->SetJsonHandler(std::make_unique<JsonHandler>(
-        [this](const auto& aDoc) { return ProccessDocument(aDoc); }));
+        [this](const auto& aDoc) { return ProcessDocument(aDoc); }));
 
     mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
     mLastConnectRetry = HardwareFactory::getAbstract().execTime();
@@ -29,7 +25,7 @@ Api::Api(std::shared_ptr<webSocketInterface> socket)
 
 Api::~Api() {}
 
-void Api::Proccess() {
+void Api::Process() {
   auto execTime = HardwareFactory::getAbstract().execTime();
   if (!mHomeAssistSocket) {
     return;
@@ -45,11 +41,11 @@ void Api::Proccess() {
       !mAuthSession->IsAuthSent()) {
     mAuthSession->SendAuth();
   }
-  ProccessSessions();
-  ProccessMessages();
+  ProcessSessions();
+  ProcessMessages();
 }
 
-void Api::ProccessSessions() {
+void Api::ProcessSessions() {
   CleanUpSessions();
   // Bail we are not connected don't start sessions
   if (mConnectionStatus != ConnectionStatus::Connected) {
@@ -65,7 +61,7 @@ void Api::ProccessSessions() {
   }
 }
 
-void Api::ProccessMessages() {
+void Api::ProcessMessages() {
   if (!mHomeAssistSocket) {
     return;
   }
@@ -96,7 +92,7 @@ void Api::CleanUpSessions() {
   }
 }
 
-bool Api::PreProccessMessage(Message& aMessage) {
+bool Api::PreProcessMessage(Message& aMessage) {
   if (mAuthSession && mAuthSession->ProcessMessage(aMessage)) {
     if (mAuthSession->IsComplete()) {
       mConnectionStatus = mAuthSession->GetConnectionStatus();
@@ -110,14 +106,14 @@ bool Api::PreProccessMessage(Message& aMessage) {
 void Api::ParseIncomingMessage(const std::string& messageStr) {
   MemConciousDocument messageJson;
   messageJson.Parse(messageStr.c_str(), messageStr.size());
-  ProccessDocument(messageJson);
+  ProcessDocument(messageJson);
 }
 
-bool Api::ProccessDocument(const MemConciousDocument& aDocFromSocket) {
+bool Api::ProcessDocument(const MemConciousDocument& aDocFromSocket) {
   // auto prettyDebugString = ToPrettyString(aDocFromSocket);
   // HardwareFactory::getAbstract().debugPrint("%s", prettyDebugString.c_str());
   auto messageObj = std::make_unique<Message>(aDocFromSocket);
-  if (PreProccessMessage(*messageObj)) {
+  if (PreProcessMessage(*messageObj)) {
     return true;
   }
   mIncomingMessageQueue.push(std::move(messageObj));

@@ -20,23 +20,23 @@ class Api {
   Api(std::shared_ptr<webSocketInterface> socket);
   virtual ~Api();
 
-  void Proccess();
+  void Process();
 
   void AddSession(std::unique_ptr<ISession> aSession);
 
  protected:
   /**
-   * @brief Used for preproccessing message before we store it on the queue
-   * @return true the message was preproccessed and should not be stored
+   * @brief Used for preProcessing message before we store it on the queue
+   * @return true the message was preProcessed and should not be stored
    */
-  bool PreProccessMessage(Message& aMessage);
+  bool PreProcessMessage(Message& aMessage);
   void ParseIncomingMessage(const std::string& messageStr);
-  bool ProccessDocument(const MemConciousDocument& aDocFromSocket);
+  bool ProcessDocument(const MemConciousDocument& aDocFromSocket);
 
-  void ProccessSessions();
+  void ProcessSessions();
   void CleanUpSessions();
 
-  void ProccessMessages();
+  void ProcessMessages();
 
  private:
   std::chrono::milliseconds mLastConnectRetry;
