@@ -3,9 +3,11 @@
 
 namespace HomeAssist::WebSocket {
 
+class Api;
+
 class ChunkForwarder : public HAL::WebSocket::IChunkProcessor {
  public:
-  ChunkForwarder() = default;
+  ChunkForwarder(Api& aApi);
   virtual ~ChunkForwarder() = default;
 
   bool Null() override;
@@ -22,6 +24,9 @@ class ChunkForwarder : public HAL::WebSocket::IChunkProcessor {
   bool EndObject(rapidjson::SizeType memberCount) override;
   bool StartArray() override;
   bool EndArray(rapidjson::SizeType elementCount) override;
+
+ private:
+  Api& mApi;
 };
 
 }  // namespace HomeAssist::WebSocket

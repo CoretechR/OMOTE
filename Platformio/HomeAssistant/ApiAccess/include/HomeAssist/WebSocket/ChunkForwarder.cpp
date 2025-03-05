@@ -2,6 +2,8 @@
 
 namespace HomeAssist::WebSocket {
 
+ChunkForwarder::ChunkForwarder(Api& aApi) : mApi(aApi) {}
+
 bool ChunkForwarder::Null() { return false; }
 bool ChunkForwarder::Bool(bool b) { return false; }
 bool ChunkForwarder::Int(int i) { return false; }

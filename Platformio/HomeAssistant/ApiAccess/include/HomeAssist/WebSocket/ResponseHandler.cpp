@@ -1,5 +1,6 @@
 #include "HomeAssist/WebSocket/ResponseHandler.hpp"
 
+#include "HomeAssist/WebSocket/ChunkForwarder.hpp"
 #include "HomeAssist/WebSocket/Message/Message.hpp"
 
 using namespace HAL::WebSocket;
@@ -8,7 +9,8 @@ namespace HomeAssist::WebSocket {
 
 ResponseHandler::ResponseHandler(HomeAssist::WebSocket::Api& aApi)
     : IProcessJsonMessage(
-          [this](const auto& aDoc) { return ProcessResponseDoc(aDoc); }),
+          [this](const auto& aDoc) { return ProcessResponseDoc(aDoc); },
+          std::make_unique<ChunkForwarder>(aApi)),
       mApi(aApi) {}
 
 bool ResponseHandler::ProcessResponseDoc(

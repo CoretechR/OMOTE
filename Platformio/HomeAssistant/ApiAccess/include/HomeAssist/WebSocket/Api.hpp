@@ -12,10 +12,13 @@ namespace HomeAssist::WebSocket {
 class Message;
 class ISession;
 class AuthSession;
+class ChunkForwarder;
 
 class Api {
  public:
   friend class ResponseHandler;
+  friend class ChunkForwarder;
+
   enum class ConnectionStatus { Initializing, Connected, Disconnected, Failed };
 
   Api(std::shared_ptr<webSocketInterface> socket);
