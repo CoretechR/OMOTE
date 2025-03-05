@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #include "websockets/IChunkProcessor.hpp"
 
 namespace HomeAssist::WebSocket {
@@ -10,6 +12,10 @@ class ChunkForwarder : public HAL::WebSocket::IChunkProcessor {
   ChunkForwarder(Api& aApi);
   virtual ~ChunkForwarder() = default;
 
+  void SetProcessor(
+      std::shared_ptr<HAL::WebSocket::IChunkProcessor> aProcessor);
+
+ protected:
   bool Null() override;
   bool Bool(bool b) override;
   bool Int(int i) override;
@@ -27,6 +33,7 @@ class ChunkForwarder : public HAL::WebSocket::IChunkProcessor {
 
  private:
   Api& mApi;
+  std::weak_ptr<HAL::WebSocket::IChunkProcessor> mProcessor;
 };
 
 }  // namespace HomeAssist::WebSocket
