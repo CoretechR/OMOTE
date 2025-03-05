@@ -15,6 +15,7 @@ class AuthSession;
 
 class Api {
  public:
+  friend class ResponseHandler;
   enum class ConnectionStatus { Initializing, Connected, Disconnected, Failed };
 
   Api(std::shared_ptr<webSocketInterface> socket);
@@ -30,8 +31,6 @@ class Api {
    * @return true the message was preProcessed and should not be stored
    */
   bool PreProcessMessage(Message& aMessage);
-  void ParseIncomingMessage(const std::string& messageStr);
-  bool ProcessDocument(const MemConciousDocument& aDocFromSocket);
 
   void ProcessSessions();
   void CleanUpSessions();
