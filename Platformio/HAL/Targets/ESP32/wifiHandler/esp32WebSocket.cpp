@@ -114,7 +114,10 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
     connected = false;
     return;
   }
-
+  if (aEventData->data_len < 0) {
+    return;
+  }
+  auto dataLength = static_cast<uint>(aEventData->data_len);
   auto nextStep = getNextStep(aEventData);
   printDebugInfo(aEventData, nextStep);
   using Step = ProcessingStep;
@@ -123,12 +126,12 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
       mIncomingMessage.reserve(aEventData->payload_len);
       [[fallthrough]];
     case Step::Append:
-      mIncomingMessage += {aEventData->data_ptr, aEventData->data_len};
+      mIncomingMessage += {aEventData->data_ptr, dataLength};
       break;
     case Step::Partial:
       if (mJsonHandler) {
-        auto parseErr = mJsonHandler->ProcessChunk(
-            {aEventData->data_ptr, aEventData->data_len});
+        auto parseErr =
+            mJsonHandler->ProcessChunk({aEventData->data_ptr, dataLength});
         if (parseErr != rapidjson::ParseErrorCode::kParseErrorNone) {
         }
       }
@@ -168,7 +171,7 @@ esp32WebSocket::ProcessingStep esp32WebSocket::getNextStep(
     return ProcessingStep::Drop;
   }
 
-  if (mJsonHandler && mJsonHandler->IsLargeHandlerPrefered()) {
+  if (mJsonHandler && mJsonHandler->IsChunkProcessingPrefered()) {
     return ProcessingStep::Partial;
   }
 

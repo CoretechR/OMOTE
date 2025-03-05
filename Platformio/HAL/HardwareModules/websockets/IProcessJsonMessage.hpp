@@ -15,11 +15,21 @@ namespace HAL::WebSocket {
 class IProcessJsonMessage {
  public:
   struct ProcessResult {
-    enum class ErrorCode { Success, ParseError, MissingChunkProcessor };
-    ProcessResult(rapidjson::ParseResult aResult, ErrorCode aInternalError);
+    enum class StatusCode {
+      Success,
+      ParseError,
+      MissingChunkProcessor,
+      DocProcessorFailed
+    };
+    ProcessResult(StatusCode aInternalError,
+                  rapidjson::ParseResult aResult = {});
+    ProcessResult(rapidjson::ParseResult aResult);
+    ProcessResult(rapidjson::ParseErrorCode aError);
 
-    ErrorCode mError;
-    rapidjson::ParseResult mParseResult;
+    operator bool();
+
+    StatusCode mStatus{};
+    rapidjson::ParseResult mParseResult{};
   };
 
   using DocumentProccessor = std::function<bool(const MemConciousDocument&)>;
@@ -33,11 +43,11 @@ class IProcessJsonMessage {
 
   // Document Based Processing
   bool ProcessDocument(const MemConciousDocument& aRecievedDocument);
-  rapidjson::ParseResult ProcessJsonAsDoc(std::string& aJsonString);
+  ProcessResult ProcessJsonAsDoc(std::string& aJsonString);
 
   // Chunk Based Processing
   bool HasChunkProcessor();
-  rapidjson::ParseResult ProcessChunk(const std::string& aJsonChunk);
+  ProcessResult ProcessChunk(const std::string& aJsonChunk);
 
   virtual bool IsChunkProcessingPrefered() = 0;
 
