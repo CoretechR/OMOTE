@@ -25,6 +25,8 @@ class ISession {
 
   virtual bool ProcessMessage(const Message& aMessage) = 0;
   virtual bool IsComplete() const = 0;
+
+  virtual bool IsPreferringChunkProcessing() = 0;
   virtual std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor>
   GetChunkProcessor() = 0;
 

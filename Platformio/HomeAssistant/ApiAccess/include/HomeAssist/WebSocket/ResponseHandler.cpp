@@ -2,6 +2,7 @@
 
 #include "HomeAssist/WebSocket/ChunkForwarder.hpp"
 #include "HomeAssist/WebSocket/Message/Message.hpp"
+#include "HomeAssist/WebSocket/Session/ISession.hpp"
 
 using namespace HAL::WebSocket::Json;
 
@@ -17,12 +18,33 @@ bool ResponseHandler::ProcessResponseDoc(
     const MemConciousDocument& aDocFromSocket) {
   // auto prettyDebugString = ToPrettyString(aDocFromSocket);
   // HardwareFactory::getAbstract().debugPrint("%s", prettyDebugString.c_str());
+
+  if (HandleRedirectToChunkProcessor(aDocFromSocket)) {
+    return true;
+  }
+
   auto messageObj = std::make_unique<Message>(aDocFromSocket);
   if (mApi.PreProcessMessage(*messageObj)) {
     return true;
   }
   mApi.mIncomingMessageQueue.push(std::move(messageObj));
   return true;
+}
+
+bool ResponseHandler::HandleRedirectToChunkProcessor(
+    const MemConciousDocument& aDoc) {
+  if (aDoc.HasMember("id") && aDoc["id"].IsInt()) {
+    auto sessionId = aDoc["id"].GetInt();
+    if (auto& session = mApi.mSessions[sessionId]; session) {
+      if (session->IsPreferringChunkProcessing()) {
+        if (auto processor = session->GetChunkProcessor(); processor) {
+          aDoc.Accept(*processor);
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 ResponseHandler::~ResponseHandler() {}

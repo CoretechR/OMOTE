@@ -1,5 +1,6 @@
 #include "HomeAssistUIExample/HomeAssistUI.hpp"
 
+#include "DevicesQueryProcessor.hpp"
 #include "HardwareFactory.hpp"
 #include "HomeAssist/WebSocket/Message/Attributes/Light.hpp"
 #include "HomeAssist/WebSocket/Message/Entity.hpp"
@@ -18,8 +19,7 @@ HomeAssistUI::HomeAssistUI() : BasicUI() {
     return;
   }
 
-  mHomeAssistApi =
-      std::make_unique<Api>(HardwareFactory::getAbstract().webSocket());
+  mHomeAssistApi = std::make_unique<Api>(socket);
   mMessageHandler =
       std::make_shared<MessageHandler>([](const Message& aMessage) {
         if (auto* newState = aMessage.BorrowToState(); newState) {
@@ -48,14 +48,16 @@ HomeAssistUI::HomeAssistUI() : BasicUI() {
     return true;
   });
 
+  mDeviceQueryProcessor = std::make_shared<UI::DevicesQueryProcessor>();
+
   auto lightRequest = std::make_unique<Request>(HomeAssist::TestSubEvent);
   auto stateRequest = std::make_unique<Request>(HomeAssist::GetStatesMessage);
 
   // mHomeAssistApi->AddSession(
   //     std::make_unique<Session>(std::move(lightRequest), mMessageHandler));
 
-  mHomeAssistApi->AddSession(
-      std::make_unique<Session>(std::move(stateRequest), mDeviceFinder));
+  mHomeAssistApi->AddSession(std::make_unique<Session>(
+      std::move(stateRequest), nullptr, mDeviceQueryProcessor));
 }
 
 void HomeAssistUI::loopHandler() {

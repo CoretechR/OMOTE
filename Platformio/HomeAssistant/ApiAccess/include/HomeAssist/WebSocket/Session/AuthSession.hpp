@@ -32,6 +32,7 @@ class AuthSession : public ISession {
       override {
     return nullptr;
   }
+  bool IsPreferringChunkProcessing() override { return false; }
 
   std::shared_ptr<webSocketInterface> mHomeAssitSocket = nullptr;
   Api::ConnectionStatus mConnectionStatus = Api::ConnectionStatus::Initializing;

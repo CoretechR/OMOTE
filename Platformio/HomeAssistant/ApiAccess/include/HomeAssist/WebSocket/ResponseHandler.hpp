@@ -13,6 +13,12 @@ class ResponseHandler : public HAL::WebSocket::Json::IProcessMessage {
 
   bool ProcessResponseDoc(const MemConciousDocument& aDoc);
 
+  /**
+   * @return true - chunk processor in a session handled the doc
+   *         fasle - session didn't want the doc processed that way
+   */
+  bool HandleRedirectToChunkProcessor(const MemConciousDocument& aDoc);
+
  private:
   HomeAssist::WebSocket::Api& mApi;
 };

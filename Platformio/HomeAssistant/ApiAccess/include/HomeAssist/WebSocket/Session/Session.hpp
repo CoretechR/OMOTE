@@ -24,6 +24,7 @@ class Session : public ISession {
 
   bool ProcessMessage(const Message& aMessage) override;
   bool IsComplete() const override;
+  bool IsPreferringChunkProcessing() override;
 
   std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> GetChunkProcessor();
 

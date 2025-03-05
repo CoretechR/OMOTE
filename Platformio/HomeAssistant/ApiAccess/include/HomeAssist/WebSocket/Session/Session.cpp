@@ -33,4 +33,8 @@ Request* Session::BorrowStartRequest() { return mStartRequest.get(); }
 
 Request* Session::BorrowEndRequest() { return mEndRequest.get(); }
 
+bool Session::IsPreferringChunkProcessing() {
+  return mMessageHandler.expired() && !mChunkProcessor.expired();
+}
+
 }  // namespace HomeAssist::WebSocket
