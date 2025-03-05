@@ -1,6 +1,6 @@
 #include "IProcessJsonMessage.hpp"
 
-namespace HAL::WebSocket {
+namespace HAL::WebSocket::Json {
 
 IProcessJsonMessage::ProcessResult::ProcessResult(
     ProcessResult::StatusCode aStatus, rapidjson::ParseResult aResult)
@@ -68,4 +68,4 @@ bool IProcessJsonMessage::IsChunkProcessingPrefered() {
   return mChunkProcessor && !mDocProcessor;
 }
 
-}  // namespace HAL::WebSocket
+}  // namespace HAL::WebSocket::Json

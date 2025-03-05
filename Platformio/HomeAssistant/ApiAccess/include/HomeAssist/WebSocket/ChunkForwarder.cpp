@@ -1,11 +1,12 @@
 #include "HomeAssist/WebSocket/ChunkForwarder.hpp"
 
+using namespace HAL::WebSocket::Json;
+
 namespace HomeAssist::WebSocket {
 
 ChunkForwarder::ChunkForwarder(Api& aApi) : mApi(aApi) {}
 
-void ChunkForwarder::SetProcessor(
-    std::shared_ptr<HAL::WebSocket::IChunkProcessor> aProcessor) {
+void ChunkForwarder::SetProcessor(std::shared_ptr<IChunkProcessor> aProcessor) {
   mProcessor = aProcessor;
 }
 

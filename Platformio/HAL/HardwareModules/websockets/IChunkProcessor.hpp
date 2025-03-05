@@ -1,7 +1,7 @@
 #pragma once
 #include "rapidjson/reader.h"
 
-namespace HAL::WebSocket {
+namespace HAL::WebSocket::Json {
 
 class IChunkProcessor
     : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>, IChunkProcessor> {
@@ -25,4 +25,4 @@ class IChunkProcessor
   virtual bool EndArray(rapidjson::SizeType elementCount) = 0;
 };
 
-}  // namespace HAL::WebSocket
+}  // namespace HAL::WebSocket::Json

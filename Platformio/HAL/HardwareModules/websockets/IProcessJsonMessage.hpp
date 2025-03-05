@@ -8,7 +8,7 @@
 #include "rapidjson/reader.h"
 #include "rapidjson/stream.h"
 
-namespace HAL::WebSocket {
+namespace HAL::WebSocket::Json {
 
 /**
  * This class is meant to help the websocket with json message handling
@@ -64,4 +64,4 @@ class IProcessJsonMessage {
   std::unique_ptr<IChunkProcessor> mChunkProcessor = nullptr;
 };
 
-}  // namespace HAL::WebSocket
+}  // namespace HAL::WebSocket::Json

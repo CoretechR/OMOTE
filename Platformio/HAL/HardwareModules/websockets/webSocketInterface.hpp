@@ -12,10 +12,10 @@ class webSocketInterface {
   virtual ~webSocketInterface() = default;
 
   webSocketInterface(
-      std::unique_ptr<HAL::WebSocket::IProcessJsonMessage> aJsonHandler);
+      std::unique_ptr<HAL::WebSocket::Json::IProcessJsonMessage> aJsonHandler);
 
   void SetJsonHandler(
-      std::unique_ptr<HAL::WebSocket::IProcessJsonMessage> aJsonHandler);
+      std::unique_ptr<HAL::WebSocket::Json::IProcessJsonMessage> aJsonHandler);
 
   virtual bool isConnected() const = 0;
   virtual void connect(const std::string& url) = 0;
@@ -25,14 +25,16 @@ class webSocketInterface {
   virtual void setMessageCallback(MessageCallback callback) = 0;
 
  protected:
-  std::unique_ptr<HAL::WebSocket::IProcessJsonMessage> mJsonHandler = nullptr;
+  std::unique_ptr<HAL::WebSocket::Json::IProcessJsonMessage> mJsonHandler =
+      nullptr;
 };
 
 inline webSocketInterface::webSocketInterface(
-    std::unique_ptr<HAL::WebSocket::IProcessJsonMessage> aJsonHandler)
+    std::unique_ptr<HAL::WebSocket::Json::IProcessJsonMessage> aJsonHandler)
     : mJsonHandler(std::move(aJsonHandler)) {}
 
 inline void webSocketInterface::SetJsonHandler(
-    std::unique_ptr<HAL::WebSocket::IProcessJsonMessage> aNewJsonHandler) {
+    std::unique_ptr<HAL::WebSocket::Json::IProcessJsonMessage>
+        aNewJsonHandler) {
   mJsonHandler = std::move(aNewJsonHandler);
 }

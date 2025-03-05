@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "HardwareModules/websockets/IChunkProcessor.hpp"
 #include "HomeAssist/WebSocket/Request.hpp"
 #include "HomeAssist/WebSocket/Session/ISession.hpp"
 
@@ -14,7 +15,9 @@ class Request;
 class Session : public ISession {
  public:
   Session(std::unique_ptr<Request> aRequest,
-          std::shared_ptr<MessageHandler> aMessageHandler);
+          std::shared_ptr<MessageHandler> aMessageHandler = nullptr,
+          std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor>
+              aChunkProcessor = nullptr);
 
   Request* BorrowStartRequest() override;
   Request* BorrowEndRequest() override;
@@ -26,6 +29,7 @@ class Session : public ISession {
   std::unique_ptr<Request> mStartRequest = nullptr;
   std::unique_ptr<Request> mEndRequest = nullptr;
   std::weak_ptr<MessageHandler> mMessageHandler;
+  std::weak_ptr<HAL::WebSocket::Json::IChunkProcessor> mChunkProcessor;
 };
 
 }  // namespace HomeAssist::WebSocket

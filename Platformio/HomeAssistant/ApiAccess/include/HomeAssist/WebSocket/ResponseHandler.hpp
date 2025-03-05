@@ -6,7 +6,7 @@
 
 namespace HomeAssist::WebSocket {
 
-class ResponseHandler : public HAL::WebSocket::IProcessJsonMessage {
+class ResponseHandler : public HAL::WebSocket::Json::IProcessJsonMessage {
  public:
   ResponseHandler(HomeAssist::WebSocket::Api& aApi);
   virtual ~ResponseHandler();

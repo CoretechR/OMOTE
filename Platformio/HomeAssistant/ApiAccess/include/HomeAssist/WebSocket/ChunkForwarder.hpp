@@ -7,13 +7,13 @@ namespace HomeAssist::WebSocket {
 
 class Api;
 
-class ChunkForwarder : public HAL::WebSocket::IChunkProcessor {
+class ChunkForwarder : public HAL::WebSocket::Json::IChunkProcessor {
  public:
   ChunkForwarder(Api& aApi);
   virtual ~ChunkForwarder() = default;
 
   void SetProcessor(
-      std::shared_ptr<HAL::WebSocket::IChunkProcessor> aProcessor);
+      std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> aProcessor);
 
  protected:
   bool Null() override;
@@ -33,7 +33,7 @@ class ChunkForwarder : public HAL::WebSocket::IChunkProcessor {
 
  private:
   Api& mApi;
-  std::weak_ptr<HAL::WebSocket::IChunkProcessor> mProcessor;
+  std::weak_ptr<HAL::WebSocket::Json::IChunkProcessor> mProcessor;
 };
 
 }  // namespace HomeAssist::WebSocket

@@ -5,9 +5,13 @@
 
 namespace HomeAssist::WebSocket {
 
-Session::Session(std::unique_ptr<Request> aRequest,
-                 std::shared_ptr<MessageHandler> aMessageHandler)
-    : mStartRequest(std::move(aRequest)), mMessageHandler(aMessageHandler) {}
+Session::Session(
+    std::unique_ptr<Request> aRequest,
+    std::shared_ptr<MessageHandler> aMessageHandler,
+    std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> aChunkProcessor)
+    : mStartRequest(std::move(aRequest)),
+      mMessageHandler(aMessageHandler),
+      mChunkProcessor(aChunkProcessor) {}
 
 bool Session::ProcessMessage(const Message& aMessage) {
   if (auto handler = mMessageHandler.lock(); handler) {
@@ -17,8 +21,8 @@ bool Session::ProcessMessage(const Message& aMessage) {
 }
 
 bool Session::IsComplete() const {
-  // Our message handler is no longer so we are now done with this session
-  return mMessageHandler.use_count() == 0;
+  // Our message handler and chunk processor are no longer active so we are done
+  return mMessageHandler.use_count() == 0 && mChunkProcessor.use_count() == 0;
 }
 
 Request* Session::BorrowStartRequest() { return mStartRequest.get(); }
