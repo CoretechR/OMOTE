@@ -61,4 +61,9 @@ IProcessJsonMessage::ProcessResult IProcessJsonMessage::ProcessJsonAsDoc(
   return {ProcessResult::StatusCode::Success};
 }
 
+bool IProcessJsonMessage::IsChunkProcessingPrefered() {
+  // Only processor we have is chunk probably use it.
+  return mChunkProcessor && !mDocProcessor;
+}
+
 }  // namespace HAL::WebSocket

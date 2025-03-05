@@ -130,10 +130,8 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
       break;
     case Step::Partial:
       if (mJsonHandler) {
-        auto parseErr =
+        auto procStatus =
             mJsonHandler->ProcessChunk({aEventData->data_ptr, dataLength});
-        if (parseErr != rapidjson::ParseErrorCode::kParseErrorNone) {
-        }
       }
       break;
     case Step::Drop:
@@ -151,14 +149,10 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
 }
 
 void esp32WebSocket::processStoredMessage() {
-  if (mJsonHandler) {
-    MemConciousDocument doc;
-    doc.ParseInsitu(mIncomingMessage.data());
-    // Give JsonHandler a crack at it and
-    // if not pass it down to the string handler
-    if (!doc.HasParseError() && mJsonHandler->ProcessDocument(doc)) {
-      return;
-    }
+  // Give JsonHandler a crack at it and
+  // if not pass it down to the string handler
+  if (mJsonHandler && mJsonHandler->ProcessJsonAsDoc(mIncomingMessage)) {
+    return;
   }
   if (messageCallback) {
     messageCallback(mIncomingMessage);
