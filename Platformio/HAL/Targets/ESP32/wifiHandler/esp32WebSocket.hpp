@@ -38,10 +38,8 @@ class esp32WebSocket : public webSocketInterface {
   std::shared_ptr<wifiHandler> mWifiHandler;
   esp_websocket_client_handle_t client;
   esp_websocket_client_config_t mConfig{};
-  rapidjson::Reader mReader;
 
-  std::string mIncomingMessage;
-
-  bool connected;
-  MessageCallback messageCallback;
+  bool connected = false;
+  std::string mIncomingMessage{};
+  MessageCallback messageCallback{};
 };
