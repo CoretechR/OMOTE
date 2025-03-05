@@ -1,33 +1,31 @@
-#include "IProcessJsonMessage.hpp"
+#include "IProcessMessage.hpp"
 
 namespace HAL::WebSocket::Json {
 
-IProcessJsonMessage::ProcessResult::ProcessResult(
-    ProcessResult::StatusCode aStatus, rapidjson::ParseResult aResult)
+IProcessMessage::ProcessResult::ProcessResult(ProcessResult::StatusCode aStatus,
+                                              rapidjson::ParseResult aResult)
     : mStatus(aStatus), mParseResult(aResult) {}
 
-IProcessJsonMessage::ProcessResult::ProcessResult(
-    rapidjson::ParseResult aResult)
+IProcessMessage::ProcessResult::ProcessResult(rapidjson::ParseResult aResult)
     : mParseResult(aResult) {
   mStatus = mParseResult.IsError() ? ProcessResult::StatusCode::ParseError
                                    : ProcessResult::StatusCode::Success;
 }
 
-IProcessJsonMessage::ProcessResult::ProcessResult(
-    rapidjson::ParseErrorCode aError)
+IProcessMessage::ProcessResult::ProcessResult(rapidjson::ParseErrorCode aError)
     : mStatus(StatusCode::ParseError), mParseResult(aError, 0) {}
 
-IProcessJsonMessage::ProcessResult::operator bool() {
+IProcessMessage::ProcessResult::operator bool() {
   return mStatus == ProcessResult::StatusCode::Success;
 }
 
-IProcessJsonMessage::IProcessJsonMessage(
+IProcessMessage::IProcessMessage(
     DocumentProccessor aDocProcessor,
     std::unique_ptr<IChunkProcessor> aChunkProcessor)
     : mDocProcessor(aDocProcessor),
       mChunkProcessor(std::move(aChunkProcessor)) {}
 
-bool IProcessJsonMessage::ProcessDocument(
+bool IProcessMessage::ProcessDocument(
     const MemConciousDocument& aRecievedDocument) {
   if (mDocProcessor) {
     return mDocProcessor(aRecievedDocument);
@@ -35,11 +33,9 @@ bool IProcessJsonMessage::ProcessDocument(
   return false;
 }
 
-bool IProcessJsonMessage::HasChunkProcessor() {
-  return mChunkProcessor != nullptr;
-}
+bool IProcessMessage::HasChunkProcessor() { return mChunkProcessor != nullptr; }
 
-IProcessJsonMessage::ProcessResult IProcessJsonMessage::ProcessChunk(
+IProcessMessage::ProcessResult IProcessMessage::ProcessChunk(
     const std::string& aJsonChunk) {
   if (!mChunkProcessor) {
     return {ProcessResult::StatusCode::MissingChunkProcessor};
@@ -48,7 +44,7 @@ IProcessJsonMessage::ProcessResult IProcessJsonMessage::ProcessChunk(
   return {mChunkReader.Parse(stream, *mChunkProcessor)};
 }
 
-IProcessJsonMessage::ProcessResult IProcessJsonMessage::ProcessJsonAsDoc(
+IProcessMessage::ProcessResult IProcessMessage::ProcessJsonAsDoc(
     const std::string& aJsonString) {
   MemConciousDocument aDoc;
   // Warning this should be safe since I only use this in ProcessDocument
@@ -63,7 +59,7 @@ IProcessJsonMessage::ProcessResult IProcessJsonMessage::ProcessJsonAsDoc(
   return {ProcessResult::StatusCode::Success};
 }
 
-bool IProcessJsonMessage::IsChunkProcessingPrefered() {
+bool IProcessMessage::IsChunkProcessingPrefered() {
   // Only processor we have is chunk probably use it.
   return mChunkProcessor && !mDocProcessor;
 }

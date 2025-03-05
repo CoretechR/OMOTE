@@ -8,7 +8,7 @@ using namespace HAL::WebSocket::Json;
 namespace HomeAssist::WebSocket {
 
 ResponseHandler::ResponseHandler(Api& aApi)
-    : IProcessJsonMessage(
+    : IProcessMessage(
           [this](const auto& aDoc) { return ProcessResponseDoc(aDoc); },
           std::make_unique<ChunkForwarder>(aApi)),
       mApi(aApi) {}

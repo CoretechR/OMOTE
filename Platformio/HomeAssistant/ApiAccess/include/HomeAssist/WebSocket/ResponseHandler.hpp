@@ -2,11 +2,11 @@
 
 #include "HomeAssist/WebSocket/Api.hpp"
 #include "rapidjson/document.h"
-#include "websockets/IProcessJsonMessage.hpp"
+#include "websockets/IProcessMessage.hpp"
 
 namespace HomeAssist::WebSocket {
 
-class ResponseHandler : public HAL::WebSocket::Json::IProcessJsonMessage {
+class ResponseHandler : public HAL::WebSocket::Json::IProcessMessage {
  public:
   ResponseHandler(HomeAssist::WebSocket::Api& aApi);
   virtual ~ResponseHandler();

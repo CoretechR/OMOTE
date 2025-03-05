@@ -13,7 +13,7 @@ namespace HAL::WebSocket::Json {
 /**
  * This class is meant to help the websocket with json message handling
  */
-class IProcessJsonMessage {
+class IProcessMessage {
  public:
   struct ProcessResult {
     enum class StatusCode {
@@ -35,11 +35,10 @@ class IProcessJsonMessage {
 
   using DocumentProccessor = std::function<bool(const MemConciousDocument&)>;
 
-  IProcessJsonMessage() = default;
-  IProcessJsonMessage(
-      DocumentProccessor aProccessor = nullptr,
-      std::unique_ptr<IChunkProcessor> aChunkProcessor = nullptr);
-  virtual ~IProcessJsonMessage() = default;
+  IProcessMessage() = default;
+  IProcessMessage(DocumentProccessor aProccessor = nullptr,
+                  std::unique_ptr<IChunkProcessor> aChunkProcessor = nullptr);
+  virtual ~IProcessMessage() = default;
 
   // Document Based Processing
   ProcessResult ProcessJsonAsDoc(const std::string& aJsonString);
