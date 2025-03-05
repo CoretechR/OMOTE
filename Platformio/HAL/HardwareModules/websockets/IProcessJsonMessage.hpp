@@ -42,7 +42,7 @@ class IProcessJsonMessage {
   virtual ~IProcessJsonMessage() = default;
 
   // Document Based Processing
-  ProcessResult ProcessJsonAsDoc(std::string& aJsonString);
+  ProcessResult ProcessJsonAsDoc(const std::string& aJsonString);
 
   // Chunk Based Processing
   bool HasChunkProcessor();
@@ -51,6 +51,10 @@ class IProcessJsonMessage {
   virtual bool IsChunkProcessingPrefered();
 
  protected:
+  /**
+   * @warning Must stay const unless we rework def of ProcessJsonAsDoc
+   *          this allows us to save memory by parsing in place
+   */
   bool ProcessDocument(const MemConciousDocument& aRecievedDocument);
 
  private:

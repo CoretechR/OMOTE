@@ -60,6 +60,16 @@ bool webSocketSimulator::isConnected() const { return connected; }
 
 void webSocketSimulator::onMessage(websocketpp::connection_hdl hdl,
                                    client::message_ptr msg) {
+  if (mJsonHandler && mJsonHandler->HasChunkProcessor() &&
+      mJsonHandler->IsChunkProcessingPrefered()) {
+    mJsonHandler->ProcessChunk(msg->get_payload());
+  } else {
+    // JsonHandler parsed no need to try with the generic message handler
+    if (mJsonHandler->ProcessJsonAsDoc(msg->get_payload())) {
+      return;
+    }
+  }
+
   if (messageCallback) {
     messageCallback(msg->get_payload());
   }

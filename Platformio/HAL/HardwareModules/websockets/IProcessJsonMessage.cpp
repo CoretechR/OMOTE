@@ -49,9 +49,11 @@ IProcessJsonMessage::ProcessResult IProcessJsonMessage::ProcessChunk(
 }
 
 IProcessJsonMessage::ProcessResult IProcessJsonMessage::ProcessJsonAsDoc(
-    std::string& aJsonString) {
+    const std::string& aJsonString) {
   MemConciousDocument aDoc;
-  aDoc.ParseInsitu(aJsonString.data());
+  // Warning this should be safe since I only use this in ProcessDocument
+  // which does not allow downstream code to change the Doc since it is const
+  aDoc.ParseInsitu(const_cast<char*>(aJsonString.data()));
   if (aDoc.HasParseError()) {
     return {aDoc.GetParseError()};
   }
