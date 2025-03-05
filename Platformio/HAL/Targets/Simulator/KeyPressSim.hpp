@@ -1,13 +1,14 @@
-#include "KeyPressAbstract.hpp"
-#include "SDL2/SDL.h"
-
+#include <condition_variable>
 #include <map>
 #include <mutex>
 #include <queue>
 #include <thread>
 
+#include "KeyPressAbstract.hpp"
+#include "SDL2/SDL.h"
+
 class KeyPressSim : public KeyPressAbstract {
-public:
+ public:
   static constexpr auto MaxQueueableKeyEvents = 3;
 
   KeyPressSim();
@@ -18,11 +19,12 @@ public:
   void HandleKeyPresses() override;
   void QueueKeyEvent(KeyEvent aJustOccuredKeyEvent) override;
 
-private:
+ private:
   std::thread mKeyGrabberThread;
   std::thread mKeyHandlerThread;
   std::queue<KeyEvent> mKeyEventQueue;
   std::mutex mQueueGaurd;
+  std::condition_variable mProcessKeyQueueCondition;
 
   using Key = KeyPressAbstract::KeyId;
   static inline const std::map<SDL_Keycode, KeyPressAbstract::KeyId> KeyMap{

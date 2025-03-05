@@ -8,7 +8,6 @@ KeyPressSim::KeyPressSim()
             std::this_thread::sleep_for(std::chrono::seconds(1));
             while (true) {
               HandleKeyPresses();
-              std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
           }) {
   SDL_AddEventWatch(KeyPressSim::GrabKeyImpl, this);
@@ -31,7 +30,10 @@ void KeyPressSim::GrabKeys(SDL_Event *aEvent) {
 };
 
 void KeyPressSim::HandleKeyPresses() {
-  std::lock_guard lock(mQueueGaurd);
+  std::unique_lock lock(mQueueGaurd);
+  mProcessKeyQueueCondition.wait(lock,
+                                 [this] { return !mKeyEventQueue.empty(); });
+
   while (!mKeyEventQueue.empty()) {
     if (mKeyEventHandler) {
       mKeyEventHandler(mKeyEventQueue.front());
@@ -43,4 +45,5 @@ void KeyPressSim::HandleKeyPresses() {
 void KeyPressSim::QueueKeyEvent(KeyEvent aJustOccuredKeyEvent) {
   std::lock_guard lock(mQueueGaurd);
   mKeyEventQueue.push(aJustOccuredKeyEvent);
+  mProcessKeyQueueCondition.notify_one();
 };
