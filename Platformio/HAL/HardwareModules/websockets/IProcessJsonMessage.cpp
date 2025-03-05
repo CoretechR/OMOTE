@@ -23,7 +23,7 @@ IProcessJsonMessage::ProcessResult::operator bool() {
 
 IProcessJsonMessage::IProcessJsonMessage(
     DocumentProccessor aDocProcessor,
-    std::unique_ptr<ChunkProcessor> aChunkProcessor)
+    std::unique_ptr<IChunkProcessor> aChunkProcessor)
     : mDocProcessor(aDocProcessor),
       mChunkProcessor(std::move(aChunkProcessor)) {}
 

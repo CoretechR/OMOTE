@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include "IChunkProcessor.hpp"
 #include "RapidJsonUtilty.hpp"
 #include "rapidjson/error/error.h"
 #include "rapidjson/reader.h"
@@ -33,12 +34,11 @@ class IProcessJsonMessage {
   };
 
   using DocumentProccessor = std::function<bool(const MemConciousDocument&)>;
-  using ChunkProcessor = rapidjson::BaseReaderHandler<>;
 
   IProcessJsonMessage() = default;
   IProcessJsonMessage(
       DocumentProccessor aProccessor = nullptr,
-      std::unique_ptr<ChunkProcessor> aChunkProcessor = nullptr);
+      std::unique_ptr<IChunkProcessor> aChunkProcessor = nullptr);
   virtual ~IProcessJsonMessage() = default;
 
   // Document Based Processing
@@ -61,7 +61,7 @@ class IProcessJsonMessage {
   DocumentProccessor mDocProcessor = nullptr;
 
   rapidjson::Reader mChunkReader;
-  std::unique_ptr<ChunkProcessor> mChunkProcessor = nullptr;
+  std::unique_ptr<IChunkProcessor> mChunkProcessor = nullptr;
 };
 
 }  // namespace HAL::WebSocket
