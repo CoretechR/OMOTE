@@ -7,6 +7,7 @@
 #include "HomeAssist/WebSocket/Message/MessageHandler.hpp"
 #include "HomeAssist/WebSocket/Message/PredefinedMessages.hpp"
 #include "HomeAssist/WebSocket/Session/Session.hpp"
+#include "HomeAssistUIExample/Pages/DeviceList.hpp"
 
 using namespace UI;
 
@@ -19,6 +20,9 @@ HomeAssistUI::HomeAssistUI() : BasicUI() {
   }
 
   mHomeAssistApi = std::make_unique<Api>(socket);
+
+  AddPageToHomeScreen(std::make_unique<UI::Page::DeviceList>(*mHomeAssistApi));
+
   mMessageHandler =
       std::make_shared<MessageHandler>([](const Message& aMessage) {
         if (auto* newState = aMessage.BorrowToState(); newState) {

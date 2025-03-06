@@ -16,7 +16,10 @@ IProcessMessage::ProcessResult::ProcessResult(rapidjson::ParseErrorCode aError)
     : mStatus(StatusCode::ParseError), mParseResult(aError, 0) {}
 
 IProcessMessage::ProcessResult::operator bool() {
-  return mStatus == ProcessResult::StatusCode::Success;
+  using Result = ProcessResult::StatusCode;
+  return mStatus == Result::Success ||
+         mStatus == Result::SuccessFinishedChunkParse ||
+         mStatus == Result::SuccessWaitingForNextChunk;
 }
 
 IProcessMessage::IProcessMessage(
@@ -40,16 +43,45 @@ IProcessMessage::ProcessResult IProcessMessage::ProcessChunk(
   if (!mChunkProcessor) {
     return {ProcessResult::StatusCode::MissingChunkProcessor};
   }
-  auto stream = rapidjson::StringStream(aJsonChunk.c_str());
-  return {mChunkReader.Parse(stream, *mChunkProcessor)};
+  if (!mIsProcessingChunks) {
+    mChunkReader.IterativeParseInit();
+    mIsProcessingChunks = true;
+  }
+
+  auto chunkToProcess =
+      mUnprocessedStr.empty() ? aJsonChunk : mUnprocessedStr + aJsonChunk;
+
+  auto stream = rapidjson::StringStream(chunkToProcess.c_str());
+  auto lastSuccessfulReadIndex = 0;
+  // Todo
+  // Honeslty not sure if this can ever be completely valid
+  // Probably just need a better look ahead method
+  static constexpr auto MagicLookAheadedBufferLength = 300;
+  while (mChunkReader.IterativeParseNext<rapidjson::kParseIterativeFlag>(
+      stream, *mChunkProcessor)) {
+    if (!mChunkReader.HasParseError()) {
+      lastSuccessfulReadIndex = stream.Tell();
+      auto isNotMuchTextLeft =
+          chunkToProcess.length() - lastSuccessfulReadIndex <
+          MagicLookAheadedBufferLength;
+      if (isNotMuchTextLeft) {
+        mUnprocessedStr = chunkToProcess.substr(lastSuccessfulReadIndex);
+        return {ProcessResult::StatusCode::SuccessWaitingForNextChunk};
+      }
+    }
+    if (mChunkReader.IterativeParseComplete()) {
+      mIsProcessingChunks = false;
+      return {ProcessResult::StatusCode::SuccessFinishedChunkParse};
+    }
+  }
+  // TODO what really?
+  return {ProcessResult::StatusCode::SuccessWaitingForNextChunk};
 }
 
 IProcessMessage::ProcessResult IProcessMessage::ProcessJsonAsDoc(
     const std::string& aJsonString) {
   MemConciousDocument aDoc;
-  // Warning this should be safe since I only use this in ProcessDocument
-  // which does not allow downstream code to change the Doc since it is const
-  aDoc.ParseInsitu(const_cast<char*>(aJsonString.data()));
+  aDoc.Parse(aJsonString.data());
   if (aDoc.HasParseError()) {
     return {aDoc.GetParseError()};
   }

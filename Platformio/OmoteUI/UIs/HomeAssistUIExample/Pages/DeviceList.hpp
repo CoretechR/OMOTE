@@ -24,6 +24,8 @@ class DeviceList : public Base {
  protected:
   bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) override;
 
+  void AddEntity(const std::string& aEntity);
+
  private:
   void InitializeUI();
   Widget::List* mDeviceList;

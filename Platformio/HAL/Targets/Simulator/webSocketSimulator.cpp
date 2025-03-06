@@ -67,6 +67,8 @@ void webSocketSimulator::onMessage(websocketpp::connection_hdl hdl,
   messageNum++;
 
   static constexpr auto TypicalEmbeddedChunkingSize = 40000;
+  static constexpr auto ChunkSize = 1024;
+
   auto embeddedWouldHaveChunked =
       msg->get_payload().size() > TypicalEmbeddedChunkingSize;
 
@@ -75,7 +77,15 @@ void webSocketSimulator::onMessage(websocketpp::connection_hdl hdl,
                                mJsonHandler->IsChunkProcessingPrefered()) ||
                               embeddedWouldHaveChunked;
     if (shouldChunkProcess) {
-      mJsonHandler->ProcessChunk(msg->get_payload());
+      size_t payloadSize = msg->get_payload().size();
+      for (size_t i = 0; i < payloadSize; i += 1024) {
+        std::string chunk = msg->get_payload().substr(i, 1024);
+        auto result = mJsonHandler->ProcessChunk(chunk);
+        if (result.mStatus != HAL::WebSocket::Json::IProcessMessage::
+                                  ProcessResult::StatusCode::Success) {
+          std::cout << "error";
+        }
+      }
     } else {
       if (mJsonHandler->ProcessJsonAsDoc(msg->get_payload())) {
         // JsonHandler parsed no need to try with the generic message handler

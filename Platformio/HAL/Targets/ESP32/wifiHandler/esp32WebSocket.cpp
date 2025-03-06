@@ -175,7 +175,7 @@ esp32WebSocket::ProcessingStep esp32WebSocket::getNextStep(
   }
 
   if (aEventData->payload_offset > 0 && mIncomingMessage.empty()) {
-    return ProcessingStep::Drop;
+    return ProcessingStep::Partial;
   }
 
   return !mIncomingMessage.empty() ? ProcessingStep::Append
@@ -227,11 +227,11 @@ void esp32WebSocket::websocket_event_handler(void *handler_args,
   switch (event_id) {
     case WEBSOCKET_EVENT_CONNECTED:
       ESP_LOGI(TAG, "WebSocket connected");
-      Connected();
+      self->Connected();
       break;
     case WEBSOCKET_EVENT_DISCONNECTED:
       ESP_LOGI(TAG, "WebSocket disconnected");
-      Disconnected();
+      self->Disconnected();
       break;
     case WEBSOCKET_EVENT_ERROR:
       ESP_LOGI(TAG, "WebSocket error");

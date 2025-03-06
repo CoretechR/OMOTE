@@ -20,7 +20,6 @@ class esp32WebSocket : public webSocketInterface {
   void disconnect() override;
   void sendMessage(const std::string &message) override;
   void setMessageCallback(MessageCallback callback) override;
-  bool isConnected() const override;
 
  private:
   void proccessEventData(esp_websocket_event_data_t *aEventData);

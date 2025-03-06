@@ -1,5 +1,6 @@
 #include "DevicesQueryProcessor.hpp"
 
+#include "HardwareFactory.hpp"
 namespace UI {
 
 bool DevicesQueryProcessor::Null() { return true; }
@@ -16,7 +17,9 @@ bool DevicesQueryProcessor::RawNumber(const Ch* str, rapidjson::SizeType length,
 bool DevicesQueryProcessor::String(const Ch* str, rapidjson::SizeType length,
                                    bool copy) {
   if (isProcessingEi && entityIdCallback) {
-    entityIdCallback(std::string(str, length));
+    auto entity = std::string(str, length);
+    entityIdCallback(entity);
+    // HardwareFactory::getAbstract().debugPrint("%s\n", entity.c_str());
     isProcessingEi = false;
   }
   return true;

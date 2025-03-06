@@ -18,6 +18,8 @@ class IProcessMessage {
   struct ProcessResult {
     enum class StatusCode {
       Success,
+      SuccessFinishedChunkParse,
+      SuccessWaitingForNextChunk,
       ParseError,
       MissingChunkProcessor,
       DocProcessorFailed
@@ -50,17 +52,16 @@ class IProcessMessage {
   virtual bool IsChunkProcessingPrefered();
 
  protected:
-  /**
-   * @warning Must stay const unless we rework def of ProcessJsonAsDoc
-   *          this allows us to save memory by parsing in place
-   */
   bool ProcessDocument(const MemConciousDocument& aRecievedDocument);
 
  private:
   DocumentProccessor mDocProcessor = nullptr;
 
   rapidjson::Reader mChunkReader;
+  rapidjson::Reader mSucessfulChunkReader;
   std::unique_ptr<IChunkProcessor> mChunkProcessor = nullptr;
+  bool mIsProcessingChunks = false;
+  std::string mUnprocessedStr;
 };
 
 }  // namespace HAL::WebSocket::Json

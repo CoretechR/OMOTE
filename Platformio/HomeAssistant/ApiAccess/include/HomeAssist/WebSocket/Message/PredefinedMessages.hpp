@@ -25,7 +25,7 @@ static const auto TestSubEvent = R"---(
 static const auto GetEntityMessage = R"---(
     {
       "id": 0,
-      "type": "config/entity_registry/list"
+      "type": "config/entity_registry/list_for_display"
     }
     )---";
 
