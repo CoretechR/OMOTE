@@ -48,6 +48,8 @@
 #include "scenes/scene_chromecast.h"
 #include "scenes/scene_appleTV.h"
 #include "applicationInternal/scenes/sceneHandler.h"
+#include "applicationInternal/hub/hubManager.h"
+#include "secrets.h"
 
 #if defined(ARDUINO)
 // in case of Arduino we have a setup() and a loop()
@@ -162,6 +164,22 @@ int main(int argc, char *argv[]) {
   init_mqtt();
   #endif
 
+  // Initialize hub communication with preferred backend from settings
+  #if (ENABLE_HUB_COMMUNICATION == 1)
+    HubBackend preferredBackend;
+
+    #if defined(PREFERRED_HUB_BACKEND)
+      preferredBackend = static_cast<HubBackend>(PREFERRED_HUB_BACKEND);
+    #elif (ENABLE_ESPNOW == 1)
+      preferredBackend = HUB_ESPNOW;  // Default to ESP-NOW when available
+    #elif (ENABLE_WIFI_AND_MQTT == 1)
+      preferredBackend = HUB_MQTT;    // Fall back to MQTT if ESP-NOW not available
+    #endif
+
+    // Initialize the hub manager with the preferred backend
+    HubManager::getInstance().init(preferredBackend);
+  #endif
+
   omote_log_i("Setup finished in %lu ms.\r\n", millis());
 
   #if defined(WIN32) || defined(__linux__) || defined(__APPLE__)
@@ -221,5 +239,10 @@ void loop(unsigned long *pIMUTaskTimer, unsigned long *pUpdateStatusTimer) {
     // update user_led, battery, BLE, memoryUsage on GUI
     updateHardwareStatusAndShowOnGUI();
   }
+
+  // Process hub communication
+  #if (ENABLE_HUB_COMMUNICATION == 1)
+  HubManager::getInstance().process();
+  #endif
 
 }

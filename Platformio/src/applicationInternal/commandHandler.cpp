@@ -14,6 +14,7 @@
 #include "guis/gui_irReceiver.h"
 // show received BLE connection messages
 #include "guis/gui_BLEpairing.h"
+#include "hub/hubManager.h"
 
 uint16_t COMMAND_UNKNOWN;
 
@@ -239,6 +240,63 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       }
       break;
     }
+
+    #if (ENABLE_HUB_COMMUNICATION == 1)
+    case HUB: {
+      auto current = commandData.commandPayloads.begin();
+      
+      // Extract device and command
+      std::string device = *current;
+      current = std::next(current, 1);
+      
+      std::string command = *current;
+      current = std::next(current, 1);
+      
+      // Create JSON payload
+      json payload;
+      
+      // Process any additional parameters (key-value pairs)
+      while (current != commandData.commandPayloads.end()) {
+        std::string key = *current;
+        current = std::next(current, 1);
+        
+        if (current != commandData.commandPayloads.end()) {
+          payload[key] = *current;
+          current = std::next(current, 1);
+        }
+      }
+      
+      // If additionalPayload is provided, it can be used as a JSON string
+      // that overrides or extends the payload
+      if (additionalPayload != "") {
+        try {
+          // Try to parse additionalPayload as JSON
+          json additionalJson = json::parse(additionalPayload);
+          
+          // Merge with the existing payload
+          for (auto& [key, value] : additionalJson.items()) {
+            payload[key] = value;
+          }
+        } catch (json::parse_error& e) {
+          // If not valid JSON, use it as a parameter value
+          payload["value"] = additionalPayload;
+        }
+      }
+      
+      // Add command type if not already present
+      if (!payload.contains("commandType")) {
+        // Default to "short" press
+        payload["commandType"] = "short";
+      }
+      
+      omote_log_d("execute: will send hub message for device '%s', command '%s'\r\n", 
+                  device.c_str(), command.c_str());
+      
+      // Send using the hub manager
+      HubManager::getInstance().sendMessage(device.c_str(), command.c_str(), payload);
+      break;
+    }
+    #endif
   }
 }
 
@@ -287,5 +345,24 @@ void receiveWiFiConnected_cb(bool connected) {
 void receiveMQTTmessage_cb(std::string topic, std::string payload) {
   showMQTTmessage(topic, payload);
 }
+#endif
 
+#if (ENABLE_ESPNOW == 1)
+void receiveEspNowMessage_cb(json payload) {
+  // Extract device and command from the payload
+  std::string device, command, jsonStr;
+  
+  if (payload.contains("device") && payload.contains("command")) {
+    device = payload["device"];
+    command = payload["command"];
+  
+    // Serialize the payload to a string
+    std::string jsonStr = payload.dump();
+    
+    // Show the message in the UI
+    showEspNowMessage(jsonStr);
+    
+    // TODO: Process the command based on device and command
+  }
+}
 #endif

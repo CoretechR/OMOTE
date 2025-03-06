@@ -3,6 +3,9 @@
 #include <list>
 #include <string>
 #include "applicationInternal/hardware/arduinoLayer.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 // --- hardware general -------------------------------------------------------
 void init_hardware_general(void);
@@ -144,3 +147,12 @@ void wifiStop();
 
 // --- memory usage -----------------------------------------------------------
 void get_heapUsage(unsigned long *heapSize, unsigned long *freeHeap, unsigned long *maxAllocHeap, unsigned long *minFreeHeap);
+
+// --- ESP-NOW ----------------------------------------------------------------
+#if (ENABLE_ESPNOW == 1)
+// ESP-NOW hardware presenter functions
+void init_espnow();
+void espnow_loop();
+bool publishEspNowMessage(json payload);
+void espnow_shutdown();
+#endif
