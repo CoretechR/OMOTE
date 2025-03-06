@@ -1,6 +1,11 @@
 #pragma once
 #include "HomeAssist/WebSocket/Api.hpp"
+#include "HomeAssist/WebSocket/Message/MessageHandler.hpp"
 #include "core/page/PageBase.hpp"
+
+namespace HAL::WebSocket::Json {
+class IChunkProcessor;
+}
 
 namespace UI::Widget {
 class List;
@@ -23,6 +28,7 @@ class DeviceList : public Base {
   void InitializeUI();
   Widget::List* mDeviceList;
   HomeAssist::WebSocket::Api& mApi;
+  std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> mDeviceQueryProcessor;
 };
 
 }  // namespace UI::Page

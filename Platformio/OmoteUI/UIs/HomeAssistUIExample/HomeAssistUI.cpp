@@ -1,6 +1,5 @@
 #include "HomeAssistUIExample/HomeAssistUI.hpp"
 
-#include "DevicesQueryProcessor.hpp"
 #include "HardwareFactory.hpp"
 #include "HomeAssist/WebSocket/Message/Attributes/Light.hpp"
 #include "HomeAssist/WebSocket/Message/Entity.hpp"
@@ -47,17 +46,6 @@ HomeAssistUI::HomeAssistUI() : BasicUI() {
     }
     return true;
   });
-
-  mDeviceQueryProcessor = std::make_shared<UI::DevicesQueryProcessor>();
-
-  auto lightRequest = std::make_unique<Request>(HomeAssist::TestSubEvent);
-  auto stateRequest = std::make_unique<Request>(HomeAssist::GetEntityMessage);
-
-  // mHomeAssistApi->AddSession(
-  //     std::make_unique<Session>(std::move(lightRequest), mMessageHandler));
-
-  mHomeAssistApi->AddSession(std::make_unique<Session>(
-      std::move(stateRequest), nullptr, mDeviceQueryProcessor));
 }
 
 void HomeAssistUI::loopHandler() {
