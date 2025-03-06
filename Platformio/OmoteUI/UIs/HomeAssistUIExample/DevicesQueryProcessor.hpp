@@ -1,11 +1,17 @@
 #pragma once
+#include <functional>
+#include <string>
+
 #include "websockets/IChunkProcessor.hpp"
 
 namespace UI {
 
 class DevicesQueryProcessor : public HAL::WebSocket::Json::IChunkProcessor {
  public:
-  DevicesQueryProcessor() = default;
+  using EntityIdCallback = std::function<void(const std::string&)>;
+
+  explicit DevicesQueryProcessor(EntityIdCallback onEntityFound)
+      : entityIdCallback(std::move(onEntityFound)) {}
   virtual ~DevicesQueryProcessor() = default;
 
   bool Null() override;
@@ -22,6 +28,10 @@ class DevicesQueryProcessor : public HAL::WebSocket::Json::IChunkProcessor {
   bool EndObject(rapidjson::SizeType memberCount) override;
   bool StartArray() override;
   bool EndArray(rapidjson::SizeType elementCount) override;
+
+ private:
+  bool isProcessingEi = false;
+  const EntityIdCallback entityIdCallback;
 };
 
 }  // namespace UI

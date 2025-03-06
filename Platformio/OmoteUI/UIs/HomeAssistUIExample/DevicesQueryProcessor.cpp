@@ -15,11 +15,16 @@ bool DevicesQueryProcessor::RawNumber(const Ch* str, rapidjson::SizeType length,
 }
 bool DevicesQueryProcessor::String(const Ch* str, rapidjson::SizeType length,
                                    bool copy) {
+  if (isProcessingEi && entityIdCallback) {
+    entityIdCallback(std::string(str, length));
+    isProcessingEi = false;
+  }
   return true;
 }
 bool DevicesQueryProcessor::StartObject() { return true; }
 bool DevicesQueryProcessor::Key(const Ch* str, rapidjson::SizeType length,
                                 bool copy) {
+  isProcessingEi = (strncmp(str, "ei", length) == 0);
   return true;
 }
 bool DevicesQueryProcessor::EndObject(rapidjson::SizeType memberCount) {
