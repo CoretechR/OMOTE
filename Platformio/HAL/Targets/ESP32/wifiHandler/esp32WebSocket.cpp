@@ -107,6 +107,11 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
              256 * aEventData->data_ptr[0] + aEventData->data_ptr[1]);
     return;
   }
+  bool IsStartOfMessage = aEventData->payload_offset == 0;
+  if (IsStartOfMessage) {
+    mPartialProcessingFailed = false;
+  }
+
   if (aEventData->data_len < 0) {
     return;
   }
@@ -123,8 +128,8 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
       break;
     case Step::Partial:
       if (mJsonHandler) {
-        auto procStatus =
-            mJsonHandler->ProcessChunk({aEventData->data_ptr, dataLength});
+        mPartialProcessingFailed = !mJsonHandler->ProcessChunk(
+            {aEventData->data_ptr, dataLength}, aEventData->payload_len);
       }
       break;
     case Step::Drop:
@@ -174,7 +179,10 @@ esp32WebSocket::ProcessingStep esp32WebSocket::getNextStep(
     return getStartStep(aEventData);
   }
 
-  if (aEventData->payload_offset > 0 && mIncomingMessage.empty()) {
+  auto inMiddleOfPartialProcMessage =
+      aEventData->payload_offset > 0 && mIncomingMessage.empty();
+
+  if (inMiddleOfPartialProcMessage && !mPartialProcessingFailed) {
     return ProcessingStep::Partial;
   }
 

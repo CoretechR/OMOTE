@@ -1,5 +1,7 @@
 #include "IProcessMessage.hpp"
 
+#include "IChunkProcessor.hpp"
+
 namespace HAL::WebSocket::Json {
 
 IProcessMessage::ProcessResult::ProcessResult(ProcessResult::StatusCode aStatus,
@@ -22,11 +24,16 @@ IProcessMessage::ProcessResult::operator bool() {
          mStatus == Result::SuccessWaitingForNextChunk;
 }
 
+IProcessMessage::IProcessMessage() = default;
+
 IProcessMessage::IProcessMessage(
     DocumentProccessor aDocProcessor,
     std::unique_ptr<IChunkProcessor> aChunkProcessor)
     : mDocProcessor(aDocProcessor),
-      mChunkProcessor(std::move(aChunkProcessor)) {}
+      mChunkProcessor(std::move(aChunkProcessor)),
+      mUnprocessedBuffer(DefaultMaxBufferSize, '\0') {}
+
+IProcessMessage::~IProcessMessage() = default;
 
 bool IProcessMessage::ProcessDocument(
     const MemConciousDocument& aRecievedDocument) {
@@ -41,48 +48,76 @@ bool IProcessMessage::HasChunkProcessor() { return mChunkProcessor != nullptr; }
 // MatthewColvin/OMOTE#6 pass final size in here and track currently processed
 // byte to allow for for calling status update callback
 IProcessMessage::ProcessResult IProcessMessage::ProcessChunk(
-    const std::string& aJsonChunk) {
+    const std::string& aJsonChunk, const size_t aTotalJsonSize) {
   if (!mChunkProcessor) {
     return {ProcessResult::StatusCode::MissingChunkProcessor};
   }
-  if (!mIsProcessingChunks) {
+  if (!IsProcessingChunks()) {
     mChunkReader.IterativeParseInit();
-    mIsProcessingChunks = true;
+    mCurrentChunkBasedTotalJsonSize = aTotalJsonSize;
+  } else {
+    if (aTotalJsonSize != mCurrentChunkBasedTotalJsonSize) {
+      return {
+          ProcessResult::StatusCode::FailedChunkProcessingMessageSizeChanged};
+    }
   }
 
-  // MatthewColvin/OMOTE#6 todo update to honor max size and if we cant handle
-  // it bail with the FailedChunkProcessorMemoryLimitMet error
-  auto chunkToProcess =
-      mUnprocessedStr.empty() ? aJsonChunk : mUnprocessedStr + aJsonChunk;
+  if (mUnprocessedBuffer.length() + aJsonChunk.length() > mMaxBufferSize) {
+    return {ProcessResult::StatusCode::FailedChunkProcessorMemoryLimitMet};
+  }
 
-  auto stream = rapidjson::StringStream(chunkToProcess.c_str());
+  mUnprocessedBuffer += aJsonChunk;
+
+  auto stream = rapidjson::StringStream(mUnprocessedBuffer.c_str());
   auto lastSuccessfulReadIndex = 0;
-  // Todo
-  // Honeslty not sure if this can ever be completely valid
-  // Probably just need a better look ahead method
-  static constexpr auto MagicLookAheadedBufferLength = 300;
+
   while (mChunkReader.IterativeParseNext<rapidjson::kParseIterativeFlag>(
       stream, *mChunkProcessor)) {
+    if (mChunkReader.IterativeParseComplete()) {
+      mCurrentChunkBasedTotalJsonSize = mCurrentChunkBasedTotalJsonSize;
+      ProcessResult result = {
+          ProcessResult::StatusCode::SuccessFinishedChunkParse};
+      EndChunkProcessing(result);
+      return result;
+    }
     if (!mChunkReader.HasParseError()) {
       lastSuccessfulReadIndex = stream.Tell();
-      auto isNotMuchTextLeft =
-          chunkToProcess.length() - lastSuccessfulReadIndex <
-          MagicLookAheadedBufferLength;
-      if (isNotMuchTextLeft) {
-        mUnprocessedStr = chunkToProcess.substr(lastSuccessfulReadIndex);
+      if (IsChunkBufferToSmallForProcessing(lastSuccessfulReadIndex)) {
+        mUnprocessedBuffer = mUnprocessedBuffer.substr(lastSuccessfulReadIndex);
+        mChunkProcessor->UpdateProgress(mOffsetIntoChunkBasedJson,
+                                        mCurrentChunkBasedTotalJsonSize);
         return {ProcessResult::StatusCode::SuccessWaitingForNextChunk};
-        // MatthewColvin/OMOTE#6 call percent complete callback here
       }
     }
-    if (mChunkReader.IterativeParseComplete()) {
-      mIsProcessingChunks = false;
-      return {ProcessResult::StatusCode::SuccessFinishedChunkParse};
-      // MatthewColvin/OMOTE#6 this could be where we call a "chunk parse
-      // complete callback with the ProcessResult
-    }
   }
-  // TODO what really?
-  return {ProcessResult::StatusCode::SuccessWaitingForNextChunk};
+
+  ProcessResult result = {
+      ProcessResult::StatusCode::ParseError,
+      {mChunkReader.GetParseErrorCode(), mOffsetIntoChunkBasedJson}};
+  EndChunkProcessing(result);
+  return result;
+}
+
+bool IProcessMessage::IsProcessingChunks() const {
+  mCurrentChunkBasedTotalJsonSize != ChunkMessageSizeNotProcessing;
+}
+void IProcessMessage::EndChunkProcessing(
+    const ProcessResult& aResultToEndWith) {
+  mCurrentChunkBasedTotalJsonSize = ChunkMessageSizeNotProcessing;
+  mOffsetIntoChunkBasedJson = 0;
+  if (mChunkProcessor) {
+    mChunkProcessor->Completed(aResultToEndWith);
+  }
+  // Clear the buffer
+  mUnprocessedBuffer.clear();
+  mUnprocessedBuffer.shrink_to_fit();
+}
+
+bool IProcessMessage::IsChunkBufferToSmallForProcessing(
+    size_t aCurrentIndexIntoBuffer) const {
+  // TODO: Consider this lookAheadsize abit more
+  const auto lookAheadBytes = mMaxBufferSize * .5;
+  return mUnprocessedBuffer.length() - aCurrentIndexIntoBuffer < lookAheadBytes;
 }
 
 IProcessMessage::ProcessResult IProcessMessage::ProcessJsonAsDoc(
@@ -101,6 +136,11 @@ IProcessMessage::ProcessResult IProcessMessage::ProcessJsonAsDoc(
 bool IProcessMessage::IsChunkProcessingPrefered() {
   // Only processor we have is chunk probably use it.
   return mChunkProcessor && !mDocProcessor;
+}
+
+void IProcessMessage::SetMaxProcessBufferSize(size_t aProcessBufferSize) {
+  mMaxBufferSize = aProcessBufferSize;
+  mUnprocessedBuffer.reserve(mMaxBufferSize);
 }
 
 }  // namespace HAL::WebSocket::Json

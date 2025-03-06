@@ -39,6 +39,7 @@ class esp32WebSocket : public webSocketInterface {
   esp_websocket_client_config_t mConfig{};
 
   bool connected = false;
+  bool mPartialProcessingFailed = false;
   std::string mIncomingMessage{};
   MessageCallback messageCallback{};
 };
