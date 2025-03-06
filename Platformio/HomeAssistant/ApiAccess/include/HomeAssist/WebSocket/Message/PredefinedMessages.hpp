@@ -22,10 +22,10 @@ static const auto TestSubEvent = R"---(
     }
     )---";
 
-static const auto GetStatesMessage = R"---(
+static const auto GetEntityMessage = R"---(
     {
       "id": 0,
-      "type": "get_states"
+      "type": "config/entity_registry/list"
     }
     )---";
 

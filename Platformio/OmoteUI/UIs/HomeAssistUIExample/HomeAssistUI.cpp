@@ -51,7 +51,7 @@ HomeAssistUI::HomeAssistUI() : BasicUI() {
   mDeviceQueryProcessor = std::make_shared<UI::DevicesQueryProcessor>();
 
   auto lightRequest = std::make_unique<Request>(HomeAssist::TestSubEvent);
-  auto stateRequest = std::make_unique<Request>(HomeAssist::GetStatesMessage);
+  auto stateRequest = std::make_unique<Request>(HomeAssist::GetEntityMessage);
 
   // mHomeAssistApi->AddSession(
   //     std::make_unique<Session>(std::move(lightRequest), mMessageHandler));

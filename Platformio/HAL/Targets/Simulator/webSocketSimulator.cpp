@@ -5,6 +5,9 @@ webSocketSimulator::webSocketSimulator() {
   wsClient.set_message_handler(std::bind(&webSocketSimulator::onMessage, this,
                                          std::placeholders::_1,
                                          std::placeholders::_2));
+  wsClient.set_open_handler([this](auto) { Connected(); });
+  wsClient.set_close_handler([this](auto) { Disconnected(); });
+  //  maybe TODO wsClient.set_fail_handler();
 }
 
 webSocketSimulator::~webSocketSimulator() {
@@ -26,7 +29,6 @@ void webSocketSimulator::connect(const std::string& url) {
   wsClient.connect(con);
   wsThread = std::thread([this] { wsClient.run(); });
 
-  connected = true;
   std::cout << "Connected to " << url << std::endl;
 }
 
@@ -37,12 +39,11 @@ void webSocketSimulator::disconnect() {
   if (ec) {
     std::cout << "Error closing connection: " << ec.message() << std::endl;
   }
-  connected = false;
   std::cout << "Disconnected" << std::endl;
 }
 
 void webSocketSimulator::sendMessage(const std::string& message) {
-  if (connected) {
+  if (isConnected()) {
     websocketpp::lib::error_code ec;
     wsClient.send(connectionHandle, message, websocketpp::frame::opcode::text,
                   ec);
@@ -56,20 +57,32 @@ void webSocketSimulator::setMessageCallback(MessageCallback callback) {
   messageCallback = callback;
 }
 
-bool webSocketSimulator::isConnected() const { return connected; }
-
 void webSocketSimulator::onMessage(websocketpp::connection_hdl hdl,
                                    client::message_ptr msg) {
-  if (mJsonHandler && mJsonHandler->HasChunkProcessor() &&
-      mJsonHandler->IsChunkProcessingPrefered()) {
-    mJsonHandler->ProcessChunk(msg->get_payload());
-  } else {
-    // JsonHandler parsed no need to try with the generic message handler
-    if (mJsonHandler->ProcessJsonAsDoc(msg->get_payload())) {
-      return;
+  rapidjson::Document doc;
+  doc.Parse(msg->get_payload().c_str());
+  std::cout << "Message:" << messageNum << std::endl
+            << ToPrettyString(doc) << std::endl
+            << "EndMessage:" << messageNum << std::endl;
+  messageNum++;
+
+  static constexpr auto TypicalEmbeddedChunkingSize = 40000;
+  auto embeddedWouldHaveChunked =
+      msg->get_payload().size() > TypicalEmbeddedChunkingSize;
+
+  if (mJsonHandler) {
+    auto shouldChunkProcess = (mJsonHandler->HasChunkProcessor() &&
+                               mJsonHandler->IsChunkProcessingPrefered()) ||
+                              embeddedWouldHaveChunked;
+    if (shouldChunkProcess) {
+      mJsonHandler->ProcessChunk(msg->get_payload());
+    } else {
+      if (mJsonHandler->ProcessJsonAsDoc(msg->get_payload())) {
+        // JsonHandler parsed no need to try with the generic message handler
+        return;
+      }
     }
   }
-
   if (messageCallback) {
     messageCallback(msg->get_payload());
   }

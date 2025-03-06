@@ -9,13 +9,10 @@
 static const char *TAG = "esp32WebSocket";
 
 esp32WebSocket::esp32WebSocket(std::shared_ptr<wifiHandler> aWifiHandler)
-    : mWifiHandler(aWifiHandler),
-      client(nullptr),
-      connected(false),
-      mIncomingMessage() {}
+    : mWifiHandler(aWifiHandler), client(nullptr), mIncomingMessage() {}
 
 void esp32WebSocket::connect(const std::string &url) {
-  if (client && !connected) {
+  if (client && !isConnected()) {
     disconnect();
   }
   if (mWifiHandler->GetStatus().isConnected) {
@@ -89,11 +86,10 @@ void esp32WebSocket::disconnect() {
     esp_websocket_client_destroy(client);
     client = nullptr;
   }
-  connected = false;
 }
 
 void esp32WebSocket::sendMessage(const std::string &message) {
-  if (connected && client) {
+  if (isConnected() && client) {
     ESP_LOGI(TAG, "Sending: %s", message.c_str());
     esp_websocket_client_send_text(client, message.c_str(), message.length(),
                                    portMAX_DELAY);
@@ -104,14 +100,11 @@ void esp32WebSocket::setMessageCallback(MessageCallback callback) {
   messageCallback = callback;
 }
 
-bool esp32WebSocket::isConnected() const { return connected; }
-
 void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
   // Todo is this a standard timeout message?
   if (aEventData->op_code == 0x08 && aEventData->data_len == 2) {
     ESP_LOGI(TAG, "Received closed message with code=%d",
              256 * aEventData->data_ptr[0] + aEventData->data_ptr[1]);
-    connected = false;
     return;
   }
   if (aEventData->data_len < 0) {
@@ -233,12 +226,12 @@ void esp32WebSocket::websocket_event_handler(void *handler_args,
 
   switch (event_id) {
     case WEBSOCKET_EVENT_CONNECTED:
-      self->connected = true;
       ESP_LOGI(TAG, "WebSocket connected");
+      Connected();
       break;
     case WEBSOCKET_EVENT_DISCONNECTED:
-      self->connected = false;
       ESP_LOGI(TAG, "WebSocket disconnected");
+      Disconnected();
       break;
     case WEBSOCKET_EVENT_ERROR:
       ESP_LOGI(TAG, "WebSocket error");

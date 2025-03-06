@@ -15,30 +15,48 @@ Api::Api(std::shared_ptr<webSocketInterface> socket)
     : mHomeAssistSocket(socket) {
   if (mHomeAssistSocket) {
     mHomeAssistSocket->SetJsonHandler(std::make_unique<ResponseHandler>(*this));
+
+    mHomeAssistSocket->OnConnect([this]() {
+      mConnectionTime = HardwareFactory::getAbstract().execTime();
+    });
+
+    mHomeAssistSocket->OnDisconnect([this]() { /*TODO Reattempt Connection*/ });
     mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
     mLastConnectRetry = HardwareFactory::getAbstract().execTime();
     mAuthSession = std::make_unique<AuthSession>(mHomeAssistSocket);
   }
 }
 
-Api::~Api() {}
+Api::~Api() {
+  // Unregsiter on destruction
+  if (mHomeAssistSocket) {
+    mHomeAssistSocket->OnConnect();
+    mHomeAssistSocket->OnDisconnect();
+    mHomeAssistSocket->SetJsonHandler();
+  }
+}
 
 void Api::Process() {
   auto execTime = HardwareFactory::getAbstract().execTime();
   if (!mHomeAssistSocket) {
     return;
   }
-  auto tenSecondsSinceRetry = [this, execTime]() {
-    return execTime > mLastConnectRetry + std::chrono::seconds(10);
+  auto fiveSecondsSinceRetry = [this, execTime]() {
+    return execTime > mLastConnectRetry + std::chrono::seconds(5);
   };
-  if (!mHomeAssistSocket->isConnected() && tenSecondsSinceRetry()) {
+  if (!mHomeAssistSocket->isConnected() && fiveSecondsSinceRetry()) {
     mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
     mLastConnectRetry = execTime;
   }
+
+  auto threeSecondsSinceConnection = [this, execTime]() {
+    return execTime > mConnectionTime + std::chrono::seconds(3);
+  };
   if (mAuthSession && mHomeAssistSocket->isConnected() &&
-      !mAuthSession->IsAuthSent()) {
+      !mAuthSession->IsAuthSent() && threeSecondsSinceConnection()) {
     mAuthSession->SendAuth();
   }
+
   ProcessSessions();
   ProcessMessages();
 }

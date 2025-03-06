@@ -15,7 +15,6 @@ class webSocketSimulator : public webSocketInterface {
   void disconnect() override;
   void sendMessage(const std::string& message) override;
   void setMessageCallback(MessageCallback callback) override;
-  bool isConnected() const override;
 
  private:
   using client = websocketpp::client<websocketpp::config::asio_client>;
@@ -24,6 +23,7 @@ class webSocketSimulator : public webSocketInterface {
   std::thread wsThread;
   bool connected = false;
   MessageCallback messageCallback;
+  int messageNum = 0;
 
   void onMessage(websocketpp::connection_hdl hdl, client::message_ptr msg);
 };

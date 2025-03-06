@@ -17,17 +17,23 @@ bool ChunkForwarder::Null() {
   if (auto processor = mProcessor.lock()) {
     return processor->Null();
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::Bool(bool b) {
   if (auto processor = mProcessor.lock()) {
     return processor->Bool(b);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::Int(int i) {
+  if (auto processor = mProcessor.lock()) {
+    return processor->Int(i);
+  }
+  return true;
+}
+bool ChunkForwarder::Uint(unsigned u) {
   if (mProcessingId) {
-    mCurrentId = i;
+    mCurrentId = u;
     mFoundId = true;
     mProcessingId = false;
 
@@ -35,58 +41,54 @@ bool ChunkForwarder::Int(int i) {
       if (auto newProcessor = session->GetChunkProcessor(); newProcessor) {
         mProcessor = newProcessor;
       }
+    } else {
+      // We did not have a session to handle this so cancel processing
+      return false;
     }
   }
-
-  if (auto processor = mProcessor.lock()) {
-    return processor->Int(i);
-  }
-  return false;
-}
-bool ChunkForwarder::Uint(unsigned u) {
   if (auto processor = mProcessor.lock()) {
     return processor->Uint(u);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::Int64(int64_t i) {
   if (auto processor = mProcessor.lock()) {
     return processor->Int64(i);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::Uint64(uint64_t u) {
   if (auto processor = mProcessor.lock()) {
     return processor->Uint64(u);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::Double(double d) {
   if (auto processor = mProcessor.lock()) {
     return processor->Double(d);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::RawNumber(const Ch* str, rapidjson::SizeType length,
                                bool copy) {
   if (auto processor = mProcessor.lock()) {
     return processor->RawNumber(str, length, copy);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::String(const Ch* str, rapidjson::SizeType length,
                             bool copy) {
   if (auto processor = mProcessor.lock()) {
     return processor->String(str, length, copy);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::StartObject() {
   mInObject = true;
   if (auto processor = mProcessor.lock()) {
     return processor->StartObject();
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::Key(const Ch* str, rapidjson::SizeType length, bool copy) {
   if (strcmp(str, "id") == 0) {
@@ -95,7 +97,7 @@ bool ChunkForwarder::Key(const Ch* str, rapidjson::SizeType length, bool copy) {
   if (auto processor = mProcessor.lock()) {
     return processor->Key(str, length, copy);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::EndObject(rapidjson::SizeType memberCount) {
   mInObject = false;
@@ -104,19 +106,19 @@ bool ChunkForwarder::EndObject(rapidjson::SizeType memberCount) {
   if (auto processor = mProcessor.lock()) {
     return processor->EndObject(memberCount);
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::StartArray() {
   if (auto processor = mProcessor.lock()) {
     return processor->StartArray();
   }
-  return false;
+  return true;
 }
 bool ChunkForwarder::EndArray(rapidjson::SizeType elementCount) {
   if (auto processor = mProcessor.lock()) {
     return processor->EndArray(elementCount);
   }
-  return false;
+  return true;
 }
 
 }  // namespace HomeAssist::WebSocket
