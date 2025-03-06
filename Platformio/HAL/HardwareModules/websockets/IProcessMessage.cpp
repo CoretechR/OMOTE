@@ -38,6 +38,8 @@ bool IProcessMessage::ProcessDocument(
 
 bool IProcessMessage::HasChunkProcessor() { return mChunkProcessor != nullptr; }
 
+// MatthewColvin/OMOTE#6 pass final size in here and track currently processed
+// byte to allow for for calling status update callback
 IProcessMessage::ProcessResult IProcessMessage::ProcessChunk(
     const std::string& aJsonChunk) {
   if (!mChunkProcessor) {
@@ -48,6 +50,8 @@ IProcessMessage::ProcessResult IProcessMessage::ProcessChunk(
     mIsProcessingChunks = true;
   }
 
+  // MatthewColvin/OMOTE#6 todo update to honor max size and if we cant handle
+  // it bail with the FailedChunkProcessorMemoryLimitMet error
   auto chunkToProcess =
       mUnprocessedStr.empty() ? aJsonChunk : mUnprocessedStr + aJsonChunk;
 
@@ -67,11 +71,14 @@ IProcessMessage::ProcessResult IProcessMessage::ProcessChunk(
       if (isNotMuchTextLeft) {
         mUnprocessedStr = chunkToProcess.substr(lastSuccessfulReadIndex);
         return {ProcessResult::StatusCode::SuccessWaitingForNextChunk};
+        // MatthewColvin/OMOTE#6 call percent complete callback here
       }
     }
     if (mChunkReader.IterativeParseComplete()) {
       mIsProcessingChunks = false;
       return {ProcessResult::StatusCode::SuccessFinishedChunkParse};
+      // MatthewColvin/OMOTE#6 this could be where we call a "chunk parse
+      // complete callback with the ProcessResult
     }
   }
   // TODO what really?

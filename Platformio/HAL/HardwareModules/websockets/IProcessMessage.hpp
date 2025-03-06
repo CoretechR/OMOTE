@@ -22,6 +22,7 @@ class IProcessMessage {
       SuccessWaitingForNextChunk,
       ParseError,
       MissingChunkProcessor,
+      FailedChunkProcessorMemoryLimitMet,
       DocProcessorFailed
     };
     ProcessResult(StatusCode aInternalError,
@@ -33,6 +34,8 @@ class IProcessMessage {
 
     StatusCode mStatus{};
     rapidjson::ParseResult mParseResult{};
+    // MatthewColvin/OMOTE#6 Add max buffer size and comment explaining how 
+    // that will directly relate to abiliy to read large json 
   };
 
   using DocumentProccessor = std::function<bool(const MemConciousDocument&)>;
