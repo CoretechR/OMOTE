@@ -2,7 +2,10 @@
 #include "hubBackendBase.h"
 #include "applicationInternal/omote_log.h"
 #include <Arduino.h>
+
+#if (ENABLE_ESPNOW == 1)
 #include "espnowBackend.h"
+#endif
 
 #if (ENABLE_WIFI_AND_MQTT == 1)
 #include "mqttBackend.h"
