@@ -43,12 +43,11 @@ void set_announceEspNowMessage_cb_HAL(tAnnounceEspNowMessage_cb pAnnounceEspNowM
 }
 
 void init_espnow_HAL(void) {
-  // Set WiFi mode to station (required for ESP-NOW)
   Serial.println("Starting ESP-NOW");
+  // Set WiFi mode to station (required for ESP-NOW)
   WiFi.mode(WIFI_STA);
   esp_wifi_set_channel(8, WIFI_SECOND_CHAN_NONE);
 
-  
   // Initialize ESP-NOW
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
@@ -85,7 +84,7 @@ bool publishEspNowMessage_HAL(json payload) {
   std::vector<std::uint8_t> packed_json = json::to_msgpack(payload);
   
   if (packed_json.size() > 250) {
-    Serial.printf("Error: Message exceeds ESP-NOW maximum size");
+    Serial.println("Error: Message exceeds ESP-NOW maximum size");
     return false;
   }
   
@@ -93,11 +92,11 @@ bool publishEspNowMessage_HAL(json payload) {
   esp_err_t result = esp_now_send(hub_peer.peer_addr, packed_json.data(), packed_json.size());
   
   if (result == ESP_OK) {
-    Serial.printf("ESP-NOW sent message with success\n");
+    Serial.println("ESP-NOW sent message with success");
     return true;
   }
   
-  Serial.printf("ESP-NOW failed to send message\n");
+  Serial.println("ESP-NOW failed to send message");
   return false;
 }
 
