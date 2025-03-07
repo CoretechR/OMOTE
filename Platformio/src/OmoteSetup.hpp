@@ -1,5 +1,5 @@
 #include "HardwareFactory.hpp"
-#include "HomeAssistUIExample/HomeAssistUI.hpp"
+#include "UIs/HomeAssistUI/HomeAssistUI.hpp"
 
 namespace OMOTE {
 std::shared_ptr<UI::UIBase> ui = nullptr;

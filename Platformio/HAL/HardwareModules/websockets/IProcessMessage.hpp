@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "RapidJsonUtilty.hpp"
+#include "HomeAssistant/RapidJsonUtilty.hpp"
 #include "rapidjson/error/error.h"
 #include "rapidjson/reader.h"
 #include "rapidjson/stream.h"
