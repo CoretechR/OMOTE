@@ -26,8 +26,8 @@ class esp32WebSocket : public webSocketInterface {
   void printDebugInfo(esp_websocket_event_data_t *aEventData,
                       ProcessingStep aNextStep);
 
-  ProcessingStep getNextStep(esp_websocket_event_data_t *aEventData);
-  ProcessingStep getStartStep(esp_websocket_event_data_t *aEventData);
+  ProcessingStep getNextStep(esp_websocket_event_data_t *aEventData) const;
+  ProcessingStep getStartStep(esp_websocket_event_data_t *aEventData) const;
 
   void processStoredMessage();
 

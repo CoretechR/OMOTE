@@ -75,10 +75,14 @@ class IProcessMessage {
  private:
   DocumentProccessor mDocProcessor = nullptr;
   bool IsProcessingChunks() const;
+  bool IsChunkBufferToSmallForProcessing() const;
+
+  void UpdateBufferAndMetaData();
   void EndChunkProcessing(const ProcessResult& aResultToEndWith);
-  bool IsChunkBufferToSmallForProcessing(size_t aCurrentIndexIntoBuffer) const;
 
   rapidjson::Reader mChunkReader;
+  rapidjson::StringStream mChunkStream;
+
   std::unique_ptr<IChunkProcessor> mChunkProcessor;
   static constexpr auto ChunkMessageSizeNotProcessing = 0;
   size_t mCurrentChunkBasedTotalJsonSize = ChunkMessageSizeNotProcessing;

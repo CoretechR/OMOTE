@@ -128,6 +128,12 @@ void esp32WebSocket::proccessEventData(esp_websocket_event_data_t *aEventData) {
       break;
     case Step::Partial:
       if (mJsonHandler) {
+        if (IsStartOfMessage) {
+          // Grab 10% of current heap to process chunkwise message on
+          auto freeHeap = esp_get_free_heap_size();
+          auto buffSize = freeHeap * .10;
+          mJsonHandler->SetMaxProcessBufferSize(buffSize);
+        }
         mPartialProcessingFailed = !mJsonHandler->ProcessChunk(
             {aEventData->data_ptr, dataLength}, aEventData->payload_len);
       }
@@ -158,7 +164,7 @@ void esp32WebSocket::processStoredMessage() {
 }
 
 esp32WebSocket::ProcessingStep esp32WebSocket::getNextStep(
-    esp_websocket_event_data_t *aEventData) {
+    esp_websocket_event_data_t *aEventData) const {
   if (aEventData->data_len == 0) {
     return ProcessingStep::Drop;
   }
@@ -191,7 +197,7 @@ esp32WebSocket::ProcessingStep esp32WebSocket::getNextStep(
 }
 
 esp32WebSocket::ProcessingStep esp32WebSocket::getStartStep(
-    esp_websocket_event_data_t *aEventData) {
+    esp_websocket_event_data_t *aEventData) const {
   auto step = ProcessingStep::Drop;
 
   auto freeHeap = esp_get_free_heap_size();

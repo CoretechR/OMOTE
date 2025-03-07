@@ -78,6 +78,7 @@ void webSocketSimulator::onMessage(websocketpp::connection_hdl hdl,
                                mJsonHandler->IsChunkProcessingPrefered()) ||
                               embeddedWouldHaveChunked;
     if (shouldChunkProcess) {
+      mJsonHandler->SetMaxProcessBufferSize(5000);
       size_t payloadSize = msg->get_payload().size();
       for (size_t i = 0; i < payloadSize; i += 1024) {
         std::string chunk = msg->get_payload().substr(i, 1024);

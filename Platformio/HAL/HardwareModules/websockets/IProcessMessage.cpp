@@ -24,14 +24,17 @@ IProcessMessage::ProcessResult::operator bool() {
          mStatus == Result::SuccessWaitingForNextChunk;
 }
 
-IProcessMessage::IProcessMessage() = default;
+IProcessMessage::IProcessMessage()
+    : mChunkStream(mUnprocessedBuffer.c_str()) {};
 
 IProcessMessage::IProcessMessage(
     DocumentProccessor aDocProcessor,
     std::unique_ptr<IChunkProcessor> aChunkProcessor)
     : mDocProcessor(aDocProcessor),
       mChunkProcessor(std::move(aChunkProcessor)),
-      mUnprocessedBuffer(DefaultMaxBufferSize, '\0') {}
+      mChunkStream(mUnprocessedBuffer.c_str()) {
+  mUnprocessedBuffer.reserve(DefaultMaxBufferSize);
+}
 
 IProcessMessage::~IProcessMessage() = default;
 
@@ -68,38 +71,32 @@ IProcessMessage::ProcessResult IProcessMessage::ProcessChunk(
 
   mUnprocessedBuffer += aJsonChunk;
 
-  auto stream = rapidjson::StringStream(mUnprocessedBuffer.c_str());
+  mChunkStream = {mUnprocessedBuffer.c_str()};
   auto lastSuccessfulReadIndex = 0;
 
-  while (mChunkReader.IterativeParseNext<rapidjson::kParseIterativeFlag>(
-      stream, *mChunkProcessor)) {
-    if (mChunkReader.IterativeParseComplete()) {
-      mCurrentChunkBasedTotalJsonSize = mCurrentChunkBasedTotalJsonSize;
-      ProcessResult result = {
-          ProcessResult::StatusCode::SuccessFinishedChunkParse};
-      EndChunkProcessing(result);
-      return result;
+  while (!mChunkReader.IterativeParseComplete()) {
+    if (IsChunkBufferToSmallForProcessing()) {
+      return {ProcessResult::StatusCode::SuccessWaitingForNextChunk};
     }
-    if (!mChunkReader.HasParseError()) {
-      lastSuccessfulReadIndex = stream.Tell();
-      if (IsChunkBufferToSmallForProcessing(lastSuccessfulReadIndex)) {
-        mUnprocessedBuffer = mUnprocessedBuffer.substr(lastSuccessfulReadIndex);
-        mChunkProcessor->UpdateProgress(mOffsetIntoChunkBasedJson,
-                                        mCurrentChunkBasedTotalJsonSize);
-        return {ProcessResult::StatusCode::SuccessWaitingForNextChunk};
-      }
+    auto IsChunkParseSuccess =
+        mChunkReader.IterativeParseNext<rapidjson::kParseIterativeFlag>(
+            mChunkStream, *mChunkProcessor);
+    if (IsChunkParseSuccess) {
+      UpdateBufferAndMetaData();
+    } else {
+      ProcessResult result = {
+          ProcessResult::StatusCode::ParseError,
+          {mChunkReader.GetParseErrorCode(), mOffsetIntoChunkBasedJson}};
+      EndChunkProcessing(result);
     }
   }
-
-  ProcessResult result = {
-      ProcessResult::StatusCode::ParseError,
-      {mChunkReader.GetParseErrorCode(), mOffsetIntoChunkBasedJson}};
+  ProcessResult result = {ProcessResult::StatusCode::SuccessFinishedChunkParse};
   EndChunkProcessing(result);
   return result;
 }
 
 bool IProcessMessage::IsProcessingChunks() const {
-  mCurrentChunkBasedTotalJsonSize != ChunkMessageSizeNotProcessing;
+  return mCurrentChunkBasedTotalJsonSize != ChunkMessageSizeNotProcessing;
 }
 void IProcessMessage::EndChunkProcessing(
     const ProcessResult& aResultToEndWith) {
@@ -113,11 +110,30 @@ void IProcessMessage::EndChunkProcessing(
   mUnprocessedBuffer.shrink_to_fit();
 }
 
-bool IProcessMessage::IsChunkBufferToSmallForProcessing(
-    size_t aCurrentIndexIntoBuffer) const {
+bool IProcessMessage::IsChunkBufferToSmallForProcessing() const {
   // TODO: Consider this lookAheadsize abit more
   const auto lookAheadBytes = mMaxBufferSize * .5;
-  return mUnprocessedBuffer.length() - aCurrentIndexIntoBuffer < lookAheadBytes;
+  auto bytesLeftToProcess = mUnprocessedBuffer.length() - mChunkStream.Tell();
+  auto isBufferTooSmall = bytesLeftToProcess < lookAheadBytes;
+
+  auto isLastChunkRecieved =
+      mOffsetIntoChunkBasedJson + mUnprocessedBuffer.length() ==
+      mCurrentChunkBasedTotalJsonSize;
+
+  return isBufferTooSmall && !isLastChunkRecieved;
+}
+
+void IProcessMessage::UpdateBufferAndMetaData() {
+  auto bytesProcesssed = mChunkStream.Tell();
+  // Update our offset since we processed all data in to where tell is at
+  mOffsetIntoChunkBasedJson += bytesProcesssed;
+  // Throw out already processed data
+  mUnprocessedBuffer = mUnprocessedBuffer.substr(bytesProcesssed);
+  // Setup Stream for next parse
+  mChunkStream = {mUnprocessedBuffer.c_str()};
+  // Notify Processor we processed some data
+  mChunkProcessor->UpdateProgress(mOffsetIntoChunkBasedJson,
+                                  mCurrentChunkBasedTotalJsonSize);
 }
 
 IProcessMessage::ProcessResult IProcessMessage::ProcessJsonAsDoc(
