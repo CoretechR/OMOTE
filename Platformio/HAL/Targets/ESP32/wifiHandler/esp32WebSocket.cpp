@@ -9,53 +9,25 @@
 static const char *TAG = "esp32WebSocket";
 
 esp32WebSocket::esp32WebSocket(std::shared_ptr<wifiHandler> aWifiHandler)
-    : mWifiHandler(aWifiHandler), client(nullptr), mIncomingMessage() {}
+    : mWifiHandler(aWifiHandler),
+      client(nullptr),
+      mIncomingMessage(),
+      mWifiStatusUpdateHandler(mWifiHandler->WifiStatusNotification()) {
+  mWifiStatusUpdateHandler =
+      [this](wifiHandlerInterface::wifiStatus aWifiStatus) {
+        if (aWifiStatus.isConnected) {
+          connect(mUri);
+        }
+      };
+}
 
 void esp32WebSocket::connect(const std::string &url) {
+  mUri = url;
   if (client && !isConnected()) {
     disconnect();
   }
   if (mWifiHandler->GetStatus().isConnected) {
-    // Extract host and port from URL
-    // std::string protocol, host, path;
-    // int port;
-    // size_t pos = url.find("://");
-    // if (pos != std::string::npos) {
-    //   protocol = url.substr(0, pos);
-    //   pos += 3;
-    // } else {
-    //   pos = 0;
-    // }
-
-    // size_t host_end = url.find(':', pos);
-    // if (host_end != std::string::npos) {
-    //   host = url.substr(pos, host_end - pos);
-    //   size_t port_end = url.find('/', host_end);
-    //   if (port_end != std::string::npos) {
-    //     port = std::stoi(url.substr(host_end + 1, port_end - host_end - 1));
-    //     path = url.substr(port_end);
-    //   } else {
-    //     port = std::stoi(url.substr(host_end + 1));
-    //   }
-    // } else {
-    //   size_t path_start = url.find('/', pos);
-    //   if (path_start != std::string::npos) {
-    //     host = url.substr(pos, path_start - pos);
-    //     path = url.substr(path_start);
-    //   } else {
-    //     host = url.substr(pos);
-    //   }
-    //   port = (protocol == "wss") ? 443 : 80;
-    // }
-
-    // ESP_LOGI(TAG, "Attempting Connect to host: %s, port: %d", host.c_str(),
-    //          port);
-
-    // mConfig.port = port;
-    // mConfig.host = host.c_str();
-    // mConfig.transport = protocol == "ws" ? WEBSOCKET_TRANSPORT_OVER_TCP
-    //                                      : WEBSOCKET_TRANSPORT_OVER_SSL;
-    mConfig.uri = url.c_str();
+    mConfig.uri = mUri.c_str();
 
     client = esp_websocket_client_init(&mConfig);
     if (!client) {

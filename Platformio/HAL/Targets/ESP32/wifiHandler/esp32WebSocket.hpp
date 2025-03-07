@@ -35,9 +35,12 @@ class esp32WebSocket : public webSocketInterface {
                                       int32_t event_id, void *event_data);
 
   std::shared_ptr<wifiHandler> mWifiHandler;
+  Handler<wifiHandlerInterface::wifiStatus> mWifiStatusUpdateHandler;
+
   esp_websocket_client_handle_t client;
   esp_websocket_client_config_t mConfig{};
 
+  std::string mUri;
   bool connected = false;
   bool mPartialProcessingFailed = false;
   std::string mIncomingMessage{};

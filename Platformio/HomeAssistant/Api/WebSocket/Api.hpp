@@ -41,8 +41,9 @@ class Api {
   void ProcessMessages();
 
  private:
-  std::chrono::milliseconds mLastConnectRetry{};
-  std::chrono::milliseconds mConnectionTime{};
+  static constexpr auto NotUsedTime = std::chrono::minutes(10000);
+  std::chrono::milliseconds mLastConnectRetry = NotUsedTime;
+  std::chrono::milliseconds mConnectionTime = NotUsedTime;
   ConnectionStatus mConnectionStatus = ConnectionStatus::Initializing;
   std::shared_ptr<webSocketInterface> mHomeAssistSocket = nullptr;
   std::queue<std::unique_ptr<Message>> mIncomingMessageQueue;
