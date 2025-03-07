@@ -20,6 +20,9 @@ std::map<char, uint16_t> key_commands_long_appleTV;
 
 void scene_setKeys_appleTV() {
   key_repeatModes_appleTV = {
+      {KEY_UP, SHORT_REPEATED},           {KEY_LEFT, SHORT_REPEATED},
+      {KEY_OK, SHORTorLONG},              {KEY_RIGHT, SHORT_REPEATED},
+      {KEY_DOWN, SHORT_REPEATED},
   };
 
   key_commands_short_appleTV = {
@@ -34,6 +37,7 @@ void scene_setKeys_appleTV() {
   };
 
   key_commands_long_appleTV = {
+      {KEY_OK, APPLETV_SELECT},
   };
 
 }
