@@ -41,7 +41,13 @@ bool DevicesQueryProcessor::EndArray(rapidjson::SizeType elementCount) {
 void DevicesQueryProcessor::UpdateProgress(size_t aProcessedBytes,
                                            size_t aTotalBytes) {
   if (mPercentCompleteCallback) {
-    mPercentCompleteCallback(aProcessedBytes / aTotalBytes);
+    auto percentComplete =
+        (100 * aProcessedBytes + aTotalBytes / 2) / aTotalBytes;
+    if (mPercentComplete == percentComplete) {
+      return;
+    }
+    mPercentComplete = percentComplete;
+    mPercentCompleteCallback(percentComplete);
   }
 }
 
@@ -52,13 +58,13 @@ void DevicesQueryProcessor::Completed(const resultType& aCompletionResult) {
 }
 
 void DevicesQueryProcessor::setPercentCompleteCallback(
-    std::function<void(float)> callback) {
-  mPercentCompleteCallback = std::move(callback);
+    std::function<void(uint16_t)> aCallback) {
+  mPercentCompleteCallback = std::move(aCallback);
 }
 
 void DevicesQueryProcessor::setRequestProcessCompleteCallback(
-    std::function<void(const resultType&)> callback) {
-  mRequestProcessCompleteCallback = std::move(callback);
+    std::function<void(const resultType&)> aCallback) {
+  mRequestProcessCompleteCallback = std::move(aCallback);
 }
 
 }  // namespace UI

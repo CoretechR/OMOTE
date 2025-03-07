@@ -1,6 +1,8 @@
 #pragma once
+#include "Arc.hpp"
 #include "HomeAssistant/Api/WebSocket/Api.hpp"
 #include "HomeAssistant/Api/WebSocket/Message/MessageHandler.hpp"
+#include "UIs/HomeAssistUI/SessionProcessors/DevicesQueryProcessor.hpp"
 #include "core/page/PageBase.hpp"
 
 namespace HAL::WebSocket::Json {
@@ -29,8 +31,9 @@ class DeviceList : public Base {
  private:
   void InitializeUI();
   Widget::List* mDeviceList;
+  Widget::Arc* mLoadingArc;
   HomeAssist::WebSocket::Api& mApi;
-  std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> mDeviceQueryProcessor;
+  std::shared_ptr<UI::DevicesQueryProcessor> mDeviceQueryProcessor;
 };
 
 }  // namespace UI::Page

@@ -121,4 +121,18 @@ bool ChunkForwarder::EndArray(rapidjson::SizeType elementCount) {
   return true;
 }
 
+void ChunkForwarder::UpdateProgress(size_t aProcessedBytes,
+                                    size_t aTotalBytes) {
+  if (auto processor = mProcessor.lock()) {
+    processor->UpdateProgress(aProcessedBytes, aTotalBytes);
+  }
+}
+
+void ChunkForwarder::Completed(
+    const IProcessMessage::ProcessResult& aCompletionResult) {
+  if (auto processor = mProcessor.lock()) {
+    processor->Completed(aCompletionResult);
+  }
+}
+
 }  // namespace HomeAssist::WebSocket

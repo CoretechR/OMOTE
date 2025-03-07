@@ -17,6 +17,10 @@ class ChunkForwarder : public HAL::WebSocket::Json::IChunkProcessor {
   void SetProcessor(
       std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> aProcessor);
 
+  void UpdateProgress(size_t aProcessedBytes, size_t aTotalBytes) override;
+  void Completed(const HAL::WebSocket::Json::IProcessMessage::ProcessResult&
+                     aCompletionResult) override;
+
  protected:
   bool Null() override;
   bool Bool(bool b) override;

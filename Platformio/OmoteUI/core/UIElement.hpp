@@ -1,19 +1,19 @@
 #pragma once
 
+#include <lvgl.h>
+
+#include <vector>
+
 #include "BorderOutlinePadding.hpp"
+#include "KeyPressAbstract.hpp"
 #include "LvglResourceManager.hpp"
 #include "TextStyle.hpp"
 #include "UIElementIds.hpp"
-#include <lvgl.h>
-
-#include "KeyPressAbstract.hpp"
-#include <vector>
 
 namespace UI {
 
 class UIElement {
-
-public:
+ public:
   using Ptr = std::unique_ptr<UIElement>;
 
   UIElement(lv_obj_t *aLvglSelf, const ID aId = ID());
@@ -83,7 +83,8 @@ public:
 
   virtual ID GetID() { return mId; };
 
-  template <class UIElemTy> static UIElemTy GetElement(lv_obj_t *aLvglObject);
+  template <class UIElemTy>
+  static UIElemTy GetElement(lv_obj_t *aLvglObject);
 
   /// @brief There are use cases in which objects
   ///        need to stay alive in LVGL but can die
@@ -105,9 +106,9 @@ public:
 
   /// @brief get Lvgl object reference to use in LVGL APIs
   /// @return lvgl object a
-  lv_obj_t *LvglSelf() { return mLvglSelf; }
+  lv_obj_t *LvglSelf() const { return mLvglSelf; }
 
-protected:
+ protected:
   /// @brief Show Element
   virtual void Show();
   /// @brief Hide Element
@@ -119,7 +120,7 @@ protected:
 
   /// @brief Override to run something when element is added to a parent
   /// @param aNewParent - Parent UIElement just added to
-  virtual void OnAdded(UIElement *aNewParent){};
+  virtual void OnAdded(UIElement *aNewParent) {};
 
   // Override in object to handle LVGL events for that object
   virtual void OnLvglEvent(lv_event_t *anEvent) {
@@ -136,7 +137,7 @@ protected:
   ///         fasle - Key event was unused
   virtual bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) = 0;
 
-private:
+ private:
   /// @brief Get Pointer to Parent Element
   /// @return - nullptr Parent was not wrapped or did not exist
   UIElement *GetParent();
@@ -193,4 +194,4 @@ UIElemTy *UIElement::AddNewElement(ElemArgs &&...elemArgs) {
       std::make_unique<UIElemTy>(std::forward<ElemArgs>(elemArgs)...)));
 }
 
-} // namespace UI
+}  // namespace UI

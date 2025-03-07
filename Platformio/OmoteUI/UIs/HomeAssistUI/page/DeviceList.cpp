@@ -5,16 +5,40 @@
 #include "HomeAssistant/Api/WebSocket/Session/Session.hpp"
 #include "List.hpp"
 #include "UIElementIds.hpp"
-#include "UIs/HomeAssistUI/SessionProcessors/DevicesQueryProcessor.hpp"
 
 namespace UI::Page {
 
 DeviceList::DeviceList(HomeAssist::WebSocket::Api& aApi)
     : Base(ID::Pages::HomeAssistDeviceList),
       mDeviceList(AddNewElement<Widget::List>()),
+      mLoadingArc(AddNewElement<Widget::Arc>()),
       mApi(aApi),
       mDeviceQueryProcessor(std::make_shared<UI::DevicesQueryProcessor>(
           [this](const auto& aEntity) { AddEntity(aEntity); })) {
+  mLoadingArc->SetRange(0, 100);
+  mLoadingArc->SetWidth(GetContentWidth() / 2);
+  mLoadingArc->SetHeight(GetContentHeight() / 4);
+  mLoadingArc->AlignTo(this, LV_ALIGN_TOP_MID);
+  mDeviceList->AlignTo(mDeviceList, LV_ALIGN_OUT_BOTTOM_MID);
+
+  mDeviceQueryProcessor->setRequestProcessCompleteCallback(
+      [this](auto aResult) {
+        if (aResult) {
+          mLoadingArc->SetVisiblity(false);
+          mDeviceList->AlignTo(this, LV_ALIGN_TOP_MID);
+        } else {
+          // Todo throw an error up?
+        }
+      });
+
+  mDeviceQueryProcessor->setPercentCompleteCallback(
+      [this](const auto& aPercentComplete) {
+        LvglResourceManager::GetInstance().AttemptNow(
+            [this, aPercentComplete]() {
+              mLoadingArc->SetValue(aPercentComplete);
+            });
+      });
+
   auto entityRequest = std::make_unique<HomeAssist::WebSocket::Request>(
       HomeAssist::GetEntityMessage);
 

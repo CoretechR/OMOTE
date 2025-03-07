@@ -22,6 +22,7 @@ class ID {
     Keyboard,
     BrightnessSlider,
     Joystick,
+    Arc,
     INVALID_WIDGET_ID
   };
 

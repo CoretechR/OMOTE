@@ -31,17 +31,17 @@ class DevicesQueryProcessor : public HAL::WebSocket::Json::IChunkProcessor {
   bool StartArray() override;
   bool EndArray(rapidjson::SizeType elementCount) override;
   void UpdateProgress(size_t aProcessedBytes, size_t aTotalBytes) override;
-  void Completed(const HAL::WebSocket::Json::IProcessMessage::ProcessResult&
-                     aCompletionResult) override;
+  void Completed(const resultType& aCompletionResult) override;
 
-  void setPercentCompleteCallback(std::function<void(float)> callback);
+  void setPercentCompleteCallback(std::function<void(uint16_t)> callback);
   void setRequestProcessCompleteCallback(
       std::function<void(const resultType&)> callback);
 
  private:
   bool isProcessingEi = false;
   const EntityIdCallback entityIdCallback;
-  std::function<void(float)> mPercentCompleteCallback;
+  std::function<void(uint16_t)> mPercentCompleteCallback;
+  uint16_t mPercentComplete = 0;
   std::function<void(const resultType&)> mRequestProcessCompleteCallback;
 };
 
