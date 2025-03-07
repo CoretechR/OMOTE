@@ -38,4 +38,27 @@ bool DevicesQueryProcessor::EndArray(rapidjson::SizeType elementCount) {
   return true;
 }
 
+void DevicesQueryProcessor::UpdateProgress(size_t aProcessedBytes,
+                                           size_t aTotalBytes) {
+  if (mPercentCompleteCallback) {
+    mPercentCompleteCallback(aProcessedBytes / aTotalBytes);
+  }
+}
+
+void DevicesQueryProcessor::Completed(const resultType& aCompletionResult) {
+  if (mRequestProcessCompleteCallback) {
+    mRequestProcessCompleteCallback(aCompletionResult);
+  }
+}
+
+void DevicesQueryProcessor::setPercentCompleteCallback(
+    std::function<void(float)> callback) {
+  mPercentCompleteCallback = std::move(callback);
+}
+
+void DevicesQueryProcessor::setRequestProcessCompleteCallback(
+    std::function<void(const resultType&)> callback) {
+  mRequestProcessCompleteCallback = std::move(callback);
+}
+
 }  // namespace UI
