@@ -1,19 +1,19 @@
 #pragma once
 
-#include "hubInterface.h"
+#include "hubBackendBase.h"
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
 #if (ENABLE_WIFI_AND_MQTT == 1)
-class MqttBackend : public HubInterface {
+class MqttBackend : public HubBackendBase {
 public:
   MqttBackend();
-  virtual ~MqttBackend();
+  ~MqttBackend() override;
   
   bool init() override;
   void process() override;
-  bool sendMessage(const char* device, const char* command, json payload) override;
+  bool sendMessage(const json& payload) override;
   bool isReady() override;
   void shutdown() override;
   

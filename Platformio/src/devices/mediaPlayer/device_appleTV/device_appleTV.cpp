@@ -26,13 +26,5 @@ void register_device_appleTV() {
   register_hub_command(&APPLETV_LEFT, "AppleTV", "left");
   register_hub_command(&APPLETV_RIGHT, "AppleTV", "right");
   register_hub_command(&APPLETV_SELECT, "AppleTV", "select");
-  
-  // Example with additional parameters
-  register_hub_command_with_params(
-    &APPLETV_VOLUME_UP, 
-    "AppleTV", 
-    "volume", 
-    {"action", "up", "increment", "5"}
-  );
 #endif
 }

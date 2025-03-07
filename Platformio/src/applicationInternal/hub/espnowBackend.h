@@ -1,19 +1,19 @@
 #pragma once
 
-#include "hubInterface.h"
+#include "hubBackendBase.h"
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
 #if (ENABLE_ESPNOW == 1)
-class EspNowBackend : public HubInterface {
+class EspNowBackend : public HubBackendBase {
 public:
   EspNowBackend();
-  virtual ~EspNowBackend();
+  ~EspNowBackend() override;
   
   bool init() override;
   void process() override;
-  bool sendMessage(const char* device, const char* command, json payload) override;
+  bool sendMessage(const json& payload) override;
   bool isReady() override;
   void shutdown() override;
 };

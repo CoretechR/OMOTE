@@ -1,5 +1,5 @@
 #include "hubManager.h"
-#include "hubInterface.h"
+#include "hubBackendBase.h"
 #include "applicationInternal/omote_log.h"
 #include <Arduino.h>
 #include "espnowBackend.h"
@@ -13,66 +13,61 @@ HubManager& HubManager::getInstance() {
   return instance;
 }
 
-HubManager::HubManager() : currentBackend(HubBackend::ESPNOW), activeBackend(nullptr) {
-  // Initialize with default backend
+HubManager::HubManager() : currentBackend(HubBackend::ESPNOW) {
+  // Initialize with default backend type only
 }
 
-HubManager::~HubManager() {
-  if (activeBackend != nullptr) {
-    activeBackend->shutdown();
-    delete activeBackend;
-    activeBackend = nullptr;
+std::unique_ptr<HubBackendBase> HubManager::createBackend(HubBackend backend) {
+  switch (backend) {
+    case HubBackend::ESPNOW:
+      #if (ENABLE_ESPNOW == 1)
+      return std::unique_ptr<HubBackendBase>(new EspNowBackend());
+      #else
+      omote_log_e("ESP-NOW backend is not available in this build\n");
+      return nullptr;
+      #endif
+    case HubBackend::MQTT:
+      #if (ENABLE_WIFI_AND_MQTT == 1)
+      return std::unique_ptr<HubBackendBase>(new MqttBackend());
+      #else
+      omote_log_e("MQTT backend is not available in this build\n");
+      return nullptr;
+      #endif
+    default:
+      omote_log_e("Invalid hub backend selected\n");
+      return nullptr;
   }
 }
 
 bool HubManager::init(HubBackend backend) {
-  // Clean up any existing backend
-  if (activeBackend != nullptr) {
-    activeBackend->shutdown();
-    delete activeBackend;
-    activeBackend = nullptr;
-  }
-
   // Store the selected backend type
   currentBackend = backend;
 
-  // Initialize the selected backend
-  switch (backend) {
-    case HubBackend::ESPNOW:
-      activeBackend = new EspNowBackend();
-      break;
-    case HubBackend::MQTT:
-      #if (ENABLE_WIFI_AND_MQTT == 1)
-      activeBackend = new MqttBackend();
-      #else
-      omote_log_e("MQTT backend is not available in this build\n");
-      return false;
-      #endif
-      break;
-    default:
-      omote_log_e("Invalid hub backend selected\n");
-      return false;
-  }
-
-  // Initialize the backend
-  if (!activeBackend->init()) {
-    omote_log_e("Failed to initialize hub backend\n");
-    delete activeBackend;
-    activeBackend = nullptr;
+  // Create the new backend
+  auto newBackend = createBackend(backend);
+  if (!newBackend) {
     return false;
   }
 
+  // Initialize the backend
+  if (!newBackend->init()) {
+    omote_log_e("Failed to initialize hub backend\n");
+    return false;
+  }
+
+  // If everything succeeded, replace the active backend
+  activeBackend = std::move(newBackend);
   return true;
 }
 
 void HubManager::process() {
-  if (activeBackend != nullptr) {
+  if (activeBackend) {
     activeBackend->process();
   }
 }
 
-bool HubManager::sendMessage(const char* device, const char* command, json payload) {
-  if (activeBackend == nullptr) {
+bool HubManager::sendMessage(const json& payload) {
+  if (!activeBackend) {
     omote_log_w("Cannot send message: no hub backend initialized\n");
     return false;
   }
@@ -82,7 +77,7 @@ bool HubManager::sendMessage(const char* device, const char* command, json paylo
     return false;
   }
   
-  return activeBackend->sendMessage(device, command, payload);
+  return activeBackend->sendMessage(payload);
 }
 
 bool HubManager::isInitialized() const {
@@ -90,17 +85,13 @@ bool HubManager::isInitialized() const {
 }
 
 bool HubManager::isReady() const {
-  if (activeBackend == nullptr) {
-    return false;
-  }
-  return activeBackend->isReady();
+  return activeBackend && activeBackend->isReady();
 }
 
 void HubManager::shutdown() {
-  if (activeBackend != nullptr) {
+  if (activeBackend) {
     activeBackend->shutdown();
-    delete activeBackend;
-    activeBackend = nullptr;
+    activeBackend.reset();
   }
 }
 

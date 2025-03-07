@@ -9,6 +9,7 @@ using json = nlohmann::json;
 
 #include "devices/keyboard/device_keyboard_mqtt/device_keyboard_mqtt.h"
 #include "devices/keyboard/device_keyboard_ble/device_keyboard_ble.h"
+#include "applicationInternal/keys.h"
 
 extern uint16_t COMMAND_UNKNOWN;
 
@@ -123,6 +124,30 @@ void get_uniqueCommandID(uint16_t *command);
 void register_keyboardCommands();
 commandData makeCommandData(commandHandlers a, std::list<std::string> b);
 void executeCommand(uint16_t command, std::string additionalPayload = "");
+
+enum CommandExecutionType {
+  CMD_SHORT,
+  CMD_LONG
+};
+
+NLOHMANN_JSON_SERIALIZE_ENUM(CommandExecutionType, {
+    {CMD_SHORT, "short"},
+    {CMD_LONG, "long"}
+})
+
+struct CommandExecutionParams {
+  uint16_t commandId;
+  std::string additionalPayload = "";
+  CommandExecutionType commandType = CMD_SHORT;
+};
+
+// Version that takes a parameter struct
+void executeCommand(const CommandExecutionParams& params);
+
+// Original executeCommandWithData
+void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload = "");
+// New overload that takes CommandExecutionParams
+void executeCommandWithData(const CommandExecutionParams& params, commandData commandData);
 
 void receiveNewIRmessage_cb(std::string message);
 #if (ENABLE_KEYBOARD_BLE == 1)

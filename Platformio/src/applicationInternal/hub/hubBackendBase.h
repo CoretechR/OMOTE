@@ -11,10 +11,10 @@ enum class HubBackend {
   MQTT
 };
 
-// Abstract interface for hub communication
-class HubInterface {
+// Abstract interface for hub communication backends
+class HubBackendBase {
 public:
-  virtual ~HubInterface() = default;
+  virtual ~HubBackendBase() = default;
   
   // Initialize the hub communication backend
   virtual bool init() = 0;
@@ -23,7 +23,7 @@ public:
   virtual void process() = 0;
   
   // Send a message to the hub
-  virtual bool sendMessage(const char* device, const char* command, json payload) = 0;
+  virtual bool sendMessage(const json& payload) = 0;
   
   // Check if connected/ready
   virtual bool isReady() = 0;

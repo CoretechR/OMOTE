@@ -7,6 +7,7 @@
 #include "devices/TV/device_samsungTV/device_samsungTV.h"
 #include "devices/AVreceiver/device_yamahaAmp/device_yamahaAmp.h"
 #include "applicationInternal/commandHandler.h"
+#include "devices/mediaPlayer/device_appleTV/device_appleTV.h"
 // guis
 #include "devices/mediaPlayer/device_appleTV/gui_appleTV.h"
 
@@ -19,34 +20,20 @@ std::map<char, uint16_t> key_commands_long_appleTV;
 
 void scene_setKeys_appleTV() {
   key_repeatModes_appleTV = {
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   };
-  
+
   key_commands_short_appleTV = {
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+      {KEY_STOP, COMMAND_UNKNOWN},       {KEY_REWI, COMMAND_UNKNOWN},
+      {KEY_PLAY, COMMAND_UNKNOWN}, {KEY_FORW, COMMAND_UNKNOWN},
+      {KEY_CONF, COMMAND_UNKNOWN},       {KEY_INFO, COMMAND_UNKNOWN},
+      {KEY_UP, APPLETV_UP},           {KEY_LEFT, APPLETV_LEFT},
+      {KEY_OK, APPLETV_SELECT},       {KEY_RIGHT, APPLETV_RIGHT},
+      {KEY_DOWN, APPLETV_DOWN},       {KEY_BACK, COMMAND_UNKNOWN},
+      {KEY_CHUP, COMMAND_UNKNOWN},    {KEY_REC, COMMAND_UNKNOWN},
+      {KEY_CHDOW, COMMAND_UNKNOWN},
   };
-  
+
   key_commands_long_appleTV = {
-  
-  
   };
 
 }

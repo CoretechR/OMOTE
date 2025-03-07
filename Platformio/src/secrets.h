@@ -13,6 +13,9 @@
 #define MQTT_PASS                  ""                          // override it in file "secrets_override.h"
 #define MQTT_CLIENTNAME            "OMOTE"                     // override it in file "secrets_override.h"
 
+// ESP-NOW Configuration
+#define ESPNOW_HUB_MAC             {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC}  // override it in file "secrets_override.h"
+
 // --- include override settings from seperate file ---------------------------------------------------------------------------------------------------------------
 #if __has_include("secrets_override.h")
   #include "secrets_override.h"

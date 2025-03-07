@@ -213,7 +213,7 @@ bool publishMQTTMessage_HAL(const char *topic, const char *payload){
   return false;
 }
 
-void wifiStop_HAL() {
+void wifi_shutdown_HAL() {
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
 }

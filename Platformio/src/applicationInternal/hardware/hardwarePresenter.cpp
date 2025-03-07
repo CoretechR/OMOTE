@@ -204,8 +204,8 @@ bool keyboardBLE_isAdvertising() {
 bool keyboardBLE_isConnected() {
   return keyboardBLE_isConnected_HAL();
 }
-void keyboardBLE_end() {
-  keyboardBLE_end_HAL();
+void keyboard_ble_shutdown() {
+  keyboard_ble_shutdown_HAL();
 }
 void keyboardBLE_write(uint8_t c) {
   keyboardBLE_write_HAL(c);
@@ -260,8 +260,8 @@ void mqtt_loop() {
 bool publishMQTTMessage(const char *topic, const char *payload) {
   return publishMQTTMessage_HAL(topic, payload);
 }
-void wifiStop() {
-  wifiStop_HAL();
+void wifi_shutdown() {
+  wifi_shutdown_HAL();
 }
 #endif
 

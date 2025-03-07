@@ -176,7 +176,7 @@ std::string convertStringListToString(std::list<std::string> listOfStrings) {
   return result;
 }
 
-void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload = "") {
+void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload) {
   switch (commandData.commandHandler) {
     case IR: {
       omote_log_v("  generic IR, payloads %s\r\n", convertStringListToString(commandData.commandPayloads).c_str());
@@ -241,73 +241,91 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       break;
     }
 
-    #if (ENABLE_HUB_COMMUNICATION == 1)
     case HUB: {
-      auto current = commandData.commandPayloads.begin();
-      
-      // Extract device and command
-      std::string device = *current;
-      current = std::next(current, 1);
-      
-      std::string command = *current;
-      current = std::next(current, 1);
-      
-      // Create JSON payload
-      json payload;
-      
-      // Process any additional parameters (key-value pairs)
-      while (current != commandData.commandPayloads.end()) {
-        std::string key = *current;
-        current = std::next(current, 1);
-        
-        if (current != commandData.commandPayloads.end()) {
-          payload[key] = *current;
-          current = std::next(current, 1);
-        }
-      }
-      
-      // If additionalPayload is provided, it can be used as a JSON string
-      // that overrides or extends the payload
-      if (additionalPayload != "") {
-        try {
-          // Try to parse additionalPayload as JSON
-          json additionalJson = json::parse(additionalPayload);
-          
-          // Merge with the existing payload
-          for (auto& [key, value] : additionalJson.items()) {
-            payload[key] = value;
-          }
-        } catch (json::parse_error& e) {
-          // If not valid JSON, use it as a parameter value
-          payload["value"] = additionalPayload;
-        }
-      }
-      
-      // Add command type if not already present
-      if (!payload.contains("commandType")) {
-        // Default to "short" press
-        payload["commandType"] = "short";
-      }
-      
-      omote_log_d("execute: will send hub message for device '%s', command '%s'\r\n", 
-                  device.c_str(), command.c_str());
-      
-      // Send using the hub manager
-      HubManager::getInstance().sendMessage(device.c_str(), command.c_str(), payload);
+      omote_log_w("HUB commands should be handled using the CommandExecutionParams struct\r\n");
       break;
     }
-    #endif
   }
+}
+
+void executeCommandWithData(const CommandExecutionParams& params, commandData commandData) {
+  if (commandData.commandHandler != HUB) {
+    // For non-HUB commands, pass through to the original function
+    omote_log_d("command: will execute command '%u'%s%s\r\n", 
+               params.commandId, 
+               params.additionalPayload.empty() ? "" : " with additionalPayload '",
+               params.additionalPayload.empty() ? "" : (params.additionalPayload + "'").c_str());
+    
+    executeCommandWithData(params.commandId, commandData, params.additionalPayload);
+    return;
+  }
+
+  auto current = commandData.commandPayloads.begin();
+  
+  // Extract device and command
+  std::string device = *current;
+  current = std::next(current, 1);
+  
+  std::string hubCommand = *current;
+  current = std::next(current, 1);
+  
+  // Create JSON payload
+  json payload;
+  payload["device"] = device;
+  payload["command"] = hubCommand;
+  payload["commandType"] = params.commandType;
+  
+  // Create a data array if we have any additional data
+  json dataArray = json::array();
+  
+  // Add all remaining items from commandPayloads to the data array
+  while (current != commandData.commandPayloads.end()) {
+    dataArray.push_back(*current);
+    current = std::next(current, 1);
+  }
+  
+  // If additionalPayload is provided, add it to the data array
+  if (!params.additionalPayload.empty()) {
+    dataArray.push_back(params.additionalPayload);
+  }
+  
+  // Only add the data array if it has any content
+  if (!dataArray.empty()) {
+    payload["data"] = dataArray;
+  }
+  
+  omote_log_d("execute: will send hub message for device '%s', command '%s'\r\n", 
+              device.c_str(), hubCommand.c_str());
+  
+  // Send using the hub manager
+  HubManager::getInstance().sendMessage(payload);
 }
 
 void executeCommand(uint16_t command, std::string additionalPayload) {
   try {
     if (commands.count(command) > 0) {
-      omote_log_d("command: will execute command '%u' with additionalPayload '%s'\r\n", command, additionalPayload.c_str());
+      omote_log_d("command: will execute command '%u' with additionalPayload '%s'\r\n", 
+                 command, additionalPayload.c_str());
       executeCommandWithData(command, commands.at(command), additionalPayload);
     } else {
       omote_log_w("command: command '%u' not found\r\n", command);
     }
+  }
+  catch (const std::out_of_range& oor) {
+    omote_log_e("executeCommand: internal error, command not registered\r\n");
+  }
+}
+
+void executeCommand(const CommandExecutionParams& params) {
+  try {
+    // Early return if command not found
+    if (commands.count(params.commandId) == 0) {
+      omote_log_w("command: command '%u' not found\r\n", params.commandId);
+      return;
+    }
+    
+    commandData cmdData = commands.at(params.commandId);
+    executeCommandWithData(params, cmdData);
   }
   catch (const std::out_of_range& oor) {
     omote_log_e("executeCommand: internal error, command not registered\r\n");

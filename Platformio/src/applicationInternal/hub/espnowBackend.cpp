@@ -19,12 +19,12 @@ void EspNowBackend::process() {
   espnow_loop();
 }
 
-bool EspNowBackend::sendMessage(const char* device, const char* command, json payload) {
-  // Add device and command to payload
-  payload["device"] = device;
-  payload["command"] = command;
+bool EspNowBackend::sendMessage(const json& payload) {
+  // Extract device and command for logging
+  std::string device = payload["device"];
+  std::string command = payload["command"];
   
-  omote_log_d("ESP-NOW: Sending message for device %s, command %s\n", device, command);
+  omote_log_d("ESP-NOW: Sending message for device %s, command %s\n", device.c_str(), command.c_str());
   return publishEspNowMessage(payload);
 }
 

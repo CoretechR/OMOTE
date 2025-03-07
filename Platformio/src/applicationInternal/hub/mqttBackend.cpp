@@ -3,7 +3,7 @@
 #include "applicationInternal/omote_log.h"
 
 #if (ENABLE_WIFI_AND_MQTT == 1)
-MqttBackend::MqttBackend() : baseTopic("OMOTE/") {
+MqttBackend::MqttBackend() : baseTopic("omote/") {
 }
 
 MqttBackend::~MqttBackend() {
@@ -19,13 +19,13 @@ void MqttBackend::process() {
   mqtt_loop();
 }
 
-bool MqttBackend::sendMessage(const char* device, const char* command, json payload) {
+bool MqttBackend::sendMessage(const json& payload) {
+  // Extract device and command from the payload
+  std::string device = payload["device"];
+  std::string command = payload["command"];
+  
   // Create MQTT topic from device and command
   std::string topic = baseTopic + device + "/" + command;
-  
-  // Add device and command to payload for consistency
-  payload["device"] = device;
-  payload["command"] = command;
   
   // Convert payload to string
   std::string payloadStr = payload.dump();
@@ -39,6 +39,6 @@ bool MqttBackend::isReady() {
 }
 
 void MqttBackend::shutdown() {
-  wifiStop();
+  wifi_shutdown();
 }
 #endif 

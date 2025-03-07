@@ -15,18 +15,9 @@ using json = nlohmann::json;
 uint8_t hub_mac[6] = ESPNOW_HUB_MAC;
 esp_now_peer_info_t hub_peer;
 
-// Callback for ESP-NOW send status
-void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  if (status == ESP_NOW_SEND_SUCCESS) {
-    Serial.println("ESP-NOW message sent successfully");
-  } else {
-    Serial.println("ESP-NOW message failed to send");
-  }
-}
-
 // Callback for ESP-NOW received data
 tAnnounceEspNowMessage_cb thisAnnounceEspNowMessage_cb = NULL;
-void OnDataReceived(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
+void onDataReceived(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
   if (thisAnnounceEspNowMessage_cb == NULL) return;
   
   // Convert MAC to string for logging
@@ -65,8 +56,7 @@ void init_espnow_HAL(void) {
   }
   
   // Register callbacks
-  esp_now_register_send_cb(OnDataSent);
-  esp_now_register_recv_cb(OnDataReceived);
+  esp_now_register_recv_cb(onDataReceived);
   
   // Register hub as peer
   memcpy(hub_peer.peer_addr, hub_mac, 6);
