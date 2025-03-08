@@ -49,8 +49,6 @@ DeviceList::DeviceList(HomeAssist::WebSocket::Api& aApi)
     mApi.AddSession(std::make_unique<Session>(std::move(request), nullptr,
                                               mDeviceQueryProcessor));
   }
-
-  InitializeUI();
 }
 
 bool DeviceList::OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) {
@@ -65,10 +63,6 @@ void DeviceList::AddEntity(const std::string& aEntity) {
       mDeviceList->AddItem(entityDeepCopy, LV_SYMBOL_OK, [] {});
     }
   });
-}
-
-void DeviceList::InitializeUI() {
-  // Initialize UI elements here
 }
 
 }  // namespace UI::Page

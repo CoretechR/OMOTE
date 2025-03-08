@@ -29,7 +29,6 @@ class DeviceList : public Base {
   void AddEntity(const std::string& aEntity);
 
  private:
-  void InitializeUI();
   Widget::List* mDeviceList;
   Widget::Arc* mLoadingArc;
   HomeAssist::WebSocket::Api& mApi;
