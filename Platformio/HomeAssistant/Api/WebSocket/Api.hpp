@@ -44,6 +44,7 @@ class Api {
   void ProcessMessages();
 
   void UpdateConnectionStatus(ConnectionStatus aNewStatus);
+  void AttemptConnection(bool aHonorTimeInterval = true);
 
  private:
   static constexpr auto NotUsedTime = std::chrono::minutes(10000);

@@ -22,10 +22,9 @@ Api::Api(std::shared_ptr<webSocketInterface> socket)
       mConnectionTime = HardwareFactory::getAbstract().execTime();
     });
 
-    mHomeAssistSocket->OnDisconnect([this]() { /*TODO Reattempt Connection*/ });
-    mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
-    mLastConnectRetry = HardwareFactory::getAbstract().execTime();
-    mAuthSession = std::make_unique<AuthSession>(mHomeAssistSocket);
+    mHomeAssistSocket->OnDisconnect(
+        [this]() { UpdateConnectionStatus(ConnectionStatus::Disconnected); });
+    AttemptConnection(false);
   }
 }
 
@@ -49,23 +48,21 @@ void Api::UpdateConnectionStatus(ConnectionStatus aNewStatus) {
 }
 
 void Api::Process() {
-  auto execTime = HardwareFactory::getAbstract().execTime();
   if (!mHomeAssistSocket) {
     return;
   }
-  auto fiveSecondsSinceRetry = [this, execTime]() {
-    return execTime > mLastConnectRetry + std::chrono::seconds(5);
-  };
-  if (!mHomeAssistSocket->isConnected() && fiveSecondsSinceRetry()) {
-    mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
-    mLastConnectRetry = execTime;
+
+  if (!mHomeAssistSocket->isConnected()) {
+    AttemptConnection();
+    return;
   }
 
-  auto threeSecondsSinceConnection = [this, execTime]() {
+  auto threeSecondsSinceWebsocketConnection = [this]() {
+    auto execTime = HardwareFactory::getAbstract().execTime();
     return execTime > mConnectionTime + std::chrono::seconds(3);
   };
   if (mAuthSession && mHomeAssistSocket->isConnected() &&
-      !mAuthSession->IsAuthSent() && threeSecondsSinceConnection()) {
+      !mAuthSession->IsAuthSent() && threeSecondsSinceWebsocketConnection()) {
     mAuthSession->SendAuth();
   }
 
@@ -132,12 +129,31 @@ bool Api::PreProcessMessage(Message& aMessage) {
 }
 
 void Api::AddSession(std::unique_ptr<ISession> aNewSession) {
-  if (aNewSession->BorrowStartRequest() == nullptr) {
-    HardwareFactory::getAbstract().debugPrint("Session Missing Start Request!");
+  if (!aNewSession || !aNewSession->BorrowStartRequest()) {
+    HardwareFactory::getAbstract().debugPrint(
+        "Session Missing Start Request or null session provided!");
+    return;
   }
-  auto newSessionId = mNextRequestId++;
-  aNewSession->BorrowStartRequest()->SetId(newSessionId);
-  mSessions[newSessionId] = std::move(aNewSession);
+  auto newRequestId = mNextRequestId++;
+  aNewSession->BorrowStartRequest()->SetId(newRequestId);
+  mSessions[newRequestId] = std::move(aNewSession);
+}
+
+void Api::AttemptConnection(bool aHonorTimeInterval) {
+  auto execTime = HardwareFactory::getAbstract().execTime();
+  auto fiveSecondsSinceRetry = [this, execTime]() {
+    return execTime > mLastConnectRetry + std::chrono::seconds(5);
+  };
+  if (mConnectionStatus == ConnectionStatus::Connected ||
+      (aHonorTimeInterval && !fiveSecondsSinceRetry())) {
+    return;
+  }
+  mHomeAssistSocket->connect("ws://192.168.86.49:8123/api/websocket");
+  mLastConnectRetry = execTime;
+  // Session already sent auth so need to reset and retry
+  if (!mAuthSession || mAuthSession->IsAuthSent()) {
+    mAuthSession = std::make_unique<AuthSession>(mHomeAssistSocket);
+  }
 }
 
 }  // namespace HomeAssist::WebSocket
