@@ -70,6 +70,7 @@ void HardwareRevX::init() {
   setCpuFrequencyMhz(240);
   wakeup_reason = getWakeReason();
   initIO();
+  // MatthewColvin/OMOTE#9
   Serial.begin(115200);
 
   mDisplay = Display::getInstance();
