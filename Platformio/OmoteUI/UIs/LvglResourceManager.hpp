@@ -6,7 +6,7 @@
 namespace UI {
 class UIBase;
 }  // namespace UI
-
+// MatthewColvin/OMOTE#8
 class LvglResourceManager {
   friend UI::UIBase;
 
