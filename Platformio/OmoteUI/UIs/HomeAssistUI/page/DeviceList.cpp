@@ -1,5 +1,6 @@
 #include "DeviceList.hpp"
 
+#include "HardwareFactory.hpp"
 #include "HomeAssistant/Api/WebSocket/Request.hpp"
 #include "HomeAssistant/Api/WebSocket/RequestBuilder.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/Session.hpp"
@@ -15,6 +16,9 @@ DeviceList::DeviceList(HomeAssist::WebSocket::Api& aApi)
       mApi(aApi),
       mDeviceQueryProcessor(std::make_shared<UI::DevicesQueryProcessor>(
           [this](const auto& aEntity) { AddEntity(aEntity); })) {
+  // Initially hide device list
+  mDeviceList->SetVisiblity(false);
+
   mLoadingArc->SetRange(0, 100);
   mLoadingArc->SetWidth(GetContentWidth() / 2);
   mLoadingArc->SetHeight(GetContentHeight() / 4);
@@ -26,6 +30,7 @@ DeviceList::DeviceList(HomeAssist::WebSocket::Api& aApi)
         if (aResult) {
           mLoadingArc->SetVisiblity(false);
           mDeviceList->AlignTo(this, LV_ALIGN_TOP_MID);
+          mDeviceList->SetVisiblity(true);
         } else {
           // Todo throw an error up?
         }
@@ -33,7 +38,7 @@ DeviceList::DeviceList(HomeAssist::WebSocket::Api& aApi)
 
   mDeviceQueryProcessor->setPercentCompleteCallback(
       [this](const auto& aPercentComplete) {
-        LvglResourceManager::GetInstance().AttemptNow(
+        LvglResourceManager::GetInstance().QueueForLater(
             [this, aPercentComplete]() {
               mLoadingArc->SetValue(aPercentComplete);
             });

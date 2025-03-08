@@ -5,12 +5,12 @@
 
 namespace UI {
 class UIBase;
-} // namespace UI
+}  // namespace UI
 
 class LvglResourceManager {
   friend UI::UIBase;
 
-public:
+ public:
   static LvglResourceManager &GetInstance() {
     static LvglResourceManager mInstance;
     return mInstance;
@@ -33,12 +33,13 @@ public:
     mLvglTasks.push(std::move(aLvglModifierFunction));
   }
 
-protected:
-  LvglResourceManager(){};
+ protected:
+  LvglResourceManager() {};
 
   void HandleQueuedTasks() {
     auto lock = scopeLock();
-    while (!mLvglTasks.empty()) {
+    static constexpr auto TasksPerRefresh = 5;
+    for (auto i = 0; i < TasksPerRefresh && !mLvglTasks.empty(); i++) {
       mLvglTasks.front()();
       mLvglTasks.pop();
     }
