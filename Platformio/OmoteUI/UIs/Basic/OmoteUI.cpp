@@ -1,14 +1,16 @@
 ﻿#include "OmoteUI.hpp"
+
+#include <functional>
+
 #include "lvgl.h"
 #include "omoteconfig.h"
-#include <functional>
 
 using namespace UI::Basic;
 
 std::shared_ptr<OmoteUI> OmoteUI::mInstance = nullptr;
 
 // This can be used to flag out specific code for SIM only
-// #if defined(IS_SIMULATOR) && (IS_SIMULATOR == true)
+// #if defined(IS_SIMULATOR)
 // #endif
 
 OmoteUI::OmoteUI(std::shared_ptr<HardwareAbstract> aHardware)
@@ -92,8 +94,7 @@ void OmoteUI::smartHomeSlider_event_cb(lv_event_t *e) {
 void OmoteUI::virtualKeypad_event_cb(lv_event_t *e) {
   lv_obj_t *target = lv_event_get_target(e);
   lv_obj_t *cont = lv_event_get_current_target(e);
-  if (target == cont)
-    return;
+  if (target == cont) return;
 
   char buffer[100];
   // sprintf(buffer, "check it out: %d\n",
@@ -187,17 +188,17 @@ void OmoteUI::ta_kb_event_cb(lv_event_t *e) {
   lv_obj_t *ta = lv_event_get_target(e);
   lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
   switch (code) {
-  case LV_EVENT_FOCUSED:
-    lv_keyboard_set_textarea(kb, ta);
-    lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_move_foreground(kb);
-    break;
-  case LV_EVENT_DEFOCUSED:
-    lv_keyboard_set_textarea(kb, NULL);
-    lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-    break;
-  default:
-    break;
+    case LV_EVENT_FOCUSED:
+      lv_keyboard_set_textarea(kb, ta);
+      lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
+      lv_obj_move_foreground(kb);
+      break;
+    case LV_EVENT_DEFOCUSED:
+      lv_keyboard_set_textarea(kb, NULL);
+      lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+      break;
+    default:
+      break;
   }
 }
 
@@ -227,7 +228,6 @@ void OmoteUI::attach_keyboard(lv_obj_t *textarea) {
 }
 
 void OmoteUI::layout_UI() {
-
   // Set the background color
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), LV_PART_MAIN);
   this->create_keyboard();
@@ -235,10 +235,10 @@ void OmoteUI::layout_UI() {
   lv_obj_t *tabview;
   tabview =
       lv_tabview_create(lv_scr_act(), LV_DIR_TOP,
-                        0); // Hide tab labels by setting their height to 0
+                        0);  // Hide tab labels by setting their height to 0
   lv_obj_set_style_bg_color(tabview, lv_color_black(), LV_PART_MAIN);
   lv_obj_set_size(tabview, SCREEN_WIDTH,
-                  270); // 270 = screenHeight(320) - panel(30) - statusbar(20)
+                  270);  // 270 = screenHeight(320) - panel(30) - statusbar(20)
   lv_obj_align(tabview, LV_ALIGN_TOP_MID, 0, 20);
 
   // Add 4 tabs (names are irrelevant since the labels are hidden)
@@ -248,11 +248,12 @@ void OmoteUI::layout_UI() {
   lv_obj_t *tab4 = lv_tabview_add_tab(tabview, "Smart Home");
 
   // Configure number button grid
-  static lv_coord_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
-                                 LV_GRID_TEMPLATE_LAST}; // equal x distribution
+  static lv_coord_t col_dsc[] = {
+      LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
+      LV_GRID_TEMPLATE_LAST};  // equal x distribution
   static lv_coord_t row_dsc[] = {
-      52, 52, 52, 52, LV_GRID_TEMPLATE_LAST}; // manual y distribution to
-                                              // compress the grid a bit
+      52, 52, 52, 52, LV_GRID_TEMPLATE_LAST};  // manual y distribution to
+                                               // compress the grid a bit
 
   // Create a container with grid for tab2
   lv_obj_set_style_pad_all(tab2, 0, LV_PART_MAIN);
@@ -276,23 +277,24 @@ void OmoteUI::layout_UI() {
     uint8_t row = i / 3;
     // Create the button object
     if ((row == 3) && ((col == 0) || (col == 2)))
-      continue; // Do not create a complete fourth row, only a 0 button
+      continue;  // Do not create a complete fourth row, only a 0 button
     obj = lv_btn_create(cont);
     lv_obj_set_grid_cell(obj, LV_GRID_ALIGN_STRETCH, col, 1,
                          LV_GRID_ALIGN_STRETCH, row, 1);
     lv_obj_set_style_bg_color(obj, this->color_primary, LV_PART_MAIN);
     lv_obj_set_style_radius(obj, 14, LV_PART_MAIN);
     lv_obj_set_style_shadow_color(obj, lv_color_hex(0x404040), LV_PART_MAIN);
-    lv_obj_add_flag(obj, LV_OBJ_FLAG_EVENT_BUBBLE); // Clicking a button causes
-                                                    // a event in its container
+    lv_obj_add_flag(obj, LV_OBJ_FLAG_EVENT_BUBBLE);  // Clicking a button causes
+                                                     // a event in its container
     // Create Labels for each button
     buttonLabel = lv_label_create(obj);
     if (i < 9) {
       lv_label_set_text_fmt(buttonLabel, std::to_string(i + 1).c_str(), col,
                             row);
-      lv_obj_set_user_data(obj,
-                           (void *)i); // Add user data so we can identify which
-                                       // button caused the container event
+      lv_obj_set_user_data(
+          obj,
+          (void *)i);  // Add user data so we can identify which
+                       // button caused the container event
     } else {
       lv_label_set_text_fmt(buttonLabel, "0", col, row);
       lv_obj_set_user_data(obj, (void *)9);
@@ -450,7 +452,7 @@ void OmoteUI::layout_UI() {
   // Create a page indicator
   panel = lv_obj_create(lv_scr_act());
   lv_obj_clear_flag(
-      panel, LV_OBJ_FLAG_CLICKABLE); // This indicator will not be clickable
+      panel, LV_OBJ_FLAG_CLICKABLE);  // This indicator will not be clickable
   lv_obj_set_size(panel, SCREEN_WIDTH, 30);
   lv_obj_set_flex_flow(panel, LV_FLEX_FLOW_ROW);
   lv_obj_align(panel, LV_ALIGN_BOTTOM_MID, 0, 0);
@@ -524,7 +526,7 @@ void OmoteUI::layout_UI() {
   // Make the indicator fade out at the sides using gradient bitmaps
   lv_obj_t *img1 = imgs.addLeftGradiant(lv_scr_act());
   lv_obj_align(img1, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-  lv_obj_set_size(img1, 30, 30); // stretch the 1-pixel high image to 30px
+  lv_obj_set_size(img1, 30, 30);  // stretch the 1-pixel high image to 30px
   lv_obj_t *img2 = imgs.addRightGradiant(lv_scr_act());
   lv_obj_align(img2, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
   lv_obj_set_size(img2, 30, 30);

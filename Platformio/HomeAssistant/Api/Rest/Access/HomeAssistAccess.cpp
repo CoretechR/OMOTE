@@ -2,7 +2,7 @@
 
 #include "omoteconfig.h"
 
-#if IS_SIMULATOR
+#if defined(IS_SIMULATOR)
 #include "HomeAssistant/Api/Rest/Backends/Curl/CurlApi.hpp"
 #else
 #include "HomeAssistant/Api/Rest/Backends/HttpClient/HttpClientApi.hpp"
@@ -14,7 +14,7 @@ using namespace HomeAssist;
 std::weak_ptr<IHomeAssistApi> HomeAssistantAccess::mCurrentApiAccess;
 
 std::shared_ptr<IHomeAssistApi> GetNewAccess() {
-#if IS_SIMULATOR
+#if defined(IS_SIMULATOR)
   return std::make_shared<CurlApi>();
 #else
   return std::make_shared<HttpClientApi>();
