@@ -21,8 +21,21 @@ HomeAssistUI::HomeAssistUI() : BasicUI() {
     return;
   }
   mHomeAssistApi = std::make_unique<Api>(socket);
+  mConnectionStatusHandler.SetNotification(
+      mHomeAssistApi->GetConnectionNotification());
+  mConnectionStatusHandler = [this](auto aStatus) {
+    HandleConnectionStatusChange(aStatus);
+  };
+
   AddPageToHomeScreen(std::make_unique<UI::Page::DeviceList>(*mHomeAssistApi));
 };
+
+void HomeAssistUI::HandleConnectionStatusChange(
+    Api::ConnectionStatus aNewStatus) {
+  if (aNewStatus == Api::ConnectionStatus::Disconnected) {
+    // MatthewColvin/OMOTE#7
+  }
+}
 
 void HomeAssistUI::loopHandler() {
   BasicUI::loopHandler();
