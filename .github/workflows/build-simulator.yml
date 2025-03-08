@@ -31,6 +31,9 @@ jobs:
       - name: Install websocketpp
         run : sudo apt-get update && sudo apt-get install -y libwebsocketpp-dev
 
+      - name: Install Boost
+        run : sudo apt-get update && sudo apt-get install -y libboost-all-dev
+      
       - name: Build PlatformIO Project 64 bit sim
         working-directory: ./Platformio
         run: pio run --environment x64_sim
