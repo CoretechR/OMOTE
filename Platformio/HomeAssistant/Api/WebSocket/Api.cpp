@@ -12,7 +12,9 @@
 namespace HomeAssist::WebSocket {
 
 Api::Api(std::shared_ptr<webSocketInterface> socket)
-    : mHomeAssistSocket(socket) {
+    : mHomeAssistSocket(socket),
+      mConnectionNotification(
+          std::make_shared<Notification<ConnectionStatus>>()) {
   if (mHomeAssistSocket) {
     mHomeAssistSocket->SetJsonHandler(std::make_unique<ResponseHandler>(*this));
 
@@ -34,6 +36,16 @@ Api::~Api() {
     mHomeAssistSocket->OnDisconnect();
     mHomeAssistSocket->SetJsonHandler();
   }
+}
+
+std::shared_ptr<Notification<Api::ConnectionStatus>>
+Api::GetConnectionNotification() {
+  return mConnectionNotification;
+}
+
+void Api::UpdateConnectionStatus(ConnectionStatus aNewStatus) {
+  mConnectionStatus = aNewStatus;
+  // mConnectionNotification->notify(aNewStatus);
 }
 
 void Api::Process() {
@@ -111,7 +123,7 @@ void Api::CleanUpSessions() {
 bool Api::PreProcessMessage(Message& aMessage) {
   if (mAuthSession && mAuthSession->ProcessMessage(aMessage)) {
     if (mAuthSession->IsComplete()) {
-      mConnectionStatus = mAuthSession->GetConnectionStatus();
+      UpdateConnectionStatus(mAuthSession->GetConnectionStatus());
       mAuthSession = nullptr;
     }
     return true;

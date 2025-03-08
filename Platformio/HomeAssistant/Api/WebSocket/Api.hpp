@@ -5,6 +5,7 @@
 #include <memory>
 #include <queue>
 
+#include "Notification.hpp"
 #include "websockets/webSocketInterface.hpp"
 
 namespace HomeAssist::WebSocket {
@@ -28,6 +29,8 @@ class Api {
 
   void AddSession(std::unique_ptr<ISession> aSession);
 
+  std::shared_ptr<Notification<ConnectionStatus>> GetConnectionNotification();
+
  protected:
   /**
    * @brief Used for preProcessing message before we store it on the queue
@@ -40,10 +43,13 @@ class Api {
 
   void ProcessMessages();
 
+  void UpdateConnectionStatus(ConnectionStatus aNewStatus);
+
  private:
   static constexpr auto NotUsedTime = std::chrono::minutes(10000);
   std::chrono::milliseconds mLastConnectRetry = NotUsedTime;
   std::chrono::milliseconds mConnectionTime = NotUsedTime;
+  std::shared_ptr<Notification<ConnectionStatus>> mConnectionNotification;
   ConnectionStatus mConnectionStatus = ConnectionStatus::Initializing;
   std::shared_ptr<webSocketInterface> mHomeAssistSocket = nullptr;
   std::queue<std::unique_ptr<Message>> mIncomingMessageQueue;
