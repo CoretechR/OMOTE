@@ -1,7 +1,7 @@
 #include "DeviceList.hpp"
 
-#include "HomeAssistant/Api/WebSocket/Message/PredefinedMessages.hpp"
 #include "HomeAssistant/Api/WebSocket/Request.hpp"
+#include "HomeAssistant/Api/WebSocket/RequestBuilder.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/Session.hpp"
 #include "List.hpp"
 #include "UIElementIds.hpp"
@@ -39,11 +39,16 @@ DeviceList::DeviceList(HomeAssist::WebSocket::Api& aApi)
             });
       });
 
-  auto entityRequest = std::make_unique<HomeAssist::WebSocket::Request>(
-      HomeAssist::GetEntityMessage);
+  {
+    using namespace HomeAssist::WebSocket;
+    auto request =
+        RequestBuilder()
+            .SetType(RequestTypes::CONFIG_ENTITY_REGISTRY_LIST_DISPLAY)
+            .BuildUnique();
 
-  mApi.AddSession(std::make_unique<HomeAssist::WebSocket::Session>(
-      std::move(entityRequest), nullptr, mDeviceQueryProcessor));
+    mApi.AddSession(std::make_unique<Session>(std::move(request), nullptr,
+                                              mDeviceQueryProcessor));
+  }
 
   InitializeUI();
 }

@@ -2,7 +2,7 @@
 
 #include "HardwareFactory.hpp"
 #include "HomeAssistant/Api/WebSocket/Message/Message.hpp"
-#include "HomeAssistant/Api/WebSocket/Message/PredefinedMessages.hpp"
+#include "HomeAssistant/Api/WebSocket/RequestBuilder.hpp"
 #include "HomeAssistant/Api/WebSocket/ResponseHandler.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/AuthSession.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/ISession.hpp"

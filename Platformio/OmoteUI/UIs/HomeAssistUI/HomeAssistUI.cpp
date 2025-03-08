@@ -5,7 +5,6 @@
 #include "HomeAssistant/Api/WebSocket/Message/Entity.hpp"
 #include "HomeAssistant/Api/WebSocket/Message/Message.hpp"
 #include "HomeAssistant/Api/WebSocket/Message/MessageHandler.hpp"
-#include "HomeAssistant/Api/WebSocket/Message/PredefinedMessages.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/Session.hpp"
 #include "UIs/HomeAssistUI/page/DeviceList.hpp"
 

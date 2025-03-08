@@ -4,11 +4,16 @@
 #include "HomeAssistant/Api/WebSocket/Api.hpp"
 #include "HomeAssistant/Api/WebSocket/Message/Message.hpp"
 #include "HomeAssistant/Api/WebSocket/Message/MessageHandler.hpp"
-#include "HomeAssistant/Api/WebSocket/Message/PredefinedMessages.hpp"
 #include "HomeAssistant/Api/WebSocket/Request.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/ISession.hpp"
 
 namespace HomeAssist::WebSocket {
+
+static const auto HomeAssistAuthResponse = R"---(
+    {
+      "type": "auth",
+      "access_token": ")---" + std::string(HOMEASSISTANT_API_TOKEN) +
+                                           "\"}";
 
 class AuthSession : public ISession {
  public:
