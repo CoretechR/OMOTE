@@ -13,9 +13,6 @@ class HomeAssistUI : public BasicUI {
 
  private:
   std::unique_ptr<HomeAssist::WebSocket::Api> mHomeAssistApi = nullptr;
-  std::shared_ptr<HomeAssist::WebSocket::MessageHandler> mMessageHandler;
-  std::shared_ptr<HomeAssist::WebSocket::MessageHandler> mDeviceFinder;
-  std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> mDeviceQueryProcessor;
 };
 
 }  // namespace UI
