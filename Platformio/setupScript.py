@@ -35,7 +35,15 @@ def installApt(apt):
     except subprocess.CalledProcessError as e:
         print(f"Failed to install {apt}: {e}")
 
-def verifySimDependencies():   
+def verifySimDependencies():
+    # Check if apt-get exists on the system
+    try:
+        subprocess.run(['which', 'apt-get'], check=True, capture_output=True)
+        verifyAptDependencies()
+    except subprocess.CalledProcessError:
+        print("apt-get not found - skipping apt dependencies check")
+
+def verifyAptDependencies():   
     try:
         for dep in LINUX_APT_DEPENDENCES:
           if(not isAptInstalled(dep)):
