@@ -38,8 +38,8 @@ def installApt(apt):
 def verifySimDependencies():   
     try:
         for dep in LINUX_APT_DEPENDENCES:
-          print(f"Detected Missing Dependency {dep} Installing...")
           if(not isAptInstalled(dep)):
+            print(f"Detected Missing Dependency {dep} Installing...")
             installApt(dep)
     except: 
        print("Failed To Verify Dependencies are Installed!")
