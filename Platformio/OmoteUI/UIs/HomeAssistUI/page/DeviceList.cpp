@@ -25,16 +25,19 @@ DeviceList::DeviceList(HomeAssist::WebSocket::Api& aApi)
   mLoadingArc->AlignTo(this, LV_ALIGN_TOP_MID);
   mDeviceList->AlignTo(mDeviceList, LV_ALIGN_OUT_BOTTOM_MID);
 
-  mDeviceQueryProcessor->setRequestProcessCompleteCallback(
-      [this](auto aResult) {
-        if (aResult) {
-          mLoadingArc->SetVisiblity(false);
-          mDeviceList->AlignTo(this, LV_ALIGN_TOP_MID);
-          mDeviceList->SetVisiblity(true);
-        } else {
-          // Todo throw an error up?
-        }
-      });
+  mDeviceQueryProcessor->setRequestProcessCompleteCallback([this](
+                                                               auto aResult) {
+    bool ranSuccessfully = aResult;
+    LvglResourceManager::GetInstance().QueueForLater([this, ranSuccessfully]() {
+      if (ranSuccessfully) {
+        mLoadingArc->SetVisiblity(false);
+        mDeviceList->AlignTo(this, LV_ALIGN_TOP_MID);
+        mDeviceList->SetVisiblity(true);
+      } else {
+        // Todo throw an error up?
+      }
+    });
+  });
 
   mDeviceQueryProcessor->setPercentCompleteCallback(
       [this](const auto& aPercentComplete) {
