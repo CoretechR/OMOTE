@@ -2,7 +2,7 @@
 #include <functional>
 #include <string>
 
-#include "websockets/IProcessMessage.hpp"
+#include "IProcessMessage.hpp"
 
 class webSocketInterface {
  public:

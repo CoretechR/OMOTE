@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "HardwareModules/websockets/IChunkProcessor.hpp"
 #include "HomeAssistant/Api/WebSocket/Request.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/ISession.hpp"
+#include "IChunkProcessor.hpp"
 
 namespace HomeAssist::WebSocket {
 

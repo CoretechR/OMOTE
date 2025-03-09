@@ -2,7 +2,7 @@
 #include <functional>
 #include <string>
 
-#include "websockets/IChunkProcessor.hpp"
+#include "IChunkProcessor.hpp"
 
 namespace UI {
 

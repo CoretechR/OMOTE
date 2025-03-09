@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 
-#include "websockets/IChunkProcessor.hpp"
-
+#include "IChunkProcessor.hpp"
+// MatthewColvin/OMOTE#10
 namespace HomeAssist::WebSocket {
 
 class Api;

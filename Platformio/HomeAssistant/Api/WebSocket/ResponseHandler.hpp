@@ -1,8 +1,8 @@
 #pragma once
 
 #include "HomeAssistant/Api/WebSocket/Api.hpp"
+#include "IProcessMessage.hpp"
 #include "rapidjson/document.h"
-#include "websockets/IProcessMessage.hpp"
 
 namespace HomeAssist::WebSocket {
 
