@@ -10,9 +10,10 @@
             "maintainer": true
         }
     ],
-    "dependencies": [
-        "HAL"
-    ],
+    "dependencies": {
+        "HAL": "HAL",
+        "SDL2": "https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-3.2.8-win32-x64.zip"
+    },
     "build": {
         "includeDir": ".",
         "flags": [
@@ -26,6 +27,7 @@
             "-lpthread"
         ]
     },
-    "frameworks": "*",
-    "platforms": "native"
+    "platforms": [
+        "native"
+    ]
 }

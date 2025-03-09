@@ -1,0 +1,16 @@
+{
+    "name": "HAL",
+    "version": "1.0.0",
+    "description": "An abstraction layer for OMOTE UI to consume and HW targets to implement",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Matthew Colvin",
+            "email": "mcolvin32.7@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "dependencies": [],
+    "frameworks": "*",
+    "platforms": "*"
+}

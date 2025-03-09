@@ -7,16 +7,16 @@ class HomeScreen;
 }
 
 class BasicUI : public UIBase {
-public:
+ public:
   BasicUI();
 
-protected:
+ protected:
   void AddPageToHomeScreen(Page::Base::Ptr aPageToAdd);
   bool GoToPage(ID anId);
 
-private:
+ private:
   Screen::HomeScreen *mHomeScreen;
 
-}; // namespace UIBase
+};  // namespace UIBase
 
-} // namespace UI
+}  // namespace UI
