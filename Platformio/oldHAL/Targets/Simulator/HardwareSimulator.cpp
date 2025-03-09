@@ -2,8 +2,6 @@
 
 #include <sstream>
 
-#include "SDLDisplay.hpp"
-
 HardwareSimulator::HardwareSimulator()
     : HardwareAbstract(),
       mBattery(std::make_shared<BatterySimulator>()),

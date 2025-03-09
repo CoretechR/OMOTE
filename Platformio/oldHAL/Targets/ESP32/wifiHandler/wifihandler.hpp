@@ -1,13 +1,14 @@
 #pragma once
-#include "Notification.hpp"
-#include "memory.h"
-#include "wifiHandlerInterface.h"
 #include <PubSubClient.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
 
+#include "Hardware/wifiHandlerInterface.h"
+#include "Notification.hpp"
+#include "memory.h"
+
 class wifiHandler : public wifiHandlerInterface {
-public:
+ public:
   static std::shared_ptr<wifiHandler> getInstance();
 
   // wifiHandlerInterface Implementation
@@ -18,7 +19,7 @@ public:
 
   //
 
-protected:
+ protected:
   // MQTT Interface
   void setupMqttBroker(std::string aBrokerIpAddress, int aPort) override;
   void mqttSend(std::string aTopic, std::string aMessage) override;
@@ -32,7 +33,7 @@ protected:
    */
   void StoreCredentials();
 
-private:
+ private:
   /**
    * @brief Handler for incoming arduino wifi events
    * @param event - a Wifi event

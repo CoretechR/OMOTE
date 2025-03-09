@@ -7,7 +7,6 @@
 #include <functional>
 #include <memory>
 
-#include "BatteryInterface.h"
 #include "EspStats.hpp"
 #include "HardwareAbstract.hpp"
 #include "IRTransceiver.hpp"
@@ -17,7 +16,6 @@
 #include "keys.hpp"
 #include "lvgl.h"
 #include "omoteconfig.h"
-#include "wifiHandlerInterface.h"
 #include "wifihandler.hpp"
 
 class HardwareRevX : public HardwareAbstract {

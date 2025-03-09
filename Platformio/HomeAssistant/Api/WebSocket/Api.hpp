@@ -5,8 +5,8 @@
 #include <memory>
 #include <queue>
 
+#include "Hardware/websockets/webSocketInterface.hpp"
 #include "Notification.hpp"
-#include "websockets/webSocketInterface.hpp"
 
 namespace HomeAssist::WebSocket {
 

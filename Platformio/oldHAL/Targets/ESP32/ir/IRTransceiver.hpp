@@ -1,12 +1,13 @@
 #pragma once
-#include "IRInterface.hpp"
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <freertos/task.h>
 
+#include "Hardware/IRInterface.h"
+
 class IRTransceiver : public IRInterface, protected IRsend, protected IRrecv {
-public:
+ public:
   IRTransceiver();
   virtual ~IRTransceiver();
 
@@ -27,7 +28,7 @@ public:
   void disableRx() override;
   void loopHandleRx() override;
 
-private:
+ private:
   void maxOutTaskPriority();
   void restoreTaskPriority();
   BaseType_t mPreSendPriority = 0;

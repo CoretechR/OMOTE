@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "Hardware/websockets/webSocketInterface.hpp"
 #include "esp_websocket_client.h"
-#include "websockets/webSocketInterface.hpp"
 #include "wifihandler.hpp"
 
 class esp32WebSocket : public webSocketInterface {

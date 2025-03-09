@@ -3,7 +3,7 @@
 #include <LovyanGFX.hpp>
 #include <memory>
 
-#include "DisplayAbstract.h"
+#include "Hardware/DisplayAbstract.h"
 #include "HardwareAbstract.hpp"
 #include "Notification.hpp"
 #include "driver/ledc.h"

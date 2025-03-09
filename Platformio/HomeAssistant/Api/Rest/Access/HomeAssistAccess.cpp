@@ -1,7 +1,5 @@
 #include "HomeAssistant/Api/Rest/Access/HomeAssistAccess.hpp"
 
-#include "omoteconfig.h"
-
 #if defined(IS_SIMULATOR)
 #include "HomeAssistant/Api/Rest/Backends/Curl/CurlApi.hpp"
 #else

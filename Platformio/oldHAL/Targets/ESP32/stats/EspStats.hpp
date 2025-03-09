@@ -1,5 +1,5 @@
 #pragma once
-#include "SystemStatsInterface.h"
+#include "Hardware/SystemStatsInterface.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 

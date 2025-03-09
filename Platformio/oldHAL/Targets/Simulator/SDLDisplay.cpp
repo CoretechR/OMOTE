@@ -1,5 +1,6 @@
 #include "SDLDisplay.hpp"
 
+#include <memory>
 #include <string>
 
 std::shared_ptr<SDLDisplay> SDLDisplay::getInstance() {

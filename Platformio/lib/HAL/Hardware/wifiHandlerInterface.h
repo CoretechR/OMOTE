@@ -3,11 +3,13 @@
 #include <memory>
 #include <string>
 
+#include "Notification.hpp"
+
 class wifiHandlerInterface {
-public:
+ public:
   wifiHandlerInterface() = default;
   virtual ~wifiHandlerInterface() = default;
-  
+
   struct WifiInfo {
     WifiInfo() = default;
     WifiInfo(std::string aSsid, int aRssi) : ssid(aSsid), rssi(aRssi) {}
@@ -19,7 +21,7 @@ public:
   struct wifiStatus {
     wifiStatus() = default;
     wifiStatus(bool aConnected, std::string aIp, std::string aSsid)
-        : isConnected(aConnected), IP(aIp), ssid(aSsid){};
+        : isConnected(aConnected), IP(aIp), ssid(aSsid) {};
 
     bool isConnected = false;
     std::string IP = "";
@@ -48,7 +50,7 @@ public:
     return mStatusUpdate;
   };
 
-protected:
+ protected:
   std::shared_ptr<ScanNotificationTy> mScanNotification =
       std::make_shared<ScanNotificationTy>();
   std::shared_ptr<Notification<wifiStatus>> mStatusUpdate =

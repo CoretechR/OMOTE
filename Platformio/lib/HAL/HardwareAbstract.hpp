@@ -4,14 +4,14 @@
 #include <chrono>
 #include <memory>
 
-#include "BatteryInterface.h"
-#include "DisplayAbstract.h"
-#include "IRInterface.hpp"
-#include "KeyPressAbstract.hpp"
+#include "Hardware/BatteryInterface.h"
+#include "Hardware/DisplayAbstract.h"
+#include "Hardware/IRInterface.h"
+#include "Hardware/KeyPressAbstract.hpp"
+#include "Hardware/SystemStatsInterface.h"
+#include "Hardware/websockets/webSocketInterface.hpp"
+#include "Hardware/wifiHandlerInterface.h"
 #include "Notification.hpp"
-#include "SystemStatsInterface.h"
-#include "websockets/webSocketInterface.hpp"
-#include "wifiHandlerInterface.h"
 
 class HardwareAbstract {
  public:

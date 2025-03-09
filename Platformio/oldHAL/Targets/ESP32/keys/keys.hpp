@@ -1,19 +1,21 @@
 #pragma once
-#include "KeyPressAbstract.hpp"
-#include "omoteconfig.h"
-#include <Keypad.h> // modified for inverted logic
+#include <Keypad.h>  // modified for inverted logic
+
 #include <map>
 
+#include "Hardware/KeyPressAbstract.hpp"
+#include "omoteconfig.h"
+
 class Keys : public KeyPressAbstract {
-public:
+ public:
   Keys();
   void HandleKeyPresses() override;
   void QueueKeyEvent(KeyEvent aJustOccuredKeyEvent) override;
 
-protected:
+ protected:
   void GrabKeys();
 
-private:
+ private:
   static void KeyGrabberTask(void *aSelf);
   static void KeyProccessor(void *aSelf);
 
@@ -22,15 +24,15 @@ private:
   TaskHandle_t mKeyHandlingTask;
 
   // Keypad declarations
-  static const byte ROWS = 5; // four rows
-  static const byte COLS = 5; // four columns
+  static const byte ROWS = 5;  // four rows
+  static const byte COLS = 5;  // four columns
   // define the symbols on the buttons of the keypads
   char hexaKeys[ROWS][COLS] = {
-      {'s', '^', '-', 'm', 'r'}, //  source, channel+, Volume-,   mute, record
-      {'i', 'R', '+', 'k', 'd'}, //    info,    right, Volume+,     OK,   down
-      {'4', 'v', '1', '3', '2'}, //    blue, channel-,     red, yellow,  green
-      {'>', 'o', 'b', 'u', 'L'}, // forward,      off,    back,     up,   left
-      {'?', 'p', 'c', '<', '='}  //       ?,     play,  config, rewind,   stop
+      {'s', '^', '-', 'm', 'r'},  //  source, channel+, Volume-,   mute, record
+      {'i', 'R', '+', 'k', 'd'},  //    info,    right, Volume+,     OK,   down
+      {'4', 'v', '1', '3', '2'},  //    blue, channel-,     red, yellow,  green
+      {'>', 'o', 'b', 'u', 'L'},  // forward,      off,    back,     up,   left
+      {'?', 'p', 'c', '<', '='}   //       ?,     play,  config, rewind,   stop
   };
   // TODO what is '?' lol
 
@@ -68,9 +70,9 @@ private:
       {'4', KeyId::Aux4}};
 
   byte rowPins[ROWS] = {SW_A, SW_B, SW_C, SW_D,
-                        SW_E}; // connect to the row pinouts of the keypad
+                        SW_E};  // connect to the row pinouts of the keypad
   byte colPins[COLS] = {SW_1, SW_2, SW_3, SW_4,
-                        SW_5}; // connect to the column pinouts of the keypad
+                        SW_5};  // connect to the column pinouts of the keypad
   Keypad customKeypad =
       Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 };

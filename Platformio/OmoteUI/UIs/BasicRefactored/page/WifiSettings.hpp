@@ -1,6 +1,6 @@
 #pragma once
 #include "PageBase.hpp"
-#include "wifiHandlerInterface.h"
+#include "Hardware/wifiHandlerInterface.h"
 
 namespace UI::Widget {
 class List;
