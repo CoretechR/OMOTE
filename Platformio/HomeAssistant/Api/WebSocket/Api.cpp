@@ -6,7 +6,7 @@
 #include "HomeAssistant/Api/WebSocket/ResponseHandler.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/AuthSession.hpp"
 #include "HomeAssistant/Api/WebSocket/Session/ISession.hpp"
-#include "HomeAssistant/RapidJsonUtilty.hpp"
+#include "RapidJsonUtilty.hpp"
 #include "rapidjson/document.h"
 
 namespace HomeAssist::WebSocket {

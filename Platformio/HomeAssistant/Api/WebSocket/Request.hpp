@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "HomeAssistant/RapidJsonUtilty.hpp"
+#include "RapidJsonUtilty.hpp"
 #include "rapidjson/document.h"
 
 namespace HomeAssist::WebSocket {

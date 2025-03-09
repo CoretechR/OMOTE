@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "HomeAssistant/RapidJsonUtilty.hpp"
+#include "RapidJsonUtilty.hpp"
 
 namespace HomeAssist::WebSocket {
 

@@ -5,7 +5,7 @@
 #include <string>
 
 #include "HomeAssistant/Api/WebSocket/Request.hpp"
-#include "HomeAssistant/RapidJsonUtilty.hpp"
+#include "RapidJsonUtilty.hpp"
 
 namespace HomeAssist::WebSocket {
 
@@ -129,7 +129,7 @@ class RequestBuilder {
       int aId, const std::string& aEntityId, const std::string& aFrom,
       const std::string& aTo);
 
-  private:
+ private:
   MemConciousDocument mDocument;
   MemConciousDocument::AllocatorType& mAllocator;
 };

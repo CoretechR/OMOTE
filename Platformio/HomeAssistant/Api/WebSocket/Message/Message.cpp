@@ -4,7 +4,7 @@
 #include <string>
 
 #include "HomeAssistant/Api/WebSocket/Message/Entity.hpp"
-#include "HomeAssistant/RapidJsonUtilty.hpp"
+#include "RapidJsonUtilty.hpp"
 
 namespace HomeAssist::WebSocket {
 

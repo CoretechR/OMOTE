@@ -5,7 +5,7 @@
 
 #include "HomeAssistant/Api/Rest/Access/HomeAssistApiParser.hpp"
 #include "HomeAssistant/Api/Rest/Access/IHomeAssistApi.hpp"
-#include "HomeAssistant/RapidJsonUtilty.hpp"
+#include "RapidJsonUtilty.hpp"
 #include "rapidjson/allocators.h"
 
 namespace HomeAssist {

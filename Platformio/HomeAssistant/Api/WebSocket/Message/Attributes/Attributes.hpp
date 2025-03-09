@@ -1,6 +1,6 @@
 #pragma once
 #include "HomeAssistant/Api/WebSocket/Message/Message.hpp"
-#include "HomeAssistant/RapidJsonUtilty.hpp"
+#include "RapidJsonUtilty.hpp"
 
 namespace HomeAssist::WebSocket {
 
