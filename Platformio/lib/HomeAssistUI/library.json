@@ -1,0 +1,28 @@
+{
+    "name": "HomeAssistUI",
+    "version": "1.0.0",
+    "description": "A UI for OMOTE Centered around interaction with HomeAssist",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Matthew Colvin",
+            "email": "mcolvin32.7@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "dependencies": [
+        "HAL",
+        "LVGL++",
+        "BasicUI",
+        "HomeAssistantApi"
+    ],
+    "build": {
+        "includeDir": ".",
+        "flags": [
+            "-I page",
+            "-I widget"
+        ]
+    },
+    "frameworks": "*",
+    "platforms": "*"
+}

@@ -1,6 +1,6 @@
 #pragma once
 #include "HardwareFactory.hpp"
-#include "UIs/HomeAssistUI/HomeAssistUI.hpp"
+#include "HomeAssistUI.hpp"
 namespace OMOTE {
 std::shared_ptr<UI::UIBase> ui = nullptr;
 
