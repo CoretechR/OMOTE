@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-#include "oldHAL/SPSCQueueInterface.hpp"
+#include "SPSCQueueInterface.hpp"
 
 template <typename T>
 class SimulatorSPSCQueue : public SPSCQueueInterface<T> {

@@ -1,8 +1,8 @@
 #pragma once
 #include <mutex>
 
-#include "oldHAL/MPMCQueueInterface.hpp"
-#include "oldHAL/Targets/Simulator/SimulatorSPSCQueue.hpp"
+#include "MPMCQueueInterface.hpp"
+#include "SimulatorSPSCQueue.hpp"
 
 template <typename T>
 class SimulatorMPMCQueue : public SimulatorSPSCQueue<T>,

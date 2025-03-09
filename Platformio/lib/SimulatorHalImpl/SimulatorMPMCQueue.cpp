@@ -1,4 +1,4 @@
-#include "oldHAL/Targets/Simulator/SimulatorMPMCQueue.hpp"
+#include "SimulatorMPMCQueue.hpp"
 
 template <typename T>
 bool SimulatorMPMCQueue<T>::push(T obj) {

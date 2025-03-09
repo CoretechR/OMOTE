@@ -1,4 +1,4 @@
-#include "oldHAL/Targets/Simulator/SimulatorSPSCQueue.hpp"
+#include "SimulatorSPSCQueue.hpp"
 
 template <typename T>
 SimulatorSPSCQueue<T>::SimulatorSPSCQueue(uint32_t size) {
