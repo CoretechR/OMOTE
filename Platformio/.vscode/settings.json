@@ -84,7 +84,13 @@
         "hash_set": "cpp",
         "text_encoding": "cpp",
         "lv_string.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "source_location": "cpp",
+        "*.ipp": "cpp",
+        "csignal": "cpp",
+        "coroutine": "cpp",
+        "ranges": "cpp",
+        "lv_sdl_private.h": "c"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/esp32/Adafruit BusIO",
     "editor.formatOnSave": true,

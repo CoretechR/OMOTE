@@ -6,7 +6,7 @@ import subprocess
 
 buildEnv : SCons.Environment.Base = env
 
-LINUX_APT_DEPENDENCES = {"libsdl2-dev","libcurl4-openssl-dev", "libboost-all-dev"}
+LINUX_APT_DEPENDENCES = {"libsdl2-dev","libcurl4-openssl-dev","libwebsocketpp-dev","libboost-all-dev"}
 
 def runGitCommand(command):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)

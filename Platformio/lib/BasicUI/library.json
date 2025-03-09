@@ -1,0 +1,27 @@
+{
+    "name": "BasicUI",
+    "version": "1.0.0",
+    "description": "A Basic UI for OMOTE",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Matthew Colvin",
+            "email": "mcolvin32.7@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "dependencies": [
+        "HAL",
+        "LVGL++"
+    ],
+    "build": {
+        "includeDir": ".",
+        "flags": [
+            "-I page",
+            "-I screen",
+            "-I widget"
+        ]
+    },
+    "frameworks": "*",
+    "platforms": "*"
+}

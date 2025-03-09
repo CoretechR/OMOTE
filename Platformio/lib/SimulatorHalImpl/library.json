@@ -1,0 +1,33 @@
+{
+    "name": "SimulatorHalImpl",
+    "version": "1.0.0",
+    "description": "An Implmention of the HAL library to be used for OMOTE Simulator on x64 ; SDL2 must be installed on system! Windows:msys2 ubuntu:apt-get ; link with lpthread for std::thread on Linux",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Matthew Colvin",
+            "email": "mcolvin32.7@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "dependencies": {
+        "HAL": "HAL",
+        "SDL2": "https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-3.2.8-win32-x64.zip"
+    },
+    "build": {
+        "includeDir": ".",
+        "flags": [
+            "-I battery",
+            "-I display",
+            "-I ir",
+            "-I keys",
+            "-I stats",
+            "-I wifiHandler",
+            "-lSDL2",
+            "-lpthread"
+        ]
+    },
+    "platforms": [
+        "native"
+    ]
+}
