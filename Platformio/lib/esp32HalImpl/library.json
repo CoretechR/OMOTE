@@ -1,0 +1,19 @@
+{
+    "name": "Esp32HalImpl",
+    "version": "1.0.0",
+    "description": "An Implmention of the HAL library to be used for OMOTE",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Matthew Colvin",
+            "email": "mcolvin32.7@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "dependencies": [
+        "HAL",
+        "LovyanGFX"
+    ],
+    "frameworks": "arduino",
+    "platforms": "espressif32"
+}
