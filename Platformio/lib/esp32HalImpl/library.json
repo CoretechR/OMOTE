@@ -14,6 +14,17 @@
         "HAL",
         "LovyanGFX"
     ],
+    "build": {
+        "includeDir": ".",
+        "flags": [
+            "-I battery",
+            "-I display",
+            "-I ir",
+            "-I keys",
+            "-I stats",
+            "-I wifiHandler"
+        ]
+    },
     "frameworks": "arduino",
     "platforms": "espressif32"
 }

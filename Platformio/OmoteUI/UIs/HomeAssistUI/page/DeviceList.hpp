@@ -2,8 +2,8 @@
 #include "Arc.hpp"
 #include "HomeAssistant/Api/WebSocket/Api.hpp"
 #include "HomeAssistant/Api/WebSocket/Message/MessageHandler.hpp"
+#include "PageBase.hpp"
 #include "UIs/HomeAssistUI/SessionProcessors/DevicesQueryProcessor.hpp"
-#include "core/page/PageBase.hpp"
 
 namespace HAL::WebSocket::Json {
 class IChunkProcessor;

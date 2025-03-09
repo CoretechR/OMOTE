@@ -1,20 +1,17 @@
 #include "HardwareFactory.hpp"
 
-#if OMOTE_SIM
+#if defined(IS_SIMULATOR)
 #include "HardwareSimulator.hpp"
-#endif
-
-#if OMOTE_ESP32
+#else
 #include "HardwareRevX.hpp"
 #endif
 
 std::unique_ptr<HardwareAbstract> HardwareFactory::mHardware = nullptr;
 
 void HardwareFactory::Init() {
-#if OMOTE_SIM
+#if defined(IS_SIMULATOR)
   mHardware = std::make_unique<HardwareSimulator>();
-#endif
-#if OMOTE_ESP32
+#else
   mHardware = std::make_unique<HardwareRevX>();
 #endif
   mHardware->init();
