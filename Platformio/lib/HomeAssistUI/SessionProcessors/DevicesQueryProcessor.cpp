@@ -59,12 +59,12 @@ void DevicesQueryProcessor::Completed(const resultType& aCompletionResult) {
 
 void DevicesQueryProcessor::setPercentCompleteCallback(
     std::function<void(uint16_t)> aCallback) {
-  mPercentCompleteCallback = std::move(aCallback);
+  mPercentCompleteCallback = aCallback;
 }
 
 void DevicesQueryProcessor::setRequestProcessCompleteCallback(
     std::function<void(const resultType&)> aCallback) {
-  mRequestProcessCompleteCallback = std::move(aCallback);
+  mRequestProcessCompleteCallback = aCallback;
 }
 
 }  // namespace UI

@@ -40,9 +40,10 @@ class DevicesQueryProcessor : public HAL::WebSocket::Json::IChunkProcessor {
  private:
   bool isProcessingEi = false;
   const EntityIdCallback entityIdCallback;
-  std::function<void(uint16_t)> mPercentCompleteCallback;
+  std::function<void(uint16_t)> mPercentCompleteCallback = nullptr;
   uint16_t mPercentComplete = 0;
-  std::function<void(const resultType&)> mRequestProcessCompleteCallback;
+  std::function<void(const resultType&)> mRequestProcessCompleteCallback =
+      nullptr;
 };
 
 }  // namespace UI

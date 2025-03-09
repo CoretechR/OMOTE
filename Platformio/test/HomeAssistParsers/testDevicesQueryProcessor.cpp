@@ -12,21 +12,17 @@ using namespace HAL::WebSocket::Json;
 class DevicesQueryProcessorTest : public Test {
  protected:
   std::vector<std::string> capturedEntities;
-  std::unique_ptr<UI::DevicesQueryProcessor> processor;
+  UI::DevicesQueryProcessor* processor;
   std::unique_ptr<IProcessMessage> messageProcessor;
 
   void SetUp() override {
-    processor = std::make_unique<UI::DevicesQueryProcessor>(
+    auto process = std::make_unique<UI::DevicesQueryProcessor>(
         [this](const std::string& entityId) {
           capturedEntities.push_back(entityId);
         });
-    messageProcessor = std::make_unique<IProcessMessage>(
-        nullptr, std::unique_ptr<IChunkProcessor>(processor.release()));
-  }
-
-  void TearDown() override {
-    // Prevent double-free since processor is now owned by messageProcessor
-    processor.release();
+    processor = process.get();
+    messageProcessor =
+        std::make_unique<IProcessMessage>(nullptr, std::move(process));
   }
 };
 
@@ -88,7 +84,7 @@ TEST_F(DevicesQueryProcessorTest, ShouldHandleChunkedInput) {
       [](auto total, auto nextStr) { return total + nextStr.length(); });
 
   for (const auto& chunk : chunks) {
-    const bool result = messageProcessor->ProcessChunk(chunk1, totalLength);
+    const bool result = messageProcessor->ProcessChunk(chunk, totalLength);
     ASSERT_TRUE(result);
   }
 
