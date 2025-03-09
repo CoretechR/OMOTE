@@ -4,7 +4,7 @@
 #include <queue>
 #include <thread>
 
-#include "KeyPressAbstract.hpp"
+#include "Hardware/KeyPressAbstract.hpp"
 #include "SDL2/SDL.h"
 
 class KeyPressSim : public KeyPressAbstract {

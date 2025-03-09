@@ -1,5 +1,5 @@
 #pragma once
-#include "IRInterface.hpp"
+#include "IRInterface.h"
 
 class IRSim : public IRInterface {
   void send(int64SendTypes protocol, uint64_t data) override;

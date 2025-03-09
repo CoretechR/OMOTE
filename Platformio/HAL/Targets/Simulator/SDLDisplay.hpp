@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#include "DisplayAbstract.h"
+#include "Hardware/DisplayAbstract.h"
 #include "SDL2/SDL.h"
 
 class SDLDisplay : public DisplayAbstract {

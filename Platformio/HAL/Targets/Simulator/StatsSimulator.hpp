@@ -2,7 +2,7 @@
 #include <random>
 #include <thread>
 
-#include "SystemStatsInterface.h"
+#include "Hardware/SystemStatsInterface.h"
 
 class StatsSimulator : public SystemStatsInterface {
  public:
