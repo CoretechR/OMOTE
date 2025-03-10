@@ -1,0 +1,19 @@
+{
+    "name": "HardwareCreation",
+    "version": "1.0.0",
+    "description": "The switching layer for which hardware abstract the UI will use",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Matthew Colvin",
+            "email": "mcolvin32.7@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "dependencies": [
+        "esp32HalImpl",
+        "SimulatorHalImpl"
+    ],
+    "frameworks": "*",
+    "platforms": "*"
+}

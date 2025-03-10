@@ -8,7 +8,6 @@ In terms of features it is currently behind the main branch:
 * no memory optimization
 * no scenes
 * simplified key handling (e.g. no long press)
-* no IR receiver
 * is using different lvgl guis compared to main
 
 Feel free to try and use this branch if you like to work wth clean, object oriented code.
