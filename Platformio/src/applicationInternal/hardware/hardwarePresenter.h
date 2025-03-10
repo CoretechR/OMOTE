@@ -118,7 +118,7 @@ void keyboardBLE_deleteBonds();
 bool keyboardBLE_forceConnectionToAddress(std::string peerAddress);
 bool keyboardBLE_isAdvertising();
 bool keyboardBLE_isConnected();
-void keyboard_ble_shutdown();
+void keyboardBLE_end();
 void keyboardBLE_write(uint8_t c);
 void keyboardBLE_longpress(uint8_t c);
 void keyboardBLE_home();
@@ -142,7 +142,7 @@ void init_mqtt(void);
 bool getIsWifiConnected();
 void mqtt_loop();
 bool publishMQTTMessage(const char *topic, const char *payload);
-void wifi_shutdown();
+void wifiStop();
 #endif
 
 // --- memory usage -----------------------------------------------------------

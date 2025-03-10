@@ -39,6 +39,6 @@ bool MqttBackend::isReady() {
 }
 
 void MqttBackend::shutdown() {
-  wifi_shutdown();
+  wifiStop();
 }
 #endif 
