@@ -10,7 +10,7 @@
 #include <optional>
 #include <string>
 
-#include "HomeAssistant/Api/Rest/Access/IHomeAssistApi.hpp"
+#include "Rest/Access/IHomeAssistApi.hpp"
 
 using namespace rapidjson;
 
