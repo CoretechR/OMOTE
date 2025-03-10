@@ -17,14 +17,17 @@ uint16_t APPLETV_SELECT;
 // ... other commands
 
 void register_device_appleTV() {
-  register_command(&APPLETV_GUI_EVENT_USER_DATA           , makeCommandData(IR, {std::to_string(IR_PROTOCOL_SONY)}));  // payload must be set when calling commandHandler
 
-#if (ENABLE_HUB_COMMUNICATION == 1)
-  // Register hub commands for Apple TV
-  register_hub_command(&APPLETV_UP, "AppleTV", "up");
-  register_hub_command(&APPLETV_DOWN, "AppleTV", "down");
-  register_hub_command(&APPLETV_LEFT, "AppleTV", "left");
-  register_hub_command(&APPLETV_RIGHT, "AppleTV", "right");
-  register_hub_command(&APPLETV_SELECT, "AppleTV", "select");
-#endif
+  #if (ENABLE_HUB_COMMUNICATION == 1)
+    // Register hub commands for Apple TV when Hub is enabled
+    register_hub_command(&APPLETV_UP, "AppleTV", "up");
+    register_hub_command(&APPLETV_DOWN, "AppleTV", "down");
+    register_hub_command(&APPLETV_LEFT, "AppleTV", "left");
+    register_hub_command(&APPLETV_RIGHT, "AppleTV", "right");
+    register_hub_command(&APPLETV_SELECT, "AppleTV", "select");
+  #else
+    // Register IR commands for Apple TV when Hub is not enabled
+    register_command(&APPLETV_GUI_EVENT_USER_DATA, makeCommandData(IR, {std::to_string(IR_PROTOCOL_SONY)}));  // payload must be set when calling commandHandler
+  #endif
+
 }
