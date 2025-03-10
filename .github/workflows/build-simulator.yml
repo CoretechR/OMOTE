@@ -28,9 +28,6 @@ jobs:
       - name: Install cURL
         run : sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
 
-      - name: Install websocketpp
-        run : sudo apt-get update && sudo apt-get install -y libwebsocketpp-dev
-
       - name: Install Boost
         run : sudo apt-get update && sudo apt-get install -y libboost-all-dev
       
