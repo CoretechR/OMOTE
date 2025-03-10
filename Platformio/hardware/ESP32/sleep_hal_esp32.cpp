@@ -146,11 +146,11 @@ void enterSleep(){
 
   #if (ENABLE_WIFI_AND_MQTT == 1)
   // Power down modem
-  wifiStop_HAL();
+  wifi_shutdown_HAL();
   #endif
 
   #if (ENABLE_KEYBOARD_BLE == 1)
-  keyboardBLE_end_HAL();
+  keyboard_ble_shutdown_HAL();
   #endif
 
   // Prepare IO states
