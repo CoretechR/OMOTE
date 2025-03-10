@@ -1,0 +1,18 @@
+{
+    "name": "OmoteBasicUI",
+    "version": "1.0.0",
+    "description": "A Basic UI for OMOTE",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Matthew Colvin",
+            "email": "mcolvin32.7@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "dependencies": {
+        "rapidjson": "https://github.com/MatthewColvin/rapidjson#master"
+    },
+    "frameworks": "*",
+    "platforms": "*"
+}
