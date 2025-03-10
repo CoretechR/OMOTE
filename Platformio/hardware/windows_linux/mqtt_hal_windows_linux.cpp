@@ -211,7 +211,7 @@ bool publishMQTTMessage_HAL(const char *topic, const char *payload) {
   return true;
 }
 
-void wifiStop_HAL() {
+void wifi_shutdown_HAL() {
   /* disconnect */
   if (sockfd != -1) {
     mqtt_disconnect(&mqttClient);

@@ -4,6 +4,7 @@
 #include <string>
 #include "applicationInternal/hardware/arduinoLayer.h"
 
+
 // --- hardware general -------------------------------------------------------
 void init_hardware_general(void);
 
@@ -115,7 +116,7 @@ void keyboardBLE_deleteBonds();
 bool keyboardBLE_forceConnectionToAddress(std::string peerAddress);
 bool keyboardBLE_isAdvertising();
 bool keyboardBLE_isConnected();
-void keyboardBLE_end();
+void keyboard_ble_shutdown();
 void keyboardBLE_write(uint8_t c);
 void keyboardBLE_longpress(uint8_t c);
 void keyboardBLE_home();
@@ -139,7 +140,7 @@ void init_mqtt(void);
 bool getIsWifiConnected();
 void mqtt_loop();
 bool publishMQTTMessage(const char *topic, const char *payload);
-void wifiStop();
+void wifi_shutdown();
 #endif
 
 // --- memory usage -----------------------------------------------------------
