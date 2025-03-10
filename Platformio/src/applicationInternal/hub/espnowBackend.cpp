@@ -3,8 +3,7 @@
 #include "applicationInternal/omote_log.h"
 
 #if (ENABLE_ESPNOW == 1)
-EspNowBackend::EspNowBackend() {
-}
+EspNowBackend::EspNowBackend() = default;
 
 EspNowBackend::~EspNowBackend() {
   shutdown();

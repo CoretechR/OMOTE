@@ -131,14 +131,14 @@ enum CommandExecutionType {
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(CommandExecutionType, {
-    {CMD_SHORT, "short"},
-    {CMD_LONG, "long"}
+    {CMD_SHORT, "SHORT"},
+    {CMD_LONG, "LONG"}
 })
 
 struct CommandExecutionParams {
   uint16_t commandId;
-  std::string additionalPayload = "";
   CommandExecutionType commandType = CMD_SHORT;
+  std::string additionalPayload = "";
 };
 
 // Version that takes a parameter struct

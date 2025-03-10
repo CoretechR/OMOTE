@@ -13,5 +13,5 @@
 #define MQTT_SERVER                "IPAddressOfYourBroker"     // override here
 
 // MAC address of the hub (replace with your actual hub's MAC)
-#define ESPNOW_HUB_MAC {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC}
+#define ESPNOW_HUB_MAC {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
 

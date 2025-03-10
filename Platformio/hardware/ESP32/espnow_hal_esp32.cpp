@@ -25,7 +25,7 @@ void onDataReceived(const uint8_t *mac_addr, const uint8_t *data, int data_len) 
   snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X",
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
   
-  Serial.printf("ESP-NOW message received from %s\n", macStr);
+//   Serial.printf("ESP-NOW message received from %s\n", macStr);
   
   try {
     // Try to parse the received data as MessagePack
@@ -59,6 +59,7 @@ void init_espnow_HAL(void) {
   
   // Register hub as peer
   memcpy(hub_peer.peer_addr, hub_mac, 6);
+  // Setting channel0 defaults to existing channel setting
   hub_peer.channel = 0;  
   hub_peer.encrypt = false;
   
@@ -77,9 +78,6 @@ void espnow_loop_HAL() {
 }
 
 bool publishEspNowMessage_HAL(json payload) {
-  // Add remote ID to the payload
-  payload["remoteId"] = WiFi.macAddress();
-  
   // Pack the JSON into MessagePack format
   std::vector<std::uint8_t> packed_json = json::to_msgpack(payload);
   
@@ -92,7 +90,7 @@ bool publishEspNowMessage_HAL(json payload) {
   esp_err_t result = esp_now_send(hub_peer.peer_addr, packed_json.data(), packed_json.size());
   
   if (result == ESP_OK) {
-    Serial.println("ESP-NOW sent message with success");
+    // Serial.println("ESP-NOW sent message with success");
     return true;
   }
   

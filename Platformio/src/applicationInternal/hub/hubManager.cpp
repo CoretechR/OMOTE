@@ -23,19 +23,21 @@ HubManager::HubManager() : currentBackend(HubBackend::ESPNOW) {
 std::unique_ptr<HubBackendBase> HubManager::createBackend(HubBackend backend) {
   switch (backend) {
     case HubBackend::ESPNOW:
-      #if (ENABLE_ESPNOW == 1)
-      return std::unique_ptr<HubBackendBase>(new EspNowBackend());
-      #else
+      #if (ENABLE_ESPNOW != 1)
       omote_log_e("ESP-NOW backend is not available in this build\n");
       return nullptr;
-      #endif
-    case HubBackend::MQTT:
-      #if (ENABLE_WIFI_AND_MQTT == 1)
-      return std::unique_ptr<HubBackendBase>(new MqttBackend());
       #else
+      return std::unique_ptr<HubBackendBase>(new EspNowBackend());
+      #endif
+    
+    case HubBackend::MQTT:
+      #if (ENABLE_WIFI_AND_MQTT != 1)
       omote_log_e("MQTT backend is not available in this build\n");
       return nullptr;
+      #else
+      return std::unique_ptr<HubBackendBase>(new MqttBackend());
       #endif
+    
     default:
       omote_log_e("Invalid hub backend selected\n");
       return nullptr;

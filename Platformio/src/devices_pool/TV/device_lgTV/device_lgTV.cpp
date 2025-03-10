@@ -3,6 +3,10 @@
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "device_lgTV.h"
 
+#if (ENABLE_HUB_COMMUNICATION == 1)
+#include "devices/misc/device_hub_helper.h"
+#endif
+
 // Only activate the commands that are used. Every command takes 100 bytes, wether used or not
 uint16_t LGTV_POWER_ON;
 uint16_t LGTV_POWER_OFF;
@@ -122,4 +126,48 @@ void register_device_lgTV()
   //register_command(&LGTV_SLEEP          , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0x20DF58A7"}));
   register_command(&LGTV_3D             , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0x20DF3BC4"}));
   register_command(&LGTV_HOME           , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0x20DF3EC1"}));
+
+  #if (ENABLE_HUB_COMMUNICATION == 1)
+    register_hub_command(&LGTV_POWER_OFF, "LGTV", "POWER_OFF");
+    register_hub_command(&LGTV_POWER_ON, "LGTV", "POWER_ON");
+    register_hub_command(&LGTV_SOURCE, "LGTV", "SOURCE");
+    register_hub_command(&LGTV_NUM_1, "LGTV", "NUM_1");
+    register_hub_command(&LGTV_NUM_2, "LGTV", "NUM_2");
+    register_hub_command(&LGTV_NUM_3, "LGTV", "NUM_3");
+    register_hub_command(&LGTV_NUM_4, "LGTV", "NUM_4");
+    register_hub_command(&LGTV_NUM_5, "LGTV", "NUM_5");
+    register_hub_command(&LGTV_NUM_6, "LGTV", "NUM_6");
+    register_hub_command(&LGTV_NUM_7, "LGTV", "NUM_7");
+    register_hub_command(&LGTV_NUM_8, "LGTV", "NUM_8");
+    register_hub_command(&LGTV_NUM_9, "LGTV", "NUM_9");
+    register_hub_command(&LGTV_NUM_0, "LGTV", "NUM_0");
+    register_hub_command(&LGTV_PRECH, "LGTV", "PRECH");
+    register_hub_command(&LGTV_VOL_MINUS, "LGTV", "VOL_MINUS");
+    register_hub_command(&LGTV_VOL_PLUS, "LGTV", "VOL_PLUS");
+    register_hub_command(&LGTV_MUTE_TOGGLE, "LGTV", "MUTE_TOGGLE");
+    register_hub_command(&LGTV_CHANNEL_UP, "LGTV", "CHANNEL_UP");
+    register_hub_command(&LGTV_CHANNEL_DOWN, "LGTV", "CHANNEL_DOWN");
+    register_hub_command(&LGTV_MENU, "LGTV", "MENU");
+    register_hub_command(&LGTV_GUIDE, "LGTV", "GUIDE");
+    register_hub_command(&LGTV_SETUP, "LGTV", "SETUP");
+    register_hub_command(&LGTV_INFO, "LGTV", "INFO");
+    register_hub_command(&LGTV_UP, "LGTV", "UP");
+    register_hub_command(&LGTV_DOWN, "LGTV", "DOWN");
+    register_hub_command(&LGTV_LEFT, "LGTV", "LEFT");
+    register_hub_command(&LGTV_RIGHT, "LGTV", "RIGHT"); 
+    register_hub_command(&LGTV_OK, "LGTV", "OK");
+    register_hub_command(&LGTV_RETURN, "LGTV", "RETURN");
+    register_hub_command(&LGTV_EXIT, "LGTV", "EXIT");
+    register_hub_command(&LGTV_KEY_A, "LGTV", "KEY_A");
+    register_hub_command(&LGTV_KEY_B, "LGTV", "KEY_B");
+    register_hub_command(&LGTV_KEY_C, "LGTV", "KEY_C");
+    register_hub_command(&LGTV_KEY_D, "LGTV", "KEY_D");
+    register_hub_command(&LGTV_INPUT_HDMI_1, "LGTV", "INPUT_HDMI_1");
+    register_hub_command(&LGTV_INPUT_HDMI_2, "LGTV", "INPUT_HDMI_2");
+    register_hub_command(&LGTV_INPUT_HDMI_3, "LGTV", "INPUT_HDMI_3");
+    register_hub_command(&LGTV_INPUT_HDMI_4, "LGTV", "INPUT_HDMI_4");
+    register_hub_command(&LGTV_INPUT_TV, "LGTV", "INPUT_TV"); 
+    register_hub_command(&LGTV_3D, "LGTV", "3D");
+    register_hub_command(&LGTV_HOME, "LGTV", "HOME"); 
+  #endif
 }

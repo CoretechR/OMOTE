@@ -263,17 +263,17 @@ void executeCommandWithData(const CommandExecutionParams& params, commandData co
   auto current = commandData.commandPayloads.begin();
   
   // Extract device and command
-  std::string device = *current;
+  std::string deviceName = *current;
   current = std::next(current, 1);
   
-  std::string hubCommand = *current;
+  std::string commandName = *current;
   current = std::next(current, 1);
   
   // Create JSON payload
   json payload;
-  payload["device"] = device;
-  payload["command"] = hubCommand;
-  payload["commandType"] = params.commandType;
+  payload["device"] = deviceName;
+  payload["command"] = commandName;
+  payload["type"] = params.commandType;
   
   // Create a data array if we have any additional data
   json dataArray = json::array();
@@ -295,7 +295,7 @@ void executeCommandWithData(const CommandExecutionParams& params, commandData co
   }
   
   omote_log_d("execute: will send hub message for device '%s', command '%s'\r\n", 
-              device.c_str(), hubCommand.c_str());
+              deviceName.c_str(), commandName.c_str());
   
   // Send using the hub manager
   HubManager::getInstance().sendMessage(payload);
