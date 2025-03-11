@@ -16,7 +16,7 @@ jobs:
             mingw-w64-x86_64-python
             mingw-w64-x86_64-curl
             mingw-w64-x86_64-asio
-            mingw-w64-x86_64-boost-thread
+            mingw-w64-x86_64-boost
             python3-pip
       - uses: actions/checkout@v3
         with:
