@@ -241,14 +241,17 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       break;
     }
 
+#if (ENABLE_HUB_COMMUNICATION == 1)
     case HUB: {
       omote_log_w("HUB commands should be handled using the CommandExecutionParams struct\r\n");
       break;
     }
+#endif
   }
 }
 
 void executeCommandWithData(const CommandExecutionParams& params, commandData commandData) {
+#if (ENABLE_HUB_COMMUNICATION == 1)
   if (commandData.commandHandler != HUB) {
     // For non-HUB commands, pass through to the original function
     omote_log_d("command: will execute command '%u'%s%s\r\n", 
@@ -299,6 +302,7 @@ void executeCommandWithData(const CommandExecutionParams& params, commandData co
   
   // Send using the hub manager
   HubManager::getInstance().sendMessage(payload);
+#endif
 }
 
 void executeCommand(uint16_t command, std::string additionalPayload) {
