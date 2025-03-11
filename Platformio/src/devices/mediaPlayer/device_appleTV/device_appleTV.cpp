@@ -28,19 +28,21 @@ void register_device_appleTV() {
 
   #if (ENABLE_HUB_COMMUNICATION == 1)
     // Register hub commands for Apple TV when Hub is enabled
-    register_hub_command(&APPLETV_POWER_ON, "AppleTV", "POWER_ON");
-    register_hub_command(&APPLETV_POWER_OFF, "AppleTV", "POWER_OFF");
-    register_hub_command(&APPLETV_PLAY_PAUSE, "AppleTV", "PLAY_PAUSE");
-    register_hub_command(&APPLETV_SKIP_FORWARD, "AppleTV", "SKIP_FORWARD");
-    register_hub_command(&APPLETV_SKIP_BACKWARD, "AppleTV", "SKIP_BACKWARD");
-    register_hub_command(&APPLETV_STOP, "AppleTV", "STOP");
-    register_hub_command(&APPLETV_UP, "AppleTV", "UP"); 
-    register_hub_command(&APPLETV_DOWN, "AppleTV", "DOWN");
-    register_hub_command(&APPLETV_RIGHT, "AppleTV", "RIGHT");
-    register_hub_command(&APPLETV_LEFT, "AppleTV", "LEFT");
-    register_hub_command(&APPLETV_SELECT, "AppleTV", "SELECT");
-    register_hub_command(&APPLETV_MENU, "AppleTV", "MENU");
-    register_hub_command(&APPLETV_HOME, "AppleTV", "HOME");
+    register_hub_command(&APPLETV_GUI_EVENT_USER_DATA, "APPLE_TV", "GUI_EVENT");
+
+    register_hub_command(&APPLETV_POWER_ON, "APPLE_TV", "POWER_ON");
+    register_hub_command(&APPLETV_POWER_OFF, "APPLE_TV", "POWER_OFF");
+    register_hub_command(&APPLETV_PLAY_PAUSE, "APPLE_TV", "PLAY_PAUSE");
+    register_hub_command(&APPLETV_SKIP_FORWARD, "APPLE_TV", "SKIP_FORWARD");
+    register_hub_command(&APPLETV_SKIP_BACKWARD, "APPLE_TV", "SKIP_BACKWARD");
+    register_hub_command(&APPLETV_STOP, "APPLE_TV", "STOP");
+    register_hub_command(&APPLETV_UP, "APPLE_TV", "UP"); 
+    register_hub_command(&APPLETV_DOWN, "APPLE_TV", "DOWN");
+    register_hub_command(&APPLETV_RIGHT, "APPLE_TV", "RIGHT");
+    register_hub_command(&APPLETV_LEFT, "APPLE_TV", "LEFT");
+    register_hub_command(&APPLETV_SELECT, "APPLE_TV", "SELECT");
+    register_hub_command(&APPLETV_MENU, "APPLE_TV", "MENU");
+    register_hub_command(&APPLETV_HOME, "APPLE_TV", "HOME");
     
   #else
     // Register IR commands for Apple TV when Hub is not enabled
