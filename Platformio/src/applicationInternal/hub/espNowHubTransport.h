@@ -1,25 +1,20 @@
 #pragma once
 
-#include "hubBackendBase.h"
+#include "hubTransportBase.h"
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
-#if (ENABLE_WIFI_AND_MQTT == 1)
-class MqttBackend : public HubBackendBase {
+#if (ENABLE_ESPNOW == 1)
+class EspNowHubTransport : public HubTransportBase {
 public:
-  MqttBackend();
-  ~MqttBackend() override;
+  EspNowHubTransport();
+  ~EspNowHubTransport() override;
   
   bool init() override;
   void process() override;
   bool sendMessage(const json& payload) override;
   bool isReady() override;
   void shutdown() override;
-  
-private:
-  // MQTT-specific members
-  bool mqttConnected;
-  std::string baseTopic;
 };
 #endif 

@@ -1,24 +1,24 @@
-#include "espnowBackend.h"
+#include "espNowHubTransport.h"
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/omote_log.h"
 
 #if (ENABLE_ESPNOW == 1)
-EspNowBackend::EspNowBackend() = default;
+EspNowHubTransport::EspNowHubTransport() = default;
 
-EspNowBackend::~EspNowBackend() {
+EspNowHubTransport::~EspNowHubTransport() {
   shutdown();
 }
 
-bool EspNowBackend::init() {
+bool EspNowHubTransport::init() {
   init_espnow();
   return true;
 }
 
-void EspNowBackend::process() {
+void EspNowHubTransport::process() {
   espnow_loop();
 }
 
-bool EspNowBackend::sendMessage(const json& payload) {
+bool EspNowHubTransport::sendMessage(const json& payload) {
   // Extract device and command for logging
   std::string device = payload["device"];
   std::string command = payload["command"];
@@ -27,12 +27,12 @@ bool EspNowBackend::sendMessage(const json& payload) {
   return publishEspNowMessage(payload);
 }
 
-bool EspNowBackend::isReady() {
+bool EspNowHubTransport::isReady() {
   // ESP-NOW is always ready once initialized
   return true;
 }
 
-void EspNowBackend::shutdown() {
+void EspNowHubTransport::shutdown() {
   espnow_shutdown();
 }
 #endif 

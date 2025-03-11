@@ -1,14 +1,14 @@
 #include "hubManager.h"
-#include "hubBackendBase.h"
+#include "hubTransportBase.h"
 #include "applicationInternal/omote_log.h"
 #include <Arduino.h>
 
 #if (ENABLE_ESPNOW == 1)
-#include "espnowBackend.h"
+#include "espNowHubTransport.h"
 #endif
 
 #if (ENABLE_WIFI_AND_MQTT == 1)
-#include "mqttBackend.h"
+#include "mqttHubTransport.h"
 #endif
 
 HubManager& HubManager::getInstance() {
@@ -16,90 +16,90 @@ HubManager& HubManager::getInstance() {
   return instance;
 }
 
-HubManager::HubManager() : currentBackend(HubBackend::ESPNOW) {
-  // Initialize with default backend type only
+HubManager::HubManager() : currentTransport(HubTransport::ESPNOW) {
+  // Initialize with default transport type only
 }
 
-std::unique_ptr<HubBackendBase> HubManager::createBackend(HubBackend backend) {
-  switch (backend) {
-    case HubBackend::ESPNOW:
+std::unique_ptr<HubTransportBase> HubManager::createTransport(HubTransport transport) {
+  switch (transport) {
+    case HubTransport::ESPNOW:
       #if (ENABLE_ESPNOW != 1)
-      omote_log_e("ESP-NOW backend is not available in this build\n");
+      omote_log_e("ESP-NOW transport is not available in this build\n");
       return nullptr;
       #else
-      return std::unique_ptr<HubBackendBase>(new EspNowBackend());
+      return std::unique_ptr<HubTransportBase>(new EspNowHubTransport());
       #endif
     
-    case HubBackend::MQTT:
+    case HubTransport::MQTT:
       #if (ENABLE_WIFI_AND_MQTT != 1)
-      omote_log_e("MQTT backend is not available in this build\n");
+      omote_log_e("MQTT transport is not available in this build\n");
       return nullptr;
       #else
-      return std::unique_ptr<HubBackendBase>(new MqttBackend());
+      return std::unique_ptr<HubTransportBase>(new MqttHubTransport());
       #endif
     
     default:
-      omote_log_e("Invalid hub backend selected\n");
+      omote_log_e("Invalid hub transport selected\n");
       return nullptr;
   }
 }
 
-bool HubManager::init(HubBackend backend) {
-  // Store the selected backend type
-  currentBackend = backend;
+bool HubManager::init(HubTransport transport) {
+  // Store the selected transport type
+  currentTransport = transport;
 
-  // Create the new backend
-  auto newBackend = createBackend(backend);
-  if (!newBackend) {
+  // Create the new transport
+  auto newTransport = createTransport(transport);
+  if (!newTransport) {
     return false;
   }
 
-  // Initialize the backend
-  if (!newBackend->init()) {
-    omote_log_e("Failed to initialize hub backend\n");
+  // Initialize the transport
+  if (!newTransport->init()) {
+    omote_log_e("Failed to initialize hub transport\n");
     return false;
   }
 
-  // If everything succeeded, replace the active backend
-  activeBackend = std::move(newBackend);
+  // If everything succeeded, replace the active transport
+  activeTransport = std::move(newTransport);
   return true;
 }
 
 void HubManager::process() {
-  if (activeBackend) {
-    activeBackend->process();
+  if (activeTransport) {
+    activeTransport->process();
   }
 }
 
 bool HubManager::sendMessage(const json& payload) {
-  if (!activeBackend) {
-    omote_log_w("Cannot send message: no hub backend initialized\n");
+  if (!activeTransport) {
+    omote_log_w("Cannot send message: no hub transport initialized\n");
     return false;
   }
   
-  if (!activeBackend->isReady()) {
-    omote_log_w("Cannot send message: hub backend not ready\n");
+  if (!activeTransport->isReady()) {
+    omote_log_w("Cannot send message: hub transport not ready\n");
     return false;
   }
   
-  return activeBackend->sendMessage(payload);
+  return activeTransport->sendMessage(payload);
 }
 
 bool HubManager::isInitialized() const {
-  return activeBackend != nullptr;
+  return activeTransport != nullptr;
 }
 
 bool HubManager::isReady() const {
-  return activeBackend && activeBackend->isReady();
+  return activeTransport && activeTransport->isReady();
 }
 
 void HubManager::shutdown() {
-  if (activeBackend) {
-    activeBackend->shutdown();
-    activeBackend.reset();
+  if (activeTransport) {
+    activeTransport->shutdown();
+    activeTransport.reset();
   }
 }
 
-HubBackend HubManager::getCurrentBackend() const {
-  return currentBackend;
+HubTransport HubManager::getCurrentTransport() const {
+  return currentTransport;
 } 

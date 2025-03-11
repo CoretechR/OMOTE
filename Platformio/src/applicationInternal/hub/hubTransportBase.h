@@ -5,18 +5,18 @@
 
 using json = nlohmann::json;
 
-// Define the hub backend types
-enum class HubBackend {
+// Define the hub transport types
+enum class HubTransport {
   ESPNOW,
   MQTT
 };
 
-// Abstract interface for hub communication backends
-class HubBackendBase {
+// Abstract interface for hub communication transports
+class HubTransportBase {
 public:
-  virtual ~HubBackendBase() = default;
+  virtual ~HubTransportBase() = default;
   
-  // Initialize the hub communication backend
+  // Initialize the hub communication transport
   virtual bool init() = 0;
   
   // Process hub communication tasks (called in loop)

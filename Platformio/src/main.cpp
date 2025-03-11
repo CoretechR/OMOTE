@@ -164,20 +164,20 @@ int main(int argc, char *argv[]) {
   init_mqtt();
   #endif
 
-  // Initialize hub communication with preferred backend from settings
+  // Initialize hub communication with preferred transport from settings
   #if (ENABLE_HUB_COMMUNICATION == 1)
-    HubBackend preferredBackend;
+    HubTransport preferredTransport;
 
-    #if defined(PREFERRED_HUB_BACKEND)
-      preferredBackend = static_cast<HubBackend>(PREFERRED_HUB_BACKEND);
+    #if defined(PREFERRED_HUB_TRANSPORT)
+      preferredTransport = static_cast<HubTransport>(PREFERRED_HUB_TRANSPORT);
     #elif (ENABLE_ESPNOW == 1)
-      preferredBackend = HUB_ESPNOW;  // Default to ESP-NOW when available
+      preferredTransport = HUB_TRANSPORT_ESPNOW;  // Default to ESP-NOW when available
     #elif (ENABLE_WIFI_AND_MQTT == 1)
-      preferredBackend = HUB_MQTT;    // Fall back to MQTT if ESP-NOW not available
+      preferredTransport = HUB_TRANSPORT_MQTT;    // Fall back to MQTT if ESP-NOW not available
     #endif
 
-    // Initialize the hub manager with the preferred backend
-    HubManager::getInstance().init(preferredBackend);
+    // Initialize the hub manager with the preferred transport
+    HubManager::getInstance().init(preferredTransport);
   #endif
 
   omote_log_i("Setup finished in %lu ms.\r\n", millis());
