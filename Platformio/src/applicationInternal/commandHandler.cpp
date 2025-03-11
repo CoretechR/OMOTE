@@ -176,7 +176,7 @@ std::string convertStringListToString(std::list<std::string> listOfStrings) {
   return result;
 }
 
-void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload) {
+void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload = "") {
   switch (commandData.commandHandler) {
     case IR: {
       omote_log_v("  generic IR, payloads %s\r\n", convertStringListToString(commandData.commandPayloads).c_str());
