@@ -25,7 +25,8 @@
             "-I stats",
             "-I wifiHandler",
             "-lSDL2",
-            "-lpthread"
+            "-lpthread",
+            "-lboost-system"
         ]
     },
     "platforms": [
