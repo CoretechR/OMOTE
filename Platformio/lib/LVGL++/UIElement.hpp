@@ -1,0 +1,197 @@
+#pragma once
+
+#include <lvgl.h>
+
+#include <vector>
+
+#include "BorderOutlinePadding.hpp"
+#include "Hardware/KeyPressAbstract.hpp"
+#include "LvglResourceManager.hpp"
+#include "TextStyle.hpp"
+#include "UIElementIds.hpp"
+
+namespace UI {
+
+class UIElement {
+ public:
+  using Ptr = std::unique_ptr<UIElement>;
+
+  UIElement(lv_obj_t *aLvglSelf, const ID aId = ID());
+  virtual ~UIElement();
+
+  virtual void SetBgColor(lv_color_t value,
+                          lv_style_selector_t selector = LV_PART_MAIN);
+
+  virtual void SetBgOpacity(lv_opa_t aOpacity,
+                            lv_style_selector_t aStyle = LV_PART_MAIN);
+
+  void SetVisiblity(bool aVisibility);
+  bool IsVisible();
+  bool IsSetVisible();
+
+  virtual void SetWidth(lv_coord_t aWidth);
+  virtual void SetHeight(lv_coord_t aHeight);
+
+  lv_coord_t GetWidth();
+  lv_coord_t GetHeight();
+
+  virtual void SetContentWidth(lv_coord_t aWidth);
+  virtual void SetContentHeight(lv_coord_t aHeight);
+
+  lv_coord_t GetContentWidth();
+  lv_coord_t GetContentHeight();
+
+  virtual void SetY(lv_coord_t aY);
+  virtual void SetX(lv_coord_t aX);
+
+  lv_coord_t GetY();
+  lv_coord_t GetX();
+  lv_coord_t GetBottom();
+
+  void AlignTo(UIElement *anElementToAlignWith, lv_align_t anAlignment,
+               lv_coord_t aXoffset = 0, lv_coord_t aYOffset = 0);
+
+  virtual void SetBorder(Border aNewBorder,
+                         lv_style_selector_t aStyle = LV_PART_MAIN);
+  Border GetBorder(lv_style_selector_t aStyle = LV_PART_MAIN);
+
+  virtual void SetOutline(Outline aNewOutline,
+                          lv_style_selector_t aStyle = LV_PART_MAIN);
+  Outline GetOutline(lv_style_selector_t aStyle = LV_PART_MAIN);
+
+  virtual void SetPadding(Padding aNewPadding,
+                          lv_style_selector_t aStyle = LV_PART_MAIN);
+  virtual void SetAllPadding(lv_coord_t aNewPadding,
+                             lv_style_selector_t aStyle = LV_PART_MAIN);
+  Padding GetPadding(lv_style_selector_t aStyle = LV_PART_MAIN);
+
+  virtual void SetTextStyle(TextStyle aNewStyle,
+                            lv_style_selector_t aStyle = LV_PART_MAIN);
+  TextStyle GetTextStyle(lv_style_selector_t aStyle = LV_PART_MAIN);
+
+  virtual void AddStyle(lv_style_t *aStyle, lv_style_selector_t aStyleSelector);
+
+  template <class UIElemTy>
+  UIElemTy *AddElement(std::unique_ptr<UIElemTy> aWidget);
+
+  template <class UIElemTy, class... ElemArgs>
+  UIElemTy *AddNewElement(ElemArgs &&...aElemArgs);
+
+  UIElement::Ptr RemoveElement(UIElement *aUIElementRef);
+
+  size_t GetNumContainedElements() { return mContainedElements.size(); }
+
+  virtual ID GetID() { return mId; };
+
+  template <class UIElemTy>
+  static UIElemTy GetElement(lv_obj_t *aLvglObject);
+
+  /// @brief There are use cases in which objects
+  ///        need to stay alive in LVGL but can die
+  ///        in terms of our usage this is a helper for these
+  ///        use Sparingly!!!
+  /// @param aTimeToKeepLvglObj
+  void SetKeepAliveTime(uint32_t aTimeToKeepLvglObj) {
+    mLvglKeepAliveTime = aTimeToKeepLvglObj;
+  }
+
+  void StartLvglEventHandler();
+  void StopLvglEventHandler();
+
+  /// @brief Register a callback to run for Lvgl Events for objects that
+  ///        are created from base classes.
+  void OnLvglEvent(std::function<void(lv_event_t *anEvent)> aLvglEventHandler) {
+    mLvglEventHandler = aLvglEventHandler;
+  }
+
+  /// @brief get Lvgl object reference to use in LVGL APIs
+  /// @return lvgl object a
+  lv_obj_t *LvglSelf() const { return mLvglSelf; }
+
+ protected:
+  /// @brief Show Element
+  virtual void Show();
+  /// @brief Hide Element
+  virtual void Hide();
+  /// @brief Override in child class to run something after element is shown
+  virtual void OnShow();
+  /// @brief Override in child class to run something after element is hidden
+  virtual void OnHide();
+
+  /// @brief Override to run something when element is added to a parent
+  /// @param aNewParent - Parent UIElement just added to
+  virtual void OnAdded(UIElement *aNewParent) {};
+
+  // Override in object to handle LVGL events for that object
+  virtual void OnLvglEvent(lv_event_t *anEvent) {
+    if (mLvglEventHandler) {
+      mLvglEventHandler(anEvent);
+    }
+  };
+
+  /// @brief Set KeyEvent to the UI element to see if it wants to handle it
+  virtual bool KeyEvent(KeyPressAbstract::KeyEvent aKeyEvent);
+
+  /// @brief Override to Handle KeyEvent for the specific element
+  /// @return true - Key event was used
+  ///         fasle - Key event was unused
+  virtual bool OnKeyEvent(KeyPressAbstract::KeyEvent aKeyEvent) = 0;
+
+ private:
+  /// @brief Get Pointer to Parent Element
+  /// @return - nullptr Parent was not wrapped or did not exist
+  UIElement *GetParent();
+
+  static void LvglEventHandler(lv_event_t *anEvent);
+
+  lv_obj_t *mLvglSelf;
+  const ID mId;
+  uint32_t mLvglKeepAliveTime = 0;
+  bool mIsHandlingLvglEvents = true;
+  std::function<void(lv_event_t *)> mLvglEventHandler = nullptr;
+
+  /// @brief Elements that are currently in this element
+  std::vector<UIElement::Ptr> mContainedElements;
+};
+
+/**
+ * @brief This helper allows conversion between anLvglObject and a
+ *        core element by using the user data that links the LVGL object
+ *        to its C++ counterpart. Do note that it is possible that this
+ *        user data is not always there if the Lvgl Object has not been wrapped
+ *        by UIElement
+ *
+ * @tparam UIElemTy - Type of element you want to cast to
+ * @param aLvglObject - object to extract User data from
+ * @return UIElemTy - object stored in user data (See constructor of
+ * UIElement)
+ */
+template <class UIElemTy>
+UIElemTy UIElement::GetElement(lv_obj_t *aLvglObject) {
+  auto UIElement = lv_obj_get_user_data(aLvglObject);
+  if (UIElement) {
+    return static_cast<UIElemTy>(UIElement);
+  }
+  return nullptr;
+}
+
+template <class UIElemTy>
+UIElemTy *UIElement::AddElement(std::unique_ptr<UIElemTy> anElement) {
+  auto lock = LvglResourceManager::GetInstance().scopeLock();
+  lv_obj_set_parent(anElement->mLvglSelf, mLvglSelf);
+  anElement->OnAdded(this);
+  if (IsVisible() && anElement->IsSetVisible()) {
+    static_cast<UIElement *>(anElement.get())->OnShow();
+  }
+  auto retval = anElement.get();
+  mContainedElements.push_back(std::move(anElement));
+  return retval;
+}
+
+template <class UIElemTy, class... ElemArgs>
+UIElemTy *UIElement::AddNewElement(ElemArgs &&...elemArgs) {
+  return static_cast<UIElemTy *>(AddElement(
+      std::make_unique<UIElemTy>(std::forward<ElemArgs>(elemArgs)...)));
+}
+
+}  // namespace UI
