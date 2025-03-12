@@ -7,7 +7,7 @@
 #include "SessionProcessors/DevicesQueryProcessor.hpp"
 
 using namespace testing;
-using namespace HAL::WebSocket::Json;
+using namespace Json;
 
 class DevicesQueryProcessorTest : public Test {
  protected:

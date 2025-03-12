@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace HAL::WebSocket::Json {
+namespace Json {
 class IChunkProcessor;
 }
 
@@ -27,8 +27,7 @@ class ISession {
   virtual bool IsComplete() const = 0;
 
   virtual bool IsPreferringChunkProcessing() = 0;
-  virtual std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor>
-  GetChunkProcessor() = 0;
+  virtual std::shared_ptr<Json::IChunkProcessor> GetChunkProcessor() = 0;
 
  protected:
   bool mIsRunning = false;

@@ -33,8 +33,7 @@ class AuthSession : public ISession {
  private:
   Request* BorrowEndRequest() override { return nullptr; }
   Request* BorrowStartRequest() override { return nullptr; }
-  std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> GetChunkProcessor()
-      override {
+  std::shared_ptr<Json::IChunkProcessor> GetChunkProcessor() override {
     return nullptr;
   }
   bool IsPreferringChunkProcessing() override { return false; }

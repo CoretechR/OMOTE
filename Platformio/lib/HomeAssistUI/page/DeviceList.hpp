@@ -5,7 +5,7 @@
 #include "WebSocket/Api.hpp"
 #include "WebSocket/Message/MessageHandler.hpp"
 
-namespace HAL::WebSocket::Json {
+namespace Json {
 class IChunkProcessor;
 }
 
