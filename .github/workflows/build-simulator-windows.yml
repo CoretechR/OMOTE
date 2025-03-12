@@ -29,4 +29,4 @@ jobs:
 
       - name: Build PlatformIO Project 64 bit sim
         working-directory: ./Platformio
-        run: pio run --environment x64_sim
+        run: pio run --environment x64_sim_windows
