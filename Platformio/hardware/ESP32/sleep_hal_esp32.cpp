@@ -155,7 +155,7 @@ void enterSleep(){
   keyboardBLE_end_HAL();
   #endif
 
-  #if (ENABLE_ESPNOW == 1)
+  #if (ENABLE_HUB_COMMUNICATION == 1)
   espnow_shutdown_HAL();
   #endif
 

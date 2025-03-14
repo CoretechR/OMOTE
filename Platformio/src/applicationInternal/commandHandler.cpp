@@ -176,7 +176,7 @@ std::string convertStringListToString(std::list<std::string> listOfStrings) {
   return result;
 }
 
-void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload = "") {
+void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload) {
   switch (commandData.commandHandler) {
     case IR: {
       omote_log_v("  generic IR, payloads %s\r\n", convertStringListToString(commandData.commandPayloads).c_str());
@@ -241,7 +241,7 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       break;
     }
 
-#if (ENABLE_HUB_COMMUNICATION == 1)
+#if (ENABLE_HUB_COMMUNICATION > 0)
     case HUB: {
       omote_log_w("HUB commands should be handled using the CommandExecutionParams struct\r\n");
       break;
@@ -251,7 +251,7 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
 }
 
 void executeCommandWithData(const CommandExecutionParams& params, commandData commandData) {
-#if (ENABLE_HUB_COMMUNICATION == 1)
+#if (ENABLE_HUB_COMMUNICATION > 0)
   if (commandData.commandHandler != HUB) {
     // For non-HUB commands, pass through to the original function
     omote_log_d("command: will execute command '%u'%s%s\r\n", 
@@ -369,7 +369,7 @@ void receiveMQTTmessage_cb(std::string topic, std::string payload) {
 }
 #endif
 
-#if (ENABLE_ESPNOW == 1)
+#if (ENABLE_HUB_COMMUNICATION == 1)
 void receiveEspNowMessage_cb(json payload) {
   // Extract device and command from the payload
   std::string device, command, jsonStr;

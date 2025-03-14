@@ -106,7 +106,7 @@ enum commandHandlers {
   #if (ENABLE_KEYBOARD_BLE == 1)
   BLE_KEYBOARD,
   #endif
-  #if (ENABLE_HUB_COMMUNICATION == 1)
+  #if (ENABLE_HUB_COMMUNICATION > 0)
   HUB,
   #endif
 };
@@ -145,7 +145,7 @@ struct CommandExecutionParams {
 void executeCommand(const CommandExecutionParams& params);
 
 // Original executeCommandWithData
-void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload = "");
+void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload);
 // New overload that takes CommandExecutionParams
 void executeCommandWithData(const CommandExecutionParams& params, commandData commandData);
 
@@ -159,6 +159,6 @@ void receiveBLEmessage_cb(std::string message);
 void receiveWiFiConnected_cb(bool connected);
 void receiveMQTTmessage_cb(std::string topic, std::string payload);
 #endif
-#if (ENABLE_ESPNOW == 1)
+#if (ENABLE_HUB_COMMUNICATION == 1)
 void receiveEspNowMessage_cb(json payload);
 #endif

@@ -165,15 +165,13 @@ int main(int argc, char *argv[]) {
   #endif
 
   // Initialize hub communication with preferred transport from settings
-  #if (ENABLE_HUB_COMMUNICATION == 1)
+  #if (ENABLE_HUB_COMMUNICATION > 0)
     HubTransport preferredTransport;
 
-    #if defined(PREFERRED_HUB_TRANSPORT)
-      preferredTransport = static_cast<HubTransport>(PREFERRED_HUB_TRANSPORT);
-    #elif (ENABLE_ESPNOW == 1)
-      preferredTransport = HUB_TRANSPORT_ESPNOW;  // Default to ESP-NOW when available
-    #elif (ENABLE_WIFI_AND_MQTT == 1)
-      preferredTransport = HUB_TRANSPORT_MQTT;    // Fall back to MQTT if ESP-NOW not available
+    #if (ENABLE_HUB_COMMUNICATION == 1)
+      preferredTransport = HubTransport::ESPNOW;  // ESP-NOW transport
+    #elif (ENABLE_HUB_COMMUNICATION == 2)
+      preferredTransport = HubTransport::MQTT;    // MQTT transport
     #endif
 
     // Initialize the hub manager with the preferred transport
@@ -241,7 +239,7 @@ void loop(unsigned long *pIMUTaskTimer, unsigned long *pUpdateStatusTimer) {
   }
 
   // Process hub communication
-  #if (ENABLE_HUB_COMMUNICATION == 1)
+  #if (ENABLE_HUB_COMMUNICATION > 0)
   HubManager::getInstance().process();
   #endif
 

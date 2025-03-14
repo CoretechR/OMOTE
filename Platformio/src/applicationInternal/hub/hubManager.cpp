@@ -3,11 +3,11 @@
 #include "applicationInternal/omote_log.h"
 #include <Arduino.h>
 
-#if (ENABLE_ESPNOW == 1)
+#if (ENABLE_HUB_COMMUNICATION == 1)
 #include "espNowHubTransport.h"
 #endif
 
-#if (ENABLE_WIFI_AND_MQTT == 1)
+#if (ENABLE_WIFI_AND_MQTT == 1 && ENABLE_HUB_COMMUNICATION == 2)
 #include "mqttHubTransport.h"
 #endif
 
@@ -23,7 +23,7 @@ HubManager::HubManager() : currentTransport(HubTransport::ESPNOW) {
 std::unique_ptr<HubTransportBase> HubManager::createTransport(HubTransport transport) {
   switch (transport) {
     case HubTransport::ESPNOW:
-      #if (ENABLE_ESPNOW != 1)
+      #if (ENABLE_HUB_COMMUNICATION != 1)
       omote_log_e("ESP-NOW transport is not available in this build\n");
       return nullptr;
       #else
@@ -31,7 +31,7 @@ std::unique_ptr<HubTransportBase> HubManager::createTransport(HubTransport trans
       #endif
     
     case HubTransport::MQTT:
-      #if (ENABLE_WIFI_AND_MQTT != 1)
+      #if (ENABLE_WIFI_AND_MQTT != 1 || ENABLE_HUB_COMMUNICATION != 2)
       omote_log_e("MQTT transport is not available in this build\n");
       return nullptr;
       #else

@@ -2,7 +2,7 @@
 #include "applicationInternal/hardware/hardwarePresenter.h"
 #include "applicationInternal/omote_log.h"
 
-#if (ENABLE_ESPNOW == 1)
+#if (ENABLE_HUB_COMMUNICATION == 1)
 EspNowHubTransport::EspNowHubTransport() = default;
 
 EspNowHubTransport::~EspNowHubTransport() {

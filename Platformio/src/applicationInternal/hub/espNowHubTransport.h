@@ -5,7 +5,7 @@
 
 using json = nlohmann::json;
 
-#if (ENABLE_ESPNOW == 1)
+#if (ENABLE_HUB_COMMUNICATION == 1)
 class EspNowHubTransport : public HubTransportBase {
 public:
   EspNowHubTransport();

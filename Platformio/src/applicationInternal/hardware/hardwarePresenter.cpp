@@ -271,7 +271,7 @@ void get_heapUsage(unsigned long *heapSize, unsigned long *freeHeap, unsigned lo
 }
 
 // --- ESP-NOW ----------------------------------------------------------------
-#if (ENABLE_ESPNOW == 1)
+#if (ENABLE_HUB_COMMUNICATION == 1)
 // ESP-NOW hardware presenter functions
 void init_espnow() {
   set_announceEspNowMessage_cb_HAL(&receiveEspNowMessage_cb);

@@ -149,7 +149,7 @@ void wifiStop();
 void get_heapUsage(unsigned long *heapSize, unsigned long *freeHeap, unsigned long *maxAllocHeap, unsigned long *minFreeHeap);
 
 // --- ESP-NOW ----------------------------------------------------------------
-#if (ENABLE_ESPNOW == 1)
+#if (ENABLE_HUB_COMMUNICATION == 1)
 // ESP-NOW hardware presenter functions
 void init_espnow();
 void espnow_loop();
