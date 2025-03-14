@@ -145,7 +145,7 @@ struct CommandExecutionParams {
 void executeCommand(const CommandExecutionParams& params);
 
 // Original executeCommandWithData
-void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload);
+void executeCommandWithData(uint16_t command, commandData commandData, std::string additionalPayload = "");
 // New overload that takes CommandExecutionParams
 void executeCommandWithData(const CommandExecutionParams& params, commandData commandData);
 
