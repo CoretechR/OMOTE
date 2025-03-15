@@ -98,15 +98,15 @@ void doLogMemoryUsage() {
     #if LV_MEM_CUSTOM != 0
       #ifdef SHOW_USED_MEMORY_INSTEAD_OF_FREE_IN_GUI
 
-      sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).c_str()                                                                                           , systemHeapSize-freeSystemHeap, systemHeapSize, float(systemHeapSize-freeSystemHeap) / systemHeapSize * 100);
+      snprintf(buffer, sizeof(buffer), ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).c_str()                                                                                           , systemHeapSize-freeSystemHeap, systemHeapSize, float(systemHeapSize-freeSystemHeap) / systemHeapSize * 100);
       #else
-      sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).c_str()                                                                                           , freeSystemHeap,                systemHeapSize, float(freeSystemHeap)                / systemHeapSize * 100);
+      snprintf(buffer, sizeof(buffer), ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).c_str()                                                                                           , freeSystemHeap,                systemHeapSize, float(freeSystemHeap)                / systemHeapSize * 100);
       #endif
     #else
       #ifdef SHOW_USED_MEMORY_INSTEAD_OF_FREE_IN_GUI
-      sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).append(" / ").append(LVGLMemorWarnBegin).append("%lu/%lu (%d%%)").append(LVGLMemorWarnEnd).c_str(), systemHeapSize-freeSystemHeap, systemHeapSize, float(systemHeapSize-freeSystemHeap) / systemHeapSize * 100, mon.total_size - mon.free_size, mon.total_size, mon.used_pct);
+      snprintf(buffer, sizeof(buffer), ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).append(" / ").append(LVGLMemorWarnBegin).append("%lu/%lu (%d%%)").append(LVGLMemorWarnEnd).c_str(), systemHeapSize-freeSystemHeap, systemHeapSize, float(systemHeapSize-freeSystemHeap) / systemHeapSize * 100, mon.total_size - mon.free_size, mon.total_size, mon.used_pct);
       #else
-      sprintf(buffer, ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).append(" / ").append(LVGLMemorWarnBegin).append("%lu/%lu (%d%%)").append(LVGLMemorWarnEnd).c_str(), freeSystemHeap,                systemHeapSize, float(freeSystemHeap)                / systemHeapSize * 100, mon.free_size,                  mon.total_size, 100-mon.used_pct);
+      snprintf(buffer, sizeof(buffer), ESP32HeapWarnBegin.append("%lu/%lu (%.0f%%)").append(ESP32HeapWarnEnd).append(" / ").append(LVGLMemorWarnBegin).append("%lu/%lu (%d%%)").append(LVGLMemorWarnEnd).c_str(), freeSystemHeap,                systemHeapSize, float(freeSystemHeap)                / systemHeapSize * 100, mon.free_size,                  mon.total_size, 100-mon.used_pct);
       #endif
     #endif
 
