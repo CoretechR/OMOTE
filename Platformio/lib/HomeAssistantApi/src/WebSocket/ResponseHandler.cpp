@@ -4,7 +4,7 @@
 #include "WebSocket/Message/Message.hpp"
 #include "WebSocket/Session/ISession.hpp"
 
-using namespace HAL::WebSocket::Json;
+using namespace Json;
 
 namespace HomeAssist::WebSocket {
 

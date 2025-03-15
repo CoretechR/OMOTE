@@ -6,8 +6,7 @@
 #include "rapidjson/error/error.h"
 #include "rapidjson/reader.h"
 #include "rapidjson/stream.h"
-// MatthewColvin/OMOTE#10
-namespace HAL::WebSocket::Json {
+namespace Json {
 class IChunkProcessor;
 
 /**
@@ -93,4 +92,4 @@ class IProcessMessage {
   size_t mMaxBufferSize = DefaultMaxBufferSize;
 };
 
-}  // namespace HAL::WebSocket::Json
+}  // namespace Json

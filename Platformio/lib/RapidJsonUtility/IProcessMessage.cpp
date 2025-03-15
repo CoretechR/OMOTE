@@ -2,7 +2,7 @@
 
 #include "IChunkProcessor.hpp"
 
-namespace HAL::WebSocket::Json {
+namespace Json {
 
 IProcessMessage::ProcessResult::ProcessResult(ProcessResult::StatusCode aStatus,
                                               rapidjson::ParseResult aResult)
@@ -159,4 +159,4 @@ void IProcessMessage::SetMaxProcessBufferSize(size_t aProcessBufferSize) {
   mUnprocessedBuffer.reserve(mMaxBufferSize);
 }
 
-}  // namespace HAL::WebSocket::Json
+}  // namespace Json

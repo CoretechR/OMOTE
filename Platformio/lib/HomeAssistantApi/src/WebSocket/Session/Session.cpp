@@ -5,10 +5,9 @@
 
 namespace HomeAssist::WebSocket {
 
-Session::Session(
-    std::unique_ptr<Request> aRequest,
-    std::shared_ptr<MessageHandler> aMessageHandler,
-    std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> aChunkProcessor)
+Session::Session(std::unique_ptr<Request> aRequest,
+                 std::shared_ptr<MessageHandler> aMessageHandler,
+                 std::shared_ptr<Json::IChunkProcessor> aChunkProcessor)
     : mStartRequest(std::move(aRequest)),
       mMessageHandler(aMessageHandler),
       mChunkProcessor(aChunkProcessor) {}
@@ -19,8 +18,7 @@ bool Session::ProcessMessage(const Message& aMessage) {
   }
   return false;
 }
-std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor>
-Session::GetChunkProcessor() {
+std::shared_ptr<Json::IChunkProcessor> Session::GetChunkProcessor() {
   return mChunkProcessor.lock();
 }
 

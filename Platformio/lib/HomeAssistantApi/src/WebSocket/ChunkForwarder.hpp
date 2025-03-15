@@ -2,24 +2,22 @@
 #include <memory>
 
 #include "IChunkProcessor.hpp"
-// MatthewColvin/OMOTE#10
 namespace HomeAssist::WebSocket {
 
 class Api;
 
-class ChunkForwarder : public HAL::WebSocket::Json::IChunkProcessor {
+class ChunkForwarder : public Json::IChunkProcessor {
  public:
   static constexpr auto InvalidId = -1;
 
   ChunkForwarder(Api& aApi);
   virtual ~ChunkForwarder() = default;
 
-  void SetProcessor(
-      std::shared_ptr<HAL::WebSocket::Json::IChunkProcessor> aProcessor);
+  void SetProcessor(std::shared_ptr<Json::IChunkProcessor> aProcessor);
 
   void UpdateProgress(size_t aProcessedBytes, size_t aTotalBytes) override;
-  void Completed(const HAL::WebSocket::Json::IProcessMessage::ProcessResult&
-                     aCompletionResult) override;
+  void Completed(
+      const Json::IProcessMessage::ProcessResult& aCompletionResult) override;
 
  protected:
   bool Null() override;
@@ -39,7 +37,7 @@ class ChunkForwarder : public HAL::WebSocket::Json::IChunkProcessor {
 
  private:
   Api& mApi;
-  std::weak_ptr<HAL::WebSocket::Json::IChunkProcessor> mProcessor;
+  std::weak_ptr<Json::IChunkProcessor> mProcessor;
   bool mInObject = false;
   bool mFoundId = false;
   bool mProcessingId = false;

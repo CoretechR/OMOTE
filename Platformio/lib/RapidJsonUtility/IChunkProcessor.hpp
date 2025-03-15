@@ -2,7 +2,7 @@
 #include "IProcessMessage.hpp"
 #include "rapidjson/reader.h"
 
-namespace HAL::WebSocket::Json {
+namespace Json {
 
 class IChunkProcessor
     : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>, IChunkProcessor> {
@@ -45,4 +45,4 @@ class IChunkProcessor
       const IProcessMessage::ProcessResult& aCompletionResult) {};
 };
 
-}  // namespace HAL::WebSocket::Json
+}  // namespace Json

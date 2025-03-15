@@ -4,8 +4,7 @@
 class MockWebSocket : public webSocketInterface {
  public:
   MockWebSocket() = default;
-  explicit MockWebSocket(
-      std::unique_ptr<HAL::WebSocket::Json::IProcessMessage> aJsonHandler)
+  explicit MockWebSocket(std::unique_ptr<Json::IProcessMessage> aJsonHandler)
       : webSocketInterface(std::move(aJsonHandler)) {}
 
   void connect(const std::string& url) override { Connected(); }

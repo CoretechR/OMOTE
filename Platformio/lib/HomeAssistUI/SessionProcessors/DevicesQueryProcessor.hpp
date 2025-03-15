@@ -6,9 +6,9 @@
 
 namespace UI {
 
-class DevicesQueryProcessor : public HAL::WebSocket::Json::IChunkProcessor {
+class DevicesQueryProcessor : public Json::IChunkProcessor {
  public:
-  using resultType = HAL::WebSocket::Json::IProcessMessage::ProcessResult;
+  using resultType = Json::IProcessMessage::ProcessResult;
 
   using EntityIdCallback = std::function<void(const std::string&)>;
 
