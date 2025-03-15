@@ -45,7 +45,7 @@ static void smartHomeToggle_event_cb(lv_event_t* e){
 static void smartHomeSlider_event_cb(lv_event_t* e){
   lv_obj_t* slider = lv_event_get_target(e);
   char payload[8];
-  sprintf(payload, "%.2f", float(lv_slider_get_value(slider)));
+  snprintf(payload, sizeof(payload), "%.2f", float(lv_slider_get_value(slider)));
   std::string payload_str(payload);
   // Publish an MQTT message based on the event user data
   #if (ENABLE_WIFI_AND_MQTT == 1)
