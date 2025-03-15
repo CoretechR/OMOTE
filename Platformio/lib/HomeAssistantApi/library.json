@@ -1,0 +1,25 @@
+{
+    "name": "HomeAssistantApi",
+    "version": "1.0.0",
+    "description": "A C++ Implemention made for esp32 to interact with HomeAssist",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Matthew Colvin",
+            "email": "mcolvin32.7@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "dependencies": [
+        "HAL@1.0.0",
+        "RapidJsonUtility@1.0.0"
+    ],
+    "build": {
+        "includeDir": ".",
+        "flags": [
+            "-I src"
+        ]
+    },
+    "frameworks": "*",
+    "platforms": "*"
+}
