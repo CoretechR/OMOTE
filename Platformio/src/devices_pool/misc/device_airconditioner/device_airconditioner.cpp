@@ -276,7 +276,7 @@ void AirConditionerPAC_N81::sendIRcommand() {
   unsigned long msg_on_hex = dl_assemble_msg(&airconditioner_state);
   //omote_log_d("AC hex command: 0x%lx\r\n", msg_on_hex);
   char buffer[12];
-  sprintf(buffer, "0x%lx", msg_on_hex);
+  snprintf(buffer, sizeof(buffer), "0x%lx", msg_on_hex);
   //omote_log_d("buffer: %s\r\n", buffer);
   executeCommand(AIRCONDITIONER_COMMAND, std::string(buffer));
 

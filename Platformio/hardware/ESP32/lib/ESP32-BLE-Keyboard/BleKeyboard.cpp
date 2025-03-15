@@ -542,7 +542,7 @@ void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) {
     #if !defined(NIMBLE_ARDUINO_2_x)
     NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
     #endif
-    sprintf(buffer, "BleKeyboard: onConnect: client %s%s, id %s%s, handle %u, isBonded %d",
+    snprintf(buffer, sizeof(buffer), "BleKeyboard: onConnect: client %s%s, id %s%s, handle %u, isBonded %d",
       NimBLEAddress(connInfo.getAddress()).toString().c_str(),
       this->getAddressTypeStr(connInfo.getAddress()).c_str(),
       NimBLEAddress(connInfo.getIdAddress()).toString().c_str(),
@@ -550,7 +550,7 @@ void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) {
       connInfo.getConnHandle(),
       connInfo.isBonded());
   } else {
-    sprintf(buffer, "BleKeyboard: onConnect: more than one device connected. How can it be???");
+    snprintf(buffer, sizeof(buffer), "BleKeyboard: onConnect: more than one device connected. How can it be???");
   }
 	ESP_LOGI(LOG_TAG, "%s", buffer);
   if (thisBLEKeyboardMessage_cb != NULL) {
@@ -570,7 +570,7 @@ void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, std
     #if !defined(NIMBLE_ARDUINO_2_x)
     NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
     #endif
-    sprintf(buffer, "BleKeyboard: onConnect with name: client %s%s, id %s%s, handle %u, isBonded %d, name %s",
+    snprintf(buffer, sizeof(buffer), "BleKeyboard: onConnect with name: client %s%s, id %s%s, handle %u, isBonded %d, name %s",
       NimBLEAddress(connInfo.getAddress()).toString().c_str(),
       this->getAddressTypeStr(connInfo.getAddress()).c_str(),
       NimBLEAddress(connInfo.getIdAddress()).toString().c_str(),
@@ -579,7 +579,7 @@ void BleKeyboard::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, std
       connInfo.isBonded(),
       name.c_str());
   } else {
-    sprintf(buffer, "BleKeyboard: onConnect with name: more than one device connected. How can it be???");
+    snprintf(buffer, sizeof(buffer), "BleKeyboard: onConnect with name: more than one device connected. How can it be???");
   }
 	ESP_LOGI(LOG_TAG, "%s", buffer);
   if (thisBLEKeyboardMessage_cb != NULL) {
@@ -599,12 +599,12 @@ void BleKeyboard::onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, 
   std::string message = "";
   char buffer[200];
   if (pServer->getConnectedCount() == 0) {
-  	sprintf(buffer, "BleKeyboard: onDisconnect: no clients connected");
+  	snprintf(buffer, sizeof(buffer), "BleKeyboard: onDisconnect: no clients connected");
   } else if (pServer->getConnectedCount() == 1) {
     #if !defined(NIMBLE_ARDUINO_2_x)
     NimBLEConnInfo connInfo = pServer->getPeerInfo(0);
     #endif
-    sprintf(buffer, "BleKeyboard: onDisconnect: there is still a client connected %s%s, id %s%s, handle %u, isBonded %d. How can it be???",
+    snprintf(buffer, sizeof(buffer), "BleKeyboard: onDisconnect: there is still a client connected %s%s, id %s%s, handle %u, isBonded %d. How can it be???",
       NimBLEAddress(connInfo.getAddress()).toString().c_str(),
       this->getAddressTypeStr(connInfo.getAddress()).c_str(),
       NimBLEAddress(connInfo.getIdAddress()).toString().c_str(),
@@ -612,7 +612,7 @@ void BleKeyboard::onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, 
       connInfo.getConnHandle(),
       connInfo.isBonded());
   } else {
-  	sprintf(buffer, "BleKeyboard: onDisconnect: there are still %d devices connected. How can it be???", pServer->getConnectedCount());
+  	snprintf(buffer, sizeof(buffer), "BleKeyboard: onDisconnect: there are still %d devices connected. How can it be???", pServer->getConnectedCount());
   }
   ESP_LOGI(LOG_TAG, "%s", buffer);
   if (thisBLEKeyboardMessage_cb != NULL) {
@@ -626,7 +626,7 @@ void BleKeyboard::onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, 
 void BleKeyboard::onIdentity(NimBLEConnInfo& connInfo) {
   std::string message = "";
   char buffer[200];
-  sprintf(buffer, "BleKeyboard: onIdentity: client %s%s, id %s%s, handle %u, isBonded %d",
+  snprintf(buffer, sizeof(buffer), "BleKeyboard: onIdentity: client %s%s, id %s%s, handle %u, isBonded %d",
     NimBLEAddress(connInfo.getAddress()).toString().c_str(),
     this->getAddressTypeStr(connInfo.getAddress()).c_str(),
     NimBLEAddress(connInfo.getIdAddress()).toString().c_str(),
@@ -765,7 +765,7 @@ void BleKeyboard::startAdvertisingDirected(std::string peerAddress, bool isRando
 
   std::string message = "";
   char buffer[100];
-  sprintf(buffer, "Direct advertising started to address %s%s",
+  snprintf(buffer, sizeof(buffer), "Direct advertising started to address %s%s",
     directedAddress.toString().c_str(),
     this->getAddressTypeStr(directedAddress).c_str());
   ESP_LOGI(LOG_TAG, "%s", buffer);
@@ -785,7 +785,7 @@ void BleKeyboard::printConnectedClients() {
   std::string message = "";
   char buffer[50];
 
-  sprintf(buffer, "Connected count: %d", NimBLEDevice::getServer()->getConnectedCount());
+  snprintf(buffer, sizeof(buffer), "Connected count: %d", NimBLEDevice::getServer()->getConnectedCount());
   message = buffer;
   ESP_LOGI(LOG_TAG, "%s", buffer);
 
@@ -796,7 +796,7 @@ void BleKeyboard::printConnectedClients() {
     #else
     NimBLEConnInfo connInfo = NimBLEDevice::getServer()->getPeerInfoByHandle(*it);
     #endif
-    sprintf(buffer, "\n client %d: %s", *it, NimBLEAddress(connInfo.getAddress()).toString().c_str());
+    snprintf(buffer, sizeof(buffer), "\n client %d: %s", *it, NimBLEAddress(connInfo.getAddress()).toString().c_str());
     message = message + buffer;
     ESP_LOGI(LOG_TAG, "%s", buffer);
   }
@@ -820,12 +820,12 @@ void BleKeyboard::printBonds() {
 
   // https://github.com/h2zero/NimBLE-Arduino/issues/579
 
-  sprintf(buffer, "NumBonds: %d", NimBLEDevice::getNumBonds());
+  snprintf(buffer, sizeof(buffer), "NumBonds: %d", NimBLEDevice::getNumBonds());
   message = buffer;
   ESP_LOGI(LOG_TAG, "%s", buffer);
 
   for (int i=0; i<NimBLEDevice::getNumBonds(); i++) {
-    sprintf(buffer, "\n bond %d: %s", i, NimBLEDevice::getBondedAddress(i).toString().c_str());
+    snprintf(buffer, sizeof(buffer), "\n bond %d: %s", i, NimBLEDevice::getBondedAddress(i).toString().c_str());
     message = message + buffer;
     ESP_LOGI(LOG_TAG, "%s", buffer);
   }
