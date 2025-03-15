@@ -8,9 +8,13 @@
 //   special
 #include "devices/misc/device_specialCommands.h"
 #include "applicationInternal/commandHandler.h"
-//   keyboards
+// keyboards
+#if (ENABLE_KEYBOARD_MQTT == 1)
 #include "devices/keyboard/device_keyboard_mqtt/device_keyboard_mqtt.h"
+#endif // ENABLE_KEYBOARD_MQTT
+#if (ENABLE_KEYBOARD_BLE == 1)
 #include "devices/keyboard/device_keyboard_ble/device_keyboard_ble.h"
+#endif // ENABLE_KEYBOARD_BLE
 //   TV
 #include "devices/TV/device_samsungTV/device_samsungTV.h"
 //#include "devices/TV/device_lgTV/device_lgTV.h"
