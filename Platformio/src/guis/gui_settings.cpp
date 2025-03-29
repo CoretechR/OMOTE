@@ -60,7 +60,7 @@ static void timout_event_cb(lv_event_t* e){
 
 // motion threshold event handler
 static void motion_threshold_event_cb(lv_event_t* e){
-  lv_obj_t* drop = lv_event_get_target(e);
+  lv_obj_t* drop = (lv_obj_t*)lv_event_get_target(e);
   uint16_t selected = lv_dropdown_get_selected(drop);
   switch (selected) {
     case 0: {set_motionThreshold(120); break;}
