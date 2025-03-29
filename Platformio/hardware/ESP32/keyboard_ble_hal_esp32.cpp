@@ -173,7 +173,7 @@ bool keyboardBLE_isConnected_HAL() {
   return bleKeyboard.isConnected();
 }
 
-void keyboardBLE_end_HAL() {
+void keyboard_ble_shutdown_HAL() {
   bleKeyboard.end();
 }
     

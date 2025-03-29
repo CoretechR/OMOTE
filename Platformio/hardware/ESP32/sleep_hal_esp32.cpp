@@ -23,13 +23,15 @@
   const uint8_t ACC_INT_GPIO = 13;
 #endif
 
-int MOTION_THRESHOLD = 80;         // motion above threshold keeps device awake
+int DEFAULT_MOTION_THRESHOLD = 80; // motion above threshold keeps device awake
 int DEFAULT_SLEEP_TIMEOUT = 20000; // default time until device enters sleep mode in milliseconds. Can be overridden.
 
 // is "lift to wake" enabled
 bool wakeupByIMUEnabled = true;
 // timeout before going to sleep
 uint32_t sleepTimeout;
+// threshold for motion detection
+uint8_t motionThreshold;
 // Timestamp of the last activity. Go to sleep if (millis() - lastActivityTimestamp > sleepTimeout)
 uint32_t lastActivityTimestamp;
 
@@ -57,7 +59,7 @@ void activityDetection() {
   // determine motion value as da/dt
   motion = (abs(accXold - accX) + abs(accYold - accY) + abs(accZold - accZ));
   // If the motion exceeds the threshold, the lastActivityTimestamp is updated
-  if(motion > MOTION_THRESHOLD) {
+  if(motion > motionThreshold) {
     // Serial.printf("Motion activity %d at %lu ms\r\n", motion, millis());
     setLastActivityTimestamp_HAL();
   }
@@ -146,11 +148,11 @@ void enterSleep(){
 
   #if (ENABLE_WIFI_AND_MQTT == 1)
   // Power down modem
-  wifiStop_HAL();
+  wifi_shutdown_HAL();
   #endif
 
   #if (ENABLE_KEYBOARD_BLE == 1)
-  keyboardBLE_end_HAL();
+  keyboard_ble_shutdown_HAL();
   #endif
 
   // Prepare IO states
@@ -222,6 +224,9 @@ void init_sleep_HAL() {
   if (sleepTimeout == 0){
     sleepTimeout = DEFAULT_SLEEP_TIMEOUT;
   }
+  if (motionThreshold == 0){
+    motionThreshold = DEFAULT_MOTION_THRESHOLD;
+  }
 
   // Find out wakeup cause
   if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1) {
@@ -290,4 +295,13 @@ void set_wakeupByIMUEnabled_HAL(bool aWakeupByIMUEnabled) {
 }
 uint32_t get_lastActivityTimestamp() {
   return lastActivityTimestamp;
+}
+uint8_t get_motionThreshold_HAL() {
+  return motionThreshold;
+}
+void set_motionThreshold_HAL(uint8_t aMotionThreshold) {
+  motionThreshold = aMotionThreshold;
+  if (motionThreshold == 0) {
+    motionThreshold = DEFAULT_MOTION_THRESHOLD;
+  }
 }

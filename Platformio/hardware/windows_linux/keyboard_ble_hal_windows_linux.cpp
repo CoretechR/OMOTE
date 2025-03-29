@@ -29,7 +29,7 @@ void set_announceBLEmessage_cb_HAL(tAnnounceBLEmessage_cb pAnnounceBLEmessage_cb
 void init_keyboardBLE_HAL() {};
 bool keyboardBLE_isAdvertising_HAL() {return false;};
 bool keyboardBLE_isConnected_HAL() {return false;};
-void keyboardBLE_end_HAL() {};
+void keyboard_ble_shutdown_HAL() {};
 void keyboardBLE_write_HAL(uint8_t c) {};
 void keyboardBLE_longpress_HAL(uint8_t c) {};
 void keyboardBLE_home_HAL() {};

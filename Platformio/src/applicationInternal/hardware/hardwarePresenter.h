@@ -36,6 +36,8 @@ uint32_t get_sleepTimeout();
 void set_sleepTimeout(uint32_t aSleepTimeout);
 bool get_wakeupByIMUEnabled();
 void set_wakeupByIMUEnabled(bool aWakeupByIMUEnabled);
+uint8_t get_motionThreshold();
+void set_motionThreshold(uint8_t aMotionThreshold);
 
 // --- keypad -----------------------------------------------------------------
 void init_keys(void);
@@ -115,7 +117,7 @@ void keyboardBLE_deleteBonds();
 bool keyboardBLE_forceConnectionToAddress(std::string peerAddress);
 bool keyboardBLE_isAdvertising();
 bool keyboardBLE_isConnected();
-void keyboardBLE_end();
+void keyboard_ble_shutdown();
 void keyboardBLE_write(uint8_t c);
 void keyboardBLE_longpress(uint8_t c);
 void keyboardBLE_home();
@@ -139,7 +141,7 @@ void init_mqtt(void);
 bool getIsWifiConnected();
 void mqtt_loop();
 bool publishMQTTMessage(const char *topic, const char *payload);
-void wifiStop();
+void wifi_shutdown();
 #endif
 
 // --- memory usage -----------------------------------------------------------

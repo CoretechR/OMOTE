@@ -99,6 +99,12 @@ bool get_wakeupByIMUEnabled() {
 void set_wakeupByIMUEnabled(bool aWakeupByIMUEnabled) {
   set_wakeupByIMUEnabled_HAL(aWakeupByIMUEnabled);
 }
+uint8_t get_motionThreshold() {
+  return get_motionThreshold_HAL();
+}
+void set_motionThreshold(uint8_t aMotionThreshold) {
+  set_motionThreshold_HAL(aMotionThreshold);
+}
 
 // --- keypad -----------------------------------------------------------------
 void init_keys(void) {
@@ -204,8 +210,8 @@ bool keyboardBLE_isAdvertising() {
 bool keyboardBLE_isConnected() {
   return keyboardBLE_isConnected_HAL();
 }
-void keyboardBLE_end() {
-  keyboardBLE_end_HAL();
+void keyboard_ble_shutdown() {
+  keyboard_ble_shutdown_HAL();
 }
 void keyboardBLE_write(uint8_t c) {
   keyboardBLE_write_HAL(c);
@@ -260,8 +266,8 @@ void mqtt_loop() {
 bool publishMQTTMessage(const char *topic, const char *payload) {
   return publishMQTTMessage_HAL(topic, payload);
 }
-void wifiStop() {
-  wifiStop_HAL();
+void wifi_shutdown() {
+  wifi_shutdown_HAL();
 }
 #endif
 

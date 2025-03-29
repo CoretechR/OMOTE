@@ -58,6 +58,19 @@ static void timout_event_cb(lv_event_t* e){
   save_preferences();
 }
 
+// motion threshold event handler
+static void motion_threshold_event_cb(lv_event_t* e){
+  lv_obj_t* drop = lv_event_get_target(e);
+  uint16_t selected = lv_dropdown_get_selected(drop);
+  switch (selected) {
+    case 0: {set_motionThreshold(120); break;}
+    case 1: {set_motionThreshold( 80); break;}
+    case 2: {set_motionThreshold( 50); break;}
+  }
+  omote_log_v("New motion threshold: %lu ms\r\n", get_motionThreshold());
+  save_preferences();
+}
+
 // show memory usage event handler
 static void showMemoryUsage_event_cb(lv_event_t* e) {
   setShowMemoryUsage(lv_obj_has_state((lv_obj_t*)lv_event_get_target(e), LV_STATE_CHECKED));
@@ -76,7 +89,7 @@ void create_tab_content_settings(lv_obj_t* tab) {
   lv_label_set_text(menuLabel, "Display");
 
   lv_obj_t* menuBox = lv_obj_create(tab);
-  lv_obj_set_size(menuBox, lv_pct(100), 109);
+  lv_obj_set_size(menuBox, lv_pct(100), 141);
   lv_obj_set_style_bg_color(menuBox, color_primary, LV_PART_MAIN);
   lv_obj_set_style_border_width(menuBox, 0, LV_PART_MAIN);
 
@@ -115,9 +128,34 @@ void create_tab_content_settings(lv_obj_t* tab) {
   }
 
   menuLabel = lv_label_create(menuBox);
-  lv_label_set_text(menuLabel, "Timeout");
+  lv_label_set_text(menuLabel, "Sensitivity");
   lv_obj_align(menuLabel, LV_ALIGN_TOP_LEFT, 0, 64);
   lv_obj_t* drop = lv_dropdown_create(menuBox);
+  lv_dropdown_set_options(drop, "low\n"
+                                "mid\n"
+                                "high");
+  // if you add more options here, do the same in timout_event_cb()
+  switch (get_motionThreshold()) {
+    case 120: {lv_dropdown_set_selected(drop, 0); break;}
+    case  80: {lv_dropdown_set_selected(drop, 1); break;}
+    case  50: {lv_dropdown_set_selected(drop, 2); break;}
+  }
+  lv_dropdown_set_selected_highlight(drop, true);
+  lv_obj_align(drop, LV_ALIGN_TOP_RIGHT, 0, 61);
+  lv_obj_set_size(drop, 70, 22);
+  //lv_obj_set_style_text_font(drop, &lv_font_montserrat_12, LV_PART_MAIN);
+  //lv_obj_set_style_text_font(lv_dropdown_get_list(drop), &lv_font_montserrat_12, LV_PART_MAIN);
+  lv_obj_set_style_pad_top(drop, 1, LV_PART_MAIN);
+  lv_obj_set_style_bg_color(drop, color_primary, LV_PART_MAIN);
+  lv_obj_set_style_bg_color(lv_dropdown_get_list(drop), color_primary, LV_PART_MAIN);
+  lv_obj_set_style_border_width(lv_dropdown_get_list(drop), 1, LV_PART_MAIN);
+  lv_obj_set_style_border_color(lv_dropdown_get_list(drop), lv_color_hex(0x505050), LV_PART_MAIN);
+  lv_obj_add_event_cb(drop, motion_threshold_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+
+  menuLabel = lv_label_create(menuBox);
+  lv_label_set_text(menuLabel, "Timeout");
+  lv_obj_align(menuLabel, LV_ALIGN_TOP_LEFT, 0, 96);
+  drop = lv_dropdown_create(menuBox);
   lv_dropdown_set_options(drop, "10s\n"
                                 "20s\n"
                                 "40s\n"
@@ -136,7 +174,7 @@ void create_tab_content_settings(lv_obj_t* tab) {
     case 3600000: {lv_dropdown_set_selected(drop, 6); break;}
   }
   lv_dropdown_set_selected_highlight(drop, true);
-  lv_obj_align(drop, LV_ALIGN_TOP_RIGHT, 0, 61);
+  lv_obj_align(drop, LV_ALIGN_TOP_RIGHT, 0, 93);
   lv_obj_set_size(drop, 70, 22);
   //lv_obj_set_style_text_font(drop, &lv_font_montserrat_12, LV_PART_MAIN);
   //lv_obj_set_style_text_font(lv_dropdown_get_list(drop), &lv_font_montserrat_12, LV_PART_MAIN);
