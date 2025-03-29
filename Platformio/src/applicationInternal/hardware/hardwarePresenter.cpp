@@ -99,6 +99,12 @@ bool get_wakeupByIMUEnabled() {
 void set_wakeupByIMUEnabled(bool aWakeupByIMUEnabled) {
   set_wakeupByIMUEnabled_HAL(aWakeupByIMUEnabled);
 }
+uint8_t get_motionThreshold() {
+  return get_motionThreshold_HAL();
+}
+void set_motionThreshold(uint8_t aMotionThreshold) {
+  set_motionThreshold_HAL(aMotionThreshold);
+}
 
 // --- keypad -----------------------------------------------------------------
 void init_keys(void) {

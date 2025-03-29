@@ -5,6 +5,8 @@
 bool wakeupByIMUEnabled = true;
 // timeout before going to sleep
 uint32_t sleepTimeout;
+// threshold for motion detection
+uint8_t motionThreshold;
 
 void init_sleep_HAL() {}
 void init_IMU_HAL(void) {}
@@ -24,4 +26,11 @@ bool get_wakeupByIMUEnabled_HAL() {
 void set_wakeupByIMUEnabled_HAL(bool aWakeupByIMUEnabled) {
   wakeupByIMUEnabled = aWakeupByIMUEnabled;
   printf("lift to wake set to %d\r\n", aWakeupByIMUEnabled);
+}
+uint8_t get_motionThreshold_HAL() {
+  return motionThreshold;
+}
+void set_motionThreshold_HAL(uint8_t aMotionThreshold) {
+  motionThreshold = aMotionThreshold;
+  printf("motion threshold set to %u\r\n", aMotionThreshold);
 }

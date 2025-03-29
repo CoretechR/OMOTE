@@ -16,7 +16,8 @@ void init_preferences_HAL(void) {
   if (preferences.getBool("alreadySetUp")) {
     // from sleep.h
     set_wakeupByIMUEnabled_HAL(preferences.getBool("wkpByIMU"));
-    set_sleepTimeout_HAL(preferences.getUInt("slpTimeout", 20000));
+    set_sleepTimeout_HAL(preferences.getUInt("slpTimeout", DEFAULT_SLEEP_TIMEOUT));
+    set_motionThreshold_HAL(preferences.getUInt("motionThreshold", DEFAULT_MOTION_THRESHOLD));
     // from tft.h
     set_backlightBrightness_HAL(preferences.getUChar("blBrightness", 255));
     // from keyboard.h
@@ -42,6 +43,7 @@ void save_preferences_HAL(void) {
   preferences.putBool("wkpByIMU", get_wakeupByIMUEnabled_HAL());
   // from tft.h
   preferences.putUInt("slpTimeout", get_sleepTimeout_HAL());
+  preferences.putUInt("motionThreshold", get_motionThreshold_HAL());
   preferences.putUChar("blBrightness", get_backlightBrightness_HAL());
   // from keyboard.h
   #if(OMOTE_HARDWARE_REV >= 5)
