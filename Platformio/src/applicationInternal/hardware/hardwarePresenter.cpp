@@ -210,8 +210,8 @@ bool keyboardBLE_isAdvertising() {
 bool keyboardBLE_isConnected() {
   return keyboardBLE_isConnected_HAL();
 }
-void keyboard_ble_shutdown() {
-  keyboard_ble_shutdown_HAL();
+void keyboardBLE_shutdown() {
+  keyboardBLE_shutdown_HAL();
 }
 void keyboardBLE_write(uint8_t c) {
   keyboardBLE_write_HAL(c);

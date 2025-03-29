@@ -152,7 +152,7 @@ void enterSleep(){
   #endif
 
   #if (ENABLE_KEYBOARD_BLE == 1)
-  keyboard_ble_shutdown_HAL();
+  keyboardBLE_shutdown_HAL();
   #endif
 
   // Prepare IO states
