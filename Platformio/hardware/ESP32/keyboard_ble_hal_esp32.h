@@ -21,7 +21,7 @@ void set_announceBLEmessage_cb_HAL(tAnnounceBLEmessage_cb pAnnounceBLEmessage_cb
 void init_keyboardBLE_HAL();
 bool keyboardBLE_isAdvertising_HAL();
 bool keyboardBLE_isConnected_HAL();
-void keyboard_ble_shutdown_HAL();
+void keyboardBLE_shutdown_HAL();
 void keyboardBLE_write_HAL(uint8_t c);
 void keyboardBLE_longpress_HAL(uint8_t c);
 void keyboardBLE_home_HAL();

@@ -117,7 +117,7 @@ void keyboardBLE_deleteBonds();
 bool keyboardBLE_forceConnectionToAddress(std::string peerAddress);
 bool keyboardBLE_isAdvertising();
 bool keyboardBLE_isConnected();
-void keyboard_ble_shutdown();
+void keyboardBLE_shutdown();
 void keyboardBLE_write(uint8_t c);
 void keyboardBLE_longpress(uint8_t c);
 void keyboardBLE_home();
