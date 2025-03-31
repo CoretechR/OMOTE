@@ -156,7 +156,7 @@ void create_tab_content_irReceiver(lv_obj_t* tab) {
     printIRMessages(true);
   }
 
-#if (ENABLE_KEYBOARD_MQTT == 1)
+#if (ENABLE_WIFI_AND_MQTT == 1)
 
   // Show MQTT messages we subscribed to ------------------------------------------------------
   menuLabel = lv_label_create(tab);
@@ -176,7 +176,7 @@ void create_tab_content_irReceiver(lv_obj_t* tab) {
   lv_obj_align(objMQTTmessageReceivedPayload, LV_ALIGN_TOP_LEFT, 0, 8);
 
   printMQTTmessage();
-#endif // ENABLE_KEYBOARD_MQTT
+#endif // ENABLE_WIFI_AND_MQTT
 }
 
 void notify_tab_before_delete_irReceiver(void) {
