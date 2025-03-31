@@ -140,7 +140,7 @@ void set_keyboardBrightness(uint8_t aKeyboardBrightness){
 void init_infraredSender(void) {
   init_infraredSender_HAL();  
 }
-void sendIRcode(IRprotocols protocol, std::list<std::string> commandPayloads, std::string additionalPayload) {
+void sendIRcode(int protocol, std::list<std::string> commandPayloads, std::string additionalPayload) {
   sendIRcode_HAL(protocol, commandPayloads, additionalPayload);
 }
 

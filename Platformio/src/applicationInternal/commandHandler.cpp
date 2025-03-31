@@ -188,7 +188,7 @@ void executeCommandWithData(uint16_t command, commandData commandData, std::stri
       it = commandData.commandPayloads.erase(it);
       omote_log_v("  protocol %s, payload %s\r\n", protocol.c_str(), convertStringListToString(commandData.commandPayloads).c_str());
       
-      sendIRcode((IRprotocols)std::stoi(protocol), commandData.commandPayloads, additionalPayload);
+      sendIRcode(std::stoi(protocol), commandData.commandPayloads, additionalPayload);
       break;
     }
 

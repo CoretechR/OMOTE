@@ -2,6 +2,7 @@
 
 #include <list>
 #include <string>
+#include "applicationInternal/hardware/IRremoteProtocols.h"
 #include "applicationInternal/hardware/arduinoLayer.h"
 
 // --- hardware general -------------------------------------------------------
@@ -67,16 +68,7 @@ void init_SD_card(void);
 
 // --- IR sender --------------------------------------------------------------
 void init_infraredSender(void);
-enum IRprotocols {
-  IR_PROTOCOL_GC = 0,
-  IR_PROTOCOL_NEC = 1,
-  IR_PROTOCOL_SAMSUNG = 2,
-  IR_PROTOCOL_SONY = 3,
-  IR_PROTOCOL_RC5 = 4,
-  IR_PROTOCOL_DENON = 5,
-  IR_PROTOCOL_SAMSUNG36 = 6
-};
-void sendIRcode(IRprotocols protocol, std::list<std::string> commandPayloads, std::string additionalPayload);
+void sendIRcode(int protocol, std::list<std::string> commandPayloads, std::string additionalPayload);
 
 // --- IR receiver ------------------------------------------------------------
 void start_infraredReceiver(void);
