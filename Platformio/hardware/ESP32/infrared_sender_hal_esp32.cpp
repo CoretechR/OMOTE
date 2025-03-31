@@ -69,7 +69,7 @@ void sendIRcode_HAL(int protocol, std::list<std::string> commandPayloads, std::s
     }
   }
 
-  if (protocol == IR_PROTOCOL_GLOBALCACHE) {
+  if (protocol == GLOBALCACHE) {
     // not a protocol, but an encoding
     // first create array of needed size
     std::string::difference_type size = std::count(dataStr.begin(), dataStr.end(), ',');
@@ -91,11 +91,11 @@ void sendIRcode_HAL(int protocol, std::list<std::string> commandPayloads, std::s
     IrSender.sendGC(buf, size);
     delete [] buf;
 
-  } else if (protocol == IR_PROTOCOL_PRONTO) {
+  } else if (protocol == PRONTO) {
     // not a protocol, but an encoding
     Serial.printf("sendIRcode_HAL: protocol IR_PROTOCOL_PRONTO not yet implemented\r\n");
 
-  } else if (protocol == IR_PROTOCOL_RAW) {
+  } else if (protocol == RAW) {
     // not a protocol, but an encoding
     Serial.printf("sendIRcode_HAL: protocol IR_PROTOCOL_RAW not yet implemented\r\n");
 
