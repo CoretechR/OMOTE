@@ -17,7 +17,7 @@ LV_IMG_DECLARE(appleBackIcon);
 static void appleKey_event_cb(lv_event_t* e) {
   // Send IR command based on the event user data  
   int user_data = *((int*)(&(e->user_data)));
-  executeCommand(APPLETV_GUI_EVENT_USER_DATA, std::to_string(50 + user_data));
+  executeCommand(APPLETV_GUI_EVENT_USER_DATA, concatenateIRsendParams(std::to_string(50 + user_data), 15, kSonyMinRepeat));
   omote_log_v("%d\r\n", 50 + user_data);
 }
 

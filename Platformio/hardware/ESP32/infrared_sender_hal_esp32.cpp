@@ -21,80 +21,35 @@ void init_infraredSender_HAL(void) {
   IrSender.begin();
 }
 
-/// @brief Supported IR Protocols.
-enum IRprotocols {
-  /// @brief Standard Global Cache IR protocol. 
-  IR_PROTOCOL_GC = 0,
-  /// @brief Standard NEC IR protocol. 
-  IR_PROTOCOL_NEC = 1,
-  /// @brief Standard Samsung IR protocol.
-  IR_PROTOCOL_SAMSUNG = 2,
-  /// @brief Sony IR protocol operating with 15 bits not the default 20 bits.
-  IR_PROTOCOL_SONY = 3,
-  /// @brief Standard RC5 IR protocol.
-  IR_PROTOCOL_RC5 = 4,
-  /// @brief Denon IR protocol operating with 48 bits not the default 48 bits.
-  IR_PROTOCOL_DENON = 5,
-  /// @brief Standard SAMSUNG 36 bit IR protocol.
-  IR_PROTOCOL_SAMSUNG36 = 6,
-};
-
-/// @brief Gets the default IR repeat number.
-/// @param protocol Which protocol to get the default for.
-/// @return The default to use for the repeat. This is the default for the 
-///         relevant IrSender.send api.
-uint16_t getProtocolDefaultRepeat(int protocol) {
+void getProtocolDefaultBitsAndRepeat(int protocol, uint16_t *defaultParams) {
+  // for more defaults, see file IRremoteESP8266/src/IRsend.h
   switch (protocol) {
-    case IR_PROTOCOL_SONY: {
-      // Sony protocol by default needs 2 repeats.
-      return 2;
-    }
+    case RC5:                  {defaultParams[0] = kRC5XBits;              defaultParams[1] = kNoRepeat;               return;}
+    case NEC:                  {defaultParams[0] = kNECBits;               defaultParams[1] = kNoRepeat;               return;}
+    case SONY:                 {defaultParams[0] = kSony20Bits;            defaultParams[1] = kSonyMinRepeat;          return;}
+    case JVC:                  {defaultParams[0] = kJvcBits;               defaultParams[1] = kNoRepeat;               return;}
+    case SAMSUNG:              {defaultParams[0] = kSamsungBits;           defaultParams[1] = kNoRepeat;               return;}
+    case LG:                   {defaultParams[0] = kLgBits;                defaultParams[1] = kNoRepeat;               return;}
+    case SANYO:                {defaultParams[0] = kSanyoLC7461Bits;       defaultParams[1] = kNoRepeat;               return;}
+    case SHARP:                {defaultParams[0] = kSharpBits;             defaultParams[1] = kNoRepeat;               return;}
+    case DENON:                {defaultParams[0] = kDenonBits;             defaultParams[1] = kNoRepeat;               return;}
+    case SHERWOOD:             {defaultParams[0] = kSherwoodBits;          defaultParams[1] = kSherwoodMinRepeat;      return;}
+    case SAMSUNG_AC:           {defaultParams[0] = kSamsungAcStateLength;  defaultParams[1] = kSamsungAcDefaultRepeat; return;}
+    case LG2:                  {defaultParams[0] = kLgBits;                defaultParams[1] = kNoRepeat;               return;}
+    case SAMSUNG36:            {defaultParams[0] = kSamsung36Bits;         defaultParams[1] = kNoRepeat;               return;}
+    case SHARP_AC:             {defaultParams[0] = kSharpAcStateLength;    defaultParams[1] = kSharpAcDefaultRepeat;   return;}
+    case SANYO_AC:             {defaultParams[0] = kSanyoAcStateLength;    defaultParams[1] = kNoRepeat;               return;}
+    case SANYO_AC88:           {defaultParams[0] = kSanyoAc88StateLength;  defaultParams[1] = kSanyoAc88MinRepeat;     return;}
+    case SANYO_AC152:          {defaultParams[0] = kSanyoAc152StateLength; defaultParams[1] = kSanyoAc152MinRepeat;    return;}
+    case WOWWEE:               {defaultParams[0] = kWowweeBits;            defaultParams[1] = kWowweeDefaultRepeat;    return;}
+    case YORK:                 {defaultParams[0] = kYorkStateLength;       defaultParams[1] = kNoRepeat;               return;}
+
     default: {
-      return 0;
+      Serial.printf("sendIRcode_HAL: WARNING: no defaults for nbits and repeat available for protocol %d\r\n", protocol);
+      defaultParams[0] = 0; defaultParams[1] = kNoRepeat; return;
     }
   }
 }
-
-/// @brief Gets the defualt IR bits to send.
-/// @param protocol Which protocol to get the default for.
-/// @return The default to use for the repeat. This is mostly default for the 
-///         relevant IrSender.send api.
-uint16_t getProtocolDefaultBits(int protocol) {
-  switch (protocol) {
-    case IR_PROTOCOL_NEC: {
-      return 32;
-    }
-
-    case IR_PROTOCOL_SAMSUNG: {
-      return 32;
-    }
-
-    case IR_PROTOCOL_SONY: {
-      // This is actually not the default but it's the default that was 
-      // selected for the enum value. The API default is 20.
-      return 15;
-    }
-
-    case IR_PROTOCOL_RC5: {
-      return 13;
-    }
-
-    case IR_PROTOCOL_DENON: {
-      // This is actually not the default but it's the default that was 
-      // selected for the enum value. The API default is 15.
-      return 48;
-    }
-
-    case IR_PROTOCOL_SAMSUNG36: {
-      return 38;
-    }
-
-    default: {
-      return 0;
-    }
-  }
-}
-
 void sendIRcode_HAL(int protocol, std::list<std::string> commandPayloads, std::string additionalPayload) {
 
   // first determine if data was provided by commandPayload or by additionalPayload. Only one of these will be used.
@@ -102,7 +57,7 @@ void sendIRcode_HAL(int protocol, std::list<std::string> commandPayloads, std::s
   std::string dataStr;
   uint64_t data;
   if (commandPayloads.empty() && (additionalPayload == "")) {
-    Serial.printf("sendIRcode_HAL: cannot send IR command, because both data and payload are empty.\r\n");
+    Serial.printf("sendIRcode_HAL: cannot send IR command, because both data and payload are empty\r\n");
     return;
   } else {
     if (additionalPayload != "") {
@@ -113,118 +68,71 @@ void sendIRcode_HAL(int protocol, std::list<std::string> commandPayloads, std::s
       dataStr = *current;
     }
   }
-  
-  uint16_t repeat = getProtocolDefaultRepeat(protocol);
-  uint16_t nbits = getProtocolDefaultBits(protocol);
 
-  if (protocol != IR_PROTOCOL_GC)
-  {
+  if (protocol == IR_PROTOCOL_GLOBALCACHE) {
+    // not a protocol, but an encoding
+    // first create array of needed size
+    std::string::difference_type size = std::count(dataStr.begin(), dataStr.end(), ',');
+    size += 1;
+    uint16_t *buf = new uint16_t[size];
+    // now get comma separated values and fill array
+    int pos = 0;
+    std::stringstream ss(dataStr);
+    while(ss.good())  {
+      std::string valueStr;
+      std::getline(ss, valueStr, ',');
+      // https://cplusplus.com/reference/string/stoull/
+      data = std::stoull(valueStr, &sz, 0);
+      // Serial.printf("  next string value %s (%" PRIu64 ")\r\n", valueStr.c_str(), data);
+      buf[pos] = data;
+      pos += 1;
+    }
+    Serial.printf("sendIRcode_HAL: will send IR GC, array size %d\r\n", size);
+    IrSender.sendGC(buf, size);
+    delete [] buf;
+
+  } else if (protocol == IR_PROTOCOL_PRONTO) {
+    // not a protocol, but an encoding
+    Serial.printf("sendIRcode_HAL: protocol IR_PROTOCOL_PRONTO not yet implemented\r\n");
+
+  } else if (protocol == IR_PROTOCOL_RAW) {
+    // not a protocol, but an encoding
+    Serial.printf("sendIRcode_HAL: protocol IR_PROTOCOL_RAW not yet implemented\r\n");
+
+  } else {
+    // generic implementation for all other protocols
+
+    // check if nbits and repeat have been provided in the command
     std::string::difference_type elementCount = std::count(dataStr.begin(), dataStr.end(), ':');
-    elementCount++;
-    std::string valueAsStr;
-
-    if (elementCount == 3)
-    {
-        std::stringstream dataStrAsStream(dataStr);
-  
-        std::getline(dataStrAsStream, valueAsStr, ':');
-        data = std::stoull(valueAsStr, nullptr, 0);
-
-        std::getline(dataStrAsStream, valueAsStr, ':');
-        repeat = std::stoull(valueAsStr, nullptr, 0);
-
-        std::getline(dataStrAsStream, valueAsStr, ':');
-        nbits = std::stoull(valueAsStr, nullptr, 0);
-    }
-    else if (elementCount == 2)
-    {
-        std::stringstream dataStrAsStream(dataStr);
-        
-        std::string valueAsStr;
-        uint64_t valueAsUint64;
-
-        std::getline(dataStrAsStream, valueAsStr, ':');
-        data = std::stoull(valueAsStr, nullptr, 0);
-
-        std::getline(dataStrAsStream, valueAsStr, ':');
-        repeat = std::stoull(valueAsStr, nullptr, 0);
+    if (elementCount == 0) {
+      // no nbits and repeat have been provided in the command. Try to get defaults.
+      uint16_t defaultBitsAndRepeat[2];
+      getProtocolDefaultBitsAndRepeat(protocol, defaultBitsAndRepeat);
+      if ((defaultBitsAndRepeat[0] == 0) && (defaultBitsAndRepeat[1] == kNoRepeat)) {
+        Serial.printf("sendIRcode_HAL: either payload is expected as 'data:nbits:repeat', or defaults for nbits and repeat have to be defined. Will abort and not send IR code\r\n");
+        return;
+      } else {
+        dataStr.append(":").append(std::to_string(defaultBitsAndRepeat[0])).append(":").append(std::to_string(defaultBitsAndRepeat[1]));
       }
-      else
-      {
-        data = std::stoull(dataStr, &sz, 0);
-      }
-  }
-
-  switch (protocol) {
-    case IR_PROTOCOL_GC: {
-      // first create array of needed size
-      std::string::difference_type size = std::count(dataStr.begin(), dataStr.end(), ',');
-      size += 1;
-      uint16_t *buf = new uint16_t[size];
-      // now get comma separated values and fill array
-      int pos = 0;
-      std::stringstream ss(dataStr);
-      while(ss.good())  {
-        std::string valueStr;
-        std::getline(ss, valueStr, ',');
-        // https://cplusplus.com/reference/string/stoull/
-        data = std::stoull(valueStr, &sz, 0);
-        // Serial.printf("  next string value %s (%" PRIu64 ")\r\n", valueStr.c_str(), data);
-        buf[pos] = data;
-        pos += 1;
-      }
-      Serial.printf("sendIRcode_HAL: will send IR GC, array size '%d'.\r\n", size);
-      IrSender.sendGC(buf, size);
-      delete [] buf;
-      break;
     }
-
-    case IR_PROTOCOL_NEC: {
-      Serial.printf("sendIRcode_HAL: will send IR NEC, command: '%s', data: (%" PRIu64 "), bits: (%" PRIu64 "), repeat: (%" PRIu64 ").\r\n", 
-        dataStr.c_str(), data, nbits, repeat);
-      IrSender.sendNEC(data, nbits, repeat);
-      break;
-    }
-
-    case IR_PROTOCOL_SAMSUNG: {
-      Serial.printf("sendIRcode_HAL: will send IR SAMSUNG, command: '%s', data: (%" PRIu64 "), bits: (%" PRIu64 "), repeat: (%" PRIu64 ").\r\n", 
-        dataStr.c_str(), data, nbits, repeat);
-      IrSender.sendSAMSUNG(data, nbits, repeat);
-      break;
-    }
-
-    case IR_PROTOCOL_SONY: {
-      Serial.printf("sendIRcode_HAL: will send IR SONY, command: '%s', data: (%" PRIu64 "), bits: (%" PRIu64 "), repeat: (%" PRIu64 ").\r\n", 
-        dataStr.c_str(), data, nbits, repeat);
-      IrSender.sendSony(data,  nbits, repeat);
-      break;
-    }
-
-    case IR_PROTOCOL_RC5: {
-      Serial.printf("sendIRcode_HAL: will send IR RC5, command: '%s', data: (%" PRIu64 "), bits: (%" PRIu64 "), repeat: (%" PRIu64 ").\r\n", 
-        dataStr.c_str(), data, nbits, repeat);
-      IrSender.sendRC5(IrSender.encodeRC5X(0x00, data),  nbits, repeat);
-      break;
-    }
-
-    case IR_PROTOCOL_DENON: {
-      Serial.printf("sendIRcode_HAL: will send IR DENON, command: '%s', data: (%" PRIu64 "), bits: (%" PRIu64 "), repeat: (%" PRIu64 ").\r\n", 
-        dataStr.c_str(), data, nbits, repeat);
-      IrSender.sendDenon(data, nbits, repeat);
-      break;
-    }
-
-    case IR_PROTOCOL_SAMSUNG36: {
-      data = std::stoull(dataStr, &sz, 0);
-      Serial.printf("sendIRcode_HAL: will send IR SAMSUNG36, command: '%s', data: (%" PRIu64 "), bits: (%" PRIu64 "), repeat: (%" PRIu64 ").\r\n", 
-        dataStr.c_str(), data, nbits, repeat);
-      IrSender.sendSamsung36(data, nbits, repeat);
-      break;
-    }
-
-    default: {
-      Serial.printf("sendIRcode_HAL: Unknwon protocol '%i'.\r\n", protocol);
+    // check if we now have the expected format 'data:nbits:repeat'
+    elementCount = std::count(dataStr.begin(), dataStr.end(), ':');
+    if (elementCount != 2) {
+      Serial.printf("sendIRcode_HAL: payload is expected as 'data:nbits:repeat'. Will abort and not send IR code\r\n");
       return;
     }
+  
+    std::string valueAsStr;
+    uint16_t nbits, repeat; 
+    std::stringstream dataStrAsStream(dataStr);
+    std::getline(dataStrAsStream, valueAsStr, ':');
+    data = std::stoull(valueAsStr, nullptr, 0);
+    std::getline(dataStrAsStream, valueAsStr, ':');
+    nbits = std::stoul(valueAsStr, nullptr, 0);
+    std::getline(dataStrAsStream, valueAsStr, ':');
+    repeat = std::stoul(valueAsStr, nullptr, 0);
+
+    Serial.printf("sendIRcode_HAL: will send data %s with protocol %d, data 0x%llx, nbits %u, repeat %u\r\n", dataStr.c_str(), protocol, data, nbits, repeat);
+    IrSender.send((decode_type_t)protocol, data, nbits, repeat);
   }
 }
