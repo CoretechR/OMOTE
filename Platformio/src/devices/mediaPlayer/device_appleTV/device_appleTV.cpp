@@ -29,7 +29,7 @@ void register_device_appleTV() {
   register_command(&APPLETV_OK                   , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0x77E13A80"}));
 
   register_command(&APPLETV_PLAY                 , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0x77E1FA80"})); 
-  register_command(&APPLETV_PAUSE                , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0xA7E14C80:1"}));
+  register_command(&APPLETV_PAUSE                , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0xA7E14C80:32:1"})); // Code + kNECBits + 1 repeat
 
   register_command(&APPLETV_10_SECOND_BACK       , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0xA7E16480:32:1"})); // Code + kNECBits + 1 repeat
   register_command(&APPLETV_10_SECOND_FOREWARD   , makeCommandData(IR, {std::to_string(IR_PROTOCOL_NEC), "0xA7E11080:32:1"})); // Code + kNECBits + 1 repeat
