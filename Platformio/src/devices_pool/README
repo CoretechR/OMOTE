@@ -1,8 +1,0 @@
-
-This directory is intended for a pool of devices already contributed by the community of OMOTE.
-Files in this directory won't get compiled by default.
-
-If you want to use one of these devices, then
-- copy the corresponding device folder from "/src/devices_pool/..." to "/src/devices/..."
-- add the corresponding call to "register_device_*()" into "/src/main.cpp" (and include the device header file in "/src/main.cpp" as well)
-- start using the commands defined by the device, e.g. by putting them in the hardware key map of "scene__default.cpp" or of a specific scene
