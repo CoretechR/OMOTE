@@ -22,7 +22,7 @@ The software can be adjusted to your needs. You can add your own amplifier, TV a
 * some smart home devices controlled with MQTT
 * an IR receiver for decoding the IR codes from your remote
 
-Please see the [wiki on how to understand and modify the software.](https://github.com/OMOTE-Community/OMOTE-Firmware/wiki/02-How-to-understand-and-modify-the-software)
+Please see the [wiki on how to understand and modify the firmware.](https://github.com/OMOTE-Community/OMOTE-Firmware/wiki/How-to-understand-and-modify-the-firmware)
 
 You need to have PlatformIO running, and you need to know how to compile and flash your own firmware with PlatformIO. There is no prebuild firmware.
 
@@ -39,7 +39,7 @@ You can run the simulator in Visual Studio Code with PlatformIO. No need for any
   <img src="images/WindowsSimulator.gif" width="60%">
 </div>
 
-For details, please see the [wiki for the software simulator for fast creating and testing of LVGL GUIs.](https://github.com/OMOTE-Community/OMOTE-Firmware/wiki/03-Software-simulator-for-fast-creating-and-testing-of-LVGL-GUIs)
+For details, please see the [wiki for the software simulator for fast creating and testing of LVGL GUIs.](https://github.com/OMOTE-Community/OMOTE-Firmware/wiki/Software-simulator-for-fast-creating-and-testing-of-LVGL-GUIs)
 
 ### To Dos for software
 
