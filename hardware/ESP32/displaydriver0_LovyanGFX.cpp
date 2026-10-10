@@ -114,8 +114,13 @@ void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *colo
 }
 
 void my_touchpad_read_display_specific(lv_indev_drv_t * indev_driver, lv_indev_data_t * data) {
-  uint16_t x, y;
-  if (tft.getTouch(&x, &y)) {
+  // After power-on the FT6206 answers every register from 0x01 on with 0xFF, until it is touched
+  // for the first time. LovyanGFX takes the low nibble of TD_STATUS (0x02) as the number of
+  // points, so it reports a touch at raw 0xFFF/0xFFF on every poll (here x=-3856 y=-3776).
+  // Adafruit_FT6206 (DISPLAY_DRIVER 1 and 2) only accepts 1 or 2 points and is not affected.
+  // A real touch is always on the panel, so drop everything outside of it.
+  int32_t x, y;
+  if (tft.getTouch(&x, &y) && (x >= 0) && (x < SCR_WIDTH) && (y >= 0) && (y < SCR_HEIGHT)) {
     data->state = LV_INDEV_STATE_PR;
     data->point.x = x;
     data->point.y = y;
